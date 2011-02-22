@@ -1,0 +1,67 @@
+#+======================================================================
+# $Source$
+#
+# Project:      Tango Manager
+#
+# Description:  Astor revisions
+#
+# $Author$
+#
+# $Revision$
+#
+# copyleft :    European Synchrotron Radiation Facility
+#               BP 220, Grenoble 38043
+#               FRANCE
+#
+#-======================================================================
+
+Astor-4.4.0: Access control tool added.
+
+Astor-4.3.2:  Bug fixed in miscellaneous host collection.
+
+Astor-4.3.1:  Moving state added for collectionx.
+              In StartAll command a sleep(500) has been added between two hosts.
+
+Astor-4.3.0:  Moving state added for startup phase.
+
+Astor-4.2.3:  Host info panel modified to use icons.
+
+Astor-4.2.2:  Backward compatibilty for jive fixed.
+
+Astor-4.2.1:  Icons have been changed.
+              Some minor changes.
+
+Astor-4.2.0:  Polling profiler added.
+
+Astor-4.1.4:  Open/Save menu added on event tester window.
+
+Astor-4.1.3:  History added on event management.
+              The maximum servers displayed in horizontal on HostInfoDialog
+              window has been set to 5.
+
+Astor-4.1.2:  Bug fixed in Device browser in member device name.
+
+Astor-4.1.1:  Change TANGO_HOST added (needs TangORB-4.7.7 or later).
+
+Astor-4.1.0:  DevBrowser and MkStarter utilities added.
+
+Astor-4.0.9:  Minor changes for EventTester compatibility
+
+Astor-4.0.8:  Screen position modified for dialogs.
+
+Astor-4.0.7:  Search if host already exist before creation.
+
+Astor-4.0.6:  Search by host name added.
+
+Astor-4.0.5:  Can change memorized attribute value.
+
+Astor-4.0.4:  Bug in server architecture fixed.
+
+Astor-4.0.3:  Minor changes, RemoteCmd property added.
+
+Astor-4.0.2:  Server architecture display addded.
+
+Astor-4.0.1:  DevWizard calls addded.
+
+Astor-4.0.0:  Possibility to controle two database servers added.
+
