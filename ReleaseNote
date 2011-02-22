@@ -1,0 +1,129 @@
+#+======================================================================
+# $Source$
+#
+# Project:      Tango Manager
+#
+# Description:  Astor revisions
+#
+# $Author$
+#
+# $Revision$
+#
+# copyleft :    European Synchrotron Radiation Facility
+#               BP 220, Grenoble 38043
+#               FRANCE
+#
+#-======================================================================
+
+Astor-5.0.4 -  16/06/08:
+	Level trees are now displayed on 2 rows.
+
+Astor-5.0.3 -  22/05/08:
+	Host info dialog servers are managed in a jtree.
+
+Astor-5.0.2 -  07/05/08:
+	Host info dialog line management changed.
+	Browse Database option added in DB popup menu.
+
+Astor-5.0.1 -  10/04/08:
+	Branch info modified.
+	Table of hosts and servers added.
+
+Astor-5.0.0 -  27/03/08:
+	Compatibility with Starter 4.0 and after only !
+	Better management of server list.
+	Server state MOVING managed.
+	Hard kill added on servers.
+	New features on polling profiler.
+
+Astor-4.5.7 -  12/12/07:
+	Reset buttons added in event configuration panel.
+
+Astor-4.5.6 -  07/11/07:
+	Display host info if OSManage DS  is running on host.
+	Display host's state on HotInfoDialog.
+
+Astor-4.5.5 -  11/09/07:
+	Db attribute polling panel added.
+	Bug on repeate error window when refresh tree fixed.
+
+Astor-4.5.4  -  04/09/07:
+	Set attribute polled names in lower case in new starter creation.
+
+Astor-4.5.3  -  20/08/07: 
+	ServStatePanel added on HostInfoDialog (Check states option).
+
+Astor-4.5.2  -  27/04/07: 
+	Display host panel available for stopped server from Device Browser.
+
+Astor-4.5.1  -  04/04/07: 
+	Database attribute properties editor added.
+
+Astor-4.5.0  -  27/03/07:
+	Preferences dialog added.
+
+Astor-4.4.4  -  08/03/07:
+	LastCollections property is managed.
+
+Astor-4.4.3  -  22/01/07:
+	Remove watch dog on host thread.
+
+Astor-4.4.2  -  17/01/07:
+	Html helps added.
+    Startup error message added in view menu.
+
+Astor-4.4.1  -  08/01/07:
+	Disable Start Server button if Starter is MOVING.
+
+Astor-4.4.0  -  25/09/06:
+	Access control tool added.
+
+Astor-4.3.2:
+	Bug fixed in miscellaneous host collection.
+
+Astor-4.3.1:  Moving state added for collectionx.
+              In StartAll command a sleep(500) has been added between two hosts.
+
+Astor-4.3.0:  Moving state added for startup phase.
+
+Astor-4.2.3:  Host info panel modified to use icons.
+
+Astor-4.2.2:  Backward compatibilty for jive fixed.
+
+Astor-4.2.1:  Icons have been changed.
+              Some minor changes.
+
+Astor-4.2.0:  Polling profiler added.
+
+Astor-4.1.4:  Open/Save menu added on event tester window.
+
+Astor-4.1.3:  History added on event management.
+              The maximum servers displayed in horizontal on HostInfoDialog
+              window has been set to 5.
+
+Astor-4.1.2:  Bug fixed in Device browser in member device name.
+
+Astor-4.1.1:  Change TANGO_HOST added (needs TangORB-4.7.7 or later).
+
+Astor-4.1.0:  DevBrowser and MkStarter utilities added.
+
+Astor-4.0.9:  Minor changes for EventTester compatibility
+
+Astor-4.0.8:  Screen position modified for dialogs.
+
+Astor-4.0.7:  Search if host already exist before creation.
+
+Astor-4.0.6:  Search by host name added.
+
+Astor-4.0.5:  Can change memorized attribute value.
+
+Astor-4.0.4:  Bug in server architecture fixed.
+
+Astor-4.0.3:  Minor changes, RemoteCmd property added.
+
+Astor-4.0.2:  Server architecture display addded.
+
+Astor-4.0.1:  DevWizard calls addded.
+
+Astor-4.0.0:  Possibility to controle two database servers added.
+
