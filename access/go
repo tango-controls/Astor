@@ -1,0 +1,2 @@
+
+java -DTANGO_HOST=$TANGO_HOST  admin.astor.access.TangoAccess $*
