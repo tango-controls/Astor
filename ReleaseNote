@@ -1,0 +1,37 @@
+#+======================================================================
+# $Source$
+#
+# Project:      Tango Manager
+#
+# Description:  Astor revisions
+#
+# $Author$
+#
+# $Revision$
+#
+# copyleft :    European Synchrotron Radiation Facility
+#               BP 220, Grenoble 38043
+#               FRANCE
+#
+#-======================================================================
+
+Astor-4.0.9:	Minor changes for EventTester compatibility
+
+Astor-4.0.8:	Screen position modified for dialogs.
+
+Astor-4.0.7:	Search if host already exist before creation.
+
+Astor-4.0.6:	Search by host name added.
+
+Astor-4.0.5:	Can change memorized attribute value.
+
+Astor-4.0.4:	Bug in server architecture fixed.
+
+Astor-4.0.3:	Minor changes, RemoteCmd property added.
+
+Astor-4.0.2:	Server architecture display addded.
+
+Astor-4.0.1:	DevWizard calls addded.
+
+Astor-4.0.0:	Possibility to controle two database server added.
+
