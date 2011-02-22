@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4" relativePaths="false" type="JAVA_MODULE">
+  <component name="ModuleRootManager" />
+  <component name="NewModuleRootManager">
+    <output url="file://Y:/tango/tools/bin" />
+    <exclude-output />
+    <output-test url="file://Y:/tango/tools/bin" />
+    <content url="file://Y:/tango/tools/admin">
+      <sourceFolder url="file://Y:/tango/tools/admin" isTestSource="true" />
+      <excludeFolder url="file://Y:/tango/tools/admin/doc" />
+      <excludeFolder url="file://Y:/tango/tools/admin/jps" />
+      <excludeFolder url="file://Y:/tango/tools/admin/notifd2db" />
+      <excludeFolder url="file://Y:/tango/tools/admin/tags_tree" />
+      <excludeFolder url="file://Y:/tango/tools/admin/tinku" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="java version &quot;1.4.2_10&quot;" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://Y:/tango/tools/bin" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://Y:/tango/javaapi/bin" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://Y:/tango/javaapi/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/appli/atkpanel.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/appli/HdbAccessStat.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/appli/JHdbConfig.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/appli/Jive.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/appli/LogViewer.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/lib/ATKWidget.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/lib/ATKCore.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://Y:/tango/release/java/lib/TangORB.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntryProperties />
+  </component>
+</module>
+
