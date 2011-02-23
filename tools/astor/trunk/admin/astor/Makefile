@@ -319,5 +319,5 @@ install_op:
 
 tag:
 	@echo "Tagging  $(PACKAGE)  for $(SVN_TAG_REV)"
-	@cd $(ASTOR_ROOT) ; echo "svn copy trunk  tags/$(PACKAGE)-$(SVN_TAG_REV)"
-	@cd $(ASTOR_ROOT) ; echo "svn commit      tags/$(PACKAGE)-$(SVN_TAG_REV)"
+	@cd $(ASTOR_ROOT) ; svn copy trunk  tags/$(PACKAGE)-$(SVN_TAG_REV)
+	@cd $(ASTOR_ROOT) ; svn commit      tags/$(PACKAGE)-$(SVN_TAG_REV)
