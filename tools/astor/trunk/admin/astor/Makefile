@@ -236,7 +236,7 @@ JAR_DIR    = $(TANGO_JAR_HOME)/appli
 #
 #------------------------------------------------------------------
 
-BIN_DIR   = /segfs/tango/tools/admin/admin/bin
+BIN_DIR   = ../../bin
 JAVAFLAGS = -deprecation -d $(BIN_DIR)
 JAVAC = javac $(JAVAFLAGS)
 #JAVAC = jmake $(JAVAFLAGS)
