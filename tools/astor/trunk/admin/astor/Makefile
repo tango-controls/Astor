@@ -7,7 +7,7 @@
 #
 # $Author$
 #
-# $Version$
+# $Version: $
 #
 # $Log$
 # Revision 3.60  2011/02/11 10:00:26  pascal_verdier
@@ -222,13 +222,20 @@
 #
 #-======================================================================
 
-APPLI_VERS	=	5.4.0
+
+MAJOR_REV   = 5
+MIDDLE_REV  = 4
+MINOR_REV   = 1
+
+APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
+SVN_TAG_REV =	Release-$(MAJOR_REV)_$(MIDDLE_REV)_$(MINOR_REV)
 
 PACKAGE    = Astor
 TANGO_HOME = /segfs/tango
 DOC_ORIG   = $(TANGO_HOME)/tools/admin/doc
 DOC_HOME   = $(TANGO_HOME)/doc/www/tango/tango_doc/tools_doc/astor_doc/
-JAR_DIR    = $(TANGO_JAR_HOME)/appli
+JAR_DIR    = $(TANGO_HOME)/release/java/appli
+ASTOR_ROOT = $(TANGO_HOME)/tools/admin/astor
 
 # -----------------------------------------------------------------
 #
@@ -239,7 +246,6 @@ JAR_DIR    = $(TANGO_JAR_HOME)/appli
 BIN_DIR   = ../../bin
 JAVAFLAGS = -deprecation -d $(BIN_DIR)
 JAVAC = javac $(JAVAFLAGS)
-#JAVAC = jmake $(JAVAFLAGS)
 
 #-------------------------------------------------------------------
 
@@ -310,3 +316,8 @@ install_ftp:
 OPERATION = /operation/dserver/java/appli
 install_op:
 	@segfs2operation $(JAR_DIR) $(MAIN_CLASS) $(APPLI_VERS) $(OPERATION)
+
+tag:
+	@echo "Tagging  $(PACKAGE)  for $(SVN_TAG_REV)"
+	@cd $(ASTOR_ROOT) ; echo "svn copy trunk  tags/$(PACKAGE)-$(SVN_TAG_REV)"
+	@cd $(ASTOR_ROOT) ; echo "svn commit      tags/$(PACKAGE)-$(SVN_TAG_REV)"
