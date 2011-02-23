@@ -4,7 +4,7 @@ TANGO_HOME=/segfs/tango
 LIB_HOME=$TANGO_HOME/release/java/lib
 APPLI_HOME=$TANGO_HOME/release/java/appli
 
-ASTOR=$TANGO_HOME/tools/admin/astor
+ASTOR=$TANGO_HOME/tools/admin/astor/trunk
 ASTOR_BIN=$ASTOR/bin
 
 TANGO=$LIB_HOME/TangORB.jar
