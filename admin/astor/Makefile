@@ -7,7 +7,7 @@
 #
 # $Author$
 #
-# $Version: $
+# $Version$
 #
 # $Log$
 # Revision 3.60  2011/02/11 10:00:26  pascal_verdier
@@ -230,12 +230,12 @@ MINOR_REV   = 1
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV)_$(MIDDLE_REV)_$(MINOR_REV)
 
-PACKAGE    = Astor
-TANGO_HOME = /segfs/tango
+PACKAGE        = Astor
+TANGO_HOME     = /segfs/tango
+SVN_ASTOR_PATH = $(SVN_TCS)/tools/astor
 DOC_ORIG   = $(TANGO_HOME)/tools/admin/doc
 DOC_HOME   = $(TANGO_HOME)/doc/www/tango/tango_doc/tools_doc/astor_doc/
 JAR_DIR    = $(TANGO_HOME)/release/java/appli
-ASTOR_ROOT = $(TANGO_HOME)/tools/admin/astor
 
 # -----------------------------------------------------------------
 #
@@ -319,5 +319,5 @@ install_op:
 
 tag:
 	@echo "Tagging  $(PACKAGE)  for $(SVN_TAG_REV)"
-	@cd $(ASTOR_ROOT) ; svn copy trunk  tags/$(PACKAGE)-$(SVN_TAG_REV)
-	@cd $(ASTOR_ROOT) ; svn commit      tags/$(PACKAGE)-$(SVN_TAG_REV)
+	svn copy  $(SVN_ASTOR_PATH)/trunk \
+	          $(SVN_ASTOR_PATH)/tags/$(PACKAGE)-$(SVN_TAG_REV)

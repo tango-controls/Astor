@@ -340,6 +340,9 @@ public class Astor extends JFrame implements AstorDefs
             tango_host = ApiUtil.get_db_obj().get_tango_host();
         }
         catch(DevFailed e){ /* do nothing */ }
+		
+		//	There is some problem between environement and change
+		changeTgHostBtn.setVisible(false);
 	}
 //===========================================================
 /**
@@ -918,8 +921,7 @@ public class Astor extends JFrame implements AstorDefs
         try{
             String      tmp_tgh;
             String[]    known_tgh;
-            if (tango_host_selector==null)
-            {
+            if (tango_host_selector==null)  {
                 known_tgh = AstorUtil.getKnownTangoHosts();
                 tango_host_selector = new Selector(this, "Tango Host  (e.g.  hal:2001)", known_tgh, tango_host);
                 ATKGraphicsUtils.centerDialog(tango_host_selector);
@@ -931,8 +933,7 @@ public class Astor extends JFrame implements AstorDefs
 
             //	Check if connection OK
             String[]	tgh_arr = tmp_tgh.split(":");
-            if (tgh_arr.length!=2)
-            {
+            if (tgh_arr.length!=2)  {
                 Utils.popupError(this, "Input syntax error\n" + tmp_tgh + "\n is not a valid TANGO_HOST");
                 return;
             }
@@ -942,11 +943,11 @@ public class Astor extends JFrame implements AstorDefs
                 return;
 
             tango_host = tmp_tgh;
+
             //	Close all host info dialogs
             tree.hostDialogs.close();
             tree.hostDialogs.clear();
-            if (dev_browser!=null)
-            {
+            if (dev_browser!=null)  {
                 dev_browser.setVisible(false);
                 dev_browser = null;
             }
