@@ -665,16 +665,13 @@ public class AstorUtil implements AstorDefs {
 	public static String getTangoHost()
 	{
 		String	th;
-		try
-		{
+		try {
 			th = ApiUtil.getTangoHost();
 		}
-		catch(DevFailed e)
-		{
+		catch(DevFailed e) {
 			return null;
 		}
-		catch(NoSuchMethodError e)
-		{
+		catch(NoSuchMethodError e) {
 			th = System.getProperty("TANGO_HOST");
 			if (th==null)
 				th = System.getenv("TANGO_HOST");
