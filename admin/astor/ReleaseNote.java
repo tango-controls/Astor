@@ -17,7 +17,9 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Fri Feb 11 11:11:24 CET 2011)</Center><Br>\n" + 
+		"	(Generated Mon Mar 14 09:38:45 CET 2011)</Center><Br>\n" + 
+		"<li><b>Astor-5.4.1 -  14/03/11:</b><Br>\n" + 
+		"&nbsp; &nbsp; Pb on TangoHost.getFamily() (if not defined) fixed.<Br>\n" + 
 		"<li><b>Astor-5.4.0 -  11/02/11:</b><Br>\n" + 
 		"&nbsp; &nbsp; Pb with TAC when adding addresses on \"All Users\" fixed.<Br>\n" + 
 		"&nbsp; &nbsp; No reference on app_util classes any more.<Br>\n" + 
