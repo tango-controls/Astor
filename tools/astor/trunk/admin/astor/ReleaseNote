@@ -15,6 +15,9 @@
 #
 #-======================================================================
 
+Astor-5.4.1 -  14/03/11:
+	Pb on TangoHost.getFamily() (if not defined) fixed.
+
 Astor-5.4.0 -  11/02/11:
 	Pb with TAC when adding addresses on "All Users" fixed.
 	No reference on app_util classes any more.

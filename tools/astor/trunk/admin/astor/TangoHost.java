@@ -745,7 +745,7 @@ public class TangoHost extends DeviceProxy
 		{
 
 			DbDatum	datum = get_property("HostCollection");
-			if (datum.is_empty())
+			if (!datum.is_empty())
 				family = datum.extractString();
 		}
 		catch(DevFailed e){
