@@ -283,7 +283,6 @@ public class PopupTable extends JDialog {
 	{
 		try
 		{
-			//	Initialise the final XML objects
 			model = new DataTableModel();
 
 			// Create the table
@@ -301,8 +300,11 @@ public class PopupTable extends JDialog {
 
 			//	Put it in a scrolled pane
 			scrollPane = new JScrollPane(table);
-			if (dim==null)
-				scrollPane.setPreferredSize(new Dimension(650, 450));
+			if (dim==null) {
+                int heith = 18 + 18*data.length;
+                if (heith>400)  heith=400;
+				scrollPane.setPreferredSize(new Dimension(650, heith));
+            }
 			else
 				scrollPane.setPreferredSize(dim);
 
