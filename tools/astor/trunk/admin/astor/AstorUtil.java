@@ -154,8 +154,9 @@ public class AstorUtil implements AstorDefs {
 	private static DbClass	_class = null;
 	private	static AstorUtil	instance = null;
 
-	//	Variables will be setted by properties
+	//	Variables will be set by properties
 	//---------------------------------------------
+    private static boolean  superTango      = false;
 	private static short	readInfoPeriod  = 5;
 	private static short	nbStartupLevels	= 5;
 	private static String	rloginCmd 	    = null;
@@ -196,6 +197,15 @@ public class AstorUtil implements AstorDefs {
 	private AstorUtil()
 	{
 		compare = new MyCompare();
+        String str = System.getenv("SUPER_TANGO");
+        if (str!=null) {
+            superTango = str.equals("true");
+        }
+        else {
+            str = System.getProperty("SUPER_TANGO");
+            if (str!=null)
+                superTango = str.equals("true");
+        }
 	}
 
 	//===============================================================
@@ -217,6 +227,12 @@ public class AstorUtil implements AstorDefs {
 		state_icons[moving]  = new ImageIcon(getClass().getResource(img_path + "blueball.gif"));
 		state_icons[failed]  = new ImageIcon(getClass().getResource(img_path + "failed.gif"));
 	}
+	//===============================================================
+	//===============================================================
+    public boolean isSuperTango()
+    {
+        return superTango;
+    }
 	//===============================================================
 	//===============================================================
 	static String[] string2array(String str)
@@ -1135,12 +1151,12 @@ public class AstorUtil implements AstorDefs {
 		JSmoothProgressBar myBar = new JSmoothProgressBar();
 		myBar.setStringPainted(true);
 		myBar.setBackground(Color.lightGray);
-		myBar.setProgressBarColors(Color.yellow, Color.yellow, Color.yellow);
+        myBar.setProgressBarColors(Color.gray, Color.lightGray,Color.darkGray);
 
 		if (tango_icon==null)
 			tango_icon = new ImageIcon(
-				getInstance().getClass().getResource(img_path+"tango.jpg"));
-		splash = new Splash(tango_icon, Color.yellow, myBar);
+				getInstance().getClass().getResource(img_path+"TangoCollaboration.jpg"));
+		splash = new Splash(tango_icon, Color.black, myBar);
 		splash.setTitle(title);
 		splash.setMessage("Starting....");
 		splash_progress = 0;
@@ -1151,19 +1167,23 @@ public class AstorUtil implements AstorDefs {
 	//=======================================================
 	public static void stopSplash()
 	{
-		splash_progress = 100;
-		splash.progress(splash_progress);
-		 splash.setVisible(false);
+        if (splash!=null) {
+		    splash_progress = 100;
+		    splash.progress(splash_progress);
+		    splash.setVisible(false);
+        }
 	}
 	//===============================================================
 	//===============================================================
 	public static void increaseSplashProgress(int i, String message)
 	{
-		splash_progress += i;
-		if (splash_progress>99)
-			splash_progress = 99;
-		splash.progress(splash_progress);
-		splash.setMessage(message);
+        if (splash!=null) {
+            splash_progress += i;
+            if (splash_progress>99)
+                splash_progress = 99;
+            splash.progress(splash_progress);
+            splash.setMessage(message);
+        }
 	}
 
 
