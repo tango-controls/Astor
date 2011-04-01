@@ -37,10 +37,7 @@ package admin.astor.tools;
 
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.ApiUtil;
-import fr.esrf.TangoApi.DbServer;
-import fr.esrf.TangoApi.DeviceData;
-import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoApi.*;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
