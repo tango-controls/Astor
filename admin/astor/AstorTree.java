@@ -181,6 +181,7 @@
 package admin.astor;
 
 import admin.astor.access.TangoAccess;
+import admin.astor.statistics.ResetStatistics;
 import admin.astor.tools.PopupText;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -970,6 +971,30 @@ public class AstorTree extends JTree  implements AstorDefs
 	}
 	//===============================================================
 	//===============================================================
+	void resetCollectionStatistics()
+	{
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                                   getLastSelectedPathComponent();
+        Vector<String>  hostList = new Vector<String>();
+        int nb = node.getChildCount();
+        for (int i=0 ; i<nb ; i++) {
+            node = node.getNextNode();
+            TangoHost	host = (TangoHost)node.getUserObject();
+            hostList.add(host.name());
+        }
+
+        if (JOptionPane.showConfirmDialog(parent,
+                "Do you want to reset statistics on " +
+                        hostList.size() + " hosts  ?",
+                "Dialog",
+                JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION) {
+
+            new ResetStatistics(hostList);
+        }
+
+    }
+	//===============================================================
+	//===============================================================
 	void displayBranchInfo()
 	{
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -1020,15 +1045,6 @@ public class AstorTree extends JTree  implements AstorDefs
 	}
 	//======================================================
 	//======================================================
-    Vector<String>  getHostList()
-    {
-        Vector<String>  v = new Vector<String>();
-        for (TangoHost host : hosts)
-            v.add(host.hostName());
-        AstorUtil.getInstance().sort(v);
-        return v;
-    }
-
 
 
 

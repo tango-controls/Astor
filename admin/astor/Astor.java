@@ -265,6 +265,7 @@ package admin.astor;
  * @author  root
  */
 
+import admin.astor.statistics.StatisticsPanel;
 import admin.astor.tools.*;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
@@ -288,7 +289,7 @@ public class Astor extends JFrame implements AstorDefs
 	 *  Initialized by make jar call and used to display title.
 	 */
     private static String revNumber =
-            "Release 5.4.1  -  Mon Mar 14 09:38:44 CET 2011";
+            "Release 5.5.0  -  Fri Apr 01 09:44:36 CEST 2011";
 	/**
 	 *	JTree object to display control system.
 	 */
@@ -581,7 +582,7 @@ public class Astor extends JFrame implements AstorDefs
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
         allHostsControledBtn = new javax.swing.JToggleButton();
         stopHostsControledBtn = new javax.swing.JToggleButton();
-        javax.swing.JMenuBar jMenuBar1 = new javax.swing.JMenuBar();
+        javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         changeTgHostBtn = new javax.swing.JMenuItem();
         ctrlPreferenceBtn = new javax.swing.JMenuItem();
@@ -604,6 +605,7 @@ public class Astor extends JFrame implements AstorDefs
         multiServersCmdItem = new javax.swing.JMenuItem();
         jiveMenuItem = new javax.swing.JMenuItem();
         accessControlBtn = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem statisticsBtn = new javax.swing.JMenuItem();
         logviewerMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         principleBtn = new javax.swing.JMenuItem();
@@ -676,7 +678,7 @@ public class Astor extends JFrame implements AstorDefs
         });
         fileMenu.add(exitBtn);
 
-        jMenuBar1.add(fileMenu);
+        menuBar.add(fileMenu);
 
         viewMenu.setText("View");
 
@@ -712,7 +714,7 @@ public class Astor extends JFrame implements AstorDefs
         });
         viewMenu.add(startupErrorBtn);
 
-        jMenuBar1.add(viewMenu);
+        menuBar.add(viewMenu);
 
         cmdMenu.setText("Command");
 
@@ -748,7 +750,7 @@ public class Astor extends JFrame implements AstorDefs
         });
         cmdMenu.add(newBranchBtn);
 
-        jMenuBar1.add(cmdMenu);
+        menuBar.add(cmdMenu);
 
         toolsMenu.setText("Tools");
 
@@ -804,6 +806,14 @@ public class Astor extends JFrame implements AstorDefs
         });
         toolsMenu.add(accessControlBtn);
 
+        statisticsBtn.setText("Server Statistics");
+        statisticsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statisticsBtnActionPerformed(evt);
+            }
+        });
+        toolsMenu.add(statisticsBtn);
+
         logviewerMenuItem.setText("LogViewer");
         logviewerMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -812,7 +822,7 @@ public class Astor extends JFrame implements AstorDefs
         });
         toolsMenu.add(logviewerMenuItem);
 
-        jMenuBar1.add(toolsMenu);
+        menuBar.add(toolsMenu);
 
         helpMenu.setText("Help");
 
@@ -880,9 +890,9 @@ public class Astor extends JFrame implements AstorDefs
         });
         helpMenu.add(aboutBtn);
 
-        jMenuBar1.add(helpMenu);
+        menuBar.add(helpMenu);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1380,6 +1390,15 @@ public class Astor extends JFrame implements AstorDefs
             ErrorPane.showErrorMessage(this, null, e);
         }
     }//GEN-LAST:event_multiServersCmdItemActionPerformed
+
+    //======================================================================
+    //======================================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void statisticsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statisticsBtnActionPerformed
+        StatisticsPanel statisticsPanel = new StatisticsPanel(this);
+        statisticsPanel.readAndDisplayStatistics(null); //  On all Servers
+        statisticsPanel.setVisible(true);
+    }//GEN-LAST:event_statisticsBtnActionPerformed
 	//======================================================================
 	//======================================================================
 	@SuppressWarnings({"ConstantConditions"})
@@ -1476,7 +1495,6 @@ public class Astor extends JFrame implements AstorDefs
 
 		long	t0 = System.currentTimeMillis();
 		//	First time, Open a simple Tango window
-		TangoWindow	tw = new TangoWindow("ASTOR  Tango Manager");
 		//noinspection ErrorNotRethrown
 		try
 		{
@@ -1487,7 +1505,6 @@ public class Astor extends JFrame implements AstorDefs
 		catch(DevFailed e)
 		{
 			System.out.println(e);
-			tw.setVisible(false);
 			if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable")>0)
 				e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
 						"Astor cannot be configured from database !";

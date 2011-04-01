@@ -224,8 +224,8 @@
 
 
 MAJOR_REV   = 5
-MIDDLE_REV  = 4
-MINOR_REV   = 1
+MIDDLE_REV  = 5
+MINOR_REV   = 0
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV)_$(MIDDLE_REV)_$(MINOR_REV)
@@ -271,6 +271,7 @@ tac:
 full:
 	$(JAVAC) tools/*.java
 	$(JAVAC) access/*.java
+	$(JAVAC) statistics/*.java
 	$(JAVAC) *.java
 
 images:
