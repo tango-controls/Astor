@@ -36,12 +36,14 @@ public class  ServerRecord
 	long		startTime    = -1;
 	long		endTime      = -1;
 	long		duration     = 0;
+    boolean     autoRestart  = false;
+
     public static final String className = "ServerRecord";
     private static final String stateStr     = "state";
     private static final String startTimeStr = "startTime";
     private static final String endTimeStr   = "endTime";
     private static final String durationStr  = "duration";
-     private static final String description =
+    private static final String description =
             "<" + className   + " " +
                     stateStr     + "=\"STATE\" " +
                     startTimeStr + "=\"START_TIME\" "+
@@ -69,7 +71,7 @@ public class  ServerRecord
 	}
 	//===============================================================
 	//===============================================================
-	public ServerRecord(DevState state, long startTime, long endTime)
+	public ServerRecord(DevState state, long startTime, long endTime, boolean autoRestart)
 	{
         this.state = state;
         if (state==DevState.ON)
@@ -77,9 +79,10 @@ public class  ServerRecord
         else
             stateName = "Failed";
 
-        this.startTime = startTime;
-        this.endTime   = endTime;
-        duration       = endTime - startTime;
+        this.startTime   = startTime;
+        this.endTime     = endTime;
+        this.duration    = endTime - startTime;
+        this.autoRestart = autoRestart;
 	}
 	//===============================================================
 	//===============================================================

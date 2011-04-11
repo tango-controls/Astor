@@ -168,6 +168,7 @@ public class  Utils
         if (dbg!=null && dbg.equals("true")) {
             ctrlHosts.add("coral");
             ctrlHosts.add("esrflinux1-2");
+            ctrlHosts.add("esrflinux1-1");
             return ctrlHosts;
         }
 
