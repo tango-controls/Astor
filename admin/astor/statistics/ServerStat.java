@@ -186,7 +186,7 @@ public class  ServerStat extends Vector<ServerRecord>
                 runDuration += t1-t0;
             }
 
-            ServerRecord    serverRecord = new ServerRecord(log.newState, t0, t1);
+            ServerRecord    serverRecord = new ServerRecord(log.newState, t0, t1, log.autoRestart);
             serverRecords.add(serverRecord);
 
             if (oldestTime>t0)

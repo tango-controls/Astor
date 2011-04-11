@@ -42,7 +42,6 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Vector;
 
 
 //===============================================================
@@ -104,7 +103,7 @@ public class ServerStatisticsPanel extends JDialog
     private void buildForm(ServerStat serverStat)
     {
         //  Build the server failed list and display it in atable
-        statisticsTable = new ServerStatisticsTable(this, serverStat);
+        statisticsTable = new ServerStatisticsTable(serverStat);
 
         //  Put it in a scrolled pane.
         JScrollPane scp = new JScrollPane();

@@ -55,45 +55,29 @@ import java.util.Enumeration;
 //=======================================================
 public class ServerStatisticsTable extends JTable
 {
-    private Component       parent;
     private ServerStat      serverStatistics;
     private ServerStat      filteredStatistics;
     private DataTableModel	model;
 
     private static final    String[]    columnNames = {
-            "State", "Begin", "End", "Duration",
+            "State", "Begin", "End", "Duration", "Auto Start",
     };
     private static final    int[]    columnSizes = {
-            50, 150, 150, 170,
+            50, 150, 150, 170, 50,
     };
     private static final    int STATE       = 0;
     private static final    int START_TIME  = 1;
     private static final    int END_TIME    = 2;
     private static final    int DURATION    = 3;
+    private static final    int AUTO_START  = 4;
 	//=======================================================
     /**
 	 *	Creates new JTable to display statistics
-     * @param parent JFrame parent instance
      * @param serverStatistics  specified server statistics
 	 */
 	//=======================================================
-    public ServerStatisticsTable(JFrame parent, ServerStat serverStatistics)
+    public ServerStatisticsTable(ServerStat serverStatistics)
 	{
-        this.parent = parent;
-        this.serverStatistics = serverStatistics;
-        copyServerStat();
-        buidTableComponent();
-    }
-	//=======================================================
-    /**
-	 *	Creates new JTable to display statistics
-     * @param parent JDialog parent instance
-     * @param serverStatistics  specified server statistics
-	 */
-	//=======================================================
-    public ServerStatisticsTable(JDialog parent, ServerStat serverStatistics)
-	{
-        this.parent = parent;
         this.serverStatistics = serverStatistics;
         copyServerStat();
         buidTableComponent();
@@ -127,7 +111,7 @@ public class ServerStatisticsTable extends JTable
         });
         model = new DataTableModel();
         setModel(model);
-        setDefaultRenderer(String.class, new ColorRenderer());
+        setDefaultRenderer(String.class, new StatCellRenderer());
 
         //  Manage column headers
         getTableHeader().setFont(new java.awt.Font("Dialog", 1, 12));
@@ -167,6 +151,7 @@ public class ServerStatisticsTable extends JTable
     }
     //===============================================================
     //===============================================================
+    @SuppressWarnings({"UnusedDeclaration"})
     private void tableActionPerformed(MouseEvent evt) {
 
         /*
@@ -208,6 +193,8 @@ public class ServerStatisticsTable extends JTable
                return Utils.formatDate(record.endTime);
            case DURATION:
                return Utils.formatDuration(record.duration);
+           case AUTO_START:
+               return Boolean.toString(record.autoRestart);
        }
        return "--";
    }
@@ -285,10 +272,10 @@ public class ServerStatisticsTable extends JTable
 
     //==========================================================
     //==========================================================
-    public class ColorRenderer extends JLabel
+    public class StatCellRenderer extends JLabel
                               implements TableCellRenderer {
 
-        public ColorRenderer() {
+        public StatCellRenderer() {
            setFont(new Font("Dialog", Font.PLAIN, 12));
            setOpaque(true); //MUST do this for background to show up.
         }
@@ -333,6 +320,8 @@ public class ServerStatisticsTable extends JTable
                     return ((record1.endTime < record2.endTime)? 1 : 0);
                 case DURATION:
                     return ((record1.duration < record2.duration)? 1 : 0);
+                case AUTO_START:
+                    return (record2.autoRestart)? 1 : 0;
             }
             //	default case by state string
             return ((record1.stateName.compareTo(record2.stateName)>0)? 1 : 0);

@@ -38,6 +38,7 @@ public class  LogRecord
 	long		failedTime     = -1;
 	long		failedDuration = 0;
 	long		runDuration    = 0;
+    boolean     autoRestart    = false;
 	//===============================================================
 	//===============================================================
 	public LogRecord(String line)
@@ -52,6 +53,10 @@ public class  LogRecord
 				failedDuration = startedTime - failedTime;
 			else
 				runDuration = failedTime - startedTime;
+
+        if (stk.hasMoreTokens()) {
+            autoRestart = stk.nextToken().equals("true");
+        }
 	}
 	//===============================================================
 	//===============================================================
@@ -81,12 +86,6 @@ public class  LogRecord
 	{
 		StringBuffer	sb = new StringBuffer();
 		sb.append(name).append(":\t");
-		/*
-		if (newState==DevState.FAULT)
-			sb.append("FAULT\t");
-		else
-			sb.append("ON\t");
-		*/
 		if (newState==DevState.FAULT) {
 			sb.append("Failed at   ").append(Utils.formatDate(failedTime));
 		}
