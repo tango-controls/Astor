@@ -61,25 +61,36 @@ public class GlobalStatisticsTable extends JTable
 {
     private JFrame  parent;
     private Vector<ServerStat>  serverStatistics;
+    private Vector<ServerStat>  filteredServerStatistics = new Vector<ServerStat>();
     private DataTableModel	    model;
     private TablePopupMenu      menu;
 
-    private static final    String[]    columnNames = {
-            "Server Name",  "Host Name",
-            "Failures",     "Failure Duration",
-            "Running Duration", "Availability",
-            "Last Failure",
-    };
-    private static final    int[]    columnSizes = {
-            200, 100, 50, 150, 150, 80, 150
-    };
+
+	//	Column Definitions
     private static final    int SERVER_NAME  = 0;
     private static final    int HOST_NAME    = 1;
     private static final    int NB_FAILURES  = 2;
     private static final    int TIME_FAILURE = 3;
-    private static final    int TIME_RUNNING = 4;
-    private static final    int AVAILABILITY = 5;
-    private static final    int LAST_FAILURE = 6;
+    private static final    int AVAILABILITY = 4;
+    private static final    int LAST_FAILURE = 5;
+    //private static final    int TIME_RUNNING = 4;
+    class Column {
+        String  name;
+        int     width;
+        Column(String name, int width) {
+            this.name = name;
+            this.width = width;
+        }
+    }
+    private final Column[]   columns = {
+            new Column("Server Name",      200),
+            new Column("Host Name",        100),
+            new Column("Failures",          50),
+            new Column("Failure Duration", 150),
+            new Column("Availability",      80),
+            new Column("Last Failure",     150),
+            //new Column("Running Duration", 150),
+     };
 	//=======================================================
     /**
 	 *	Creates new JTable to display statistics
@@ -116,7 +127,7 @@ public class GlobalStatisticsTable extends JTable
         TableColumn tc;
         while (enumeration.hasMoreElements()) {
             tc = (TableColumn)enumeration.nextElement();
-            tc.setPreferredWidth(columnSizes[i++]);
+            tc.setPreferredWidth(columns[i++].width);
         }
 
         menu = new TablePopupMenu(this);
@@ -126,17 +137,17 @@ public class GlobalStatisticsTable extends JTable
     public int getDefaultHeight()
     {
 		int	max = 400;
-        int height = 22+17*serverStatistics.size();
+        int height = 22+17*filteredServerStatistics.size();
         if (height>max) height = max;
         return height;
     }
     //===============================================================
     //===============================================================
-    public static int getDefaultWidth()
+    public int getDefaultWidth()
     {
         int width = 0;
-        for (int w : columnSizes)
-            width += w;
+        for (Column column : columns)
+            width += column.width;
         return width;
     }
     //===============================================================
@@ -146,7 +157,7 @@ public class GlobalStatisticsTable extends JTable
         int column = columnAtPoint(new Point(evt.getX(), evt.getY()));
         int row    = rowAtPoint(new Point(evt.getX(), evt.getY()));
         //	get selected cell
-        ServerStat  server = serverStatistics.get(row);
+        ServerStat  server = filteredServerStatistics.get(row);
         if (evt.getButton()==MouseEvent.BUTTON3) {
             switch (column) {
                 case SERVER_NAME:
@@ -205,7 +216,7 @@ public class GlobalStatisticsTable extends JTable
     {
         MyCompare   compare = new MyCompare();
         compare.setSelectedColumn(column);
-        Collections.sort(serverStatistics, compare);
+        Collections.sort(filteredServerStatistics, compare);
 
         model.fireTableDataChanged();
     }
@@ -213,9 +224,39 @@ public class GlobalStatisticsTable extends JTable
     //=======================================================
     public void setStatistics(Vector<ServerStat> serverStatistics) {
         this.serverStatistics = serverStatistics;
+        copyServerStatistics();
         sort(LAST_FAILURE);
+        model.fireTableDataChanged();
     }
 	//=======================================================
+	//=======================================================
+    public void setFilter(String startWith)
+    {
+        filteredServerStatistics.clear();
+        for (ServerStat serverStat : serverStatistics) {
+            if (serverStat.name.startsWith(startWith)) {
+                filteredServerStatistics.add(serverStat);
+            }
+        }
+        model.fireTableDataChanged();
+    }
+  	//=======================================================
+	//=======================================================
+    public void resetFilter()
+    {
+        copyServerStatistics();
+        model.fireTableDataChanged();
+    }
+  	//=======================================================
+	//=======================================================
+    private void copyServerStatistics()
+    {
+        filteredServerStatistics.clear();
+        for (ServerStat serverStat : serverStatistics) {
+            filteredServerStatistics.add(serverStat);
+        }
+    }
+  	//=======================================================
 	//=======================================================
 
 
@@ -236,27 +277,24 @@ public class GlobalStatisticsTable extends JTable
          //==========================================================
         public int getColumnCount()
         {
-            return columnNames.length;
+            return columns.length;
         }
          //==========================================================
          //==========================================================
         public int getRowCount()
         {
-            return serverStatistics.size();
+            return filteredServerStatistics.size();
         }
          //==========================================================
          //==========================================================
-        public String getColumnName(int aCol) {
-            if (aCol>=getColumnCount())
-                return columnNames[getColumnCount()-1];
-            else
-                return columnNames[aCol];
+        public String getColumnName(int col) {
+            return columns[col].name;
         }
          //==========================================================
          //==========================================================
         public Object getValueAt(int row, int col)
         {
-            ServerStat  server = serverStatistics.get(row);
+            ServerStat  server = filteredServerStatistics.get(row);
             return getServerValueString(server, col);
         }
          //==========================================================
@@ -272,8 +310,8 @@ public class GlobalStatisticsTable extends JTable
                     return Integer.toString(server.nbFailures);
                 case TIME_FAILURE:
                     return Utils.formatDuration(server.failedDuration);
-                case TIME_RUNNING:
-                    return Utils.formatDuration(server.runDuration);
+                //case TIME_RUNNING:
+                //    return Utils.formatDuration(server.runDuration);
                 case AVAILABILITY:
                     return Utils.formatPercentage(server.getAvailability());
                 case LAST_FAILURE:
@@ -315,8 +353,8 @@ public class GlobalStatisticsTable extends JTable
                     return ((server1.nbFailures < server2.nbFailures)? 1 : 0);
                 case TIME_FAILURE:
                     return ((server1.failedDuration < server2.failedDuration)? 1 : 0);
-                case TIME_RUNNING:
-                    return ((server1.runDuration < server2.runDuration)? 1 : 0);
+                //case TIME_RUNNING:
+                //    return ((server1.runDuration < server2.runDuration)? 1 : 0);
                 case AVAILABILITY:
                     return ((server1.getAvailability() < server2.getAvailability())? 1 : 0);
                 case LAST_FAILURE:

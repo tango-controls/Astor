@@ -42,6 +42,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
 
@@ -58,7 +59,9 @@ public class StatisticsPanel extends JFrame
     private static final StatisticsFileFilter	fileFilter =
             new StatisticsFileFilter("xml", "Statistics Files");
     private JFrame  parent = null;
-    private GlobalStatistics    globalStatistics;
+    private GlobalStatistics        globalStatistics;
+    private JScrollPane             tableScrollPane = null;
+    private GlobalStatisticsTable   statisticsTable;
 
 
 
@@ -75,6 +78,7 @@ public class StatisticsPanel extends JFrame
         this.parent = parent;
         initComponents();
 		customizeMenus();
+
         globalStatistics = new GlobalStatistics(fileName);
         displayGlobalStatistics();
 
@@ -142,7 +146,6 @@ public class StatisticsPanel extends JFrame
              displayGlobalStatistics();
 
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            pack();
             AstorUtil.stopSplash();
         }
 
@@ -154,16 +157,18 @@ public class StatisticsPanel extends JFrame
         //  Build the server failed list and display it in a table
         Vector<ServerStat>  failedServers = getServerFailedList(
                 globalStatistics.getStarterStatistics());
-        GlobalStatisticsTable statisticsTable = new GlobalStatisticsTable(this);
+        statisticsTable = new GlobalStatisticsTable(this);
         statisticsTable.setStatistics(failedServers);
         globalStatTextArea.setText(globalStatistics.toString());
 
         //  Put it in a scrolled pane.
-        JScrollPane scp = new JScrollPane();
-        scp.setPreferredSize(new Dimension(
-                GlobalStatisticsTable.getDefaultWidth(), statisticsTable.getDefaultHeight()));
-        scp.setViewportView(statisticsTable);
-        getContentPane().add(scp, BorderLayout.CENTER);
+        if (tableScrollPane!=null)
+            getContentPane().remove(tableScrollPane);
+        tableScrollPane = new JScrollPane();
+        tableScrollPane.setPreferredSize(new Dimension(
+                statisticsTable.getDefaultWidth(), statisticsTable.getDefaultHeight()));
+        tableScrollPane.setViewportView(statisticsTable);
+        getContentPane().add(tableScrollPane, BorderLayout.CENTER);
 
         //  Build title
         String title = "During  " + Utils.formatDuration(globalStatistics.getDuration()) +
@@ -173,6 +178,7 @@ public class StatisticsPanel extends JFrame
         else
             title += "  servers have failed";
         titleLabel.setText(title);
+        pack();
 	}
 	//=======================================================
 	//=======================================================
@@ -191,9 +197,13 @@ public class StatisticsPanel extends JFrame
 		exitItem.setMnemonic ('E');
 		exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
 
-        showMenu.setMnemonic ('S');
+        editMenu.setMnemonic ('E');
+        filterItem.setMnemonic ('F');
+        filterItem.setAccelerator(KeyStroke.getKeyStroke('F', Event.CTRL_MASK));
         errorItem.setMnemonic ('E');
         errorItem.setAccelerator(KeyStroke.getKeyStroke('E', Event.CTRL_MASK));
+
+        bottomPanel.setVisible(false);
 	}
 	//=======================================================
     /** This method is called from within the constructor to
@@ -209,13 +219,17 @@ public class StatisticsPanel extends JFrame
         titleLabel = new javax.swing.JLabel();
         javax.swing.JScrollPane globalStatScrollPane = new javax.swing.JScrollPane();
         globalStatTextArea = new javax.swing.JTextArea();
+        bottomPanel = new javax.swing.JPanel();
+        javax.swing.JLabel filterLabel = new javax.swing.JLabel();
+        filterText = new javax.swing.JTextField();
         javax.swing.JMenuBar jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         readItem = new javax.swing.JMenuItem();
         openItem = new javax.swing.JMenuItem();
         saveItem = new javax.swing.JMenuItem();
         exitItem = new javax.swing.JMenuItem();
-        showMenu = new javax.swing.JMenu();
+        editMenu = new javax.swing.JMenu();
+        filterItem = new javax.swing.JMenuItem();
         errorItem = new javax.swing.JMenuItem();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -226,21 +240,34 @@ public class StatisticsPanel extends JFrame
 
         topPanel.setLayout(new java.awt.BorderLayout());
 
-        titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 14));
         titleLabel.setText("Title");
-        topPanel.add(titleLabel, java.awt.BorderLayout.SOUTH);
+        topPanel.add(titleLabel, java.awt.BorderLayout.PAGE_END);
 
-        globalStatScrollPane.setPreferredSize(new java.awt.Dimension(250, 95));
+        globalStatScrollPane.setPreferredSize(new java.awt.Dimension(250, 110));
 
         globalStatTextArea.setColumns(20);
         globalStatTextArea.setEditable(false);
-        globalStatTextArea.setFont(new java.awt.Font("Monospaced", 1, 12)); // NOI18N
+        globalStatTextArea.setFont(new java.awt.Font("Monospaced", 1, 12));
         globalStatTextArea.setRows(5);
         globalStatScrollPane.setViewportView(globalStatTextArea);
 
         topPanel.add(globalStatScrollPane, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
+
+        filterLabel.setText("Filter :  ");
+        bottomPanel.add(filterLabel);
+
+        filterText.setColumns(20);
+        filterText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                filterTextKeyPressed(evt);
+            }
+        });
+        bottomPanel.add(filterText);
+
+        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText("File");
 
@@ -279,17 +306,25 @@ public class StatisticsPanel extends JFrame
 
         jMenuBar1.add(fileMenu);
 
-        showMenu.setText("Show");
+        editMenu.setText("Edit");
 
-        errorItem.setText("Errors");
+        filterItem.setText("Find Server");
+        filterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(filterItem);
+
+        errorItem.setText("Show Errors");
         errorItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 errorItemActionPerformed(evt);
             }
         });
-        showMenu.add(errorItem);
+        editMenu.add(errorItem);
 
-        jMenuBar1.add(showMenu);
+        jMenuBar1.add(editMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -306,8 +341,14 @@ public class StatisticsPanel extends JFrame
 			File	file = chooser.getSelectedFile();
 			if (file!=null) {
 				if (!file.isDirectory()) {
-					String	filename = file.getAbsolutePath();
-					System.out.println(filename);
+                    try {
+                        String	filename = file.getAbsolutePath();
+                        globalStatistics = new GlobalStatistics(filename);
+                        displayGlobalStatistics();
+                    }
+                    catch (DevFailed e) {
+                        ErrorPane.showErrorMessage(this, null, e);
+                    }
 				}
 			}
 		}
@@ -411,6 +452,40 @@ public class StatisticsPanel extends JFrame
             sb.append("No Eror.");
         new PopupText(this, true).show(sb.toString());
     }//GEN-LAST:event_errorItemActionPerformed
+
+    //=======================================================
+    //=======================================================
+    private void filterTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_filterTextKeyPressed
+        if (evt.getKeyChar()==27) { //    Escape
+            resetFilter();
+        }
+        else {
+            //  Delayed a bit to be able to read text
+            new DelayedDisplay(evt).start();
+        }
+    }//GEN-LAST:event_filterTextKeyPressed
+
+    //=======================================================
+    //=======================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void filterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterItemActionPerformed
+        if (statisticsTable!=null) {
+            bottomPanel.setVisible(true);
+            pack();
+            new DelayedDisplay().start();
+        }
+    }//GEN-LAST:event_filterItemActionPerformed
+    //=======================================================
+    //=======================================================
+    private void resetFilter()
+    {
+        if (statisticsTable!=null) {
+            statisticsTable.resetFilter();
+            filterText.setText("");
+            bottomPanel.setVisible(false);
+            pack();
+        }
+    }
     //=======================================================
     //=======================================================
     private Vector<ServerStat>  getServerFailedList(Vector<StarterStat> starterStats)
@@ -445,16 +520,60 @@ public class StatisticsPanel extends JFrame
 
 	//=======================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel bottomPanel;
+    private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem errorItem;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem filterItem;
+    private javax.swing.JTextField filterText;
     private javax.swing.JTextArea globalStatTextArea;
     private javax.swing.JMenuItem openItem;
     private javax.swing.JMenuItem readItem;
     private javax.swing.JMenuItem saveItem;
-    private javax.swing.JMenu showMenu;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 	//=======================================================
 
+    private String filter = "";
+    //===============================================================
+    /**
+     *  A Thread class to manage JTextField a bit later.
+     *  After main loop update.
+     */
+    //===============================================================
+    private class DelayedDisplay extends Thread
+    {
+        private KeyEvent evt = null;
+        //===============================================================
+        private DelayedDisplay() {
+            //
+        }
+        private DelayedDisplay(KeyEvent evt) {
+            this.evt = evt;
+        }
+        //===============================================================
+        public void run() {
+            try { sleep(10); } catch (InterruptedException e) {/*  */}
+
+            if (evt==null) {
+                filterText.requestFocus();
+            }
+            else {
+                char    c = evt.getKeyChar();
+                if ((c & 0x8000)==0) { //  not Ctrl, Shift,...
+                    String  s = filterText.getText();
+                    //System.out.println(c+ "  " + ((int)c));
+                    if (!filter.equals(s)) { // Has changed
+                        if (s.length()>0) {
+                            statisticsTable.setFilter(s);
+                        }
+                        else
+                            statisticsTable.resetFilter();
+                    }
+                    filter = s;
+                }
+            }
+        }
+    }
 }

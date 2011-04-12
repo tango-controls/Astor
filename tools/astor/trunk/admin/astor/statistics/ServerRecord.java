@@ -36,19 +36,26 @@ public class  ServerRecord
 	long		startTime    = -1;
 	long		endTime      = -1;
 	long		duration     = 0;
-    boolean     autoRestart  = false;
+    int         autoRestart  = START_UNKNOWN;
 
+    public static final int START_UNKNOWN = 0;
+    public static final int START_REQUEST = 1;
+    public static final int START_AUTO    = 2;
+
+    //  Saving file definitions
     public static final String className = "ServerRecord";
     private static final String stateStr     = "state";
     private static final String startTimeStr = "startTime";
     private static final String endTimeStr   = "endTime";
     private static final String durationStr  = "duration";
+    private static final String autoStartStr = "started";
     private static final String description =
             "<" + className   + " " +
                     stateStr     + "=\"STATE\" " +
                     startTimeStr + "=\"START_TIME\" "+
                     endTimeStr   + "=\"END_TIME\" " +
                     durationStr  + "=\"DURATION\"" +
+                    autoStartStr + "=\"STARTED\"" +
                     ">";
     private static final String tab = "\t\t\t\t";
 	//===============================================================
@@ -63,15 +70,23 @@ public class  ServerRecord
         try {
             startTime = Long.parseLong(Utils.parseXmlProperty(line, startTimeStr));
             endTime   = Long.parseLong(Utils.parseXmlProperty(line, endTimeStr));
-        duration       = endTime - startTime;
+            duration  = endTime - startTime;
         }
         catch (NumberFormatException e ) {
             Except.throw_exception("SYNTAX_ERROR", e.toString(), "ServerRecord.ServerRecord()");
         }
+        String  str = Utils.parseXmlProperty(line, autoStartStr);
+        if (str.equals("auto"))
+            autoRestart = START_AUTO;
+        else
+        if (str.equals("request"))
+            autoRestart = START_REQUEST;
+        else
+            autoRestart = START_UNKNOWN;
 	}
 	//===============================================================
 	//===============================================================
-	public ServerRecord(DevState state, long startTime, long endTime, boolean autoRestart)
+	public ServerRecord(DevState state, long startTime, long endTime, int autoRestart)
 	{
         this.state = state;
         if (state==DevState.ON)
@@ -93,6 +108,17 @@ public class  ServerRecord
         str = Utils.strReplace(str, "START_TIME", Long.toString(startTime));
         str = Utils.strReplace(str, "END_TIME", Long.toString(endTime));
         str = Utils.strReplace(str, "DURATION", Long.toString(duration));
+        if (state==DevState.ON) {
+            if (autoRestart==ServerRecord.START_AUTO)
+                str = Utils.strReplace(str, "STARTED", "auto");
+            else
+            if (autoRestart==ServerRecord.START_REQUEST)
+                str = Utils.strReplace(str, "STARTED", "request");
+            else
+                str = Utils.strReplace(str, "STARTED", "");// Unknown
+        }
+        else
+            str = Utils.strReplace(str, "STARTED", "");
         return tab + str;
     }
 	//===============================================================

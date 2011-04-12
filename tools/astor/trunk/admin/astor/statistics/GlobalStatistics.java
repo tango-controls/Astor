@@ -50,15 +50,17 @@ import java.util.Vector;
 public class GlobalStatistics
 {
     public long readAt         = 0;
-    public int nbHosts         = 0;
-    public int nbHostRead      = 0;
-    public int nbServers       = 0;
-    public int nbServersRead   = 0;
+    public int  nbHosts        = 0;
+    public int  nbHostRead     = 0;
+    public int  nbServers      = 0;
+    public int  nbServersRead  = 0;
     public long runDuration    = 0;
     public long failedDuration = 0;
     public int nbFailures      = 0;
     private Vector<StarterStat> starterStats;
+    private String  fileName  = null;
 
+    //  Saving file definitions
     private static final String className   = "GlobalStat";
     private static final String dateStr     = "date";
     private static final String timeStr     = "time";
@@ -78,13 +80,14 @@ public class GlobalStatistics
     //=======================================================
 	public GlobalStatistics(String fileName) throws DevFailed
 	{
+        this.fileName = fileName;
         starterStats = new Vector<StarterStat>();
-        String  str = Utils.readFile(fileName);
-        if (!str.startsWith(header))
+        String  code  = Utils.readFile(fileName);
+        if (!code.startsWith(header))
             Except.throw_exception("FILE_NOT_VALID",
                     fileName + " is not a TANGO statistics file",
                     "GlobalStatistics.GlobalStatistics()");
-        parseStatistics(str);
+        parseStatistics(code);
         computeStatistics();
     }
     //=======================================================
@@ -226,7 +229,12 @@ public class GlobalStatistics
     {
         StringBuffer    sb = new StringBuffer();
 
-        sb.append("Statistics between   ").append(Utils.formatDate(getOldestTime()))
+        if (fileName==null)
+            sb.append("Statistics from Starters\n");
+        else
+            sb.append("Statistics from file: ").append(fileName).append("\n");
+
+        sb.append("Between   ").append(Utils.formatDate(getOldestTime()))
                 .append("   and   ")
                 .append(Utils.formatDate(readAt)).append(" on:\n  ");
         sb.append(nbHostRead).append("/").append(nbHosts).append("   Controlled hosts\n  ");
