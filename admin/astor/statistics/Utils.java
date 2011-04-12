@@ -122,13 +122,6 @@ public class  Utils
 
     //=======================================================
 	//=======================================================
-	public static Vector<StarterStat>  readHostStatistics()
-    {
-        Vector<String>  vs = null;
-        return readHostStatistics(vs);
-    }
-    //=======================================================
-	//=======================================================
 	public static StarterStat  readHostStatistics(String hostName)
     {
         Vector<String>  vs = new Vector<String>();

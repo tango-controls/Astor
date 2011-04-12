@@ -43,6 +43,7 @@ public class  StarterStat extends Vector<ServerStat>
     public long     resetTime = System.currentTimeMillis();
     public String   error = ""; 
 
+    //  Saving file definitions
     public  static final String className = "StarterStat";
     private static final String hostStr   = "host";
     private static final String readStr   = "read";
@@ -303,8 +304,7 @@ public class  StarterStat extends Vector<ServerStat>
 		if (args.length>0)
 			devName = args[0];
 		try {
-			StarterStat stat = new StarterStat(devName);
-            System.out.println(stat.toString("Dummy/check"));
+            System.out.println(new StarterStat(devName).toString("Dummy/check"));
 		}
 		catch(Exception e) {
 			e.printStackTrace();

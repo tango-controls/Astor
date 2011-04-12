@@ -37,7 +37,7 @@ package admin.astor.statistics;
 import fr.esrf.Tango.DevState;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -59,17 +59,27 @@ public class ServerStatisticsTable extends JTable
     private ServerStat      filteredStatistics;
     private DataTableModel	model;
 
-    private static final    String[]    columnNames = {
-            "State", "Begin", "End", "Duration", "Auto Start",
-    };
-    private static final    int[]    columnSizes = {
-            50, 150, 150, 170, 50,
-    };
+	//	Column Definitions
     private static final    int STATE       = 0;
     private static final    int START_TIME  = 1;
     private static final    int END_TIME    = 2;
     private static final    int DURATION    = 3;
     private static final    int AUTO_START  = 4;
+    class Column {
+        String  name;
+        int     width;
+        Column(String name, int width) {
+            this.name = name;
+            this.width = width;
+        }
+    }
+    private final Column[]   columns = {
+            new Column("State",     50),
+            new Column("Begin",    150),
+            new Column("End",      150),
+            new Column("Duration", 170),
+            new Column("Started",   50),
+    };
 	//=======================================================
     /**
 	 *	Creates new JTable to display statistics
@@ -80,7 +90,7 @@ public class ServerStatisticsTable extends JTable
 	{
         this.serverStatistics = serverStatistics;
         copyServerStat();
-        buidTableComponent();
+        buildTableComponent();
     }
     //=======================================================
     //=======================================================
@@ -97,7 +107,7 @@ public class ServerStatisticsTable extends JTable
     }
     //=======================================================
     //=======================================================
-    private void buidTableComponent()
+    private void buildTableComponent()
     {
         //  Create the table.
         setRowSelectionAllowed(true);
@@ -127,7 +137,7 @@ public class ServerStatisticsTable extends JTable
         TableColumn tc;
         while (enumeration.hasMoreElements()) {
             tc = (TableColumn)enumeration.nextElement();
-            tc.setPreferredWidth(columnSizes[i++]);
+            tc.setPreferredWidth(columns[i++].width);
         }
         sort(START_TIME);
  	}
@@ -142,11 +152,11 @@ public class ServerStatisticsTable extends JTable
     }
     //===============================================================
     //===============================================================
-    public static int getDefaultWidth()
+    public int getDefaultWidth()
     {
         int width = 0;
-        for (int w : columnSizes)
-            width += w;
+        for (Column column : columns)
+            width += column.width;
         return width;
     }
     //===============================================================
@@ -168,7 +178,7 @@ public class ServerStatisticsTable extends JTable
     private void headerTableActionPerformed(MouseEvent evt) {
 
         sort (getTableHeader().columnAtPoint(
-                new Point(evt.getX(), evt.getY())) );
+             new Point(evt.getX(), evt.getY())) );
     }
     //=======================================================
     //=======================================================
@@ -194,7 +204,18 @@ public class ServerStatisticsTable extends JTable
            case DURATION:
                return Utils.formatDuration(record.duration);
            case AUTO_START:
-               return Boolean.toString(record.autoRestart);
+               if (record.state==DevState.ON) {
+                   //return Boolean.toString(record.autoRestart);
+                   if (record.autoRestart==ServerRecord.START_AUTO)
+                       return "Auto";
+                   else
+                   if (record.autoRestart==ServerRecord.START_REQUEST)
+                       return "On Req.";
+                   else
+                       return "";
+               }
+               else
+                   return "";
        }
        return "--";
    }
@@ -205,7 +226,7 @@ public class ServerStatisticsTable extends JTable
         filteredStatistics.clear();
         for (ServerRecord rec : serverStatistics)
             if (b || rec.state==DevState.FAULT)
-            filteredStatistics.add(rec);
+                filteredStatistics.add(rec);
         model.fireTableDataChanged();
     }
     //=======================================================
@@ -223,37 +244,52 @@ public class ServerStatisticsTable extends JTable
 
     //=========================================================================
     //=========================================================================
-    public class DataTableModel extends AbstractTableModel
+    public class DataTableModel extends DefaultTableModel
     {
-         //==========================================================
-         //==========================================================
+        /*
+        private Object[][]  viewers;
+        //==========================================================
+        //==========================================================
+        public DataTableModel()
+        {
+            viewers = new Object[filteredStatistics.size()][columnNames.length];
+            for (int row=0 ; row<filteredStatistics.size() ; row++ ) {
+                for (int col=0 ; col<columnNames.length ; col++) {
+                    if (col==AUTO_START)
+                        viewers[row][col] = new JRadioButton();
+                    else
+                        viewers[row][col] = new JLabel();
+                }
+            }
+            setDataVector(viewers, columnNames);
+        }
+        */
+        //==========================================================
+        //==========================================================
         public int getColumnCount()
         {
-            return columnNames.length;
+            return columns.length;
         }
-         //==========================================================
-         //==========================================================
+        //==========================================================
+        //==========================================================
         public int getRowCount()
         {
             return filteredStatistics.size();
         }
-         //==========================================================
-         //==========================================================
-        public String getColumnName(int aCol) {
-            if (aCol>=getColumnCount())
-                return columnNames[getColumnCount()-1];
-            else
-                return columnNames[aCol];
+        //==========================================================
+        //==========================================================
+        public String getColumnName(int col) {
+            return columns[col].name;
         }
-         //==========================================================
-         //==========================================================
+        //==========================================================
+        //==========================================================
         public Object getValueAt(int row, int col)
         {
             ServerRecord  record = filteredStatistics.get(row);
             return getRecordValueString(record, col);
         }
-        //==========================================================
-      /*
+       //==========================================================
+       /*
         * JTable uses this method to determine the default renderer/
         * editor for each cell.  If we didn't implement this method,
         * then the last column would contain text ("true"/"false"),
@@ -263,13 +299,15 @@ public class ServerStatisticsTable extends JTable
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
         }
-
-         //==========================================================
-         //==========================================================
+        //==========================================================
+        //==========================================================
     }
+    //=========================================================================
+    //=========================================================================
 
 
 
+    
     //==========================================================
     //==========================================================
     public class StatCellRenderer extends JLabel
@@ -281,15 +319,30 @@ public class ServerStatisticsTable extends JTable
         }
 
         public Component getTableCellRendererComponent(
-                               JTable table, Object color,
+                               JTable table, Object value,
                                boolean isSelected, boolean hasFocus,
                                int row, int column) {
-            ServerRecord    rec = filteredStatistics.get(row);
-            if (rec.state== DevState.FAULT)
+
+            ServerRecord    record = filteredStatistics.get(row);
+            if (record.state== DevState.FAULT)
                 setBackground(Color.orange);
             else
                 setBackground(Color.green);
-            setText(getRecordValueString(rec, column));
+            setText(getRecordValueString(record, column));
+
+            //  set tool tips
+            if (column==AUTO_START) {
+                if (record.autoRestart==ServerRecord.START_AUTO)
+                    setToolTipText("Auto restarted by Starter");
+                else
+                if (record.autoRestart==ServerRecord.START_REQUEST)
+                    setToolTipText("Started on Request");
+                else
+                    setToolTipText("");
+            }
+            else
+                setToolTipText("");
+
             return this;
         }
     }
@@ -321,7 +374,7 @@ public class ServerStatisticsTable extends JTable
                 case DURATION:
                     return ((record1.duration < record2.duration)? 1 : 0);
                 case AUTO_START:
-                    return (record2.autoRestart)? 1 : 0;
+                    return (record1.autoRestart < record2.autoRestart)? 1 : 0;
             }
             //	default case by state string
             return ((record1.stateName.compareTo(record2.stateName)>0)? 1 : 0);

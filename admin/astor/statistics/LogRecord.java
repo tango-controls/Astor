@@ -38,7 +38,7 @@ public class  LogRecord
 	long		failedTime     = -1;
 	long		failedDuration = 0;
 	long		runDuration    = 0;
-    boolean     autoRestart    = false;
+    int         autoRestart    = ServerRecord.START_UNKNOWN;
 	//===============================================================
 	//===============================================================
 	public LogRecord(String line)
@@ -54,9 +54,17 @@ public class  LogRecord
 			else
 				runDuration = failedTime - startedTime;
 
-        if (stk.hasMoreTokens()) {
-            autoRestart = stk.nextToken().equals("true");
+        if (newState==DevState.ON) {
+            if (stk.hasMoreTokens()) {
+                String  str = stk.nextToken();
+                if (str.equals("true"))
+                    autoRestart = ServerRecord.START_AUTO;
+                else
+                    autoRestart = ServerRecord.START_REQUEST;
+            }
+            //  else unknown (for backward compatibility)
         }
+        //  else unknown (not started)
 	}
 	//===============================================================
 	//===============================================================

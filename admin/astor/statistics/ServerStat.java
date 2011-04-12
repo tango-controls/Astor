@@ -41,6 +41,8 @@ public class  ServerStat extends Vector<ServerRecord>
 	public long	runDuration    = 0;
     public long oldestTime     = 0;
     private Vector<LogRecord>   logs = new Vector<LogRecord>();
+
+    //  Saving file definitions
     public  static final String className = "ServerStat";
     private static final String nameStr   = "server";
     private static final String nbFailStr = "nbFailures";

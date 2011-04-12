@@ -108,7 +108,7 @@ public class ServerStatisticsPanel extends JDialog
         //  Put it in a scrolled pane.
         JScrollPane scp = new JScrollPane();
         scp.setPreferredSize(new Dimension(
-                ServerStatisticsTable.getDefaultWidth(), statisticsTable.getDefaultHeight()));
+                statisticsTable.getDefaultWidth(), statisticsTable.getDefaultHeight()));
         scp.setViewportView(statisticsTable);
         getContentPane().add(scp, BorderLayout.CENTER);
 
