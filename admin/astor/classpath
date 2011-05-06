@@ -1,4 +1,5 @@
-
+JDK_5=/segfs/tango/jdk/Linux/jdk1.5.0_02/bin
+PATH=$JDK_5:$PATH
 
 TANGO_HOME=/segfs/tango
 LIB_HOME=$TANGO_HOME/release/java/lib

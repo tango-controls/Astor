@@ -89,6 +89,21 @@ public class PropListDialog extends javax.swing.JDialog {
 	 *	Creates new form PropListDialog
 	 */
 	//======================================================
+	public PropListDialog(JFrame parent, Vector<String> vProps) {
+		super (parent, true);
+		this.parent = parent;
+		this.props  = new String[vProps.size()];
+		for (int i=0 ; i<vProps.size() ; i++)
+			this.props[i] = vProps.get(i);
+		initComponents ();
+		
+		buildlist();
+	}
+	//======================================================
+	/*
+	 *	Creates new form PropListDialog
+	 */
+	//======================================================
 	public PropListDialog(JFrame parent, JTextArea pathText, TangoHost[] hosts) {
 
 		super (parent, true);

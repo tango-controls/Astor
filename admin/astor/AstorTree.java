@@ -233,7 +233,7 @@ public class AstorTree extends JTree  implements AstorDefs
 	 */
 	HostInfoDialogVector	hostDialogs = null;
 
-	private static String[]					collec_names;
+	private static Vector<String>			collecNames = new Vector<String>();
 	private static DefaultMutableTreeNode	root;
 	private static int						host_subscribed = 0;
 	private static Vector<TangoHost>		hosts_using_evt;
@@ -375,11 +375,11 @@ public class AstorTree extends JTree  implements AstorDefs
 	{
 		if (expand)
 			//	Expand
-			for (int i=0 ; i<(hosts.length + collec_names.length+1) ; i++)
+			for (int i=0 ; i<(hosts.length + collecNames.size()+1) ; i++)
 				expandRow(i);
 		else
 			//	Collapse
-			for (int i=1 ; i<=collec_names.length; i++)
+			for (int i=1 ; i<=collecNames.size(); i++)
 				collapseRow(i);
 	}
 	//===============================================================
@@ -469,7 +469,7 @@ public class AstorTree extends JTree  implements AstorDefs
 		//	Build Host objects
 		AstorUtil	au = AstorUtil.getInstance();
 		hosts = au.getTangoHostList();
-		collec_names = au.getCollectionList(hosts);
+		collecNames = au.getCollectionList(hosts);
 
         String accessControlDeviceName = AstorUtil.getAccessControlDeviceName();
         if (accessControlDeviceName!=null)
@@ -482,20 +482,20 @@ public class AstorTree extends JTree  implements AstorDefs
 
 		int	cnt = 0;
 		splash.progress(cnt);
-		Vector<DefaultMutableTreeNode>	collection = new Vector<DefaultMutableTreeNode>();
-		for (String collec_name : collec_names) {
+		Vector<DefaultMutableTreeNode>	collections = new Vector<DefaultMutableTreeNode>();
+		for (String collec_name : collecNames) {
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(collec_name);
-			collection.add(node);
+			collections.add(node);
 			root.add(node);
 		}
 		//	First create database node
 		for (DbaseObject db : dbase) {
-			collection.get(0).add(new DefaultMutableTreeNode(db));
+			collections.get(0).add(new DefaultMutableTreeNode(db));
         }
 
         //  Add TAC if any
         if (accessControl!=null) {
-            collection.get(0).add(new DefaultMutableTreeNode(accessControl));
+            collections.get(0).add(new DefaultMutableTreeNode(accessControl));
         }
 
         //	Add Host nodes
@@ -507,26 +507,26 @@ public class AstorTree extends JTree  implements AstorDefs
 					new DefaultMutableTreeNode(host);
 			host.state = unknown;
 			int idx = getHostCollection(host);
-			collection.get(idx).add(host_node);
+			collections.get(idx).add(host_node);
 		}
     }
  	//===============================================================
 	//===============================================================
-	String[] getCollectionList()
+	Vector<String> getCollectionList()
 	 {
-		 return collec_names;
+		 return collecNames;
 	 }
-	 //===============================================================
 	//===============================================================
-	int getHostCollection(TangoHost host)
+	//===============================================================
+	private int getHostCollection(TangoHost host)
 	{
-		for (int i=0 ; i<collec_names.length ; i++)
+		for (int i=0 ; i<collecNames.size() ; i++)
 			if (host.collection==null)
-				return collec_names.length-1;	//	The last one
+				return collecNames.size()-1;	//	The last one
 			else
-				if (host.collection.equals(collec_names[i]))
+				if (host.collection.equals(collecNames.get(i)))
 					return i;
-		return collec_names.length-1;	//	The last one.
+		return collecNames.size()-1;	//	The last one.
 	}
 	//======================================================
 	//======================================================
@@ -648,40 +648,87 @@ public class AstorTree extends JTree  implements AstorDefs
 		DefaultMutableTreeNode	root = 
 				(DefaultMutableTreeNode)model.getRoot();
 		model.insertNodeInto(node, root, root.getChildCount());
+		collecNames.add(name);
 	}
  	//===============================================================
 	//===============================================================
-	void moveNode(DefaultMutableTreeNode host_node)
+	void moveNode()
 	{
-		//	Get the old collection node
-		DefaultMutableTreeNode	old_collec = 
-				(DefaultMutableTreeNode) host_node.getParent();
-		
-		//	get the new collection
-		DefaultMutableTreeNode	new_collec =
+		//	Get selected host
+		DefaultMutableTreeNode	hostNode =
 			(DefaultMutableTreeNode) getLastSelectedPathComponent();
+		DefaultMutableTreeNode	parentNode =
+			(DefaultMutableTreeNode) hostNode.getParent();
 
-		//	Change the Starter property
-		try
-		{
-			TangoHost	host = (TangoHost)host_node.getUserObject();
-			host.setCollection((String)new_collec.getUserObject());
+		//	Get collection without Database and its own collection
+		String[]	targetNames = new String[collecNames.size()-1];
+		int	idx = 0;
+		for (int i=1 ; i<collecNames.size() ; i++) {
+			if (! collecNames.get(i).equals(parentNode.toString()))
+				targetNames[idx++] = collecNames.get(i);
 		}
-		catch(DevFailed e) {
-			ErrorPane.showErrorMessage(parent, null, e);
-			return;
+		targetNames[idx] = "New Branch";
+
+		//	And choose new collection
+		String		targetName =
+				 (String) JOptionPane.showInputDialog(this,
+								"Move " + hostNode + "  to :", "",
+								JOptionPane.INFORMATION_MESSAGE, null,
+								targetNames, targetNames[0]);
+		if (targetName != null) {
+
+			//	Is it a new one ?
+			if (targetName.equals(targetNames[idx])) {	//	"New Branch"
+
+				//	Get the new branch name and add it
+				targetName =
+					(String)JOptionPane.showInputDialog(this,
+								"New Branch Name",
+								"Input Dialog",
+								JOptionPane.INFORMATION_MESSAGE,
+								null, null, "");
+				if (targetName==null)
+					return;
+
+				addBranch(targetName);
+			}
+
+			//	Get target collection node
+			for (int i=0 ; i<root.getChildCount() ; i++) {
+
+				DefaultMutableTreeNode	collecNode =
+					(DefaultMutableTreeNode) root.getChildAt(i);
+				if (collecNode.toString().equals(targetName)) {
+
+					//	Change the Starter property
+					try {
+						TangoHost	host = (TangoHost)hostNode.getUserObject();
+						host.setCollection(targetName);
+					}
+					catch(DevFailed e) {
+						ErrorPane.showErrorMessage(parent, null, e);
+						return;
+					}
+
+					//	Get the default model used to move node
+					DefaultTreeModel	model = (DefaultTreeModel)getModel();
+					model.removeNodeFromParent(hostNode);
+					model.insertNodeInto(hostNode, collecNode, 0);
+
+					//	Check if previous collection has still children
+					if (parentNode.getChildCount()==0) {
+						model.removeNodeFromParent(parentNode);
+						collecNames.remove(parentNode.toString());
+					}
+
+					//	Ensure that the new node is visible and select it
+					scrollPathToVisible(new TreePath(hostNode.getPath()));
+
+					TreeNode[]	path = hostNode.getPath();
+					setSelectionPath(new TreePath(path));
+				}
+			}
 		}
-
-		//	Get the default model used to move node
-		DefaultTreeModel	model = (DefaultTreeModel)getModel();
-		model.removeNodeFromParent(host_node);
-		model.insertNodeInto(host_node, new_collec, 0);
-		//	Check if previous collection has still children
-		if (old_collec.getChildCount()==0)
-			model.removeNodeFromParent(old_collec);
-
-		//	Ensure that the new node is visible
-		scrollPathToVisible(new TreePath(host_node.getPath()));
 	}
 	//===============================================================
 	//===============================================================
@@ -757,7 +804,7 @@ public class AstorTree extends JTree  implements AstorDefs
 						(DefaultMutableTreeNode) getLastSelectedPathComponent();
 					Object o = node.getUserObject();
 					if (selected_db!=null ||
-						o.toString().equals(collec_names[0]))
+						o.toString().equals(collecNames.get(0)))
 						displayJiveAppli();
 				}
 			}
@@ -1256,7 +1303,7 @@ public class AstorTree extends JTree  implements AstorDefs
 			else
 			if (obj instanceof String) {
 					String	str = (String)obj;
-					return (str.equals(collec_names[0]));
+					return (str.equals(collecNames.get(0)));
 			}
 			return false;
 		}

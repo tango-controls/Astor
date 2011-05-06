@@ -1,122 +1,14 @@
 //+======================================================================
-// $Source$
+// $Source: $
 //
 // Project:   Tango
 //
-// Description:  java source code for the Pogo class definition .
+// Description:  java source code for the Astor utilities .
 //
 // $Author$
 //
 // $Revision$
 //
-// $Log$
-// Revision 3.42  2011/01/10 12:48:13  pascal_verdier
-// TAC is now displayed as database servers.
-// StartServersAtStarteup starter class property management added.
-// Display access mode in Tango Access panel.
-//
-// Revision 3.41  2011/01/04 14:33:03  pascal_verdier
-// Password added for access control dialog.
-// Do not try to subscribe on Starter events if starter device not exported.
-//
-// Revision 3.40  2010/01/05 13:46:30  pascal_verdier
-// GetTangoHost() modified.
-//
-// Revision 3.39  2009/04/06 14:27:44  pascal_verdier
-// Using MySqlUtil feature.
-//
-// Revision 3.38  2009/02/18 09:47:57  pascal_verdier
-// Device dependencies (sub-devices) tool added.
-//
-// Revision 3.37  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.36  2008/12/16 15:17:16  pascal_verdier
-// Add a scroll pane in HostInfoDialog in case of too big dialog.
-//
-// Revision 3.35  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.34  2008/09/12 11:52:02  pascal_verdier
-// Minor changes
-//
-// Revision 3.33  2007/09/21 09:25:18  pascal_verdier
-// Refresh Astor properties when TANGO_HOST changed.
-//
-// Revision 3.32  2007/08/20 14:06:08  pascal_verdier
-// ServStatePanel added on HostInfoDialog (Check states option).
-//
-// Revision 3.31  2007/04/27 08:07:28  pascal_verdier
-// Bug on LastCollection not set fixed.
-//
-// Revision 3.30  2007/03/27 08:56:11  pascal_verdier
-// Preferences added.
-//
-// Revision 3.29  2007/03/08 13:44:32  pascal_verdier
-// LastCollections property added.
-//
-// Revision 3.28  2007/01/17 10:11:27  pascal_verdier
-// Html helps added.
-// Startup error message added in view menu.
-//
-// Revision 3.27  2006/06/26 12:24:08  pascal_verdier
-// Bug fixed in miscellaneous host collection.
-//
-// Revision 3.26  2006/06/13 13:52:14  pascal_verdier
-// During StartAll command, sleep(500) added between 2 hosts.
-// MOVING states added for collection.
-//
-// Revision 3.25  2006/01/13 14:24:40  pascal_verdier
-// Family Miscellaneous management modified.
-//
-// Revision 3.24  2006/01/11 08:46:13  pascal_verdier
-// PollingProfiler added.
-//
-// Revision 3.23  2005/12/01 10:00:23  pascal_verdier
-// Change TANGO_HOST added (needs TangORB-4.7.7 or later).
-//
-// Revision 3.22  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.21  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.20  2005/09/27 12:43:18  pascal_verdier
-// RloginCmd property added.
-//
-// Revision 3.19  2005/09/15 08:26:36  pascal_verdier
-// Server architecture display addded.
-//
-// Revision 3.18  2005/08/30 08:05:25  pascal_verdier
-// Management of two TANGO HOST added.
-//
-// Revision 3.17  2005/08/02 12:01:51  pascal_verdier
-// Minor changes.
-//
-// Revision 3.16  2005/06/02 09:02:36  pascal_verdier
-// Minor changes.
-//
-// Revision 3.15  2005/04/25 08:55:36  pascal_verdier
-// Start/Stop servers from shell command line added.
-//
-// Revision 3.14  2005/03/15 10:22:30  pascal_verdier
-// Sort servers before creating panel buttons.
-//
-// Revision 3.13  2005/01/18 08:48:20  pascal_verdier
-// Tools menu added.
-// Not controlled servers list added.
-//
-// Revision 3.12  2004/11/29 11:43:56  pascal_verdier
-// OsIsUnix method modified.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
 
 
@@ -523,9 +415,15 @@ public class AstorUtil implements AstorDefs {
 	}
 	//===============================================================
 	//===============================================================
-	void setLastCollectionList(String[] lcl)
+	public static String getStarterPathHome()
 	{
-		last_collec = lcl;
+        String  path = System.getenv("StarterPathHome");
+        if (path==null)
+            path = System.getProperty("StarterPathHome");
+        if (path!=null)
+            return path;
+        else
+    		return ".";
 	}
 	//===============================================================
 	//===============================================================
@@ -537,7 +435,13 @@ public class AstorUtil implements AstorDefs {
 	}
 	//===============================================================
 	//===============================================================
-	String[] getCollectionList(TangoHost[] hosts)
+	void setLastCollectionList(String[] lcl)
+	{
+		last_collec = lcl;
+	}
+	//===============================================================
+	//===============================================================
+	Vector<String> getCollectionList(TangoHost[] hosts)
 	{
 		Vector<String>	vect = new Vector<String>();
 		for (TangoHost host : hosts) {
@@ -577,13 +481,7 @@ public class AstorUtil implements AstorDefs {
 					}
 				}
 			}
-
-
-		//	Copy vector to string array
-		String[]	list = new String[vect.size()];
-		for (int i=0 ; i<vect.size() ; i++)
-			list[i] = vect.elementAt(i);
-		return list;
+		return vect;
 	}
 	//===============================================================
 	//===============================================================
@@ -747,8 +645,7 @@ public class AstorUtil implements AstorDefs {
 	//===============================================================
 	private static void getStarterClassProperties()
 	{
-		try
-		{
+		try {
 			_class = new DbClass("Starter");
 
 			String[]	propnames = {
@@ -758,24 +655,26 @@ public class AstorUtil implements AstorDefs {
 								"appli_doc_url"
 								};
 			DbDatum[]	properties = _class.get_property(propnames);
-			if (!properties[0].is_empty())
-				nbStartupLevels  = properties[0].extractShort();
-			if (!properties[1].is_empty())
-				readInfoPeriod   = properties[1].extractShort();
+            int i = 0;
+			if (!properties[i].is_empty())
+				nbStartupLevels  = properties[i].extractShort();
+            i++;
+			if (!properties[i].is_empty())
+				readInfoPeriod   = properties[i].extractShort();
 			readInfoPeriod  *= 1000;	//	sec -> ms
 
-			if (!properties[2].is_empty())
-				serverHelpURL = properties[2].extractString();
+            i++;
+			if (!properties[i].is_empty())
+				serverHelpURL = properties[i].extractString();
 
-			if (!properties[3].is_empty())
-				appliHelpURL = properties[3].extractString();
+            i++;
+			if (!properties[i].is_empty())
+				appliHelpURL = properties[i].extractString();
 		}
-		catch(DevFailed e)
-		{
+		catch(DevFailed e) {
 			 Except.print_exception(e);
 		}
-		if (getDebug())
-		{
+		if (getDebug()) {
 			System.out.println("NbStartupLevels:  " + nbStartupLevels);
 			System.out.println("ReadInfoDbPeriod: " + readInfoPeriod);
 			System.out.println("server doc_url:   " + serverHelpURL);
