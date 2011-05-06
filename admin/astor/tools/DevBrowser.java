@@ -1,37 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for main swing class.
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
-// $Log$
-// Revision 1.5  2009/01/16 14:50:02  pascal_verdier
-// Black box management added for host and Server.
 //
-// Revision 1.4  2008/11/19 10:04:38  pascal_verdier
-// Minor changes
-//
-// Revision 1.3  2008/03/27 08:08:26  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 1.2  2006/09/19 13:09:39  pascal_verdier
-// Minor changes.
-//
-// Revision 1.1.1.1  2006/01/11 08:34:48  pascal_verdier
-// Imported using TkCVS
-//
-//
-// Copyleft 2006 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 
 package admin.astor.tools;
