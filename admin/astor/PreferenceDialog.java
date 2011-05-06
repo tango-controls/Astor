@@ -1,43 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  Basic Dialog Class to display info
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
-// $Log$
-// Revision 1.6  2011/01/10 12:48:13  pascal_verdier
-// TAC is now displayed as database servers.
-// StartServersAtStarteup starter class property management added.
-// Display access mode in Tango Access panel.
 //
-// Revision 1.5  2010/10/08 07:41:27  pascal_verdier
-// Minor changes.
-//
-// Revision 1.4  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 1.3  2008/12/16 15:17:16  pascal_verdier
-// Add a scroll pane in HostInfoDialog in case of too big dialog.
-//
-// Revision 1.2  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 1.1  2008/01/18 10:13:03  pascal_verdier
-// *** empty log message ***
-//
-//
-//
-// Copyleft 2007 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

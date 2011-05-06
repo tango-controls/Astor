@@ -1,70 +1,36 @@
-//+===========================================================================
-// $Source$
+//+======================================================================
+// $Source:  $
 //
-// Project:   Tango API
+// Project:   Tango
 //
-// Description:  Java source for device proxy connection
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.11  2009/06/02 15:19:05  pascal_verdier
-// Remove serialization between HostStateThread and HostInfoDialogVector.
-//
-// Revision 3.10  2009/04/17 19:12:51  pascal_verdier
-// Best display on DB server info.
-//
-// Revision 3.9  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-// Revision 3.8  2008/03/27 08:07:15  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 3.7  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.6  2005/08/30 08:05:25  pascal_verdier
-// Management of two TANGO HOST added.
-//
-// Revision 3.5  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.4  2003/11/25 15:56:46  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.3  2003/11/05 10:34:57  pascal_verdier
-// Main Panel screen centering.
-// Starter multi path added.
-// little bugs fixed.
-//
-// Revision 3.2  2003/07/22 14:35:20  pascal_verdier
-// Minor bugs fixed.
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:53  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:12  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
-//-===========================================================================
-//         (c) - Software Engineering Group - ESRF
-//============================================================================
+//-======================================================================
+
 
 package admin.astor;
 

@@ -1,27 +1,36 @@
-//+===========================================================================
-// $Source$
+//+======================================================================
+// $Source:  $
 //
-// Project:   Tango API
+// Project:   Tango
 //
-// Description:  Java source for device proxy connection
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 1.1  2011/01/10 12:49:02  pascal_verdier
-// TAC is now displayed as database servers.
-// StartServersAtStarteup starter class property management added.
-// Display access mode in Tango Access panel.
-//
-// Revision 3.11  2009/06/02 15:19:05  pascal_verdier
-//
-// Copyleft 2011 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
-//-===========================================================================
-//         (c) - Software Engineering Group - ESRF
-//============================================================================
+//-======================================================================
+
 
 package admin.astor;
 

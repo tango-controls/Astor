@@ -1,260 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for Astor class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.69  2011/02/11 10:00:26  pascal_verdier
-// Pb with TAC when adding addresses on "All Users" fixed.
-// No reference on app_util classes any more.
-// Change splash screen image.
-//
-// Revision 3.68  2011/01/13 13:04:17  pascal_verdier
-// Increase release number
-//
-// Revision 3.67  2011/01/10 12:48:13  pascal_verdier
-// TAC is now displayed as database servers.
-// StartServersAtStarteup starter class property management added.
-// Display access mode in Tango Access panel.
-//
-// Revision 3.66  2011/01/04 14:33:03  pascal_verdier
-// Password added for access control dialog.
-// Do not try to subscribe on Starter events if starter device not exported.
-//
-// Revision 3.65  2010/11/30 09:27:47  pascal_verdier
-// For multi servers command, if the command is done throu the starter,
-// it is done by a thread and a delay has been added between servers.
-//
-// Revision 3.64  2010/11/29 13:54:45  pascal_verdier
-// Multi servers command added.
-// Uptime for servers added.
-//
-// Revision 3.63  2010/10/08 07:41:27  pascal_verdier
-// Minor changes.
-//
-// Revision 3.62  2010/06/17 08:48:11  pascal_verdier
-// Pb on display startup level dialog in case of many devices fixed.
-//
-// Revision 3.61  2010/06/17 07:41:22  pascal_verdier
-// Start new server can take several servers (multiple selection).
-//
-// Revision 3.60  2010/06/04 14:12:55  pascal_verdier
-// Global command to change startup level added.
-//
-// Revision 3.59  2010/04/08 10:41:47  pascal_verdier
-// Minor changes.
-//
-// Revision 3.58  2010/01/05 13:47:22  pascal_verdier
-// Best management of subscribe error window at startup.
-//
-// Revision 3.57  2009/06/02 15:19:05  pascal_verdier
-// Remove serialization between HostStateThread and HostInfoDialogVector.
-//
-// Revision 3.56  2009/04/06 14:27:43  pascal_verdier
-// Using MySqlUtil feature.
-//
-// Revision 3.55  2009/02/18 09:47:57  pascal_verdier
-// Device dependencies (sub-devices) tool added.
-//
-// Revision 3.54  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-// Revision 3.53  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.52  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.51  2008/09/12 11:51:23  pascal_verdier
-// Minor changes
-//
-// Revision 3.50  2008/05/26 11:49:12  pascal_verdier
-// Host info dialog servers are managed in a jtree.
-//
-// Revision 3.49  2008/04/07 10:53:36  pascal_verdier
-// Branch info modified.
-//
-// Revision 3.48  2008/03/27 08:10:14  pascal_verdier
-// Patching Release-5.0.0
-//
-// Revision 3.47  2008/03/27 08:07:15  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 3.46  2008/03/03 14:55:21  pascal_verdier
-// Starter Release_4 management.
-//
-// Revision 3.45  2007/11/07 09:05:38  pascal_verdier
-// Display host info if OSManage DS  is running on host.
-// Display host's state on HotInfoDialog.
-//
-// Revision 3.44  2007/09/21 09:25:18  pascal_verdier
-// Refresh Astor properties when TANGO_HOST changed.
-//
-// Revision 3.43  2007/08/20 14:06:08  pascal_verdier
-// ServStatePanel added on HostInfoDialog (Check states option).
-//
-// Revision 3.42  2007/03/27 08:56:11  pascal_verdier
-// Preferences added.
-//
-// Revision 3.41  2007/03/08 13:44:32  pascal_verdier
-// LastCollections property added.
-//
-// Revision 3.40  2007/01/17 10:11:27  pascal_verdier
-// Html helps added.
-// Startup error message added in view menu.
-//
-// Revision 3.39  2007/01/08 08:21:07  pascal_verdier
-// Disable Start Server button if Starter is MOVING.
-//
-// Revision 3.38  2006/09/19 13:04:46  pascal_verdier
-// Access control manager added.
-//
-// Revision 3.37  2006/06/26 12:24:08  pascal_verdier
-// Bug fixed in miscellaneous host collection.
-//
-// Revision 3.36  2006/06/13 13:52:14  pascal_verdier
-// During StartAll command, sleep(500) added between 2 hosts.
-// MOVING states added for collection.
-//
-// Revision 3.35  2006/05/17 07:52:56  pascal_verdier
-// MOVING state added.
-//
-// Revision 3.34  2006/04/19 12:06:58  pascal_verdier
-// Host info dialog modified to use icons to display server states.
-//
-// Revision 3.33  2006/04/12 13:50:47  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.32  2006/01/11 08:46:13  pascal_verdier
-// PollingProfiler added.
-//
-// Revision 3.31  2005/12/08 12:39:27  pascal_verdier
-// Add release note display in help menu.
-//
-// Revision 3.30  2005/12/01 10:00:23  pascal_verdier
-// Change TANGO_HOST added (needs TangORB-4.7.7 or later).
-//
-// Revision 3.29  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.28  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.27  2005/10/20 13:24:49  pascal_verdier
-// Screen position management has been changed.
-//
-// Revision 3.26  2005/10/17 14:14:24  pascal_verdier
-// Search host by name added.
-//
-// Revision 3.25  2005/09/15 08:26:36  pascal_verdier
-// Server architecture display addded.
-//
-// Revision 3.24  2005/08/30 08:05:25  pascal_verdier
-// Management of two TANGO HOST added.
-//
-// Revision 3.23  2005/06/02 09:02:36  pascal_verdier
-// Minor changes.
-//
-// Revision 3.22  2005/04/25 08:55:35  pascal_verdier
-// Start/Stop servers from shell command line added.
-//
-// Revision 3.21  2005/04/22 09:30:45  pascal_verdier
-// Use events management in starter properies dialog added.
-//
-// Revision 3.20  2005/03/15 10:22:30  pascal_verdier
-// Sort servers before creating panel buttons.
-//
-// Revision 3.19  2005/03/11 14:07:53  pascal_verdier
-// Pathes have been modified.
-//
-// Revision 3.18  2005/02/16 13:41:05  pascal_verdier
-// Add controlled servers info in DeviceTree class.
-//
-// Revision 3.17  2005/02/10 15:38:18  pascal_verdier
-// Event subscritions have been serialized.
-//
-// Revision 3.16  2005/02/03 13:31:58  pascal_verdier
-// Display message if subscribe event failed.
-// Display hosts using events (Starter/Astor).
-//
-// Revision 3.15  2005/01/18 08:48:20  pascal_verdier
-// Tools menu added.
-// Not controlled servers list added.
-//
-// Revision 3.14  2004/11/23 14:05:56  pascal_verdier
-// Minor changes.
-//
-// Revision 3.13  2004/09/28 07:01:50  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.12  2004/07/09 07:21:25  pascal_verdier
-// JAR revision and date management added in appli.
-//
-// Revision 3.11  2004/07/08 11:22:58  pascal_verdier
-// First revision able to use events.
-//
-// Revision 3.10  2004/06/17 09:19:58  pascal_verdier
-// Refresh performence problem solved by removing tool tips on JTree.
-//
-// Revision 3.9  2004/05/04 07:05:27  pascal_verdier
-// Bug on notify daemon fixed.
-// server reconection transparency added.
-//
-// Revision 3.8  2004/04/13 12:17:27  pascal_verdier
-// DeviceTree class uses the new browsing database commands.
-//
-// Revision 3.7  2003/11/25 15:56:45  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.6  2003/11/05 10:34:57  pascal_verdier
-// Main Panel screen centering.
-// Starter multi path added.
-// little bugs fixed.
-//
-// Revision 3.5  2003/10/20 08:55:15  pascal_verdier
-// Bug on tree popup menu position fixed.
-//
-// Revision 3.4  2003/09/08 12:21:36  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.3  2003/09/08 11:05:28  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.2  2003/07/22 14:35:20  pascal_verdier
-// Minor bugs fixed.
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:52  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:12  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 
@@ -262,7 +38,7 @@ package admin.astor;
  *	This class is the Astor main panel
  *	containing the Jtree used to display hosts.
  *
- * @author  root
+ * @author  verdier
  */
 
 import admin.astor.statistics.StatisticsPanel;
