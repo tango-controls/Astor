@@ -1,12 +1,13 @@
 //+======================================================================
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  Basic Dialog Class to define s file filter
+// Description:  java source code for Tango manager tool..
 //
 // $Author: verdier $
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2009,2010,2011
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -26,12 +27,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: $
-// $Date:  $
-//
-// $HeadURL: $
+// $Revision:  $
 //
 //-======================================================================
+
 
 package admin.astor.statistics;
 
