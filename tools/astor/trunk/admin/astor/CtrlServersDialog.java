@@ -1,54 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the Pogo class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
-// $Revision$: $
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
 //
-// $Log$
-// Revision 3.10  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
+// This file is part of Tango.
 //
-// Revision 3.9  2004/12/02 10:04:23  pascal_verdier
-// Number of devices and classes added to display.
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Revision 3.8  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
+// $Revision$
 //
-// Revision 3.7  2004/07/08 11:22:58  pascal_verdier
-// First revision able to use events.
-//
-// Revision 3.6  2004/05/04 07:05:27  pascal_verdier
-// Bug on notify daemon fixed.
-// server reconection transparency added.
-//
-// Revision 3.5  2004/02/04 14:37:42  pascal_verdier
-// Starter logging added
-// Database info added on CtrlServersDialog.
-//
-// Revision 3.4  2003/11/25 15:56:45  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.3  2003/09/08 11:08:53  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 1.1  2003/06/19 12:27:03  pascal_verdier
-// Add host option.
-// Controlled servers list option.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor; 
 

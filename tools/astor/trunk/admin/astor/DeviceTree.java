@@ -1,65 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the TempClass class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.14  2009/02/18 09:42:41  pascal_verdier
-// Cancel is managed.
-//
-// Revision 3.13  2006/09/19 13:04:46  pascal_verdier
-// Access control manager added.
-//
-// Revision 3.12  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.11  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.10  2005/10/20 13:24:49  pascal_verdier
-// Screen position management has been changed.
-//
-// Revision 3.9  2005/03/11 14:07:53  pascal_verdier
-// Pathes have been modified.
-//
-// Revision 3.8  2005/02/21 13:44:16  pascal_verdier
-// Display not controled servers in a JTable.
-//
-// Revision 3.7  2005/02/16 13:41:02  pascal_verdier
-// Add controlled servers info in DeviceTree class.
-//
-// Revision 3.6  2005/01/18 08:48:20  pascal_verdier
-// Tools menu added.
-// Not controlled servers list added.
-//
-// Revision 3.5  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.4  2004/07/08 11:22:58  pascal_verdier
-// First revision able to use events.
-//
-// Revision 3.3  2004/05/04 07:05:27  pascal_verdier
-// Bug on notify daemon fixed.
-// server reconection transparency added.
-//
-// Revision 3.2  2004/04/13 12:17:29  pascal_verdier
-// DeviceTree class uses the new browsing database commands.
-//
-// Revision 3.1  2003/11/25 15:56:45  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

@@ -1,182 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the TempClass class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.45  2011/01/10 12:48:13  pascal_verdier
-// TAC is now displayed as database servers.
-// StartServersAtStarteup starter class property management added.
-// Display access mode in Tango Access panel.
-//
-// Revision 3.44  2011/01/04 14:33:03  pascal_verdier
-// Password added for access control dialog.
-// Do not try to subscribe on Starter events if starter device not exported.
-//
-// Revision 3.43  2010/01/05 13:54:15  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.42  2010/01/05 13:47:22  pascal_verdier
-// Best management of subscribe error window at startup.
-//
-// Revision 3.41  2009/05/18 14:15:21  pascal_verdier
-// Throw an exeption if TANGO_HOST has not been set.
-//
-// Revision 3.40  2009/04/17 19:12:51  pascal_verdier
-// Best display on DB server info.
-//
-// Revision 3.39  2009/04/06 14:27:44  pascal_verdier
-// Using MySqlUtil feature.
-//
-// Revision 3.38  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-// Revision 3.37  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.36  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.35  2008/05/19 09:24:23  pascal_verdier
-// Jive added in menu
-//
-// Revision 3.34  2008/03/27 08:07:15  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 3.33  2008/03/03 14:55:21  pascal_verdier
-// Starter Release_4 management.
-//
-// Revision 3.32  2007/09/11 09:22:04  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.31  2007/03/27 08:56:11  pascal_verdier
-// Preferences added.
-//
-// Revision 3.30  2007/03/08 13:44:32  pascal_verdier
-// LastCollections property added.
-//
-// Revision 3.29  2007/01/17 10:11:27  pascal_verdier
-// Html helps added.
-// Startup error message added in view menu.
-//
-// Revision 3.28  2006/06/13 13:52:14  pascal_verdier
-// During StartAll command, sleep(500) added between 2 hosts.
-// MOVING states added for collection.
-//
-// Revision 3.27  2006/04/19 12:06:58  pascal_verdier
-// Host info dialog modified to use icons to display server states.
-//
-// Revision 3.26  2006/04/18 14:12:36  pascal_verdier
-// Backward compatibilty for jive fixed.
-//
-// Revision 3.25  2006/04/12 13:13:05  pascal_verdier
-// Watch dog on thread died added.
-// Icons modified.
-//
-// Revision 3.24  2005/11/25 07:43:28  pascal_verdier
-// Host panel can be opened from DevBrowser.
-//
-// Revision 3.23  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.22  2005/10/20 13:24:49  pascal_verdier
-// Screen position management has been changed.
-//
-// Revision 3.21  2005/10/03 09:27:25  pascal_verdier
-// Display jive if click on MySql logo.
-//
-// Revision 3.20  2005/08/30 08:05:25  pascal_verdier
-// Management of two TANGO HOST added.
-//
-// Revision 3.19  2005/08/11 08:44:10  pascal_verdier
-// Correction on message done.
-//
-// Revision 3.18  2005/06/22 06:53:05  pascal_verdier
-// Minor changes.
-//
-// Revision 3.17  2005/06/06 09:04:08  pascal_verdier
-// Case of no Satretr defined bug fixed.
-//
-// Revision 3.16  2005/06/02 09:02:36  pascal_verdier
-// Minor changes.
-//
-// Revision 3.15  2005/03/11 14:07:53  pascal_verdier
-// Pathes have been modified.
-//
-// Revision 3.14  2005/02/16 13:41:05  pascal_verdier
-// Add controlled servers info in DeviceTree class.
-//
-// Revision 3.13  2005/02/10 15:38:19  pascal_verdier
-// Event subscritions have been serialized.
-//
-// Revision 3.12  2005/02/03 13:31:58  pascal_verdier
-// Display message if subscribe event failed.
-// Display hosts using events (Starter/Astor).
-//
-// Revision 3.11  2005/01/18 08:48:20  pascal_verdier
-// Tools menu added.
-// Not controlled servers list added.
-//
-// Revision 3.10  2004/11/23 14:05:57  pascal_verdier
-// Minor changes.
-//
-// Revision 3.9  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.8  2004/06/17 09:19:58  pascal_verdier
-// Refresh performence problem solved by removing tool tips on JTree.
-//
-// Revision 3.7  2003/11/25 15:56:45  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.6  2003/11/05 10:34:57  pascal_verdier
-// Main Panel screen centering.
-// Starter multi path added.
-// little bugs fixed.
-//
-// Revision 3.5  2003/10/20 08:55:15  pascal_verdier
-// Bug on tree popup menu position fixed.
-//
-// Revision 3.4  2003/09/08 12:21:36  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.3  2003/09/08 11:05:28  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.2  2003/07/22 14:35:20  pascal_verdier
-// Minor bugs fixed.
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:52  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:11  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

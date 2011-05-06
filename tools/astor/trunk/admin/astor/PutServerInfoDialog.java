@@ -1,64 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the Pogo class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
-// $Revision$: $
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
 //
-// $Log$
-// Revision 3.7  2010/06/04 14:12:55  pascal_verdier
-// Global command to change startup level added.
+// This file is part of Tango.
 //
-// Revision 3.6  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Revision 3.5  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
+// $Revision$
 //
-// Revision 3.4  2005/10/17 14:13:35  pascal_verdier
-// Replace delete by remove.
-//
-// Revision 3.3  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.2  2004/03/03 08:31:04  pascal_verdier
-// The server restart command has been replaced by a stop and start command in a thread.
-// The delete startup level info has been added.
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:52  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:12  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.0  2003/01/16 15:22:35  verdier
-// Last ci before CVS usage
-//
-// Revision 1.6  2002/09/13 08:43:07  verdier
-// Use IDL 2 Starter version (polling thread, State from Starter, ...).
-// Host info window not modal.
-// Host info window resizable for display all servers option.
-// And many features.
-//
-// Revision 1.5  2001/05/30 15:13:29  verdier
-// Start/Stop host control added
-// Jive statup aded
-// and many app_util added...
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
  

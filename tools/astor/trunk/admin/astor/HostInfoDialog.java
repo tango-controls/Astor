@@ -1,80 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  Basic Dialog Class to display info
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.48  2010/11/29 13:54:45  pascal_verdier
-// Multi servers command added.
-// Uptime for servers added.
-//
-// Revision 3.47  2010/10/08 07:41:27  pascal_verdier
-// Minor changes.
-//
-// Revision 3.46  2010/06/17 07:41:22  pascal_verdier
-// Start new server can take several servers (multiple selection).
-//
-// Revision 3.45  2010/04/08 10:41:47  pascal_verdier
-// Minor changes.
-//
-// Revision 3.44  2009/06/02 15:19:05  pascal_verdier
-// Remove serialization between HostStateThread and HostInfoDialogVector.
-//
-// Revision 3.43  2009/04/06 14:27:44  pascal_verdier
-// Using MySqlUtil feature.
-//
-// Revision 3.42  2009/02/18 09:47:57  pascal_verdier
-// Device dependencies (sub-devices) tool added.
-//
-// Revision 3.41  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-// Revision 3.40  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.39  2008/12/16 15:17:16  pascal_verdier
-// Add a scroll pane in HostInfoDialog in case of too big dialog.
-//
-// Revision 3.38  2008/12/02 08:19:55  pascal_verdier
-// Number of controlled server display added.
-//
-// Revision 3.37  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.36  2008/06/17 11:41:50  pascal_verdier
-// Pb on notifd button fixed.
-//
-// Revision 3.35  2008/06/16 11:50:39  pascal_verdier
-// Level trees are now displayed on 2 rows.
-//
-// Revision 3.34  2008/05/28 13:19:20  pascal_verdier
-// Start/Stop All do not ask for not concerned levels.
-//
-// Revision 3.33  2008/05/26 11:49:12  pascal_verdier
-// Host info dialog servers are managed in a jtree.
-//
-// Revision 3.32  2008/04/07 10:53:35  pascal_verdier
-// Branch info modified.
-//
-// Revision 3.31  2008/03/03 14:55:21  pascal_verdier
-// Starter Release_4 management.
-//
-//
-// Copyleft 2007 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

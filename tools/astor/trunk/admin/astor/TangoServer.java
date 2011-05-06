@@ -1,173 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the Pogo class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
-// $Version: $
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
 //
-// $Log$
-// Revision 3.34  2010/11/29 13:54:45  pascal_verdier
-// Multi servers command added.
-// Uptime for servers added.
+// This file is part of Tango.
 //
-// Revision 3.33  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Revision 3.32  2009/01/20 08:25:34  pascal_verdier
-// Bug in QueryDevice command backward compatibility fixed.
+// $Revision$
 //
-// Revision 3.31  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.30  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.29  2008/09/12 11:51:23  pascal_verdier
-// Minor changes
-//
-// Revision 3.28  2008/03/27 08:07:15  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 3.27  2008/03/03 14:55:21  pascal_verdier
-// Starter Release_4 management.
-//
-// Revision 3.26  2007/09/11 09:23:29  pascal_verdier
-// Db attribute polling panel added.
-//
-// Revision 3.25  2007/08/20 14:06:11  pascal_verdier
-// ServStatePanel added on HostInfoDialog (Check states option).
-//
-// Revision 3.24  2007/04/04 13:00:27  pascal_verdier
-// Database attribute properties editor added.
-//
-// Revision 3.23  2006/01/11 08:46:14  pascal_verdier
-// PollingProfiler added.
-//
-// Revision 3.22  2005/11/25 08:30:20  pascal_verdier
-// Bug in new Device Panel startup fixed.
-//
-// Revision 3.21  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.20  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.19  2005/10/26 10:32:44  pascal_verdier
-// Change test device dialog screen position.
-//
-// Revision 3.18  2005/10/14 14:29:34  pascal_verdier
-// Edit memorized attribute value added.
-//
-// Revision 3.17  2005/10/03 09:32:06  pascal_verdier
-// Check if at least one device is registred in chooseDevice() method.
-// New problem since Wizard usage.
-//
-// Revision 3.16  2005/09/15 08:26:36  pascal_verdier
-// Server architecture display addded.
-//
-// Revision 3.15  2005/09/13 14:28:01  pascal_verdier
-// Wizard management added.
-//
-// Revision 3.14  2005/06/02 09:02:36  pascal_verdier
-// Minor changes.
-//
-// Revision 3.13  2005/03/11 14:07:54  pascal_verdier
-// Pathes have been modified.
-//
-// Revision 3.12  2005/02/10 15:38:19  pascal_verdier
-// Event subscritions have been serialized.
-//
-// Revision 3.11  2004/12/08 09:55:55  pascal_verdier
-// Tango 5 feature (classname::devname) compatibility.
-//
-// Revision 3.10  2004/12/02 10:05:25  pascal_verdier
-// Delete html temporary file.
-//
-// Revision 3.9  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.8  2004/07/08 11:22:58  pascal_verdier
-// First revision able to use events.
-//
-// Revision 3.7  2004/05/04 07:05:27  pascal_verdier
-// Bug on notify daemon fixed.
-// server reconection transparency added.
-//
-// Revision 3.6  2004/03/03 08:31:04  pascal_verdier
-// The server restart command has been replaced by a stop and start command in a thread.
-// The delete startup level info has been added.
-//
-// Revision 3.5  2004/02/04 14:37:43  pascal_verdier
-// Starter logging added
-// Database info added on CtrlServersDialog.
-//
-// Revision 3.4  2003/11/25 15:56:45  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.3  2003/09/08 11:05:28  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.2  2003/07/22 14:35:20  pascal_verdier
-// Minor bugs fixed.
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:52  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:12  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.0  2003/01/16 15:22:35  verdier
-// Last ci before CVS usage
-//
-// Revision 1.6  2002/09/13 08:43:07  verdier
-// Use IDL 2 Starter version (polling thread, State from Starter, ...).
-// Host info window not modal.
-// Host info window resizable for display all servers option.
-// And many features.
-//
-// Revision 1.5  2001/05/30 15:13:29  verdier
-// Start/Stop host control added
-// Jive statup aded
-// and many app_util added...
-//
-// Revision 1.4  2001/01/09 14:58:33  verdier
-// Start and stop all servers added.
-// Progress Monitor added.
-//
-// Revision 1.3  2000/12/20 09:32:51  verdier
-// Compatible with TangoApi package first revision.
-//
-// Revision 1.2  2000/10/12 08:50:52  verdier
-// Hosts and servers are now controlled by threads.
-// Commnds could be send to dserver/class server.
-//
-// Revision 1.1  2000/10/04 14:35:56  verdier
-// Initial revision
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
  

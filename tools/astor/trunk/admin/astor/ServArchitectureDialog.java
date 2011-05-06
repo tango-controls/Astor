@@ -1,65 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
-// Project:   Tango Manager (Astor)
+// Project:   Tango
 //
-// Description:   Dialog Class to display server architecture.
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
-// $Log$
-// Revision 3.14  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
 //
-// Revision 3.13  2007/04/27 08:08:29  pascal_verdier
-// Toggle info added.
-//
-// Revision 3.12  2007/01/08 08:16:20  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.11  2006/06/13 13:52:14  pascal_verdier
-// During StartAll command, sleep(500) added between 2 hosts.
-// MOVING states added for collection.
-//
-// Revision 3.10  2006/01/11 08:46:13  pascal_verdier
-// PollingProfiler added.
-//
-// Revision 3.9  2005/12/08 12:43:21  pascal_verdier
-// Add tag release in class node.
-//
-// Revision 3.8  2005/12/01 10:00:22  pascal_verdier
-// Change TANGO_HOST added (needs TangORB-4.7.7 or later).
-//
-// Revision 3.7  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.6  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.5  2005/10/14 14:28:28  pascal_verdier
-// Edit property added to server achitecture tree.
-//
-// Revision 3.4  2005/10/06 06:45:14  pascal_verdier
-// Bug in default/DB value fixed.
-//
-// Revision 3.3  2005/09/27 12:45:59  pascal_verdier
-// Expand button added.
-//
-// Revision 3.2  2005/09/15 13:44:04  pascal_verdier
-// jive.MultiLineToolTipUI.initialize() call added.
-//
-// Revision 3.1  2005/09/15 08:26:36  pascal_verdier
-// Server architecture display addded.
-//
-//
-//
-// Copyleft 2005 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

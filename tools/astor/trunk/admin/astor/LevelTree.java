@@ -1,46 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the LevelTree class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.8  2010/11/29 13:54:45  pascal_verdier
-// Multi servers command added.
-// Uptime for servers added.
-//
-// Revision 3.7  2010/10/08 07:41:27  pascal_verdier
-// Minor changes.
-//
-// Revision 3.6  2010/06/04 14:12:55  pascal_verdier
-// Global command to change startup level added.
-//
-// Revision 3.5  2008/12/16 15:17:16  pascal_verdier
-// Add a scroll pane in HostInfoDialog in case of too big dialog.
-//
-// Revision 3.4  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.3  2008/06/16 11:50:39  pascal_verdier
-// Level trees are now displayed on 2 rows.
-//
-// Revision 3.2  2008/05/28 13:19:20  pascal_verdier
-// Start/Stop All do not ask for not concerned levels.
-//
-// Revision 3.1  2008/05/26 11:49:12  pascal_verdier
-// Host info dialog servers are managed in a jtree.
-//
-//
-// Copyleft 2008 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
 

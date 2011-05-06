@@ -1,141 +1,36 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  java source code for the Pogo class definition .
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
 // $Revision$
 //
-// $Log$
-// Revision 3.33  2010/11/29 13:54:45  pascal_verdier
-// Multi servers command added.
-// Uptime for servers added.
-//
-// Revision 3.32  2010/06/17 08:48:11  pascal_verdier
-// Pb on display startup level dialog in case of many devices fixed.
-//
-// Revision 3.31  2010/06/04 14:12:55  pascal_verdier
-// Global command to change startup level added.
-//
-// Revision 3.30  2009/04/06 14:27:47  pascal_verdier
-// Using MySqlUtil feature.
-//
-// Revision 3.29  2009/02/18 09:47:57  pascal_verdier
-// Device dependencies (sub-devices) tool added.
-//
-// Revision 3.28  2009/01/30 09:31:50  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-// Revision 3.27  2009/01/16 14:46:58  pascal_verdier
-// Black box management added for host and Server.
-// Starter logging display added for host and server.
-// Splash screen use ATK one.
-//
-// Revision 3.26  2008/11/19 09:59:56  pascal_verdier
-// New tests done on Access control.
-// Pool Threads management added.
-// Size added as preferences.
-//
-// Revision 3.25  2008/09/12 11:51:23  pascal_verdier
-// Minor changes
-//
-// Revision 3.24  2008/05/29 13:14:55  pascal_verdier
-// Bug on standard error index fixed
-//
-// Revision 3.23  2008/05/26 11:49:12  pascal_verdier
-// Host info dialog servers are managed in a jtree.
-//
-// Revision 3.22  2008/03/27 08:07:15  pascal_verdier
-// Compatibility with Starter 4.0 and after only !
-// Better management of server list.
-// Server state MOVING managed.
-// Hard kill added on servers.
-// New features on polling profiler.
-//
-// Revision 3.21  2008/03/03 14:55:21  pascal_verdier
-// Starter Release_4 management.
-//
-// Revision 3.20  2007/09/11 09:23:29  pascal_verdier
-// Db attribute polling panel added.
-//
-// Revision 3.19  2007/04/04 13:00:27  pascal_verdier
-// Database attribute properties editor added.
-//
-// Revision 3.18  2007/01/08 08:21:07  pascal_verdier
-// Disable Start Server button if Starter is MOVING.
-//
-// Revision 3.17  2006/04/19 12:08:12  pascal_verdier
-// Host info dialog modified to use icons to display server states.
-//
-// Revision 3.16  2006/01/11 08:46:14  pascal_verdier
-// PollingProfiler added.
-//
-// Revision 3.15  2005/11/24 12:24:57  pascal_verdier
-// DevBrowser utility added.
-// MkStarter utility added.
-//
-// Revision 3.14  2005/11/17 12:30:33  pascal_verdier
-// Analysed with IntelliJidea.
-//
-// Revision 3.13  2005/10/14 14:29:34  pascal_verdier
-// Edit memorized attribute value added.
-//
-// Revision 3.12  2005/09/15 08:26:36  pascal_verdier
-// Server architecture display addded.
-//
-// Revision 3.11  2005/09/13 14:28:01  pascal_verdier
-// Wizard management added.
-//
-// Revision 3.10  2005/04/22 09:30:45  pascal_verdier
-// Use events management in starter properies dialog added.
-//
-// Revision 3.9  2005/03/11 14:07:54  pascal_verdier
-// Pathes have been modified.
-//
-// Revision 3.8  2005/01/18 08:48:19  pascal_verdier
-// Tools menu added.
-// Not controlled servers list added.
-//
-// Revision 3.7  2004/09/28 07:01:51  pascal_verdier
-// Problem on two events server list fixed.
-//
-// Revision 3.6  2004/03/03 08:31:04  pascal_verdier
-// The server restart command has been replaced by a stop and start command in a thread.
-// The delete startup level info has been added.
-//
-// Revision 3.5  2004/02/04 14:37:43  pascal_verdier
-// Starter logging added
-// Database info added on CtrlServersDialog.
-//
-// Revision 3.4  2003/11/25 15:56:46  pascal_verdier
-// Label on hosts added.
-// Notifyd begin to be controled.
-//
-// Revision 3.3  2003/11/07 09:58:46  pascal_verdier
-// Host info dialog automatic resize implemented.
-//
-// Revision 3.2  2003/09/08 11:05:28  pascal_verdier
-// *** empty log message ***
-//
-// Revision 3.1  2003/06/19 12:57:57  pascal_verdier
-// Add a new host option.
-// Controlled servers list option.
-//
-// Revision 3.0  2003/06/04 12:37:53  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-// Revision 2.1  2003/06/04 12:33:12  pascal_verdier
-// Main window uses now a Jtree to display hosts.
-//
-//
-// Copyleft 2003 by European Synchrotron Radiation Facility, Grenoble, France
-//               All Rights Reversed
 //-======================================================================
+
 
 package admin.astor;
  
