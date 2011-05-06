@@ -111,7 +111,6 @@ import java.awt.event.ActionListener;
 
 public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 {
-	private DefaultMutableTreeNode	node_cut    = null;
 	private Astor		astor;
 	private AstorTree	parent;
 	private TangoHost	host;
@@ -131,8 +130,7 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 									"Stop  all Servers",
 									"Reset Statistics",
 									"Clone",
-									"Cut",
-									"Paste",
+									"Change branch",
 									"Edit Properties",
 									"Remove",
 									"Black Box",
@@ -161,15 +159,14 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 
 	//	Edit options
 	static private final int	CLONE_HOST     = 11;
-	static private final int	CUT_HOST       = 12;
-	static private final int	PASTE_HOST     = 13;
-	static private final int	EDIT_PROP      = 14;
-	static private final int	REMOVE_HOST    = 15;
-	static private final int	BLACK_BOX      = 16;
-	static private final int	STARTER_LOGS   = 17;
-    static private final int	UPTIME_SERVERS = 18;
-	static private final int	UPDATE         = 19;
-	static private final int	CHANGE_NAME    = 20;
+	static private final int	CHANGE_BRANCHE = 12;
+	static private final int	EDIT_PROP      = 13;
+	static private final int	REMOVE_HOST    = 14;
+	static private final int	BLACK_BOX      = 15;
+	static private final int	STARTER_LOGS   = 16;
+    static private final int	UPTIME_SERVERS = 17;
+	static private final int	UPDATE         = 18;
+	static private final int	CHANGE_NAME    = 19;
 
 	 //===============================================================
 	//===============================================================
@@ -304,8 +301,7 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 			getComponent(OFFSET+RESET_STAT).setVisible(false);
 			getComponent(OFFSET+CHANGE_NAME).setVisible(false);
 
-			getComponent(OFFSET+CUT_HOST).setEnabled(true);
-			getComponent(OFFSET+PASTE_HOST).setEnabled(false);
+			getComponent(OFFSET+CHANGE_BRANCHE).setEnabled(true);
 			getComponent(OFFSET+EDIT_PROP).setEnabled(true);
 			getComponent(OFFSET+CLONE_HOST).setEnabled(true);
 
@@ -343,9 +339,8 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 			getComponent(OFFSET+UPDATE).setVisible(false);
 
 			getComponent(OFFSET+CLONE_HOST).setEnabled(false);
-			getComponent(OFFSET+CUT_HOST).setEnabled(false);
+			getComponent(OFFSET+CHANGE_BRANCHE).setEnabled(false);
 			getComponent(OFFSET+EDIT_PROP).setEnabled(false);
-			getComponent(OFFSET+PASTE_HOST).setEnabled(node_cut!=null);
 			getComponent(OFFSET+REMOVE_HOST).setEnabled(false);
 			getComponent(OFFSET+BLACK_BOX).setVisible(false);
 			getComponent(OFFSET+UNEXPORT_STARTER).setVisible(false);
@@ -406,13 +401,8 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 		case EDIT_PROP:
 			astor.editHostProperties(host);
 			break;
-		case CUT_HOST:
-			node_cut = (DefaultMutableTreeNode)
-					        parent.getLastSelectedPathComponent();
-			break;
-		case PASTE_HOST:
-			parent.moveNode(node_cut);
-			node_cut = null;
+		case CHANGE_BRANCHE:
+			parent.moveNode();
 			break;
 		case REMOVE_HOST:
 			astor.removeHost(host.getName());
