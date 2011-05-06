@@ -1,13 +1,13 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  Basic Dialog Class to display info
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2009
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -29,14 +29,8 @@
 //
 // $Revision$
 //
-// $Log$
-// Revision 1.1  2009/01/30 09:32:58  pascal_verdier
-// Black box management added for database.
-// Black box management tool improved.
-// Find TANGO object by filter added.
-//
-//
 //-======================================================================
+
 
 package admin.astor.tools;
 

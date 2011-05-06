@@ -1,13 +1,13 @@
 //+======================================================================
-// $Source$
+// $Source:  $
 //
 // Project:   Tango
 //
-// Description:  Basic Dialog Class to display info
+// Description:  java source code for Tango manager tool..
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2009
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -29,9 +29,8 @@
 //
 // $Revision$
 //
-// $Log$
-//
 //-======================================================================
+
 
 package admin.astor.tools;
 
