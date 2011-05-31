@@ -35,9 +35,11 @@
 
 package admin.astor.statistics;
 
+import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceProxy;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -52,41 +54,92 @@ public class ResetStatistics
 {
     private int nbHosts = 0;
     private int done = 0;
+    private JFrame  parent;
     //=======================================================
     //=======================================================
-	public ResetStatistics(Vector<String> hosts)
+	public ResetStatistics(JFrame parent)
 	{
-        nbHosts = hosts.size();
-        for (String host : hosts) {
-            try {
-                //  Check if host or starter name
-                String  devName = host;
-                if (host.indexOf('/')<0)
-                    devName = "tango/admin/" + host;
-                DeviceProxy dev = new DeviceProxy(devName);
-                //dev.command_inout("ResetStatistics");
-                done++;
-                System.out.println("ResetStatistics done on " + host);
-            }
-            catch(DevFailed e) {
-                System.err.println(host + ":    " + e.errors[0].desc);
+        this.parent = parent;
+
+        Vector<String>  hosts = Utils.getHostControlledList(false);
+        StringBuffer  failed = new StringBuffer();
+        if (getConfirm(hosts)) {
+            nbHosts = hosts.size();
+
+            if (parent!=null)
+                AstorUtil.startSplash("Statistics ");
+            for (String host : hosts) {
+                if (parent==null)
+                    System.out.println("Resetting " + host);
+                else
+                    AstorUtil.increaseSplashProgress(100 / nbHosts, "Resetting " + host);
+                try {
+                    //  Check if host or starter name
+                    String  devName = host;
+                    if (host.indexOf('/')<0)
+                        devName = "tango/admin/" + host;
+                    System.out.println("Resetting " + host);
+                    DeviceProxy dev = new DeviceProxy(devName);
+                    dev.command_inout("ResetStatistics");
+                    done++;
+
+                    try { Thread.sleep(50); } catch (Exception e) {/* */}
+                }
+                catch(DevFailed e) {
+                    failed.append(host).append(":    ").append(e.errors[0].desc).append("\n");
+                }
             }
         }
+        if (parent!=null)
+            AstorUtil.stopSplash();
+
+        //  Display error if any
+        if (failed.length()>0) {
+            if (parent==null)
+                System.err.println(failed);
+            else {
+                JOptionPane.showMessageDialog(parent,
+                                    failed.toString(),
+                                    "error",
+                                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+
+        //  Display results
+        if(parent!=null) {
+            JOptionPane.showMessageDialog(parent,
+                                this,
+                                "Command done",
+                                JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+            System.out.println(this);
 	}
     //=======================================================
     //=======================================================
-    private static boolean getConfirm(Vector<String> hosts)
+    private boolean getConfirm(Vector<String> hosts)
     {
-        try {
-             System.out.println("OK to reset statistics on " + hosts.size() + " (y/n) ?");
-             byte[] b = new byte[100];
-             if (System.in.read(b)>0)
-                 if (b[0]=='y')
-                     return true;
-         }
-         catch (IOException e) {
-             System.err.println(e);
-         }
+        if (parent!=null) {
+
+            return JOptionPane.showConfirmDialog(parent,
+                "Reset Statistics on " + hosts.size() + " hosts ?",
+                "Confirm Dialog",
+                JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION;
+
+        }
+        else {
+            try {
+                 System.out.println("OK to reset statistics on " + hosts.size() + " (y/n) ?");
+                 byte[] b = new byte[100];
+                 if (System.in.read(b)>0)
+                     if (b[0]=='y')
+                         return true;
+             }
+             catch (IOException e) {
+                 System.err.println(e);
+             }
+        }
         return false;
     }
     //=======================================================
@@ -100,11 +153,7 @@ public class ResetStatistics
     //=======================================================
     public static void main(String[] args)
     {
-        Vector<String>  hosts = Utils.getHostControlledList(false);
-        if (getConfirm(hosts)) {
-            ResetStatistics rs = new ResetStatistics(hosts);
-            System.out.println(rs);
-        }
+        new ResetStatistics(null);
     }
     //=======================================================
     //=======================================================
