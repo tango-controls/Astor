@@ -195,6 +195,15 @@ public class StatisticsPanel extends JFrame
 		openItem.setAccelerator(KeyStroke.getKeyStroke('O', Event.CTRL_MASK));
 		saveItem.setMnemonic ('S');
 		saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Event.CTRL_MASK));
+
+        String superTango = System.getenv("SUPER_TANGO");
+        if (superTango!=null && superTango.toLowerCase().equals("true")) {
+    		resetItem.setMnemonic ('R');
+	    	resetItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.ALT_MASK));
+        }
+        else
+            resetItem.setVisible(false);
+
 		exitItem.setMnemonic ('E');
 		exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
 
@@ -228,6 +237,7 @@ public class StatisticsPanel extends JFrame
         readItem = new javax.swing.JMenuItem();
         openItem = new javax.swing.JMenuItem();
         saveItem = new javax.swing.JMenuItem();
+        resetItem = new javax.swing.JMenuItem();
         exitItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         filterItem = new javax.swing.JMenuItem();
@@ -296,6 +306,14 @@ public class StatisticsPanel extends JFrame
             }
         });
         fileMenu.add(saveItem);
+
+        resetItem.setText("Reset Statistics");
+        resetItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(resetItem);
 
         exitItem.setText("Exit");
         exitItem.addActionListener(new java.awt.event.ActionListener() {
@@ -387,7 +405,7 @@ public class StatisticsPanel extends JFrame
 
                     //  Check if already exists
                     if (new File(fileName).exists()) {
-                        if (JOptionPane.showConfirmDialog(parent,
+                        if (JOptionPane.showConfirmDialog(this,
                                 fileName + "   File already exists\n\n     Overwrite it ?",
                                 "Confirm Dialog",
                                 JOptionPane.YES_NO_OPTION)!=JOptionPane.OK_OPTION) {
@@ -476,6 +494,14 @@ public class StatisticsPanel extends JFrame
             new DelayedDisplay().start();
         }
     }//GEN-LAST:event_filterItemActionPerformed
+
+    //=======================================================
+    //=======================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void resetItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetItemActionPerformed
+        // TODO add your handling code here:
+        new ResetStatistics(this);
+    }//GEN-LAST:event_resetItemActionPerformed
     //=======================================================
     //=======================================================
     private void resetFilter()
@@ -531,6 +557,7 @@ public class StatisticsPanel extends JFrame
     private javax.swing.JTextArea globalStatTextArea;
     private javax.swing.JMenuItem openItem;
     private javax.swing.JMenuItem readItem;
+    private javax.swing.JMenuItem resetItem;
     private javax.swing.JMenuItem saveItem;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
