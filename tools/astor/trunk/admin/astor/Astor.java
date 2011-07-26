@@ -65,7 +65,7 @@ public class Astor extends JFrame implements AstorDefs
 	 *  Initialized by make jar call and used to display title.
 	 */
     private static String revNumber =
-            "Release 5.5.1  -  Tue Apr 12 14:12:12 CEST 2011";
+            "Release 5.5.2  -  Tue Jul 26 12:55:58 CEST 2011";
 	/**
 	 *	JTree object to display control system.
 	 */
@@ -957,8 +957,7 @@ public class Astor extends JFrame implements AstorDefs
 								"Input Dialog",
 								JOptionPane.INFORMATION_MESSAGE,
 								null, null, "");
-		if (branch_name!=null)
-		{
+		if (branch_name!=null) {
 			tree.addBranch(branch_name);
 		}
 	}//GEN-LAST:event_newBranchBtnActionPerformed

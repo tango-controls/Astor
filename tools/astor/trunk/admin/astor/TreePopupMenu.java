@@ -34,6 +34,10 @@
 
 package admin.astor;
 
+import admin.astor.statistics.StarterStatTable;
+import fr.esrf.Tango.DevFailed;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -67,6 +71,7 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 									"Remove",
 									"Black Box",
 									"Starter Logs",
+									"Starter Statistics",
                                     "Uptime for Servers",
 									"Force Update",
 									"Change Name",
@@ -96,9 +101,10 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 	static private final int	REMOVE_HOST    = 14;
 	static private final int	BLACK_BOX      = 15;
 	static private final int	STARTER_LOGS   = 16;
-    static private final int	UPTIME_SERVERS = 17;
-	static private final int	UPDATE         = 18;
-	static private final int	CHANGE_NAME    = 19;
+	static private final int	STARTER_STAT   = 17;
+    static private final int	UPTIME_SERVERS = 18;
+	static private final int	UPDATE         = 19;
+	static private final int	CHANGE_NAME    = 20;
 
 	 //===============================================================
 	//===============================================================
@@ -241,6 +247,7 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 						  host.state==alarm || host.state==moving);
 			getComponent(OFFSET+STARTER_TEST).setEnabled(can_test);
 			getComponent(OFFSET+STARTER_LOGS).setEnabled(can_test);
+			getComponent(OFFSET+STARTER_STAT).setEnabled(can_test);
             getComponent(OFFSET+UPTIME_SERVERS).setVisible(true);
 			getComponent(OFFSET+REMOVE_HOST).setEnabled(!can_test);
 			getComponent(OFFSET+UPDATE).setEnabled(can_test);
@@ -267,6 +274,7 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 			getComponent(OFFSET+STARTER_INFO).setVisible(false);
 			getComponent(OFFSET+STARTER_TEST).setVisible(false);
 			getComponent(OFFSET+STARTER_LOGS).setVisible(false);
+			getComponent(OFFSET+STARTER_STAT).setVisible(false);
 			getComponent(OFFSET+UPTIME_SERVERS).setVisible(false);
 			getComponent(OFFSET+UPDATE).setVisible(false);
 
@@ -311,6 +319,13 @@ public class TreePopupMenu extends JPopupMenu  implements AstorDefs
 			break;
 		case STARTER_LOGS:
 			host.displayLogging(astor);
+			break;
+		case STARTER_STAT:
+            try {
+    			new StarterStatTable(astor, host.hostName()).setVisible(true);
+            } catch (DevFailed e) {
+                ErrorPane.showErrorMessage(astor, null, e);
+            }
 			break;
 		case UPTIME_SERVERS:
 			host.displayUptimes(astor);
