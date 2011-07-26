@@ -1,0 +1,3 @@
+
+java  admin.astor.access.TangoAccess $*
+# -DSUPER_TANGO=true  
