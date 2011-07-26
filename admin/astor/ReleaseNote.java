@@ -17,7 +17,9 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Tue Apr 12 14:12:13 CEST 2011)</Center><Br>\n" + 
+		"	(Generated Tue Jul 26 12:55:59 CEST 2011)</Center><Br>\n" + 
+		"<li><b>Astor-5.5.2 -  26/07/11:</b><Br>\n" + 
+		"&nbsp; &nbsp; Statistics on one host added.<Br>\n" + 
 		"<li><b>Astor-5.5.1 -  12/04/11:</b><Br>\n" + 
 		"&nbsp; &nbsp; Auto start info added to statistics tool.<Br>\n" + 
 		"<li><b>Astor-5.5.0 -  01/04/11:</b><Br>\n" + 

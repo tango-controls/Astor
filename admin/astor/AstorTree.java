@@ -890,7 +890,7 @@ public class AstorTree extends JTree  implements AstorDefs
                 "Dialog",
                 JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION) {
 
-            new ResetStatistics(hostList);
+            new ResetStatistics(parent);
         }
 
     }
