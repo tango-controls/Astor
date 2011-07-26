@@ -69,6 +69,7 @@ public class  LogRecord
 			if (startedTime>failedTime)
 				failedDuration = startedTime - failedTime;
 			else
+        	if (newState==DevState.ON)
 				runDuration = failedTime - startedTime;
 
         if (newState==DevState.ON) {

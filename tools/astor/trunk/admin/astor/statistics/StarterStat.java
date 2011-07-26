@@ -157,7 +157,8 @@ public class  StarterStat extends Vector<ServerStat>
 		Vector<LogRecord>	records = new Vector<LogRecord>();
 		StringTokenizer	stk = new StringTokenizer(str, "\n");
 		while (stk.hasMoreTokens()) {
-			records.add(new LogRecord(stk.nextToken()));
+			LogRecord	record = new LogRecord(stk.nextToken());
+			records.add(record);
 		}
 
         resetTime = System.currentTimeMillis();
@@ -311,22 +312,4 @@ public class  StarterStat extends Vector<ServerStat>
   	//===============================================================
 	//===============================================================
 
-	//===============================================================
-	//===============================================================
-	public static void main (String[] args)
-	{
-		//String		devName = "esrflinux1-2";
-		String		devName = "coral";
-
-		if (args.length>0)
-			devName = args[0];
-		try {
-            System.out.println(new StarterStat(devName).toString("Dummy/check"));
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	//===============================================================
-	//===============================================================
 }

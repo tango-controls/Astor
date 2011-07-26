@@ -34,10 +34,7 @@
 
 package admin.astor.statistics;
 
-
-import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
-import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,42 +51,33 @@ import java.awt.*;
 
 public class ServerStatisticsPanel extends JDialog
 {
-    private JFrame parent;
+    private Window parent;
     private ServerStatisticsTable statisticsTable;
-	//===============================================================
-	/**
-	 *	Creates new form ServerStatisticsPanel
-     * @param parent      JFrame parent instance
-     * @param hostName    host wher specified server is running
-     * @param serverName  specified server
-     * @throws DevFailed in case of specified host Starter connection failed.
-	 */
-	//===============================================================
-	public ServerStatisticsPanel(JFrame parent, String hostName, String serverName) throws DevFailed
-	{
-		super(parent, true);
-		this.parent = parent;
-		initComponents();
-
-        StarterStat hostStatistics = Utils.readHostStatistics(hostName);
-        if (hostStatistics!=null) {
-            ServerStat  serverStat = hostStatistics.getServerStat(serverName);
-            buildForm(serverStat);
-            titleLabel.setText(serverStat.name + "   (on  " + serverStat.starterStat.name + ")");
-        }
-        else
-            titleLabel.setText("No Statistics found for " + serverName);
-    }
 	//===============================================================
 	/**
 	 *	Creates new form ServerStatisticsPanel
      * @param parent      JFrame parent instance
      * @param title       dialog title.
      * @param serverStat  specified server statistics
-     * @throws DevFailed in case of specified host Starter connection failed.
 	 */
 	//===============================================================
-	public ServerStatisticsPanel(JFrame parent, String title, ServerStat serverStat) throws DevFailed
+	public ServerStatisticsPanel(JFrame parent, String title, ServerStat serverStat)
+	{
+		super(parent, true);
+		this.parent = parent;
+		initComponents();
+        buildForm(serverStat);
+        titleLabel.setText(title);
+    }
+	//===============================================================
+	/**
+	 *	Creates new form ServerStatisticsPanel
+     * @param parent      JDialog parent instance
+     * @param title       dialog title.
+     * @param serverStat  specified server statistics
+	 */
+	//===============================================================
+	public ServerStatisticsPanel(JDialog parent, String title, ServerStat serverStat)
 	{
 		super(parent, true);
 		this.parent = parent;
@@ -101,7 +89,7 @@ public class ServerStatisticsPanel extends JDialog
     //===============================================================
     private void buildForm(ServerStat serverStat)
     {
-        //  Build the server failed list and display it in atable
+        //  Build the server failed list and display it in a table
         statisticsTable = new ServerStatisticsTable(serverStat);
 
         //  Put it in a scrolled pane.
@@ -208,25 +196,4 @@ public class ServerStatisticsPanel extends JDialog
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 	//===============================================================
-
-
-
-
-	//===============================================================
-	/**
-	* @param args the command line arguments
-	*/
-	//===============================================================
-	public static void main(String args[]) {
-	
-		try
-		{
-			new ServerStatisticsPanel(null, "coral", "Dummy/check").setVisible(true);
-		}
-		catch(DevFailed e)
-		{
-            ErrorPane.showErrorMessage(new Frame(), null, e);
-		}
-	}
-
 }
