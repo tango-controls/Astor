@@ -140,6 +140,7 @@ public class GlobalStatistics
         for (StarterStat starterStat : starterStats) {
             if (starterStat.resetTime < t) {
                 t = starterStat.resetTime;
+				//System.out.println(starterStat.name + ":	" + starterStat.resetTime);
             }
         }
         return t;

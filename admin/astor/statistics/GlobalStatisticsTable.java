@@ -35,7 +35,6 @@
 
 package admin.astor.statistics;
 
-import admin.astor.tools.PopupTable;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -185,24 +184,15 @@ public class GlobalStatisticsTable extends JTable
     //===============================================================
     //===============================================================
     private void displayServerStat(ServerStat serverStat) {
-        try {
-            String  title = serverStat.name + "  registered on  " + serverStat.starterStat.name;
-            new ServerStatisticsPanel(parent, title, serverStat).setVisible(true);
-        }
-        catch (DevFailed e) {
-            ErrorPane.showErrorMessage(parent, null, e);
-        }
+        String  title = serverStat.name + "  registered on  " + serverStat.starterStat.name;
+        new ServerStatisticsPanel(parent, title, serverStat).setVisible(true);
     }
     //===============================================================
     //===============================================================
     private void displayStarterStat(StarterStat starterStat) {
-        try {
-            String  title = starterStat.name;
-            new PopupTable(parent, title, StarterStat.tableHeader, starterStat.toTable()).setVisible(true);
-        }
-        catch (DevFailed e) {
-            ErrorPane.showErrorMessage(parent, null, e);
-        }
+
+        String  title = starterStat.name;
+        new StarterStatTable(parent, title, starterStat).setVisible(true);
     }
     //===============================================================
     //===============================================================
