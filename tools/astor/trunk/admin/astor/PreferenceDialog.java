@@ -119,7 +119,7 @@ public class PreferenceDialog extends JDialog
 		try {
 			//	And write it in database
 			AstorUtil.putAstorProperties();
-			Utils.popupError(this,
+			Utils.popupMessage(this,
 				"The preferences have been saved for " + AstorUtil.getTangoHost());
 		}
 		catch (DevFailed e) {
