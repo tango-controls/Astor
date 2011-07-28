@@ -69,6 +69,7 @@ public class UnAvailableHostsDialog extends JDialog
 		this.parent = parent;
 		initComponents();
 
+        AstorUtil.startSplash("Pinging crates.....");
         String[]	ctrlHosts = AstorUtil.getInstance().getHostControlledList();
         PingHosts   pg = new PingHosts(ctrlHosts);
         stoppedHosts = pg.getStopped();
@@ -98,7 +99,8 @@ public class UnAvailableHostsDialog extends JDialog
 
 		pack();
  		ATKGraphicsUtils.centerDialog(this);
-	}
+        AstorUtil.stopSplash();
+    }
 
 	//===============================================================
     /** This method is called from within the constructor to
@@ -191,32 +193,29 @@ public class UnAvailableHostsDialog extends JDialog
     private void unexportAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unexportAllBtnActionPerformed
 
         Object[] options = {"Un Export", "Next Host", "Cancel"};
-        for (String hostName : stoppedHosts) {
-            switch (JOptionPane.showOptionDialog(this,
-                        "Unexport all devices registred on " + hostName + " ?",
-                        "Confirmation Window",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.WARNING_MESSAGE,
-                        null, options, options[0]))
-            {
-            case 0:    //	Un Export
+        if (JOptionPane.showConfirmDialog(parent,
+                "Unexport all devices registered on " + stoppedHosts.size() + " hosts ?",
+                "Confirm Dialog",
+                JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION) {
+
+            //  OK Un export
+            AstorUtil.startSplash("Un export");
+            int ratio = 100/stoppedHosts.size();
+            for (String hostName : stoppedHosts) {
+                AstorUtil.increaseSplashProgress(ratio, "un export devices for " + hostName);
                 try {
                     setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     OneHost host = new OneHost(hostName);
-                    host.unExportDeices();
+                    host.unExportDevices();
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 }
                 catch(DevFailed e) {
+                    AstorUtil.stopSplash();
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     ErrorPane.showErrorMessage(this, null, e);
                 }
-                break;
-            case 1:    // Next
-                break;
-            case 2:    //	Cancel
-            case -1:   //	escape
-                return;
             }
+            AstorUtil.stopSplash();
         }
     }//GEN-LAST:event_unexportAllBtnActionPerformed
 
@@ -257,6 +256,7 @@ public class UnAvailableHostsDialog extends JDialog
 		}
 		catch(DevFailed e)
 		{
+            AstorUtil.stopSplash();
             ErrorPane.showErrorMessage(new Frame(), null, e);
 		}
 	}
@@ -292,7 +292,7 @@ public class UnAvailableHostsDialog extends JDialog
             }
         }
         //===========================================================
-        private void unExportDeices() throws DevFailed
+        private void unExportDevices() throws DevFailed
         {
             for (OneServer server : this) {
                 server.unExportDeices();
@@ -419,7 +419,7 @@ public class UnAvailableHostsDialog extends JDialog
             System.out.println("Unexport devices for " + host.name);
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                host.unExportDeices();
+                host.unExportDevices();
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
             catch(DevFailed e) {
