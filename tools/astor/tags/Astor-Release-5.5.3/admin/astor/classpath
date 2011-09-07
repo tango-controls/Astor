@@ -1,0 +1,18 @@
+JDK_5=/segfs/tango/jdk/Linux/jdk1.5.0_02/bin
+PATH=$JDK_5:$PATH
+
+TANGO_HOME=/segfs/tango
+LIB_HOME=$TANGO_HOME/release/java/lib
+APPLI_HOME=$TANGO_HOME/release/java/appli
+
+ASTOR=$TANGO_HOME/tools/admin/astor
+ASTOR_BIN=$ASTOR/bin
+
+TANGO=$LIB_HOME/TangORB.jar
+ATK=$LIB_HOME/ATKWidget.jar:$LIB_HOME/ATKCore.jar:$APPLI_HOME/atkpanel.jar
+JIVE=$APPLI_HOME/Jive.jar
+PANELS=$APPLI_HOME/tool_panels.jar
+LOG_VIEWER=$APPLI_HOME/LogViewer.jar
+
+export CLASSPATH=$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$PANELS:$LOG_VIEWER
+echo "CLASSPATH=$CLASSPATH"
