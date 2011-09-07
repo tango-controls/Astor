@@ -65,7 +65,7 @@ public class Astor extends JFrame implements AstorDefs
 	 *  Initialized by make jar call and used to display title.
 	 */
     private static String revNumber =
-            "Release 5.5.2  -  Tue Jul 26 12:55:58 CEST 2011";
+            "Release 5.5.3  -  Wed Sep 07 15:21:21 CEST 2011";
 	/**
 	 *	JTree object to display control system.
 	 */
@@ -220,9 +220,6 @@ public class Astor extends JFrame implements AstorDefs
 		newBranchBtn.setMnemonic ('N');
 		newBranchBtn.setAccelerator(KeyStroke.getKeyStroke('N', Event.CTRL_MASK));
 
-		refreshBtn.setMnemonic ('U');
-		refreshBtn.setAccelerator(KeyStroke.getKeyStroke('U', Event.CTRL_MASK));
-
 		deviceBrowserBtn.setMnemonic ('B');
 		deviceBrowserBtn.setAccelerator(KeyStroke.getKeyStroke('B', Event.CTRL_MASK));
 
@@ -365,7 +362,7 @@ public class Astor extends JFrame implements AstorDefs
         exitBtn = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         deviceBrowserBtn = new javax.swing.JMenuItem();
-        refreshBtn = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem refreshBtn = new javax.swing.JMenuItem();
         expandBtn = new javax.swing.JMenuItem();
         javax.swing.JMenuItem startupErrorBtn = new javax.swing.JMenuItem();
         cmdMenu = new javax.swing.JMenu();
@@ -379,6 +376,7 @@ public class Astor extends JFrame implements AstorDefs
         javax.swing.JMenuItem findObjectByFilterItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem tangoStatBtn = new javax.swing.JMenuItem();
         multiServersCmdItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem serverUsageMenuItem = new javax.swing.JMenuItem();
         jiveMenuItem = new javax.swing.JMenuItem();
         accessControlBtn = new javax.swing.JMenuItem();
         javax.swing.JMenuItem statisticsBtn = new javax.swing.JMenuItem();
@@ -565,6 +563,15 @@ public class Astor extends JFrame implements AstorDefs
             }
         });
         toolsMenu.add(multiServersCmdItem);
+
+        serverUsageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        serverUsageMenuItem.setText("Server Usage");
+        serverUsageMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverUsageMenuItemActionPerformed(evt);
+            }
+        });
+        toolsMenu.add(serverUsageMenuItem);
 
         jiveMenuItem.setText("Jive");
         jiveMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1174,6 +1181,18 @@ public class Astor extends JFrame implements AstorDefs
         statisticsPanel.readAndDisplayStatistics(null); //  On all Servers
         statisticsPanel.setVisible(true);
     }//GEN-LAST:event_statisticsBtnActionPerformed
+
+    //======================================================================
+    //======================================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void serverUsageMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverUsageMenuItemActionPerformed
+        try {
+            new ServerUsageDialog(this).setVisible(true);
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+        }
+    }//GEN-LAST:event_serverUsageMenuItemActionPerformed
 	//======================================================================
 	//======================================================================
 	@SuppressWarnings({"ConstantConditions"})
@@ -1228,7 +1247,6 @@ public class Astor extends JFrame implements AstorDefs
     private javax.swing.JMenuItem newBranchBtn;
     private javax.swing.JMenuItem newHostBtn;
     private javax.swing.JMenuItem principleBtn;
-    private javax.swing.JMenuItem refreshBtn;
     private javax.swing.JMenuItem releaseNoteBtn;
     private javax.swing.JMenuItem starterEventsItem;
     private javax.swing.JMenuItem starterNoEventsItem;
