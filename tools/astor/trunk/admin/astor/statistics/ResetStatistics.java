@@ -71,8 +71,12 @@ public class ResetStatistics
             for (String host : hosts) {
                 if (parent==null)
                     System.out.println("Resetting " + host);
-                else
-                    AstorUtil.increaseSplashProgress(100 / nbHosts, "Resetting " + host);
+                else {
+					int ratio   = 100 / nbHosts;
+					if (ratio<1)
+						ratio = 1;
+                    AstorUtil.increaseSplashProgress(ratio, "Resetting " + host);
+				}
                 try {
                     //  Check if host or starter name
                     String  devName = host;
