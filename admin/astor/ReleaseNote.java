@@ -17,7 +17,9 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Wed Sep 07 15:21:22 CEST 2011)</Center><Br>\n" + 
+		"	(Generated Tue Dec 06 13:43:15 CET 2011)</Center><Br>\n" + 
+		"<li><b>Astor-5.5.4 -  06/12/11:</b><Br>\n" + 
+		"&nbsp; &nbsp; Create a Thread to update splash screen (to boost startup).<Br>\n" + 
 		"<li><b>Astor-5.5.3 -  07/09/11:</b><Br>\n" + 
 		"&nbsp; &nbsp; ServerUsage tool added.<Br>\n" + 
 		"<li><b>Astor-5.5.2 -  26/07/11:</b><Br>\n" + 
