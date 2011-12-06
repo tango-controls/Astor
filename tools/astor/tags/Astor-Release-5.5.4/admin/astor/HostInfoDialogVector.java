@@ -1,0 +1,124 @@
+//+======================================================================
+// $Source:  $
+//
+// Project:   Tango
+//
+// Description:  java source code for Tango manager tool..
+//
+// $Author$
+//
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011
+//						European Synchrotron Radiation Facility
+//                      BP 220, Grenoble 38043
+//                      FRANCE
+//
+// This file is part of Tango.
+//
+// Tango is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// Tango is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Tango.  If not, see <http://www.gnu.org/licenses/>.
+//
+// $Revision$
+//
+//-======================================================================
+
+
+package admin.astor;
+ 
+import java.awt.*;
+import java.util.Vector;
+
+
+
+public class  HostInfoDialogVector extends Vector
+{
+	private	Point		position = null;
+	private static int	step = 10;
+	//===============================================================
+	//===============================================================
+	HostInfoDialogVector()
+	{
+		super();
+	}
+	//===============================================================
+	//===============================================================
+	void setDialogPreferredSize(Dimension d)
+	{
+		for (Object o : this)
+			((HostInfoDialog)o).setDialogPreferredSize(d);
+	}
+	//===============================================================
+	//===============================================================
+	void close()
+	{
+		for (Object o : this)
+		{
+			((HostInfoDialog)o).setVisible(false);
+			((HostInfoDialog)o).dispose();
+		}
+	}
+	//===============================================================
+	//===============================================================
+	HostInfoDialog getByHostName(TangoHost host)
+	{
+		HostInfoDialog	hid = null;
+		for (int i=0 ; i<size() ; i++)
+		{
+			HostInfoDialog	tmp = (HostInfoDialog) elementAt(i);
+			if (host.getName().equals(tmp.name))
+				hid = tmp;
+		}
+		return hid;
+	}
+	//===============================================================
+	//===============================================================
+	HostInfoDialog add(Astor parent, TangoHost host)
+	{
+		if (position==null)
+			position = parent.getLocationOnScreen();
+		//	Set the servers polling and Notify to awake the thread.
+		host.poll_serv_lists = true;
+		host.updateData();
+		//	And wait a bit before re-build panel
+		try { Thread.sleep(500); } catch(Exception e){}
+
+		//	Search if already exists
+		host.info_dialog = getByHostName(host);
+		//	If does not exists, create a new one and add it in vector
+		if (host.info_dialog==null)
+		{
+			host.info_dialog = new HostInfoDialog(parent, host);
+			add(host.info_dialog);
+
+			//	Set position to display
+			position.translate(step,step);
+			host.info_dialog.setLocation(position);
+		}
+		else
+			host.info_dialog.updatePanel();
+		host.info_dialog.setVisible(true);
+
+		return host.info_dialog;
+	}
+	//===============================================================
+	//===============================================================
+	void close(TangoHost host)
+	{
+		//	Search if already exists
+		HostInfoDialog	hid = getByHostName(host);
+		//	If do exists, close it
+		if (hid!=null)
+			hid.doClose();
+	}
+	//===============================================================
+	//===============================================================
+}
