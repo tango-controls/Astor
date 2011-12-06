@@ -114,7 +114,7 @@ public class HostStateThread extends Thread implements AstorDefs {
                     manageSynchronousAttributes();
             } else {
                 if ((t - t0) > 60000) {
-                    //	Every minuts, check in synchronous
+                    //	Every minute, check in synchronous
                     //	event could have been lost.
                     manageSynchronousAttributes();
                     t0 = t;
@@ -126,7 +126,6 @@ public class HostStateThread extends Thread implements AstorDefs {
         }
     }
     //======================================================================
-
     /**
      * Compute time to sleep before next loop, and sleep it.
      *
@@ -268,7 +267,7 @@ public class HostStateThread extends Thread implements AstorDefs {
         } catch (Exception e) {
             state_listener = null;
             host.use_events = false;
-            //	Display excetion
+            //	Display exception
             strerror = "subscribeChangeStateEvent() for " +
                     host.get_name() + " FAILED !" + e.toString();
             e.printStackTrace();

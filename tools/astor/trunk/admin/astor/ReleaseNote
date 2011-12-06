@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-5.5.4 -  06/12/11:
+	Create a Thread to update splash screen (to boost startup).
+
 Astor-5.5.3 -  07/09/11:
 	ServerUsage tool added.
 

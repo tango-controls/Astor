@@ -62,7 +62,7 @@ import java.util.Vector;
 public class AstorTree extends JTree implements AstorDefs {
     private JFrame parent;
     public TangoHost[] hosts;
-    private TangoHost selected_host = null;
+    private TangoHost selectedHost = null;
     private DbaseObject selected_db = null;
     private DbaseObject[] dbase;
     private DefaultTreeModel treeModel;
@@ -84,22 +84,27 @@ public class AstorTree extends JTree implements AstorDefs {
     /**
      * Class to store many HostInfoDialog
      */
-    HostInfoDialogVector hostDialogs = null;
+    HostInfoDialogVector hostDialogs = new HostInfoDialogVector();
 
     private static Vector<String> collecNames = new Vector<String>();
     private static DefaultMutableTreeNode root;
-    private static int host_subscribed = 0;
+    private static int hostSubscribed = 0;
     private static Vector<TangoHost> hosts_using_evt;
     public static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
+    // startup objects
+    private Splash splash;
+    private Vector<String> subscribeError = new Vector<String>();
+    private UpdateSplashThread  updateSplashThread = null;
+    PopupText subscribeErrWindow = null;
+    private long    startSubscribeTime;
     //===============================================================
     //===============================================================
     public AstorTree(JFrame parent, boolean polling, Splash splash) throws DevFailed {
         this.parent = parent;
         this.splash = splash;
         splash.setMessage("Initializing from Database....");
-        int cnt = 0;
-        splash.progress(cnt);
+        splash.progress(10);
 
         //	Build panel and its tree
         initComponent();
@@ -107,13 +112,14 @@ public class AstorTree extends JTree implements AstorDefs {
         setBackground(background);
 
         //	Check hosts using or not events.
-        host_subscribed = 0;
+        hostSubscribed = 0;
         hosts_using_evt = new Vector<TangoHost>();
-        splash.setMaxProgress(hosts.length);
+        updateSplashThread = new UpdateSplashThread(hosts.length);
+        updateSplashThread.start();
+        int cnt = 0;
         for (TangoHost host : hosts) {
-            splash.progress(++cnt);
-            splash.setMessage("Creating  " + host + "  object");
 
+            updateSplashThread.wakeUp(cnt++, "Creating  " + host + "  object");
             //	Fix the polling status
             host.do_polling = false;
             if (polling)
@@ -126,13 +132,18 @@ public class AstorTree extends JTree implements AstorDefs {
             host.thread = new HostStateThread(this, host);
             host.thread.start();
         }
-        hostDialogs = new HostInfoDialogVector();
+        updateSplashThread.stopThread();
+
 
         //	Start a thread to subscribe events and a monitor to display
-        if (host_subscribed == 0)    //	init size
-            splash.setMaxProgress(hosts_using_evt.size());
-        new subscribeThread().start();
-        updateMonitor(null);
+        if (hostSubscribed == 0) {   //	init size
+            updateSplashThread = new UpdateSplashThread(hosts_using_evt.size());
+            updateSplashThread.start();
+
+            startSubscribeTime = System.currentTimeMillis();
+            new subscribeThread().start();
+            updateMonitor(null);
+        }
 
         //	Build menus
         if (parent instanceof Astor)
@@ -158,47 +169,83 @@ public class AstorTree extends JTree implements AstorDefs {
     }
 
     //===============================================================
+    /**
+     * A little thread to update splash screen
+     * because it gets too much time in loop.
+     */
     //===============================================================
-    private Splash splash;
-    private Vector<String> subscrib_error = new Vector<String>();
-    PopupText subscribeErrWindow = null;
-
+    class UpdateSplashThread extends Thread {
+        private String  message = "";
+        private int     ratio;
+        private boolean stop = false;
+        //===========================================================
+        private UpdateSplashThread(int maxValue) {
+            splash.setAlwaysOnTop(true);
+            splash.setVisible(true);
+            splash.setMaxProgress(maxValue);
+        }
+        //===========================================================
+        public void run() {
+            while (!stop) {
+                splash.progress(ratio);
+                splash.setMessage(message);
+                doSleep();
+            }
+        }
+        //===========================================================
+        private synchronized void doSleep() {
+            try { wait(500); } catch (InterruptedException e) { /* */ }
+        }
+        //===========================================================
+        private synchronized void wakeUp(int ratio, String message) {
+            this.ratio   = ratio;
+            this.message = message;
+            notify();
+        }
+        //===========================================================
+        private synchronized void stopThread() {
+            stop = true;
+            notify();
+        }
+        //===========================================================
+    }
+    //===============================================================
+    //===============================================================
     void updateMonitor(String strerror) {
-        //	Concat. error messages at startup
+        //	add error startup message
         if (strerror != null)
-            subscrib_error.add(strerror);
+            subscribeError.add(strerror);
 
         //	Check if startup is terminated
-        if (host_subscribed < hosts_using_evt.size()) {
-            //	NOT TERMINATED
-            //	Update the monitor window
-            TangoHost host = hosts_using_evt.get(host_subscribed);
-            String message = "Subscribing for  " + host.getName() + "  (" +
-                    (host_subscribed + 1) + "/" + hosts_using_evt.size() + ")";
-
-            //	Display only if main window displayed to be sure to be on top
-            if (Astor.displayed)
-                splash.setVisible(true);
-
-            splash.progress(++host_subscribed);
-            splash.setMessage(message);
-        } else {
+        if (hostSubscribed == hosts_using_evt.size()) {
             //	All host subscribed or failed
+
+            //  Display time spent.
+            long t1 = System.currentTimeMillis();
+            System.out.println("Total time to subscribe on " +
+                    hostSubscribed + " hosts : " + (t1 - startSubscribeTime) + " ms");
+            System.out.println("Total time to start Astor " + (t1 - Astor.t0) + " ms");
+
+            if (updateSplashThread!=null) {
+                updateSplashThread.stopThread();
+            }
+
+            //	Concat. error messages at startup if any
             splash.setVisible(false);
-            if (subscrib_error.size() > 0) {
+            if (subscribeError.size() > 0) {
                 StringBuffer sb = new StringBuffer();
-                for (int i = 0; i < subscrib_error.size(); i++) {
-                    sb.append(subscrib_error.get(i));
-                    if (i < subscrib_error.size() - 1)
+                for (int i = 0; i < subscribeError.size(); i++) {
+                    sb.append(subscribeError.get(i));
+                    if (i < subscribeError.size() - 1)
                         sb.append("\n\n");
                 }
-                String title = "Subcribe events on " + subscrib_error.size() + "/" +
-                        host_subscribed;
-                if (subscrib_error.size() == 1)
+                String title = "Subscribe events on " + subscribeError.size() + "/" +
+                        hostSubscribed;
+                if (subscribeError.size() == 1)
                     title += " host has failed";
                 else
                     title += " hosts have failed";
-                int height = 50 + subscrib_error.size() * 75;
+                int height = 50 + subscribeError.size() * 75;
                 if (height > 560)
                     height = 560;
 
@@ -207,6 +254,17 @@ public class AstorTree extends JTree implements AstorDefs {
                         new String[]{sb.toString()},
                         900, height);
             }
+        }
+        else {
+            //	NOT TERMINATED
+            if (updateSplashThread!=null) {
+                TangoHost host = hosts_using_evt.get(hostSubscribed);
+                String message = "Subscribing for  " + host.getName() + "  (" +
+                        (hostSubscribed + 1) + "/" + hosts_using_evt.size() + ")";
+                updateSplashThread.wakeUp(hostSubscribed, message);    //  Wake up thread to update splash screen
+                hostSubscribed++;
+            }
+
         }
     }
 
@@ -329,8 +387,8 @@ public class AstorTree extends JTree implements AstorDefs {
     //===============================================================
     private void createNodes(DefaultMutableTreeNode root) {
 
-        int cnt = 0;
-        splash.progress(cnt);
+        updateSplashThread = new UpdateSplashThread(hosts.length);
+        updateSplashThread.start();
         Vector<DefaultMutableTreeNode> collections = new Vector<DefaultMutableTreeNode>();
         for (String collec_name : collecNames) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(collec_name);
@@ -348,16 +406,17 @@ public class AstorTree extends JTree implements AstorDefs {
         }
 
         //	Add Host nodes
-        splash.setMaxProgress(hosts.length);
+        int cnt = 0;
         for (TangoHost host : hosts) {
-            splash.progress(++cnt);
-            splash.setMessage("Creating  " + host + "  node");
+            updateSplashThread.wakeUp(cnt++, "Creating "+ host + " node");
             DefaultMutableTreeNode host_node =
                     new DefaultMutableTreeNode(host);
             host.state = unknown;
             int idx = getHostCollection(host);
             collections.get(idx).add(host_node);
         }
+        updateSplashThread.stopThread();
+
     }
 
     //===============================================================
@@ -582,17 +641,17 @@ public class AstorTree extends JTree implements AstorDefs {
         Object obj = node.getUserObject();
         if (node.isLeaf()) {
             if (obj instanceof TangoHost) {
-                selected_host = (TangoHost) obj;
+                selectedHost = (TangoHost) obj;
                 selected_db = null;
             } else if (obj instanceof DbaseObject) {
-                selected_host = null;
+                selectedHost = null;
                 selected_db = (DbaseObject) obj;
             } else {
-                selected_host = null;
+                selectedHost = null;
                 selected_db = null;
             }
         } else {
-            selected_host = null;
+            selectedHost = null;
             selected_db = null;
         }
     }
@@ -629,7 +688,7 @@ public class AstorTree extends JTree implements AstorDefs {
         if (evt.getClickCount() == 2) {
             //	Check if btn1
             if ((mask & InputEvent.BUTTON1_MASK) != 0) {
-                if (selected_host != null) {
+                if (selectedHost != null) {
                     //	Display dialog
                     displayHostInfo();
                 } else {
@@ -773,7 +832,7 @@ public class AstorTree extends JTree implements AstorDefs {
             displayHostInfo();
             String servname = new DeviceProxy(devname).adm_name();
             servname = servname.substring(servname.indexOf('/') + 1);
-            HostInfoDialog dlg = hostDialogs.getByHostName(selected_host);
+            HostInfoDialog dlg = hostDialogs.getByHostName(selectedHost);
             if (dlg != null)
                 dlg.setSelection(servname);
         } catch (DevFailed e) {
@@ -785,52 +844,53 @@ public class AstorTree extends JTree implements AstorDefs {
     //======================================================
     public void displayHostInfo() {
         //	Check if a host is selected
-        if (selected_host == null) {
+        if (selectedHost == null) {
             Utils.popupError(this,
                     "this Host is not controlled by Astor !");
             return;
         }
 
         //	if host is not polled start polling on it
-        if (!selected_host.do_polling) {
-            selected_host.do_polling = true;
-            selected_host.updateData();
+        if (!selectedHost.do_polling) {
+            selectedHost.do_polling = true;
+            selectedHost.updateData();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) { /* */ }
         }
         //	Check if host starter is faulty
-        if (selected_host.state == faulty && selected_host.except != null) {
+        if (selectedHost.state == faulty && selectedHost.except != null) {
             //	Check if host starter is running
-            String reason = selected_host.except.errors[0].reason;
-            String desc = selected_host.except.errors[0].desc;
+            String reason = selectedHost.except.errors[0].reason;
+            String desc = selectedHost.except.errors[0].desc;
             if (reason.equals("TangoApi_DEVICE_NOT_EXPORTED") ||
                     desc.indexOf("CORBA.TRANSIENT: Retries exceeded,") > 0) {
                 //	Ask for remote login
                 if (AstorUtil.osIsUnix()) {
                     if (JOptionPane.showConfirmDialog(parent,
-                            "Starter is not running on " + selected_host + "\n\n\n" +
+                            "Starter is not running on " + selectedHost + "\n\n\n" +
                                     "Do you want a remote login to start it ?",
                             "Dialog",
                             JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
-                        new RemoteLoginThread(selected_host.getName(), parent).start();
+                        new RemoteLoginThread(selectedHost.getName(), parent).start();
                     }
                 } else
                     Utils.popupError(parent,
                             "Starter is not running on " +
-                                    selected_host + " !!!");
+                                    selectedHost + " !!!");
             } else
                 //	Display exception
                 Utils.popupError(parent,
-                        "Starter on " + selected_host,
-                        selected_host.except);
-        } else if (selected_host.state == unknown)
+                        "Starter on " + selectedHost,
+                        selectedHost.except);
+        } else if (selectedHost.state == unknown)
             Utils.popupMessage(parent,
                     "Connection with Starter device server is blocked !");
-        else
+        else {
             //	Popup a host info dialog and add it in vector
             if (parent instanceof Astor)
-                hostDialogs.add((Astor) parent, selected_host);
+                hostDialogs.add((Astor) parent, selectedHost);
+        }
     }
 
     //===============================================================
@@ -895,7 +955,7 @@ public class AstorTree extends JTree implements AstorDefs {
     //===============================================================
     public void updateState() {
         repaint();
-        if (hostDialogs != null) {
+        if (hostDialogs != null && hosts!=null) {
             //	Close host dialogs if exists
             for (TangoHost host : hosts)
                 if (host.state == faulty)
@@ -1122,19 +1182,11 @@ public class AstorTree extends JTree implements AstorDefs {
         //===============================================================
         //===============================================================
         public void run() {
-            long t0 = System.currentTimeMillis();
-            int nb_subscribed = 0;
             for (TangoHost host : hosts) {
                 if (host.use_events) {
                     host.thread.subscribeChangeStateEvent();
-                    nb_subscribed++;
                 }
             }
-
-            long t1 = System.currentTimeMillis();
-            System.out.println("Total time to subscribe on " +
-                    nb_subscribed + " hosts : " + (t1 - t0) + " ms");
-            System.out.println("Total time to start Astor " + (t1 - Astor.t0) + " ms");
         }
     }
 
