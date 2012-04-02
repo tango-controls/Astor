@@ -428,8 +428,7 @@ public class PopupTable extends JDialog {
         void sort(int column) {
             this.column = column;
             //	Sort data
-            MyCompare compare = new MyCompare();
-            Collections.sort(this, compare);
+            Collections.sort(this, new StringArrayComparator());
 
             for (int i = 0; i < size(); i++)
                 data[i] = get(i);
@@ -442,10 +441,8 @@ public class PopupTable extends JDialog {
          * MyCompare class to sort collection
          */
         //======================================================
-        class MyCompare implements Comparator {
-            public int compare(Object o1, Object o2) {
-                String[] a1 = (String[]) o1;
-                String[] a2 = (String[]) o2;
+        class StringArrayComparator implements Comparator<String[]> {
+            public int compare(String[] a1, String[] a2) {
 
                 String s1 = a1[column];
                 String s2 = a2[column];
@@ -462,39 +459,12 @@ public class PopupTable extends JDialog {
             }
         }
     }
-
-
+    //=========================================================================
     //=========================================================================
 
-    /**
-     * A renderer class to update table
-     */
-    //=========================================================================
-    public class ResultTableRowRenderer extends DefaultTableCellRenderer {
 
-        //=========================================================================
-        //=========================================================================
-        ResultTableRowRenderer() {
-            //setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        }
 
-        //=========================================================================
-        //=========================================================================
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value,
-                                                       boolean isSelected,
-                                                       boolean hasFocus,
-                                                       int row,
-                                                       int col) {
-            ///String col_header = (String)table.getColumnModel().getColumn(col).getHeaderValue();
-            return super.getTableCellRendererComponent(table,
-                    value,
-                    isSelected,
-                    hasFocus,
-                    row,
-                    col);
-        }
-    }
+
 
 
     //=========================================================================
