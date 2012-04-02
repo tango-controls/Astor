@@ -47,187 +47,184 @@ import javax.swing.*;
 import java.awt.*;
 
 //=======================================================
+
 /**
- *	Class Description: Basic JFrame Class to display info
+ * Class Description: Basic JFrame Class to display info
  *
- * @author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //=======================================================
-public class TangoAccess extends JFrame
-{
-	String	access_devname;
-    UsersTree   usersTree;
+public class TangoAccess extends JFrame {
+    String access_devname;
+    UsersTree usersTree;
     /**
-	 *	Access proxy instance
-	 */
-	private AccessProxy	access_dev;
-
-    /**
-     *  Dialog to check access
+     * Access proxy instance
      */
-    private EditDialog  check_dlg = null;
+    private AccessProxy access_dev;
 
-	private JFrame	parent;
-
-	static private final Dimension	pane_size = new Dimension(350, 500);
-    //=======================================================
     /**
-	 *	Creates new form TangoAccess
+     * Dialog to check access
+     */
+    private EditDialog check_dlg = null;
+
+    private JFrame parent;
+
+    static private final Dimension pane_size = new Dimension(350, 500);
+    //=======================================================
+
+    /**
+     * Creates new form TangoAccess
+     *
      * @param parent JFrame parent instance
      * @throws fr.esrf.Tango.DevFailed If no AccessControl service or connection failed on it.
      */
-	//=======================================================
-    public TangoAccess(JFrame parent) throws DevFailed
-	{
+    //=======================================================
+    public TangoAccess(JFrame parent) throws DevFailed {
         this.parent = parent;
-		try
-		{
-			AstorUtil.startSplash("TangoAccess ");
-        	AstorUtil.increaseSplashProgress(5, "Reading database");
-			String	test = System.getenv("AccessControl");
-			if (test==null)
-				getTangoService();
-			else
-				access_devname = test;
+        try {
+            AstorUtil.startSplash("TangoAccess ");
+            AstorUtil.increaseSplashProgress(5, "Reading database");
+            String test = System.getenv("AccessControl");
+            if (test == null)
+                getTangoService();
+            else
+                access_devname = test;
 
             initComponents();
-        	initOwnComponents();
-        	AstorUtil.increaseSplashProgress( 5, "Finalize GUI");
-        	ImageIcon icon = Utils.getInstance().getIcon("tango_icon.jpg");
-        	setIconImage(icon.getImage());
-        	this.setTitle("Tango Access Control Manager");
+            initOwnComponents();
+            AstorUtil.increaseSplashProgress(5, "Finalize GUI");
+            ImageIcon icon = Utils.getInstance().getIcon("tango_icon.jpg");
+            setIconImage(icon.getImage());
+            this.setTitle("Tango Access Control Manager");
 
             if (isSuperUser())
-    			superUserLabel.setVisible(true);
+                superUserLabel.setVisible(true);
             else {
-               if (access_dev.getAccessControl()==TangoConst.ACCESS_READ) {
-                   superUserLabel.setVisible(true);
-                   superUserLabel.setText("Read Only Mode !");
-                   superUserLabel.setForeground(Color.red);
-               }
-               else
-                   superUserLabel.setVisible(false);
+                if (access_dev.getAccessControl() == TangoConst.ACCESS_READ) {
+                    superUserLabel.setVisible(true);
+                    superUserLabel.setText("Read Only Mode !");
+                    superUserLabel.setForeground(Color.red);
+                } else
+                    superUserLabel.setVisible(false);
             }
 
-        	pack();
-			if (parent.getWidth()>0)	//	has parent
-			{
-				//	cascade window
-				Point	p = parent.getLocationOnScreen();
-				p.x += 100;
-				p.y += 100;
-				setLocation(p);
-			}
-			else
-	        	ATKGraphicsUtils.centerFrameOnScreen(this);
-				AstorUtil.stopSplash();
-		}
-		catch (DevFailed e)
-		{
-			AstorUtil.stopSplash();
-			throw e;
-		}
+            pack();
+            if (parent.getWidth() > 0)    //	has parent
+            {
+                //	cascade window
+                Point p = parent.getLocationOnScreen();
+                p.x += 100;
+                p.y += 100;
+                setLocation(p);
+            } else
+                ATKGraphicsUtils.centerFrameOnScreen(this);
+            AstorUtil.stopSplash();
+        } catch (DevFailed e) {
+            AstorUtil.stopSplash();
+            throw e;
+        }
     }
- 	//===========================================================
-	//===========================================================
-    private static boolean isSuperUser()
-    {
-        boolean	super_tango = false;
-        String	str = System.getProperty("SUPER_TANGO");
-        if (str!=null) {
+
+    //===========================================================
+    //===========================================================
+    private static boolean isSuperUser() {
+        boolean super_tango = false;
+        String str = System.getProperty("SUPER_TANGO");
+        if (str != null) {
             if (str.toLowerCase().equals("true"))
                 super_tango = true;
-        }
-        else {
+        } else {
             str = System.getenv("SUPER_TANGO");
-            if (str!=null) {
+            if (str != null) {
                 if (str.toLowerCase().equals("true"))
                     super_tango = true;
             }
         }
         return super_tango;
     }
- 	//===========================================================
-	//===========================================================
-	private void getTangoService() throws DevFailed
-    {
-	    //  Get TangoAccess service and check if exist
-        String[]    services =
-	    	ApiUtil.get_db_obj().getServices("AccessControl", "tango");
-        if (services.length==0)
+
+    //===========================================================
+    //===========================================================
+    private void getTangoService() throws DevFailed {
+        //  Get TangoAccess service and check if exist
+        String[] services =
+                ApiUtil.get_db_obj().getServices("AccessControl", "tango");
+        if (services.length == 0)
             Except.throw_communication_failed("Service_DoesNotExist",
                     "There is no AccessControl service defined !",
                     "TangoAccess.TangoAccess()");
         access_devname = services[0];
-	}
- 	//===========================================================
-	//===========================================================
-	private void initOwnComponents() throws DevFailed
-	{
-		//	File menu
-		fileMenu.setMnemonic ('F');
-		checkAccessBtn.setMnemonic ('T');
-		checkAccessBtn.setAccelerator(KeyStroke.getKeyStroke('T', Event.CTRL_MASK));
-        exitBtn.setMnemonic ('E');
+    }
+
+    //===========================================================
+    //===========================================================
+    private void initOwnComponents() throws DevFailed {
+        //	File menu
+        fileMenu.setMnemonic('F');
+        checkAccessBtn.setMnemonic('T');
+        checkAccessBtn.setAccelerator(KeyStroke.getKeyStroke('T', Event.CTRL_MASK));
+        exitBtn.setMnemonic('E');
         exitBtn.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
 
-		//	Action menu
-        actionMenu.setMnemonic ('A');
-        registerItem.setMnemonic ('R');
-        findItem.setMnemonic ('R');
+        //	Action menu
+        actionMenu.setMnemonic('A');
+        registerItem.setMnemonic('R');
+        findItem.setMnemonic('R');
         findItem.setAccelerator(KeyStroke.getKeyStroke('F', Event.CTRL_MASK));
 
-		//	Help menu
-        helpMenu.setMnemonic ('H');
-        principleItem.setMnemonic ('P');
-		principleItem.setAccelerator(KeyStroke.getKeyStroke('P', Event.CTRL_MASK));
+        //	Help menu
+        helpMenu.setMnemonic('H');
+        principleItem.setMnemonic('P');
+        principleItem.setAccelerator(KeyStroke.getKeyStroke('P', Event.CTRL_MASK));
 
-		//	Check if write allowed
- 		access_dev = new AccessProxy(access_devname);
-        if (access_dev.getAccessControl()==TangoConst.ACCESS_READ) {
+        //	Check if write allowed
+        access_dev = new AccessProxy(access_devname);
+        if (access_dev.getAccessControl() == TangoConst.ACCESS_READ) {
             checkAccessBtn.setEnabled(false);
             actionMenu.setEnabled(false);
         }
 
-		//	Build tabbed pane title
+        //	Build tabbed pane title
         tabbedPane.setTitleAt(0, "Users");
         tabbedPane.setTitleAt(1, "Allowed Cmd");
 
-         //	Build users_tree to display users rights
-        usersTree= new UsersTree(this, access_dev);
-		JScrollPane scrowllPane = new JScrollPane();
-		scrowllPane.setViewportView(usersTree);
-		usersPanel.add(scrowllPane, BorderLayout.CENTER);
+        //	Build users_tree to display users rights
+        usersTree = new UsersTree(this, access_dev);
+        JScrollPane scrowllPane = new JScrollPane();
+        scrowllPane.setViewportView(usersTree);
+        usersPanel.add(scrowllPane, BorderLayout.CENTER);
 
-         //	Build users_tree to display users rights
+        //	Build users_tree to display users rights
         AllowedCmdTree cmd_tree = new AllowedCmdTree(this, access_dev);
-		scrowllPane = new JScrollPane();
-		scrowllPane.setViewportView(cmd_tree);
-		cmdClassPanel.add(scrowllPane, BorderLayout.CENTER);
+        scrowllPane = new JScrollPane();
+        scrowllPane.setViewportView(cmd_tree);
+        cmdClassPanel.add(scrowllPane, BorderLayout.CENTER);
 
-		//	Add a panel to display icons.
-		JLabel	lbl = new JLabel("Devices: ");
-		JPanel	panel = new JPanel();
-		panel.add(lbl);
+        //	Add a panel to display icons.
+        JLabel lbl = new JLabel("Devices: ");
+        JPanel panel = new JPanel();
+        panel.add(lbl);
 
-		lbl = new JLabel("Read/Write");
-		lbl.setIcon(Utils.getInstance().getIcon("greenbal.gif"));
-		panel.add(lbl);
+        lbl = new JLabel("Read/Write");
+        lbl.setIcon(Utils.getInstance().getIcon("greenbal.gif"));
+        panel.add(lbl);
 
-		lbl = new JLabel("Read Only");
-		lbl.setIcon(Utils.getInstance().getIcon("redball.gif"));
-		panel.add(lbl);
-		usersPanel.add(panel, BorderLayout.SOUTH);
+        lbl = new JLabel("Read Only");
+        lbl.setIcon(Utils.getInstance().getIcon("redball.gif"));
+        panel.add(lbl);
+        usersPanel.add(panel, BorderLayout.SOUTH);
 
-		tabbedPane.setPreferredSize(pane_size);
-	}
-	//=======================================================
-    /** This method is called from within the constructor to
+        tabbedPane.setPreferredSize(pane_size);
+    }
+    //=======================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//=======================================================
+    //=======================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -344,13 +341,12 @@ public class TangoAccess extends JFrame
         if (!actionMenu.isSelected())
             return;
         try {
-            String[]    services =
-	    		ApiUtil.get_db_obj().getServices(TangoConst.ACCESS_SERVICE, "tango");
-            registerItem.setSelected(services.length!=0);
-        }
-        catch(DevFailed e)  {
+            String[] services =
+                    ApiUtil.get_db_obj().getServices(TangoConst.ACCESS_SERVICE, "tango");
+            registerItem.setSelected(services.length != 0);
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this,
-				"Cannot start TangoAccess class", e);
+                    "Cannot start TangoAccess class", e);
         }
     }//GEN-LAST:event_actionMenuItemStateChanged
 
@@ -359,12 +355,11 @@ public class TangoAccess extends JFrame
     @SuppressWarnings({"UnusedDeclaration"})
     private void registerItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerItemActionPerformed
         try {
-            boolean b = (registerItem.getSelectedObjects()!=null);
+            boolean b = (registerItem.getSelectedObjects() != null);
             access_dev.registerService(b);
-        }
-        catch(DevFailed e)  {
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this,
-				"Cannot start TangoAccess class", e);
+                    "Cannot start TangoAccess class", e);
         }
     }//GEN-LAST:event_registerItemActionPerformed
 
@@ -372,44 +367,43 @@ public class TangoAccess extends JFrame
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void checkAccessBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkAccessBtnActionPerformed
-        if (check_dlg==null) {
+        if (check_dlg == null) {
             check_dlg = new EditDialog(this, access_dev);
             check_dlg.showDialog();
-        }
-        else
+        } else
             check_dlg.setVisible(true);
     }//GEN-LAST:event_checkAccessBtnActionPerformed
 
-	//=======================================================
-	//=======================================================
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
         doClose();
     }//GEN-LAST:event_exitBtnActionPerformed
 
-	//=======================================================
-	//=======================================================
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         doClose();
     }//GEN-LAST:event_exitForm
 
-	//=======================================================
-	//=======================================================
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void principleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_principleItemActionPerformed
-		admin.astor.tools.Utils.popupMessage(this,
-			"This access management is necessary only if the\n" +
-			"    \"AccessControl/tango\"\n" +
-			"    Tango service has been installed.\n\n" +
-			"By default all devices are forbiden for all users.\n" +
-			"And the rights will be opened for [user, address, device].\n\n" +
-			"This tool is able to define WRITE access \n" +
-			"    on devices for a TANGO control system\n\n"+
-			"You can define for a specified user:\n" +
-			"    - Allowed addresses to write devices\n"+
-			"    - Set devices acces to  READ_WRITE or READ_ONLY");
-	}//GEN-LAST:event_principleItemActionPerformed
+    private void principleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_principleItemActionPerformed
+        admin.astor.tools.Utils.popupMessage(this,
+                "This access management is necessary only if the\n" +
+                        "    \"AccessControl/tango\"\n" +
+                        "    Tango service has been installed.\n\n" +
+                        "By default all devices are forbiden for all users.\n" +
+                        "And the rights will be opened for [user, address, device].\n\n" +
+                        "This tool is able to define WRITE access \n" +
+                        "    on devices for a TANGO control system\n\n" +
+                        "You can define for a specified user:\n" +
+                        "    - Allowed addresses to write devices\n" +
+                        "    - Set devices acces to  READ_WRITE or READ_ONLY");
+    }//GEN-LAST:event_principleItemActionPerformed
 
     //=======================================================
     //=======================================================
@@ -418,99 +412,97 @@ public class TangoAccess extends JFrame
         boolean ok = false;
         while (!ok) {
             //  Get a new password
-            PasswordDialog  dialog = new PasswordDialog(this, "New Password ?");
-            if (dialog.showDialog()==JOptionPane.OK_OPTION) {
-                String  password = dialog.getPassword();
+            PasswordDialog dialog = new PasswordDialog(this, "New Password ?");
+            if (dialog.showDialog() == JOptionPane.OK_OPTION) {
+                String password = dialog.getPassword();
                 //  Get it a second time
                 dialog = new PasswordDialog(this, "Confirm New Passsword:");
-                if (dialog.showDialog()==JOptionPane.OK_OPTION) {
-                    String  password2 = dialog.getPassword();
+                if (dialog.showDialog() == JOptionPane.OK_OPTION) {
+                    String password2 = dialog.getPassword();
                     //  Check them (they must be equals
                     if (password.equals(password2)) {
                         try {
                             savePassword(password);
-                        }
-                        catch (DevFailed e) {
+                        } catch (DevFailed e) {
                             ErrorPane.showErrorMessage(this, null, e);
                         }
                         ok = true;
-                    }
-                    else
+                    } else
                         popupError(this, "Passwords are not equals !");
-                }
-                else
+                } else
                     return;
-            }
-            else
+            } else
                 return;
         }
     }//GEN-LAST:event_passwordItemActionPerformed
+
     //=======================================================
     //=======================================================
     private String userName;
+
     @SuppressWarnings({"UnusedDeclaration"})
     private void findItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findItemActionPerformed
         //	Ask for user name
-        String	str = (String) JOptionPane.showInputDialog(this,
-                                                "Host Name ?",
-                                                "Input Dialog",
-                                                JOptionPane.INFORMATION_MESSAGE,
-                                                null, null, userName);
-        if (str!=null) {
+        String str = (String) JOptionPane.showInputDialog(this,
+                "Host Name ?",
+                "Input Dialog",
+                JOptionPane.INFORMATION_MESSAGE,
+                null, null, userName);
+        if (str != null) {
             userName = str;
             usersTree.findUser(userName);
         }
     }//GEN-LAST:event_findItemActionPerformed
 
-	//=======================================================
-	//=======================================================
-    private static String getPasswordFromDatabase() throws DevFailed
-    {
+    //=======================================================
+    //=======================================================
+    private static String getPasswordFromDatabase() throws DevFailed {
         //   If not super user check access with password
-        DbDatum datum =   ApiUtil.get_db_obj().get_property("Astor", "access");
-        String  encoded = "???";
+        DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "access");
+        String encoded = "???";
         if (!datum.is_empty())
             encoded = datum.extractString();
         return PasswordDialog.decryptPassword(encoded);
     }
-	//=======================================================
-	//=======================================================
-    private static void savePassword(String password) throws DevFailed
-    {
+
+    //=======================================================
+    //=======================================================
+    private static void savePassword(String password) throws DevFailed {
         DbDatum datum = new DbDatum("access");
         datum.insert(PasswordDialog.cryptPassword(password));
-        ApiUtil.get_db_obj().put_property("Astor", new DbDatum[] { datum } );
+        ApiUtil.get_db_obj().put_property("Astor", new DbDatum[]{datum});
     }
-	//=======================================================
-	//=======================================================
-    public static int checkPassword(JFrame parent) throws DevFailed
-    {
+
+    //=======================================================
+    //=======================================================
+    public static int checkPassword(JFrame parent) throws DevFailed {
         if (isSuperUser())
             return JOptionPane.OK_OPTION;
 
-        String  password = getPasswordFromDatabase();
-        PasswordDialog  dialog = new PasswordDialog(parent, password.getBytes());
+        String password = getPasswordFromDatabase();
+        PasswordDialog dialog = new PasswordDialog(parent, password.getBytes());
         return dialog.showDialog();
     }
-	//=======================================================
-	//=======================================================
-    private void doClose()
-    {
-        if (parent.getWidth()>0)
+
+    //=======================================================
+    //=======================================================
+    private void doClose() {
+        if (parent.getWidth() > 0)
             setVisible(false);
         else
             System.exit(0);
     }
 
-   //=======================================================
-   /**
-    * @param args the command line arguments
-    */
-	//=======================================================
+    //=======================================================
+
+    /**
+     * @param args the command line arguments
+     */
+    //=======================================================
     public static void main(String args[]) {
-        try  {
+        try {
             //  Check if display password
-            if (args.length>0) {
+            if (args.length > 0) {
                 if (args[0].equals("-???")) {
                     System.out.println(getPasswordFromDatabase());
                     System.exit(0);
@@ -518,40 +510,35 @@ public class TangoAccess extends JFrame
             }
 
             //  Get the password and display tool
-            if (TangoAccess.checkPassword(new JFrame())==JOptionPane.OK_OPTION) {
+            if (TangoAccess.checkPassword(new JFrame()) == JOptionPane.OK_OPTION) {
                 new TangoAccess(new JFrame()).setVisible(true);
-            }
-            else
+            } else
                 System.exit(0);
-        }
-        catch (DevFailed e)  {
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(),
-				"Cannot start TangoAccess class", e);
+                    "Cannot start TangoAccess class", e);
+            System.exit(0);
+        } catch (java.lang.InternalError e) {
+            System.out.println(e);
+            System.exit(0);
+        } catch (java.awt.HeadlessException e) {
+            System.out.println(e);
             System.exit(0);
         }
- 		catch(java.lang.InternalError e) {
-			System.out.println(e);
-             System.exit(0);
-		}
- 		catch(java.awt.HeadlessException e) {
-			System.out.println(e);
-             System.exit(0);
-		}
-   }
+    }
+
     //===============================================================
     //===============================================================
-    public static void popupError(Component component, String message)
-    {
+    public static void popupError(Component component, String message) {
         try {
             throw new Exception(message);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             ErrorPane.showErrorMessage(component, null, e);
         }
     }
 
 
-	//=======================================================
+    //=======================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu actionMenu;
     private javax.swing.JMenuItem checkAccessBtn;
@@ -566,6 +553,6 @@ public class TangoAccess extends JFrame
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JPanel usersPanel;
     // End of variables declaration//GEN-END:variables
-	//=======================================================
+    //=======================================================
 
 }

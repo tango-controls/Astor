@@ -35,63 +35,61 @@
 package admin.astor.access;
 
 
-/** 
+/**
  *	This class is able to
  *
- * @author  verdier
+ * @author verdier
  */
- 
-import javax.swing.ImageIcon;
+
+import javax.swing.*;
 import java.awt.*;
 
 
-class  Utils
-{
-	static private Utils	instance = null;
-	//===============================================================
-	//===============================================================
-	private Utils()
-	{
-	}
-	//===============================================================
-	//===============================================================
-	static Utils getInstance()
-	{
-		if (instance==null)
-			instance = new Utils();
-		return instance;
-	}
-	//===============================================================
-	//===============================================================
-	ImageIcon getIcon(String filename)
-	{
+class Utils {
+    static private Utils instance = null;
+
+    //===============================================================
+    //===============================================================
+    private Utils() {
+    }
+
+    //===============================================================
+    //===============================================================
+    static Utils getInstance() {
+        if (instance == null)
+            instance = new Utils();
+        return instance;
+    }
+
+    //===============================================================
+    //===============================================================
+    ImageIcon getIcon(String filename) {
         return admin.astor.tools.Utils.getInstance().getIcon(filename);
-	}
+    }
+
     //===============================================================
     //===============================================================
-    public ImageIcon getIcon(String filename, double ratio)
-    {
-        ImageIcon	icon = getIcon(filename);
+    public ImageIcon getIcon(String filename, double ratio) {
+        ImageIcon icon = getIcon(filename);
         return getIcon(icon, ratio);
     }
-    //===============================================================
-    //===============================================================
-    public ImageIcon getIcon(ImageIcon icon, double ratio)
-    {
-        if (icon != null)
-        {
-            int	width  = icon.getIconWidth();
-            int	height = icon.getIconHeight();
 
-            width  = (int) (ratio * width);
+    //===============================================================
+    //===============================================================
+    public ImageIcon getIcon(ImageIcon icon, double ratio) {
+        if (icon != null) {
+            int width = icon.getIconWidth();
+            int height = icon.getIconHeight();
+
+            width = (int) (ratio * width);
             height = (int) (ratio * height);
 
             icon = new ImageIcon(
-               icon.getImage().getScaledInstance(
-                        width, height, Image.SCALE_SMOOTH ));
+                    icon.getImage().getScaledInstance(
+                            width, height, Image.SCALE_SMOOTH));
         }
         return icon;
     }
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
 }
