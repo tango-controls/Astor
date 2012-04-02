@@ -32,7 +32,6 @@
 //-======================================================================
 
 
-
 package admin.astor.statistics;
 
 import admin.astor.AstorUtil;
@@ -41,122 +40,120 @@ import fr.esrf.TangoApi.DeviceProxy;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 //=======================================================
+
 /**
- *	Execute a ResetStatistics on all Controlled starter
+ * Execute a ResetStatistics on all Controlled starter
  *
- * @author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //=======================================================
-public class ResetStatistics
-{
+public class ResetStatistics {
     private int nbHosts = 0;
     private int done = 0;
-    private JFrame  parent;
+    private JFrame parent;
+
     //=======================================================
     //=======================================================
-	public ResetStatistics(JFrame parent)
-	{
+    public ResetStatistics(JFrame parent) {
         this.parent = parent;
 
-        Vector<String>  hosts = Utils.getHostControlledList(false);
-        StringBuffer  failed = new StringBuffer();
+        ArrayList<String> hosts = Utils.getHostControlledList(false);
+        StringBuffer failed = new StringBuffer();
         if (getConfirm(hosts)) {
             nbHosts = hosts.size();
 
-            if (parent!=null)
+            if (parent != null)
                 AstorUtil.startSplash("Statistics ");
             for (String host : hosts) {
-                if (parent==null)
+                if (parent == null)
                     System.out.println("Resetting " + host);
                 else {
-					int ratio   = 100 / nbHosts;
-					if (ratio<1)
-						ratio = 1;
+                    int ratio = 100 / nbHosts;
+                    if (ratio < 1)
+                        ratio = 1;
                     AstorUtil.increaseSplashProgress(ratio, "Resetting " + host);
-				}
+                }
                 try {
                     //  Check if host or starter name
-                    String  devName = host;
-                    if (host.indexOf('/')<0)
+                    String devName = host;
+                    if (host.indexOf('/') < 0)
                         devName = "tango/admin/" + host;
                     System.out.println("Resetting " + host);
                     DeviceProxy dev = new DeviceProxy(devName);
                     dev.command_inout("ResetStatistics");
                     done++;
 
-                    try { Thread.sleep(50); } catch (Exception e) {/* */}
-                }
-                catch(DevFailed e) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (Exception e) {/* */}
+                } catch (DevFailed e) {
                     failed.append(host).append(":    ").append(e.errors[0].desc).append("\n");
                 }
             }
         }
-        if (parent!=null)
+        if (parent != null)
             AstorUtil.stopSplash();
 
         //  Display error if any
-        if (failed.length()>0) {
-            if (parent==null)
+        if (failed.length() > 0) {
+            if (parent == null)
                 System.err.println(failed);
             else {
                 JOptionPane.showMessageDialog(parent,
-                                    failed.toString(),
-                                    "error",
-                                    JOptionPane.ERROR_MESSAGE);
+                        failed.toString(),
+                        "error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
 
 
         //  Display results
-        if(parent!=null) {
+        if (parent != null) {
             JOptionPane.showMessageDialog(parent,
-                                this,
-                                "Command done",
-                                JOptionPane.INFORMATION_MESSAGE);
-        }
-        else
+                    this,
+                    "Command done",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else
             System.out.println(this);
-	}
+    }
+
     //=======================================================
     //=======================================================
-    private boolean getConfirm(Vector<String> hosts)
-    {
-        if (parent!=null) {
+    private boolean getConfirm(ArrayList<String> hosts) {
+        if (parent != null) {
 
             return JOptionPane.showConfirmDialog(parent,
-                "Reset Statistics on " + hosts.size() + " hosts ?",
-                "Confirm Dialog",
-                JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION;
+                    "Reset Statistics on " + hosts.size() + " hosts ?",
+                    "Confirm Dialog",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION;
 
-        }
-        else {
+        } else {
             try {
-                 System.out.println("OK to reset statistics on " + hosts.size() + " (y/n) ?");
-                 byte[] b = new byte[100];
-                 if (System.in.read(b)>0)
-                     if (b[0]=='y')
-                         return true;
-             }
-             catch (IOException e) {
-                 System.err.println(e);
-             }
+                System.out.println("OK to reset statistics on " + hosts.size() + " (y/n) ?");
+                byte[] b = new byte[100];
+                if (System.in.read(b) > 0)
+                    if (b[0] == 'y')
+                        return true;
+            } catch (IOException e) {
+                System.err.println(e);
+            }
         }
         return false;
     }
+
     //=======================================================
     //=======================================================
-    public String toString()
-    {
+    public String toString() {
         return "ResetStatistics done for " + done + " hosts / " + nbHosts;
 
     }
+
     //=======================================================
     //=======================================================
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         new ResetStatistics(null);
     }
     //=======================================================

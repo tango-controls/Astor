@@ -39,7 +39,7 @@ import fr.esrf.Tango.DevFailed;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 /*
@@ -60,25 +60,25 @@ import java.util.Vector;
 /**
  * A convenience implementation of FileFilter that filters out
  * all files except for those type extensions that it knows about.
- *
+ * <p/>
  * Extensions are of the type ".foo", which is typically found on
  * Windows and Unix boxes, but not on Macinthosh. Case is ignored.
- *
+ * <p/>
  * Example - create a new filter that filerts out all files
  * but gif and jpg image files:
+ * <p/>
+ * JFileChooser chooser = new JFileChooser();
+ * StatisticsFileFilter filter = new StatisticsFileFilter(
+ * new String{"gif", "jpg"}, "JPEG & GIF Images")
+ * chooser.addChoosableFileFilter(filter);
+ * chooser.showOpenDialog(this);
  *
- *     JFileChooser chooser = new JFileChooser();
- *     StatisticsFileFilter filter = new StatisticsFileFilter(
- *                   new String{"gif", "jpg"}, "JPEG & GIF Images")
- *     chooser.addChoosableFileFilter(filter);
- *     chooser.showOpenDialog(this);
- *
- * @version 1.8 08/26/98
  * @author Jeff Dinkins
+ * @version 1.8 08/26/98
  */
 public class StatisticsFileFilter extends FileFilter {
 
-    private Vector<String> filters = new Vector<String>();
+    private ArrayList<String> filters = new ArrayList<String>();
     private String description = null;
     private String fullDescription = null;
     private boolean useExtensionsInDescription = true;
@@ -86,8 +86,6 @@ public class StatisticsFileFilter extends FileFilter {
     /**
      * Creates a file filter. If no filters are added, then all
      * files are accepted.
-     *
-     * @see #addExtension
      */
     public StatisticsFileFilter() {
 
@@ -96,120 +94,114 @@ public class StatisticsFileFilter extends FileFilter {
     /**
      * Creates a file filter that accepts the given file type.
      * Example: new StatisticsFileFilter("jpg", "JPEG Image Images");
-     *
+     * <p/>
      * Note that the "." before the extension is not needed. If
      * provided, it will be ignored.
      *
-     * @param extension     extension to filter
-     * @param description   filter description
-     *
-     * @see #addExtension
+     * @param extension   extension to filter
+     * @param description filter description
      */
     public StatisticsFileFilter(String extension, String description) {
-		this();
-		if(extension!=null)
-			addExtension(extension);
-		if(description!=null)
-			setDescription(description);
+        this();
+        if (extension != null)
+            addExtension(extension);
+        if (description != null)
+            setDescription(description);
     }
 
     /**
      * Creates a file filter from the given string array and description.
      * Example: new StatisticsFileFilter(String {"gif", "jpg"}, "Gif and JPG Images");
-     *
+     * <p/>
      * Note that the "." before the extension is not needed and will be ignored.
      *
-     * @param filters       extensions
-     * @param description   filter description
-     * @see #addExtension
+     * @param filters     extensions
+     * @param description filter description
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public StatisticsFileFilter(String[] filters, String description) {
-		this();
+        this();
         //System.out.println("new PogoFilter for " + description);
         for (String filter : filters) {
             // add filters one by one
             addExtension(filter);
         }
- 		if(description!=null) setDescription(description);
+        if (description != null) setDescription(description);
     }
 
     /**
      * Return true if this file should be shown in the directory pane,
      * false if it shouldn't.
-     *
+     * <p/>
      * Files that begin with "." are ignored.
      *
-     * @see #getExtension
      * @see FileFilter
      */
     public boolean accept(File f) {
-		if(f != null)
-		{
-		    if(f.isDirectory()) {
+        if (f != null) {
+            if (f.isDirectory()) {
                 return true;
             }
-		    String	extension   = getExtension(f);
-			if(extension != null) {
+            String extension = getExtension(f);
+            if (extension != null) {
                 for (String filter : filters) {
                     if (filter.equals(extension)) {
                         return isStatisticsGeneratedFile(f.toString());
                     }
                 }
-			}
-		}
-		return false;
+            }
+        }
+        return false;
     }
 
     /**
      * Return the extension portion of the file's name .
      *
-     * @see #getExtension
-     * @see FileFilter#accept
      * @param f file to br checked
      * @return return file extention
      */
     static public String getExtension(File f) {
-		if(f != null) {
-		    String filename = f.getName();
-			return getExtension(filename);
-		}
-		return null;
+        if (f != null) {
+            String filename = f.getName();
+            return getExtension(filename);
+        }
+        return null;
     }
+
     /**
      * Return the extension portion of the file's name .
      *
-     * @see #getExtension
-     * @see FileFilter#accept
      * @param filename file to br checked
      * @return return file extention
      */
     static public String getExtension(String filename) {
-		if(filename != null) {
-	    	int i = filename.lastIndexOf('.');
-	    	if(i>0 && i<filename.length()-1)
-				return filename.substring(i+1).toLowerCase();
-		}
-		return null;
+        if (filename != null) {
+            int i = filename.lastIndexOf('.');
+            if (i > 0 && i < filename.length() - 1)
+                return filename.substring(i + 1).toLowerCase();
+        }
+        return null;
     }
 
     /**
      * Adds a filetype "dot" extension to filter against.
-     *
+     * <p/>
      * For example: the following code will create a filter that filters
      * out all files except those that end in ".jpg" and ".tif":
+     * <p/>
+     * StatisticsFileFilter filter = new StatisticsFileFilter();
+     * filter.addExtension("jpg");
+     * filter.addExtension("tif");
      *
-     *   StatisticsFileFilter filter = new StatisticsFileFilter();
-     *   filter.addExtension("jpg");
-     *   filter.addExtension("tif");
      * @param extension extention to be added.
-     *
-     * Note that the "." before the extension is not needed and will be ignored.
+     *                  <p/>
+     *                  Note that the "." before the extension is not needed and will be ignored.
      */
     public void addExtension(String extension) {
-       //noinspection unchecked
+        //noinspection unchecked
         filters.add(extension.toLowerCase());
-		fullDescription = null;
-	}
+        fullDescription = null;
+    }
 
 
     /**
@@ -219,22 +211,21 @@ public class StatisticsFileFilter extends FileFilter {
      * @see FileFilter#getDescription
      */
     public String getDescription() {
-		if(fullDescription == null) {
-			if(description == null || isExtensionListInDescription()) {
-				fullDescription = description==null ? "" : description + "  (";
-				// build the description from the extension list
-				//Enumeration extensions = filters.keys();
-                for (int i=0 ; i<filters.size() ; i++) {
+        if (fullDescription == null) {
+            if (description == null || isExtensionListInDescription()) {
+                fullDescription = description == null ? "" : description + "  (";
+                // build the description from the extension list
+                //Enumeration extensions = filters.keys();
+                for (int i = 0; i < filters.size(); i++) {
                     fullDescription += "*." + filters.get(i);
-                    if(i<filters.size()-1)
+                    if (i < filters.size() - 1)
                         fullDescription += ", ";
                 }
-				fullDescription += ")";
-			}
-			else
-				fullDescription = description;
-		}
-		return fullDescription;
+                fullDescription += ")";
+            } else
+                fullDescription = description;
+        }
+        return fullDescription;
     }
 
     /**
@@ -244,52 +235,49 @@ public class StatisticsFileFilter extends FileFilter {
      * @param description description to be added
      */
     public void setDescription(String description) {
-		this.description = description;
-		fullDescription = null;
+        this.description = description;
+        fullDescription = null;
     }
 
     /**
      * Determines whether the extension list (.jpg, .gif, etc) should
      * show up in the human readable description.
-     *
+     * <p/>
      * Only relevent if a description was provided in the constructor
      * or using setDescription();
      *
      * @param b set it if true.
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public void setExtensionListInDescription(boolean b) {
-		useExtensionsInDescription = b;
-		fullDescription = null;
+        useExtensionsInDescription = b;
+        fullDescription = null;
     }
 
     /**
      * Returns whether the extension list (.jpg, .gif, etc) should
      * show up in the human readable description.
-     *
+     * <p/>
      * Only relevent if a description was provided in the constructor
      * or using setDescription();
      *
      * @return whether the extension list (.jpg, .gif, etc) should
-     * show up in the human readable description.
+     *         show up in the human readable description.
      */
     public boolean isExtensionListInDescription() {
-		return useExtensionsInDescription;
+        return useExtensionsInDescription;
     }
 
 
-
-
     //===============================================================
     //===============================================================
-    private boolean isStatisticsGeneratedFile(String fileName)
-    {
+    private boolean isStatisticsGeneratedFile(String fileName) {
         String code;
         try {
-             code = Utils.readFile(fileName);
-        }
-        catch (DevFailed e) {
+            code = Utils.readFile(fileName);
+        } catch (DevFailed e) {
             return false;
         }
-        return (code.indexOf(GlobalStatistics.header)>=0);
+        return (code.indexOf(GlobalStatistics.header) >= 0);
     }
 }
