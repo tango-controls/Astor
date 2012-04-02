@@ -44,94 +44,93 @@ import javax.swing.*;
 import java.awt.*;
 
 //===============================================================
+
 /**
- *	JDialog Class to display info
+ * JDialog Class to display info
  *
- *	@author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //===============================================================
 
 
-public class DeviceHierarchyDialog extends JDialog
-{
-	private Component		parent;
-	private DeviceHierarchy	tree = null;
-	private String 			name;
+public class DeviceHierarchyDialog extends JDialog {
+    private Component parent;
+    private DeviceHierarchy tree = null;
+    private String name;
 
-	//===============================================================
-	/**
-	 *	Creates new form DeviceHierarchyDialog
-	 */
-	//===============================================================
-	public DeviceHierarchyDialog(JFrame parent, String name) throws DevFailed
-	{
-		super(parent, false);
-		this.parent = parent;
-		this.name  = name;
-		init();
-	}
-	//===============================================================
-	/**
-	 *	Creates new form DeviceHierarchyDialog
-	 */
-	//===============================================================
-	public DeviceHierarchyDialog(JDialog parent, String name) throws DevFailed
-	{
-		super(parent, false);
-		this.parent = parent;
-		this.name  = name;
-		init();
-	}
-	//===============================================================
-	//===============================================================
-	private void init() throws DevFailed
-	{
-		try
-		{
-			AstorUtil.startSplash("Device Hierarchy");
-			initComponents();
-			initOwnComponents();
+    //===============================================================
 
-			titleLabel.setText("Device hierarchy for  " + name);
-			pack();
-			Point	p = parent.getLocation();
-			p.translate(40, 30);
-			this.setLocation(p);
-			AstorUtil.stopSplash();
-		}
-		catch (DevFailed e)
-		{
-			AstorUtil.stopSplash();
-			throw e;
-		}
-	}
-	//===============================================================
-	//===============================================================
-	private void initOwnComponents() throws DevFailed
-	{
-		//	If it is an update, stop old tree's threads
-		if (tree!=null)
-			tree.stopThread();
+    /**
+     * Creates new form DeviceHierarchyDialog
+     */
+    //===============================================================
+    public DeviceHierarchyDialog(JFrame parent, String name) throws DevFailed {
+        super(parent, false);
+        this.parent = parent;
+        this.name = name;
+        init();
+    }
+    //===============================================================
 
-		 //	Build users_tree to display info
-		Astor	astor = null;
-		if (parent instanceof HostInfoDialog)
-			astor = ((HostInfoDialog)parent).getAstorObject();
-		tree = new DeviceHierarchy(this, astor, name);
-		scrollPane1.setViewportView(tree);
-		scrollPane1.setPreferredSize(new Dimension(400, 400));
-		scrollPane2.setPreferredSize(new Dimension(400, 400));
-		//splitPane.setDividerSize(2);
-	}
+    /**
+     * Creates new form DeviceHierarchyDialog
+     */
+    //===============================================================
+    public DeviceHierarchyDialog(JDialog parent, String name) throws DevFailed {
+        super(parent, false);
+        this.parent = parent;
+        this.name = name;
+        init();
+    }
+
+    //===============================================================
+    //===============================================================
+    private void init() throws DevFailed {
+        try {
+            AstorUtil.startSplash("Device Hierarchy");
+            initComponents();
+            initOwnComponents();
+
+            titleLabel.setText("Device hierarchy for  " + name);
+            pack();
+            Point p = parent.getLocation();
+            p.translate(40, 30);
+            this.setLocation(p);
+            AstorUtil.stopSplash();
+        } catch (DevFailed e) {
+            AstorUtil.stopSplash();
+            throw e;
+        }
+    }
+
+    //===============================================================
+    //===============================================================
+    private void initOwnComponents() throws DevFailed {
+        //	If it is an update, stop old tree's threads
+        if (tree != null)
+            tree.stopThread();
+
+        //	Build users_tree to display info
+        Astor astor = null;
+        if (parent instanceof HostInfoDialog)
+            astor = ((HostInfoDialog) parent).getAstorObject();
+        tree = new DeviceHierarchy(this, astor, name);
+        scrollPane1.setViewportView(tree);
+        scrollPane1.setPreferredSize(new Dimension(400, 400));
+        scrollPane2.setPreferredSize(new Dimension(400, 400));
+        //splitPane.setDividerSize(2);
+    }
 
 
-	//===============================================================
-    /** This method is called from within the constructor to
+    //===============================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//===============================================================
+    //===============================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -181,96 +180,87 @@ public class DeviceHierarchyDialog extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//===============================================================
-	//===============================================================
-	void setText(String str)
-	{
-		textArea.setText(str);
-	}
-	//===============================================================
-	//===============================================================
-	@SuppressWarnings({"UNUSED_SYMBOL"})
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    //===============================================================
+    //===============================================================
+    void setText(String str) {
+        textArea.setText(str);
+    }
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	@SuppressWarnings({"UNUSED_SYMBOL"})
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		doClose();
-	}//GEN-LAST:event_closeDialog
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UNUSED_SYMBOL"})
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
-	void update()
-	{
-		try
-		{
-			AstorUtil.startSplash("Device Hierarchy");
-			initOwnComponents();
-			AstorUtil.stopSplash();
-		}
-		catch(DevFailed e)
-		{
-			AstorUtil.stopSplash();
-			ErrorPane.showErrorMessage(this, null, e);
-		}
-	}
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void doClose()
-	{
-		int	w = parent.getWidth();
-		if (w>0)
-		{
-			setVisible(false);
-			tree.stopThread();
-			dispose();
-		}
-		else
-			System.exit(0);
-	}
+    //===============================================================
 
-	//===============================================================
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    @SuppressWarnings({"UNUSED_SYMBOL"})
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        doClose();
+    }//GEN-LAST:event_closeDialog
+
+    //===============================================================
+    //===============================================================
+    void update() {
+        try {
+            AstorUtil.startSplash("Device Hierarchy");
+            initOwnComponents();
+            AstorUtil.stopSplash();
+        } catch (DevFailed e) {
+            AstorUtil.stopSplash();
+            ErrorPane.showErrorMessage(this, null, e);
+        }
+    }
+    //===============================================================
+
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    private void doClose() {
+        int w = parent.getWidth();
+        if (w > 0) {
+            setVisible(false);
+            tree.stopThread();
+            dispose();
+        } else
+            System.exit(0);
+    }
+
+    //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane scrollPane1;
     private javax.swing.JScrollPane scrollPane2;
     private javax.swing.JTextArea textArea;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
-	//===============================================================
+    //===============================================================
 
 
+    //===============================================================
 
+    /**
+     * @param args the command line arguments
+     */
+    //===============================================================
+    public static void main(String args[]) {
 
-	//===============================================================
-	/**
-	* @param args the command line arguments
-	*/
-	//===============================================================
-	public static void main(String args[]) {
-
-		String	servname = "PoolThreadTest/pv";
-		if (args.length>0)
-			servname = args[0];
-		try
-		{
-			AstorUtil.getInstance().initIcons();
-			DeviceHierarchyDialog	dlg =
-				new DeviceHierarchyDialog(new JFrame(), servname);
-			dlg.setVisible(true);
-		}
-		catch(DevFailed e)
-		{
+        String servname = "PoolThreadTest/pv";
+        if (args.length > 0)
+            servname = args[0];
+        try {
+            AstorUtil.getInstance().initIcons();
+            DeviceHierarchyDialog dlg =
+                    new DeviceHierarchyDialog(new JFrame(), servname);
+            dlg.setVisible(true);
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), null, e);
-		}
-	}
+        }
+    }
 
 }

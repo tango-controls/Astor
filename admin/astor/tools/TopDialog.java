@@ -37,107 +37,102 @@ package admin.astor.tools;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 import javax.swing.*;
-import java.util.Vector;
-import java.util.Comparator;
-import java.util.Collections;
 import java.awt.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.ArrayList;
 
 //===============================================================
+
 /**
- *	JDialog Class to display info
+ * JDialog Class to display info
  *
- *	@author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //===============================================================
 
 
-public class TopDialog extends JDialog
-{
-	private BlackBoxTable.BlackBox	black_box;
-	private TopCompare				compare;
-	private Vector<JTextArea>		textAreas;
-	//private String					devname;
-	//===============================================================
-	/**
-	 *	Creates new form TopDialog
-	 */
-	//===============================================================
-	public TopDialog(JDialog parent, String devname, BlackBoxTable.BlackBox black_box)
-	{
-		super(parent, false);
-		//this.devname   = devname;
-		this.black_box = black_box;
-		initComponents();
-		textAreas = new Vector<JTextArea>();
-		textAreas.add(null);	//	DATE is not used
-		textAreas.add(operationTxt);
-		textAreas.add(nameTxt);
-		textAreas.add(sourceTxt);
-		textAreas.add(hostTxt);
-		textAreas.add(processTxt);
+public class TopDialog extends JDialog {
+    private BlackBoxTable.BlackBox black_box;
+    private TopCompare compare;
+    private ArrayList<JTextArea> textAreas;
+    //private String					devname;
+    //===============================================================
+    /*
+     * Creates new form TopDialog
+     */
+    //===============================================================
+    public TopDialog(JDialog parent, String devname, BlackBoxTable.BlackBox black_box) {
+        super(parent, false);
+        //this.devname   = devname;
+        this.black_box = black_box;
+        initComponents();
+        textAreas = new ArrayList<JTextArea>();
+        textAreas.add(null);    //	DATE is not used
+        textAreas.add(operationTxt);
+        textAreas.add(nameTxt);
+        textAreas.add(sourceTxt);
+        textAreas.add(hostTxt);
+        textAreas.add(processTxt);
 
-		for (int i= BlackBoxTable.OPERATION ; i<=BlackBoxTable.PROCESS ; i++)
-		{
-			textAreas.get(i).getParent().setPreferredSize(new Dimension(500, 350));
-			textAreas.get(i).setFont(new Font("dialog", Font.BOLD, 12));
-		}
-		compare = new TopCompare();
-		titleLabel.setText("Top on  " + devname);
-		tabbedPane.setSelectedIndex(BlackBoxTable.HOST-1);	//	-1 for DATES not used
+        for (int i = BlackBoxTable.OPERATION; i <= BlackBoxTable.PROCESS; i++) {
+            textAreas.get(i).getParent().setPreferredSize(new Dimension(500, 350));
+            textAreas.get(i).setFont(new Font("dialog", Font.BOLD, 12));
+        }
+        compare = new TopCompare();
+        titleLabel.setText("Top on  " + devname);
+        tabbedPane.setSelectedIndex(BlackBoxTable.HOST - 1);    //	-1 for DATES not used
 
-		pack();
- 		ATKGraphicsUtils.centerDialog(this);
-	}
+        pack();
+        ATKGraphicsUtils.centerDialog(this);
+    }
 
-	//===============================================================
-	//===============================================================
-	void displayTop()
-	{
-		if (black_box==null)
-			return;
+    //===============================================================
+    //===============================================================
+    void displayTop() {
+        if (black_box == null)
+            return;
 
-		for (int i= BlackBoxTable.OPERATION ; i<=BlackBoxTable.PROCESS ; i++)
-			textAreas.get(i).setText(computeTop(i).toString());
-	}
-	//===============================================================
-	//===============================================================
-	private TopObject computeTop(int index)
-	{
-		TopObject	retVect = new TopObject();
+        for (int i = BlackBoxTable.OPERATION; i <= BlackBoxTable.PROCESS; i++)
+            textAreas.get(i).setText(computeTop(i).toString());
+    }
 
-		for (int i=0 ; i<black_box.nbRecords() ; i++)
-		{
-			Vector<String> line = black_box.getLine(i);
-			String	item = line.get(index);
-			boolean	found = false;
-			for (Vector<String> vh : retVect)
-			{
-				if (vh.get(0).equals(item))
-				{
-					vh.add(item);
-					found = true;
-				}
-			}
-			if (! found)
-			{
-				Vector<String>	vh = new Vector<String>();
-				vh.add(item);
-				retVect.add(vh);
-			}
-		}
+    //===============================================================
+    //===============================================================
+    private TopObject computeTop(int index) {
+        TopObject retVect = new TopObject();
 
-		//	Sort for size order
-		Collections.sort(retVect, compare);
+        for (int i = 0; i < black_box.nbRecords(); i++) {
+            ArrayList<String> line = black_box.getLine(i);
+            String item = line.get(index);
+            boolean found = false;
+            for (ArrayList<String> vh : retVect) {
+                if (vh.get(0).equals(item)) {
+                    vh.add(item);
+                    found = true;
+                }
+            }
+            if (!found) {
+                ArrayList<String> vh = new ArrayList<String>();
+                vh.add(item);
+                retVect.add(vh);
+            }
+        }
 
-		return retVect;
-	}
-	//===============================================================
-    /** This method is called from within the constructor to
+        //	Sort for size order
+        Collections.sort(retVect, compare);
+
+        return retVect;
+    }
+    //===============================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//===============================================================
+    //===============================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -244,43 +239,39 @@ public class TopDialog extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//===============================================================
-	//===============================================================
-	@SuppressWarnings({"UNUSED_SYMBOL"})
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		//System.out.println(jScrollPane1.getPreferredSize());
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        //System.out.println(jScrollPane1.getPreferredSize());
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	@SuppressWarnings({"UNUSED_SYMBOL"})
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		doClose();
-	}//GEN-LAST:event_closeDialog
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        doClose();
+    }//GEN-LAST:event_closeDialog
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void doClose()
-	{
-		setVisible(false);
-		dispose();
-	}
-	//===============================================================
-	//===============================================================
-	public void showDialog()
-	{
-		displayTop();
-		setVisible(true);
-	}
+    //===============================================================
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    private void doClose() {
+        setVisible(false);
+        dispose();
+    }
 
-	//===============================================================
+    //===============================================================
+    //===============================================================
+    public void showDialog() {
+        displayTop();
+        setVisible(true);
+    }
+
+    //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea hostTxt;
     private javax.swing.JTextArea nameTxt;
@@ -290,44 +281,40 @@ public class TopDialog extends JDialog
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
-	//===============================================================
+    //===============================================================
 
 
-	//======================================================
-	//======================================================
-	private class TopObject extends Vector<Vector<String>>
-	{
-		//======================================================
-		public String toString()
-		{
-			StringBuffer	sb = new StringBuffer();
-			for (Vector<String> vs : this)
-				sb.append(vs.size()).append(" calls:\t")
-						.append(vs.get(0)).append('\n');
-			return sb.toString();
-		}
-	}
-	//======================================================
-	/**
-	 *	MyCompare class to sort by size
-	 */
-	//======================================================
-	class  TopCompare implements Comparator
-	{
-		public int compare(Object o1, Object o2)
-		{
-			Vector<String>	vs1 = (Vector<String>) o1;
-			Vector<String>	vs2 = (Vector<String>) o2;
+    //======================================================
+    //======================================================
+    private class TopObject extends ArrayList<ArrayList<String>> {
+        //======================================================
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            for (ArrayList<String> vs : this)
+                sb.append(vs.size()).append(" calls:\t")
+                        .append(vs.get(0)).append('\n');
+            return sb.toString();
+        }
+    }
+    //======================================================
 
-			if (vs1.size() == vs2.size())
-				return 0;
-			else
-			if (vs1.size() < vs2.size())
-				return 1;
-			else
-				return -1;
-		}
-	}
+    /**
+     * MyCompare class to sort by size
+     */
+    //======================================================
+    class TopCompare implements Comparator {
+        public int compare(Object o1, Object o2) {
+            ArrayList<String> vs1 = (ArrayList<String>) o1;
+            ArrayList<String> vs2 = (ArrayList<String>) o2;
+
+            if (vs1.size() == vs2.size())
+                return 0;
+            else if (vs1.size() < vs2.size())
+                return 1;
+            else
+                return -1;
+        }
+    }
 
 
 }
