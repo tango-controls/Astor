@@ -33,92 +33,84 @@
 
 
 package admin.astor;
- 
+
 import java.awt.*;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
+public class HostInfoDialogVector extends ArrayList<HostInfoDialog> {
+    private Point position = null;
 
-public class  HostInfoDialogVector extends Vector
-{
-	private	Point		position = null;
-	private static int	step = 10;
-	//===============================================================
-	//===============================================================
-	HostInfoDialogVector()
-	{
-		super();
-	}
-	//===============================================================
-	//===============================================================
-	void setDialogPreferredSize(Dimension d)
-	{
-		for (Object o : this)
-			((HostInfoDialog)o).setDialogPreferredSize(d);
-	}
-	//===============================================================
-	//===============================================================
-	void close()
-	{
-		for (Object o : this)
-		{
-			((HostInfoDialog)o).setVisible(false);
-			((HostInfoDialog)o).dispose();
-		}
-	}
-	//===============================================================
-	//===============================================================
-	HostInfoDialog getByHostName(TangoHost host)
-	{
-		HostInfoDialog	hid = null;
-		for (int i=0 ; i<size() ; i++)
-		{
-			HostInfoDialog	tmp = (HostInfoDialog) elementAt(i);
-			if (host.getName().equals(tmp.name))
-				hid = tmp;
-		}
-		return hid;
-	}
-	//===============================================================
-	//===============================================================
-	HostInfoDialog add(Astor parent, TangoHost host)
-	{
-		if (position==null)
-			position = parent.getLocationOnScreen();
-		//	Set the servers polling and Notify to awake the thread.
-		host.poll_serv_lists = true;
-		host.updateData();
-		//	And wait a bit before re-build panel
-		try { Thread.sleep(500); } catch(Exception e){}
+    //===============================================================
+    //===============================================================
+    HostInfoDialogVector() {
+        super();
+    }
 
-		//	Search if already exists
-		host.info_dialog = getByHostName(host);
-		//	If does not exists, create a new one and add it in vector
-		if (host.info_dialog==null)
-		{
-			host.info_dialog = new HostInfoDialog(parent, host);
-			add(host.info_dialog);
+    //===============================================================
+    //===============================================================
+    void setDialogPreferredSize(Dimension d) {
+        for (Object o : this)
+            ((HostInfoDialog) o).setDialogPreferredSize(d);
+    }
 
-			//	Set position to display
-			position.translate(step,step);
-			host.info_dialog.setLocation(position);
-		}
-		else
-			host.info_dialog.updatePanel();
-		host.info_dialog.setVisible(true);
+    //===============================================================
+    //===============================================================
+    void close() {
+        for (Object o : this) {
+            ((HostInfoDialog) o).setVisible(false);
+            ((HostInfoDialog) o).dispose();
+        }
+    }
 
-		return host.info_dialog;
-	}
-	//===============================================================
-	//===============================================================
-	void close(TangoHost host)
-	{
-		//	Search if already exists
-		HostInfoDialog	hid = getByHostName(host);
-		//	If do exists, close it
-		if (hid!=null)
-			hid.doClose();
-	}
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
+    HostInfoDialog getByHostName(TangoHost host) {
+        HostInfoDialog hid = null;
+        for (HostInfoDialog hostInfoDialog : this) {
+            if (host.getName().equals(hostInfoDialog.name))
+                hid = hostInfoDialog;
+        }
+        return hid;
+    }
+
+    //===============================================================
+    //===============================================================
+    HostInfoDialog add(Astor parent, TangoHost host) {
+        if (position == null)
+            position = parent.getLocationOnScreen();
+        //	Set the servers polling and Notify to awake the thread.
+        host.poll_serv_lists = true;
+        host.updateData();
+        //	And wait a bit before re-build panel
+        try { Thread.sleep(500); } catch (Exception e) { /* */ }
+
+        //	Search if already exists
+        host.info_dialog = getByHostName(host);
+        //	If does not exists, create a new one and add it in vector
+        if (host.info_dialog == null) {
+            host.info_dialog = new HostInfoDialog(parent, host);
+            add(host.info_dialog);
+
+            //	Set position to display
+            position.translate(10, 10);
+            host.info_dialog.setLocation(position);
+        } else
+            host.info_dialog.updatePanel();
+        host.info_dialog.setVisible(true);
+
+        return host.info_dialog;
+    }
+
+    //===============================================================
+    //===============================================================
+    void close(TangoHost host) {
+        //	Search if already exists
+        HostInfoDialog hid = getByHostName(host);
+        //	If do exists, close it
+        if (hid != null)
+            hid.doClose();
+    }
+    //===============================================================
+    //===============================================================
 }

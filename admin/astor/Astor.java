@@ -58,7 +58,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 public class Astor extends JFrame implements AstorDefs {
@@ -67,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "Release 5.5.4  -  Tue Dec 06 13:43:14 CET 2011";
+            "Release 6.0.1  -  Mon Apr 02 14:23:08 CEST 2012";
     /**
      * JTree object to display control system.
      */
@@ -113,7 +113,6 @@ public class Astor extends JFrame implements AstorDefs {
                 getClass().getResource(img_path + "tango_icon.jpg"));
         setIconImage(icon.getImage());
 
-        bottomPanel.setVisible(AstorUtil.getCtrlBtn());
         centerWindow();
 
         try {
@@ -123,12 +122,11 @@ public class Astor extends JFrame implements AstorDefs {
         //	There is some problem between environement and change
         changeTgHostBtn.setVisible(false);
     }
-//===========================================================
-
+	//===========================================================
     /**
      * Move the window to the center of the screen
      */
-//===========================================================
+	//===========================================================
     public void centerWindow() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension scrsize = toolkit.getScreenSize();
@@ -170,7 +168,7 @@ public class Astor extends JFrame implements AstorDefs {
             }
 
             //	Build tree and start threads to update tree
-            tree = new AstorTree(this, true, splash);
+            tree = new AstorTree(this, splash);
             scrollPane = new JScrollPane();
             scrollPane.setPreferredSize(AstorUtil.getPreferredSize());
             scrollPane.setViewportView(tree);
@@ -335,8 +333,8 @@ public class Astor extends JFrame implements AstorDefs {
     }
 
     private int nb_def_tools = 1;
-    private Vector<OneTool> app_tools = new Vector<OneTool>();
-    private Vector<ActionListener> tools_al = new Vector<ActionListener>();
+    private ArrayList<OneTool> app_tools = new ArrayList<OneTool>();
+    private ArrayList<ActionListener> tools_al = new ArrayList<ActionListener>();
     //======================================================================
 
     /**
@@ -349,10 +347,6 @@ public class Astor extends JFrame implements AstorDefs {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        bottomPanel = new javax.swing.JPanel();
-        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        allHostsControledBtn = new javax.swing.JToggleButton();
-        stopHostsControledBtn = new javax.swing.JToggleButton();
         javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         changeTgHostBtn = new javax.swing.JMenuItem();
@@ -394,35 +388,6 @@ public class Astor extends JFrame implements AstorDefs {
                 exitForm(evt);
             }
         });
-
-        jLabel1.setText("Control  :   ");
-        bottomPanel.add(jLabel1);
-
-        allHostsControledBtn.setFont(new java.awt.Font("Dialog", 1, 10));
-        allHostsControledBtn.setText("  All  hosts  ");
-        allHostsControledBtn.setToolTipText("Start Control on All Hosts");
-        allHostsControledBtn.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        allHostsControledBtn.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        allHostsControledBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                allHostsControledBtnActionPerformed(evt);
-            }
-        });
-        bottomPanel.add(allHostsControledBtn);
-
-        stopHostsControledBtn.setFont(new java.awt.Font("Dialog", 1, 10));
-        stopHostsControledBtn.setText("    None   ");
-        stopHostsControledBtn.setToolTipText("Stop Control on All Hosts");
-        stopHostsControledBtn.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        stopHostsControledBtn.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        stopHostsControledBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopHostsControledBtnActionPerformed(evt);
-            }
-        });
-        bottomPanel.add(stopHostsControledBtn);
-
-        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText("File");
 
@@ -974,103 +939,91 @@ public class Astor extends JFrame implements AstorDefs {
             new HostsScanThread(this, tree.hosts).start();
         else if (item.equals(stateIconsBtn.getText()))
             Utils.popupMessage(this, "", img_path + "astor_state_icons.jpg");
-        else if (item.equals(releaseNoteBtn.getText())) {
+        else if (item.equals(releaseNoteBtn.getText()))
             new PopupHtml(this).show(ReleaseNote.str);
-        } else if (item.equals(tangorbBtn.getText())) {
-            TangORBversion tangorb;
-            try {
-                tangorb = new TangORBversion();
-            } catch (Exception e) {
-                ErrorPane.showErrorMessage(this,
-                        "Cannot check TangORB revision", e);
-                return;
-            }
-            String message = tangorb.jarfile + ":\n\n" + tangorb;
-            PopupText txt = new PopupText(this, true);
-            txt.setFont(new java.awt.Font("Courier", 1, 14));
-            AstorUtil.centerDialog(txt, this);
-            txt.show(message);
-        } else if (item.equals(aboutBtn.getText())) {
-            String message =
-                    "           Astor  (Tango Manager) \n\n" +
-                            "This programme is used to control, start and stop\n" +
-                            "           the TANGO device servers. \n\n" +
-                            revNumber +
-                            "\n\n" +
-                            "Pascal Verdier - Software Engineering Group - ESRF";
-            Utils.popupMessage(this, message, img_path + "tango_icon.jpg");
-        } else if (item.equals(starterEventsItem.getText())) {
-            Vector<String> v = new Vector<String>();
-            for (TangoHost host : tree.hosts)
-                if (host.use_events)
-                    v.add(host.getName());
-
-            String title;
-            String[] hostnames = null;
-            if (v.size() == 0)
-                title = "There is no host controlled on events !";
-            else if (v.size() == tree.hosts.length)
-                title = "All hosts are controlled on events !";
-            else {
-                title = "On " + tree.hosts.length + " hosts,\n" +
-                        v.size() + "  are controlled on events :";
-                hostnames = new String[v.size()];
-                for (int i = 0; i < v.size(); i++)
-                    hostnames[i] = v.get(i);
-            }
-            if (hostnames == null)
-                Utils.popupMessage(this, title);
-            else
-                new PopupText(this, true).show(title, hostnames, 300, 400);
-        } else if (item.equals(starterNoEventsItem.getText())) {
-            Vector<String> v = new Vector<String>();
-            for (TangoHost host : tree.hosts)
-                if (!host.use_events)
-                    v.add(host.getName());
-
-            String title;
-            String[] hostnames = null;
-            if (v.size() == 0)
-                title = "There is no host controlled on polling !";
-            else if (v.size() == tree.hosts.length)
-                title = "All hosts are controlled on polling !";
-            else {
-                title = "On " + tree.hosts.length + " hosts,\n" +
-                        v.size() + "  are controlled on polling :";
-                hostnames = new String[v.size()];
-                for (int i = 0; i < v.size(); i++)
-                    hostnames[i] = v.get(i);
-            }
-            if (hostnames == null)
-                Utils.popupMessage(this, title);
-            else
-                new PopupText(this, true).show(title, hostnames, 300, 400);
-        } else
+        else if (item.equals(tangorbBtn.getText()))
+			displayTangORBversion();
+        else if (item.equals(aboutBtn.getText()))
+			displayAboutAstor();
+        else if (item.equals(starterEventsItem.getText()))
+            displaySubscribedHostList(true);
+        else if (item.equals(starterNoEventsItem.getText()))
+            displaySubscribedHostList(false);
+        else
             Utils.popupMessage(this, "Not implemented yet !");
     }//GEN-LAST:event_helpActionPerformed
 
     //======================================================================
     //======================================================================
-    @SuppressWarnings({"UnusedDeclaration"})
-    private void stopHostsControledBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopHostsControledBtnActionPerformed
-        if (tree != null) {
-            for (TangoHost host : tree.hosts) {
-                host.do_polling = false;
-                tree.hostDialogs.close(host);
-            }
-            stopHostsControledBtn.setSelected(false);
+	private void displayTangORBversion() {
+       TangORBversion tangorb;
+        try {
+            tangorb = new TangORBversion();
+        } catch (Exception e) {
+            ErrorPane.showErrorMessage(this,
+                    "Cannot check TangORB revision", e);
+            return;
         }
-    }//GEN-LAST:event_stopHostsControledBtnActionPerformed
-
+        String message = tangorb.jarfile + ":\n\n" + tangorb;
+        PopupText txt = new PopupText(this, true);
+        txt.setFont(new java.awt.Font("Courier", 1, 14));
+        AstorUtil.centerDialog(txt, this);
+        txt.show(message);
+	}
     //======================================================================
     //======================================================================
-    @SuppressWarnings({"UnusedDeclaration"})
-    private void allHostsControledBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allHostsControledBtnActionPerformed
-        for (TangoHost host : tree.hosts)
-            host.do_polling = true;
-        allHostsControledBtn.setSelected(false);
-    }//GEN-LAST:event_allHostsControledBtnActionPerformed
+	private void displayAboutAstor() {
+        String message =
+                "           Astor  (Tango Manager) \n\n" +
+                        "This programme is used to control, start and stop\n" +
+                        "           the TANGO device servers. \n\n" +
+                        revNumber +
+                        "\n\n" +
+                        "Pascal Verdier - Software Engineering Group - ESRF";
+        Utils.popupMessage(this, message, img_path + "tango_icon.jpg");
+	}
+    //======================================================================
+    //======================================================================
+    private void displaySubscribedHostList(boolean onEvt) {
+        ArrayList<String> hostsList = new ArrayList<String>();
+        for (TangoHost host : tree.hosts) {
+            if (onEvt) {
+				if (host.onEvents)
+                	hostsList.add(host.getName() + " " + host.eventSource);
+			}
+            else {
+ 				if (!host.onEvents)
+					hostsList.add(host.getName());
+			}
+        }
 
+        String  title;
+        StringBuffer  message = new StringBuffer();
+        if (hostsList.size() == 0) {
+            title = "There is no host controlled " + TangoHost.controlMethod(onEvt);
+        }
+        else if (hostsList.size() == tree.hosts.length) {
+            title = "All hosts are controlled " + TangoHost.controlMethod(onEvt);
+        }
+        else {
+            title = "On " + tree.hosts.length + " hosts,\n" +
+                    hostsList.size() + "  are controlled " + TangoHost.controlMethod(onEvt);
+
+            for (String hostName :  hostsList)
+                message.append(hostName).append('\n');
+        }
+        if (message.length()==0)
+            Utils.popupMessage(this, title);
+        else {
+            PopupText   ppt = new PopupText(this, true);
+            ppt.setTitle(title);
+            ppt.addText(message.toString());
+            ppt.setSize(360, 400);
+            ppt.setVisible(true);
+        }
+    }
+    //======================================================================
+    //======================================================================
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1174,7 +1127,7 @@ public class Astor extends JFrame implements AstorDefs {
             for (TangoHost host : tree.hosts) {
                 //	Display a little timer during unsubscribe
                 host.stopThread();
-                if (host.use_events) {
+                if (host.onEvents) {
                     try {
                         Thread.sleep(20);
                     } catch (Exception e) {/* Do nothing */}
@@ -1200,8 +1153,6 @@ public class Astor extends JFrame implements AstorDefs {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutBtn;
     private javax.swing.JMenuItem accessControlBtn;
-    private javax.swing.JToggleButton allHostsControledBtn;
-    private javax.swing.JPanel bottomPanel;
     private javax.swing.JMenuItem changeTgHostBtn;
     private javax.swing.JMenu cmdMenu;
     private javax.swing.JMenuItem ctrlPreferenceBtn;
@@ -1221,7 +1172,6 @@ public class Astor extends JFrame implements AstorDefs {
     private javax.swing.JMenuItem starterEventsItem;
     private javax.swing.JMenuItem starterNoEventsItem;
     private javax.swing.JMenuItem stateIconsBtn;
-    private javax.swing.JToggleButton stopHostsControledBtn;
     private javax.swing.JMenuItem tangorbBtn;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenu viewMenu;
@@ -1229,6 +1179,7 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
 
     //======================================================================
+
     /**
      * @param args the command line arguments
      */

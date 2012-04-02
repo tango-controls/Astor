@@ -35,100 +35,88 @@
 package admin.astor;
 
 
-/** 
+/**
  *	This class is a thread to open a window with a
  *	remote login to a remote host.
  *
- * @author  verdier
+ * @author verdier
  */
- 
- 
+
+
 import javax.swing.*;
 import java.awt.*;
 
-public class RemoteLoginThread extends Thread implements AstorDefs
-{
-	private Component	parent;
-	private String	hostname;
+public class RemoteLoginThread extends Thread implements AstorDefs {
+    private Component parent;
+    private String hostname;
 
-	//======================================================================
-	/**
-	 *	Thread constructor.
-	 *
-	 *	@param	hostname	Host to do the remote login.
-	 *	@param	parent		parent component used to display error message.
-	 */
-	//======================================================================
-	public RemoteLoginThread(String hostname, Component parent)
-	{
-		this.hostname = hostname;
-		this.parent   = parent;
-	}
+    //======================================================================
 
-
-	//======================================================================
-	/**
-	 *	Running thread method.
-	 */
-	//======================================================================
-	public void run()
-	{
-		String	cmd = "xterm -sb -title " + hostname + "";
+    /**
+     * Thread constructor.
+     *
+     * @param    hostname    Host to do the remote login.
+     * @param    parent        parent component used to display error message.
+     */
+    //======================================================================
+    public RemoteLoginThread(String hostname, Component parent) {
+        this.hostname = hostname;
+        this.parent = parent;
+    }
 
 
-		//	Check if rlogin user is defined
-		String	remlog = AstorUtil.getRloginCmd();
-		String	user   = AstorUtil.getRloginUser();
-		if (remlog==null || remlog.length()==0)
-		{
-			if (user==null || user.length()==0)
-				cmd += "  -e telnet " + hostname;
-			else
-				remlog = "  -e rlogin  " + hostname;
-		}
-		else
-		{
-			//	Check if rlogin command (with or without user)
-			if (remlog.equals("rlogin"))
-			{
-				if (user==null || user.length()==0)
-					cmd += "  -e  rlogin " + hostname;
-				else
-					cmd += "_" + user + "  -e  rlogin -l " + user + "  " + hostname;
-			}
-			else
-			//	Check if ssh command (with or without user)
-			if (remlog.startsWith("ssh"))
-			{
-				if (user==null || user.length()==0)
-					cmd += "  -e  ssh -X " + hostname;
-				else
-					cmd += "_" + user + "  -e  ssh -X " + user + "@" + hostname;
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(parent,
-										"Command : " + remlog + " Not Managed !",
-										"Error Window",
-										JOptionPane.INFORMATION_MESSAGE);
-				return;
-			}
-			
-		}
-		
-		try
-		{
-			//	Execute
-			Process proc = Runtime.getRuntime().exec(cmd);
-			proc.waitFor();
-		}
-		catch(Exception ex)
-		{
-			System.out.println(ex);
-			JOptionPane.showMessageDialog(parent,
-										ex.toString(),
-										"Error Window",
-										JOptionPane.INFORMATION_MESSAGE);
-		}
-	}
+    //======================================================================
+
+    /**
+     * Running thread method.
+     */
+    //======================================================================
+    public void run() {
+        String cmd = "xterm -sb -title " + hostname + "";
+
+
+        //	Check if rlogin user is defined
+        String remlog = AstorUtil.getRloginCmd();
+        String user = AstorUtil.getRloginUser();
+        if (remlog == null || remlog.length() == 0) {
+            if (user == null || user.length() == 0)
+                cmd += "  -e telnet " + hostname;
+            else
+                remlog = "  -e rlogin  " + hostname;
+        } else {
+            //	Check if rlogin command (with or without user)
+            if (remlog.equals("rlogin")) {
+                if (user == null || user.length() == 0)
+                    cmd += "  -e  rlogin " + hostname;
+                else
+                    cmd += "_" + user + "  -e  rlogin -l " + user + "  " + hostname;
+            } else
+                //	Check if ssh command (with or without user)
+                if (remlog.startsWith("ssh")) {
+                    if (user == null || user.length() == 0)
+                        cmd += "  -e  ssh -X " + hostname;
+                    else
+                        cmd += "_" + user + "  -e  ssh -X " + user + "@" + hostname;
+                } else {
+                    JOptionPane.showMessageDialog(parent,
+                            "Command : " + remlog + " Not Managed !",
+                            "Error Window",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+        }
+
+        try {
+            //	Execute
+            Process proc = Runtime.getRuntime().exec(cmd);
+            proc.waitFor();
+        } catch (Exception ex) {
+            System.out.println(ex);
+            JOptionPane.showMessageDialog(parent,
+                    ex.toString(),
+                    "Error Window",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
 }

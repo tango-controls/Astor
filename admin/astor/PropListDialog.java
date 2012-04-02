@@ -34,14 +34,14 @@
 
 package admin.astor;
 
-/** 
+/**
  *
- * @author  verdier
- * @version 
+ * @author verdier
+ * @version
  */
- 
- 
- 
+
+
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -51,81 +51,82 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Vector;
-import admin.astor.tools.Utils;
+import java.util.ArrayList;
 
 //===============================================================
 public class PropListDialog extends javax.swing.JDialog {
-	private JFrame		parent;
-	private	String		selectedItem = null;
-	private JTextArea	pathText = null;
+    private JFrame parent;
+    private String selectedItem = null;
+    private JTextArea pathText = null;
 
-	private String[]	props;
-	//======================================================
-	//======================================================
-	private void setList()
-	{
-		jList.setListData(props);
-	}
-	//======================================================
-	/*
-	 *	Creates new form PropListDialog
-	 */
-	//======================================================
-	public PropListDialog(JFrame parent, String[] props) {
-		super (parent, true);
-		this.parent = parent;
-		this.props  = props;
-		initComponents ();
-		
-		buildlist();
-	}
-	//======================================================
-	/*
-	 *	Creates new form PropListDialog
-	 */
-	//======================================================
-	public PropListDialog(JFrame parent, Vector<String> vProps) {
-		super (parent, true);
-		this.parent = parent;
-		this.props  = new String[vProps.size()];
-		for (int i=0 ; i<vProps.size() ; i++)
-			this.props[i] = vProps.get(i);
-		initComponents ();
-		
-		buildlist();
-	}
-	//======================================================
-	/*
-	 *	Creates new form PropListDialog
-	 */
-	//======================================================
-	public PropListDialog(JFrame parent, JTextArea pathText, TangoHost[] hosts) {
+    private String[] props;
 
-		super (parent, true);
-		this.parent   = parent;
-		this.pathText = pathText;
-		initComponents ();
+    //======================================================
+    //======================================================
+    private void setList() {
+        jList.setListData(props);
+    }
 
-		hosts2path(hosts);
-		buildlist();
-	}
-	//======================================================
-	//======================================================
-	private boolean alreadyIn(Vector vect, String s)
-	{
-		for (int i=0 ; i<vect.size() ; i++)
-			if (vect.elementAt(i).equals(s))
-				return true;
-		return false;
-	}
-	//======================================================
-	//======================================================
-	private void hosts2path(TangoHost[] hosts)
-	{
-		try
-		{
-			Vector<String>	vect = new Vector<String>();
+    //======================================================
+    /*
+      *	Creates new form PropListDialog
+      */
+    //======================================================
+    public PropListDialog(JFrame parent, String[] props) {
+        super(parent, true);
+        this.parent = parent;
+        this.props = props;
+        initComponents();
+
+        buildList();
+    }
+
+    //======================================================
+    /*
+      *	Creates new form PropListDialog
+      */
+    //======================================================
+    public PropListDialog(JFrame parent, ArrayList<String> vProps) {
+        super(parent, true);
+        this.parent = parent;
+        this.props = new String[vProps.size()];
+        for (int i = 0; i < vProps.size(); i++)
+            this.props[i] = vProps.get(i);
+        initComponents();
+
+        buildList();
+    }
+
+    //======================================================
+    /*
+      *	Creates new form PropListDialog
+      */
+    //======================================================
+    public PropListDialog(JFrame parent, JTextArea pathText, TangoHost[] hosts) {
+
+        super(parent, true);
+        this.parent = parent;
+        this.pathText = pathText;
+        initComponents();
+
+        hosts2path(hosts);
+        buildList();
+    }
+
+    //======================================================
+    //======================================================
+    private boolean alreadyIn(ArrayList<String> stringList, String s) {
+        for (String str : stringList)
+            if (str.equals(s))
+                return true;
+        return false;
+    }
+
+    //======================================================
+    //======================================================
+    private void hosts2path(TangoHost[] hosts) {
+        try {
+            ArrayList<String> pathList = new ArrayList<String>();
             for (TangoHost host : hosts) {
                 String devname = AstorDefs.starterDeviceHeader + host.getName();
                 DeviceProxy dev = new DeviceProxy(devname);
@@ -133,169 +134,168 @@ public class PropListDialog extends javax.swing.JDialog {
                 if (!data.is_empty()) {
                     String[] path = data.extractStringArray();
                     for (String aPath : path)
-                        if (!alreadyIn(vect, aPath))
-                            vect.add(aPath);
+                        if (!alreadyIn(pathList, aPath))
+                            pathList.add(aPath);
                 }
             }
-			props = new String[vect.size()];
-			for (int i=0 ; i<vect.size() ; i++)
-				props[i] = vect.elementAt(i);
-		}
-		catch (DevFailed e)
-		{
-			Utils.popupError(parent, null, e);
-		}
-	}
-	//======================================================
-	//======================================================
-	private void buildlist()
-	{
-		//	Add a mouse listener on list
-		//---------------------------------------------------
-		MouseListener mouseListener = new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				listSelectionPerformed(e);
-			}
-		};
-		jList.addMouseListener(mouseListener);
+            props = new String[pathList.size()];
+            for (int i = 0; i < pathList.size(); i++)
+                props[i] = pathList.get(i);
+        } catch (DevFailed e) {
+            Utils.popupError(parent, null, e);
+        }
+    }
 
-		pack ();
-	}
+    //======================================================
+    //======================================================
+    private void buildList() {
+        //	Add a mouse listener on list
+        //---------------------------------------------------
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                listSelectionPerformed(e);
+            }
+        };
+        jList.addMouseListener(mouseListener);
 
- 	//======================================================
-	/** This method is called from within the constructor to
-	* initialize the form.
-	* WARNING: Do NOT modify this code. The content of this method is
-	* always regenerated by the FormEditor.
-	*/
- 	//======================================================
-	private void initComponents () {//GEN-BEGIN:initComponents
-		jPanel1 = new javax.swing.JPanel ();
-		addBtn = new javax.swing.JButton ();
-		dismissBtn = new javax.swing.JButton ();
-		jScrollPane1 = new javax.swing.JScrollPane ();
-		jList = new javax.swing.JList ();
-		addWindowListener (new java.awt.event.WindowAdapter () {
-			public void windowClosing (java.awt.event.WindowEvent evt) {
-				closeDialog (evt);
-			}
-		});
+        pack();
+    }
 
-		addBtn.setText ("Add");
-		addBtn.setHorizontalAlignment (javax.swing.SwingConstants.RIGHT);
-		addBtn.setFont (new java.awt.Font ("Dialog", 0, 12));
-		addBtn.addActionListener (new java.awt.event.ActionListener () {
-			public void actionPerformed (java.awt.event.ActionEvent evt) {
-				addBtnActionPerformed (evt);
-			}
-		});
+    //======================================================
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the FormEditor.
+     */
+    //======================================================
+    private void initComponents() {//GEN-BEGIN:initComponents
+        jPanel1 = new javax.swing.JPanel();
+        addBtn = new javax.swing.JButton();
+        dismissBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList = new javax.swing.JList();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                closeDialog(evt);
+            }
+        });
 
-		jPanel1.add (addBtn);
-  
-		dismissBtn.setHorizontalTextPosition (javax.swing.SwingConstants.RIGHT);
-		if (pathText==null)
-			dismissBtn.setText ("Cancel");
-		else
-			dismissBtn.setText ("Dismiss");
-		dismissBtn.setHorizontalAlignment (javax.swing.SwingConstants.RIGHT);
-		dismissBtn.setFont (new java.awt.Font ("Dialog", 0, 12));
-		dismissBtn.addActionListener (new java.awt.event.ActionListener () {
-			public void actionPerformed (java.awt.event.ActionEvent evt) {
-				dismissBtnActionPerformed (evt);
-			}
-		});
-		jPanel1.add (dismissBtn);
-		getContentPane ().add (jPanel1, java.awt.BorderLayout.SOUTH);
+        addBtn.setText("Add");
+        addBtn.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        addBtn.setFont(new java.awt.Font("Dialog", 0, 12));
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
 
-		jList.setFont (new java.awt.Font ("Courier", 1, 12));
+        jPanel1.add(addBtn);
 
-		jScrollPane1.setPreferredSize (new java.awt.Dimension(450, 300));
-		jScrollPane1.setMinimumSize (new java.awt.Dimension(450, 300));
-		jScrollPane1.setViewportView (jList);
-		getContentPane ().add (jScrollPane1, java.awt.BorderLayout.CENTER);
+        dismissBtn.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        if (pathText == null)
+            dismissBtn.setText("Cancel");
+        else
+            dismissBtn.setText("Dismiss");
+        dismissBtn.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        dismissBtn.setFont(new java.awt.Font("Dialog", 0, 12));
+        dismissBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dismissBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(dismissBtn);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-	}//GEN-END:initComponents
+        jList.setFont(new java.awt.Font("Courier", 1, 12));
 
-	//======================================================
-	//======================================================
-	@SuppressWarnings({"UnusedDeclaration"})
-    private void dismissBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dismissBtnActionPerformed
-		setVisible (false);
-		dispose ();
-	}//GEN-LAST:event_dismissBtnActionPerformed
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(450, 300));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(450, 300));
+        jScrollPane1.setViewportView(jList);
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-	//======================================================
-	//======================================================
+    }//GEN-END:initComponents
+
+    //======================================================
+    //======================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void addBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-		retreiveSelectedItem();
-	}//GEN-LAST:event_addBtnActionPerformed
-	//======================================================
-	//======================================================
-	private void listSelectionPerformed(MouseEvent evt)
-	{
-		//	save selected item to set selection  later.
-		//----------------------------------------------------
-		//selectedItem = new String((String) jList.getSelectedValue());
+    private void dismissBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dismissBtnActionPerformed
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_dismissBtnActionPerformed
 
-		//	Check if double click
-		//-----------------------------
-		if (evt.getClickCount() == 2)
-			retreiveSelectedItem();
-	}
-	//======================================================
-	//======================================================
-	private void retreiveSelectedItem()
-	{
-		//	At first try if already running
-		//------------------------------------
-		selectedItem = (String) jList.getSelectedValue();
-		if (pathText!=null)
-			pathText.append(selectedItem + "\n");
-		else
-		{
-			setVisible (false);
-			dispose ();
-		}
-	}
-	//======================================================
-	//======================================================
-	@SuppressWarnings({"UnusedDeclaration"})
+    //======================================================
+    //======================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        retrieveSelectedItem();
+    }//GEN-LAST:event_addBtnActionPerformed
+
+    //======================================================
+    //======================================================
+    private void listSelectionPerformed(MouseEvent evt) {
+        //	save selected item to set selection  later.
+        //----------------------------------------------------
+        //selectedItem = new String((String) jList.getSelectedValue());
+
+        //	Check if double click
+        //-----------------------------
+        if (evt.getClickCount() == 2)
+            retrieveSelectedItem();
+    }
+
+    //======================================================
+    //======================================================
+    private void retrieveSelectedItem() {
+        //	At first try if already running
+        //------------------------------------
+        selectedItem = (String) jList.getSelectedValue();
+        if (pathText != null)
+            pathText.append(selectedItem + "\n");
+        else {
+            setVisible(false);
+            dispose();
+        }
+    }
+
+    //======================================================
+    //======================================================
+    @SuppressWarnings({"UnusedDeclaration"})
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		setVisible (false);
-		dispose ();
-	}//GEN-LAST:event_closeDialog
-	//======================================================
-	//======================================================
-	public void showDialog()
-	{
-		setList();
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_closeDialog
 
-		//	Center windon and move a bit
-		Point	p = parent.getLocationOnScreen();
-		p.x += ((parent.getWidth()  - getWidth())   / 2) + 50;
-		p.y += ((parent.getHeight() - getHeight())  / 2) + 50;
-		setLocation(p);
+    //======================================================
+    //======================================================
+    public void showDialog() {
+        setList();
 
-		setVisible(true);
-	}
-	//======================================================
-	//======================================================
-	public String getSelectedItem()
-	{
-		return selectedItem;
-	}
+        //	Center windon and move a bit
+        Point p = parent.getLocationOnScreen();
+        p.x += ((parent.getWidth() - getWidth()) / 2) + 50;
+        p.y += ((parent.getHeight() - getHeight()) / 2) + 50;
+        setLocation(p);
 
- 	//======================================================
-	//======================================================
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel jPanel1;
-        private javax.swing.JButton addBtn;
-        private javax.swing.JButton dismissBtn;
-        private javax.swing.JScrollPane jScrollPane1;
-        private javax.swing.JList jList;
-        // End of variables declaration//GEN-END:variables
+        setVisible(true);
+    }
 
-	//======================================================
-	//======================================================
- }
+    //======================================================
+    //======================================================
+    public String getSelectedItem() {
+        return selectedItem;
+    }
+
+    //======================================================
+    //======================================================
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton addBtn;
+    private javax.swing.JButton dismissBtn;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList jList;
+    // End of variables declaration//GEN-END:variables
+
+    //======================================================
+    //======================================================
+}
