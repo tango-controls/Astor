@@ -53,9 +53,8 @@ import java.util.ArrayList;
 
 
 public class TopDialog extends JDialog {
-    private BlackBoxTable.BlackBox black_box;
-    private TopCompare compare;
-    private ArrayList<JTextArea> textAreas;
+    private BlackBoxTable.BlackBox  black_box;
+    private ArrayList<JTextArea>    textAreas;
     //private String					devname;
     //===============================================================
     /*
@@ -79,7 +78,6 @@ public class TopDialog extends JDialog {
             textAreas.get(i).getParent().setPreferredSize(new Dimension(500, 350));
             textAreas.get(i).setFont(new Font("dialog", Font.BOLD, 12));
         }
-        compare = new TopCompare();
         titleLabel.setText("Top on  " + devname);
         tabbedPane.setSelectedIndex(BlackBoxTable.HOST - 1);    //	-1 for DATES not used
 
@@ -120,7 +118,7 @@ public class TopDialog extends JDialog {
         }
 
         //	Sort for size order
-        Collections.sort(retVect, compare);
+        Collections.sort(retVect, new StringListComparator());
 
         return retVect;
     }
@@ -289,7 +287,7 @@ public class TopDialog extends JDialog {
     private class TopObject extends ArrayList<ArrayList<String>> {
         //======================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (ArrayList<String> vs : this)
                 sb.append(vs.size()).append(" calls:\t")
                         .append(vs.get(0)).append('\n');
@@ -297,19 +295,16 @@ public class TopDialog extends JDialog {
         }
     }
     //======================================================
-
     /**
      * MyCompare class to sort by size
      */
     //======================================================
-    class TopCompare implements Comparator {
-        public int compare(Object o1, Object o2) {
-            ArrayList<String> vs1 = (ArrayList<String>) o1;
-            ArrayList<String> vs2 = (ArrayList<String>) o2;
+    class StringListComparator implements Comparator<ArrayList<String>> {
+        public int compare(ArrayList<String> list1, ArrayList<String> list2) {
 
-            if (vs1.size() == vs2.size())
+            if (list1.size() == list2.size())
                 return 0;
-            else if (vs1.size() < vs2.size())
+            else if (list1.size() < list2.size())
                 return 1;
             else
                 return -1;
