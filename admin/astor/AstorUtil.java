@@ -86,8 +86,6 @@ public class AstorUtil implements AstorDefs {
     private static boolean debug = false;
     private static String[] helps;
 
-    MyCompare compare;
-
     private static final String starterStartupPropName = "StartServersAtStartup";
     private static final String[] astor_propnames = {
             "Debug",
@@ -106,7 +104,6 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     private AstorUtil() {
-        compare = new MyCompare();
         String str = System.getenv("SUPER_TANGO");
         if (str != null) {
             superTango = str.equals("true");
@@ -442,7 +439,7 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     ArrayList<String> getCollectionList(TangoHost[] hosts) {
-        ArrayList<String> vect = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<String>();
         for (TangoHost host : hosts) {
             //  Check if collection property is defined.
             if (host.collection == null)
@@ -450,20 +447,19 @@ public class AstorUtil implements AstorDefs {
 
             //  Check if this collection already exists
             boolean found = false;
-            for (int j = 0; j < vect.size() && !found; j++)
-                found = (host.collection.equals(vect.get(j)));
+            for (int j = 0; j < list.size() && !found; j++)
+                found = (host.collection.equals(list.get(j)));
 
             //	If not already exists add it
             if (!found)
-                vect.add(host.collection);
+                list.add(host.collection);
         }
 
         //	Sort for alphabetical order
-        //noinspection unchecked
-        Collections.sort(vect, compare);
+        Collections.sort(list, new StringComparator());
 
         //	Add database as first element
-        vect.add(0, "Tango Database");
+        list.add(0, "Tango Database");
 
         //	Check if default Bottom collection
         String[] lasts = getLastCollectionList();
@@ -471,16 +467,16 @@ public class AstorUtil implements AstorDefs {
         if (lasts != null)
             for (String last : lasts) {
                 boolean found = false;
-                for (int j = 0; !found && j < vect.size(); j++) {
+                for (int j = 0; !found && j < list.size(); j++) {
                     //	 put it at end of vector
-                    if (found = last.equals(vect.get(j))) {
-                        String s = vect.get(j);
-                        vect.remove(j);
-                        vect.add(s);
+                    if (found = last.equals(list.get(j))) {
+                        String s = list.get(j);
+                        list.remove(j);
+                        list.add(s);
                     }
                 }
             }
-        return vect;
+        return list;
     }
 
     //===============================================================
@@ -873,7 +869,6 @@ public class AstorUtil implements AstorDefs {
         // Do not check its exit value
     }
     //===============================================================
-
     /**
      * Execute a shell command and throw exception if command failed.
      *
@@ -1158,38 +1153,45 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"unchecked"})
-    public void sort(ArrayList[] array) {
-        for (ArrayList v : array)
-            Collections.sort(v, compare);
+    public void sortTangoServer(ArrayList<TangoServer> list) {
+        Collections.sort(list, new TangoServerComparator());
     }
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"unchecked"})
-    public void sort(ArrayList v) {
-        Collections.sort(v, compare);
+    public void sort(ArrayList<String> arrayList) {
+        Collections.sort(arrayList, new StringComparator());
     }
     //===============================================================
     //===============================================================
 
 
     //======================================================
-
     /**
-     * MyCompare class to sort collection
+     * Comparators class to sort collection
      */
     //======================================================
-    class MyCompare implements Comparator {
-        public int compare(Object o1, Object o2) {
-            String s1 = o1.toString().toLowerCase();
-            String s2 = o2.toString().toLowerCase();
+    class StringComparator implements Comparator<String> {
+        public int compare(String s1, String s2) {
+
             if (s1 == null)
                 return 1;
             else if (s2 == null)
                 return -1;
             else
                 return s1.compareTo(s2);
+        }
+    }
+    //======================================================
+    class TangoServerComparator implements Comparator<TangoServer> {
+        public int compare(TangoServer s1, TangoServer s2) {
+
+            if (s1 == null)
+                return 1;
+            else if (s2 == null)
+                return -1;
+            else
+                return s1.getName().compareTo(s2.getName());
         }
     }
 }

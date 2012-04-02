@@ -431,7 +431,7 @@ public class LevelTree extends JTree implements AstorDefs {
                 }
             }
             //	Alphabetical order
-            AstorUtil.getInstance().sort(this);
+            AstorUtil.getInstance().sortTangoServer(this);
         }
 
         //===========================================================
