@@ -34,158 +34,143 @@
 
 package admin.astor.access;
 
-import fr.esrf.Tango.*;
-import fr.esrf.TangoDs.*;
-import fr.esrf.TangoApi.*;
+import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.ApiUtil;
+import fr.esrf.TangoApi.CommandInfo;
+import fr.esrf.TangoApi.Database;
+import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
-import fr.esrf.tangoatk.widget.util.ErrorPane;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 
 //===============================================================
+
 /**
- *	JDialog Class to display info
+ * JDialog Class to display info
  *
- *	@author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //===============================================================
 
 
-public class ListSelectionDialog extends JDialog
-{
-	private JFrame	parent;
-	private int		retVal = JOptionPane.OK_OPTION;
-	private AccessProxy 	access_dev = null;
-	private ClassAllowed	def_class = null;
-	private String[]		cmd_exist;
-	
-	private int mode;
-	private static final int CLASS_MODE   = 0;
-	private static final int COMMAND_MODE = 1;
-	//===============================================================
-	/**
-	 *	Creates new form ListSelectionDialog for classes
-	 */
-	//===============================================================
-	public ListSelectionDialog(JFrame parent, String[] exist)
-					throws DevFailed
-	{
-		super(parent, true);
-		this.parent = parent;
-		cmd_exist   = exist;
-		mode  = CLASS_MODE;
-		initComponents();
-		initOwnComponents();
+public class ListSelectionDialog extends JDialog {
+    private int retVal = JOptionPane.OK_OPTION;
+    private ClassAllowed def_class = null;
+    private String[] cmd_exist;
 
-		titleLabel.setText("Classes found in database");
-		pack();
- 		ATKGraphicsUtils.centerDialog(this);
-	}
-	//===============================================================
-	/**
-	 *	Creates new form ListSelectionDialog for commands
-	 */
-	//===============================================================
-	public ListSelectionDialog(JFrame parent, ClassAllowed def_class, AccessProxy access_dev)
-					throws DevFailed
-	{
-		super(parent, true);
-		this.parent     = parent;
-		this.def_class  = def_class;
-		this.access_dev = access_dev;
-		mode  = COMMAND_MODE;
-		initComponents();
-		initOwnComponents();
+    private int mode;
+    private static final int CLASS_MODE = 0;
+    private static final int COMMAND_MODE = 1;
+    //===============================================================
+    /*
+     * Creates new form ListSelectionDialog for classes
+     */
+    //===============================================================
+    public ListSelectionDialog(JFrame parent, String[] exist)
+            throws DevFailed {
+        super(parent, true);
+        cmd_exist = exist;
+        mode = CLASS_MODE;
+        initComponents();
+        initOwnComponents();
 
-		titleLabel.setText("Commands not allowed for " + def_class.name);
-		pack();
+        titleLabel.setText("Classes found in database");
+        pack();
+        ATKGraphicsUtils.centerDialog(this);
+    }
+    //===============================================================
+    /*
+     * Creates new form ListSelectionDialog for commands
+     */
+    //===============================================================
+    public ListSelectionDialog(JFrame parent, ClassAllowed def_class)
+            throws DevFailed {
+        super(parent, true);
+        this.def_class = def_class;
+        mode = COMMAND_MODE;
+        initComponents();
+        initOwnComponents();
 
-		//	cascade window
-		Point	p = parent.getLocationOnScreen();
-		p.x += 50;
-		p.y += 50;
-		setLocation(p);
- 		//ATKGraphicsUtils.centerDialog(this);
-	}
-	//===============================================================
-	//===============================================================
-	private String[] notExising(String[] array1, String[] array2)
-	{
-		Vector	v = new Vector();
-		for (String s1 : array1)
-		{
-			String	cmd = null;
-			for (String s2 : array2)
-				if (s1.toLowerCase().equals(s2.toLowerCase()))
-					cmd = s1;
-			if (cmd==null)	//	Not found
-				v.add(s1);
-		}
-		String[]	ret = new String[v.size()];
-		for (int i=0 ; i<v.size() ; i++)
-			ret[i] = (String)v.get(i);
-		return ret;
-	}
-	//===============================================================
-	//===============================================================
-	private void initOwnComponents() throws DevFailed
-	{
-		//	Get exported devices for class
-		Database	dbase = ApiUtil.get_db_obj();
-		
-		jScrollPane1.setPreferredSize(new Dimension(300, 400));
-		if (mode==CLASS_MODE)
-		{
-			String[]	classes = dbase.get_class_list("*");
-			//	keep only not_existing
-			classes = notExising(classes, cmd_exist);
-			cmdList.setListData(classes);
- 		}
-		else
-		{
-			//	Commands mode
-			String[]	devices = dbase.get_device_exported_for_class(def_class.name);
-			String[]	commands = null;
-			for (String devname : devices)
-			{
-				try
-				{
-					//	Try to read all commands.
-					System.out.println("try to read " + devname);
-					CommandInfo[]	info =
-						new DeviceProxy(devname).command_list_query();
-					//	And keep only not already allowed
-					commands = def_class.getNotAllowed(info);
-					break;
-				}
-				catch (DevFailed e)
-				{
-					//ErrorPane.showErrorMessage(this, null, e);
-				}
-			}
-			if (commands!=null)
-			{
-				cmdList.setListData(commands);
-			}
-			else
-				Except.throw_exception("NoDeviceExported",
-						"There is no device exported for class " + def_class.name +
-						" to get the command list !",
-						"ListSelectionDialog.initOwnComponents()");
-		}
-	}
-	//===============================================================
-    /** This method is called from within the constructor to
+        titleLabel.setText("Commands not allowed for " + def_class.name);
+        pack();
+
+        //	cascade window
+        Point p = parent.getLocationOnScreen();
+        p.x += 50;
+        p.y += 50;
+        setLocation(p);
+        //ATKGraphicsUtils.centerDialog(this);
+    }
+
+    //===============================================================
+    //===============================================================
+    private String[] notExising(String[] array1, String[] array2) {
+        ArrayList<String> v = new ArrayList<String>();
+        for (String s1 : array1) {
+            String cmd = null;
+            for (String s2 : array2)
+                if (s1.toLowerCase().equals(s2.toLowerCase()))
+                    cmd = s1;
+            if (cmd == null)    //	Not found
+                v.add(s1);
+        }
+        String[] ret = new String[v.size()];
+        for (int i = 0; i < v.size(); i++)
+            ret[i] = v.get(i);
+        return ret;
+    }
+
+    //===============================================================
+    //===============================================================
+    private void initOwnComponents() throws DevFailed {
+        //	Get exported devices for class
+        Database dbase = ApiUtil.get_db_obj();
+
+        jScrollPane1.setPreferredSize(new Dimension(300, 400));
+        if (mode == CLASS_MODE) {
+            String[] classes = dbase.get_class_list("*");
+            //	keep only not_existing
+            classes = notExising(classes, cmd_exist);
+            cmdList.setListData(classes);
+        } else {
+            //	Commands mode
+            String[] devices = dbase.get_device_exported_for_class(def_class.name);
+            String[] commands = null;
+            for (String devname : devices) {
+                try {
+                    //	Try to read all commands.
+                    System.out.println("try to read " + devname);
+                    CommandInfo[] info =
+                            new DeviceProxy(devname).command_list_query();
+                    //	And keep only not already allowed
+                    commands = def_class.getNotAllowed(info);
+                    break;
+                } catch (DevFailed e) {
+                    //ErrorPane.showErrorMessage(this, null, e);
+                }
+            }
+            if (commands != null) {
+                cmdList.setListData(commands);
+            } else
+                Except.throw_exception("NoDeviceExported",
+                        "There is no device exported for class " + def_class.name +
+                                " to get the command list !",
+                        "ListSelectionDialog.initOwnComponents()");
+        }
+    }
+    //===============================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//===============================================================
+    //===============================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -239,71 +224,71 @@ public class ListSelectionDialog extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//===============================================================
-	//===============================================================
-	private String	selection = null;
-	public String getSelection()
-	{
-		return selection;
-	}
-	//===============================================================
-	//===============================================================
-	private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
+    //===============================================================
+    //===============================================================
+    private String selection = null;
 
-		selection = (String) cmdList.getSelectedValue();
-		retVal = JOptionPane.OK_OPTION;
-		doClose();
-	}//GEN-LAST:event_okBtnActionPerformed
+    public String getSelection() {
+        return selection;
+    }
 
-	//===============================================================
-	//===============================================================
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		retVal = JOptionPane.CANCEL_OPTION;
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		retVal = JOptionPane.CANCEL_OPTION;
-		doClose();
-	}//GEN-LAST:event_closeDialog
+        selection = (String) cmdList.getSelectedValue();
+        retVal = JOptionPane.OK_OPTION;
+        doClose();
+    }//GEN-LAST:event_okBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
-	private void cmdListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmdListMouseClicked
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        retVal = JOptionPane.CANCEL_OPTION;
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-		//	Check if double click
-		if (evt.getClickCount() == 2)
-		{
-			selection = (String) cmdList.getSelectedValue();
-			retVal = JOptionPane.OK_OPTION;
-			doClose();
-		}
-	}//GEN-LAST:event_cmdListMouseClicked
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        retVal = JOptionPane.CANCEL_OPTION;
+        doClose();
+    }//GEN-LAST:event_closeDialog
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void doClose()
-	{
-		setVisible(false);
-		dispose();
-	}
-	//===============================================================
-	//===============================================================
-	public int showDialog()
-	{
-		setVisible(true);
-		return retVal;
-	}
+    //===============================================================
+    //===============================================================
+    private void cmdListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmdListMouseClicked
 
-	//===============================================================
+        //	Check if double click
+        if (evt.getClickCount() == 2) {
+            selection = (String) cmdList.getSelectedValue();
+            retVal = JOptionPane.OK_OPTION;
+            doClose();
+        }
+    }//GEN-LAST:event_cmdListMouseClicked
+
+    //===============================================================
+
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    private void doClose() {
+        setVisible(false);
+        dispose();
+    }
+
+    //===============================================================
+    //===============================================================
+    public int showDialog() {
+        setVisible(true);
+        return retVal;
+    }
+
+    //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;
     private javax.swing.JList cmdList;
@@ -313,6 +298,6 @@ public class ListSelectionDialog extends JDialog
     private javax.swing.JButton okBtn;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
-	//===============================================================
+    //===============================================================
 
 }
