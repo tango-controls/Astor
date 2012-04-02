@@ -32,7 +32,6 @@
 //-======================================================================
 
 
-
 package admin.astor.statistics;
 
 import admin.astor.AstorUtil;
@@ -45,40 +44,40 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
 
 //=======================================================
+
 /**
- *	JFrame Class to display info
+ * JFrame Class to display info
  *
- * @author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //=======================================================
-public class StatisticsPanel extends JFrame
-{
-	static private JFileChooser  chooser = null;
-    private static final StatisticsFileFilter	fileFilter =
+public class StatisticsPanel extends JFrame {
+    static private JFileChooser chooser = null;
+    private static final StatisticsFileFilter fileFilter =
             new StatisticsFileFilter("xml", "Statistics Files");
-    private JFrame  parent = null;
-    private GlobalStatistics        globalStatistics;
-    private JScrollPane             tableScrollPane = null;
-    private GlobalStatisticsTable   statisticsTable;
-
+    private JFrame parent = null;
+    private GlobalStatistics globalStatistics;
+    private JScrollPane tableScrollPane = null;
+    private GlobalStatisticsTable statisticsTable;
 
 
     //=======================================================
+
     /**
-	 *	Creates new form StatisticsPanel
-     * @param parent JFrame parent instance (if null, exit at exitBtn clicked)
+     * Creates new form StatisticsPanel
+     *
+     * @param parent   JFrame parent instance (if null, exit at exitBtn clicked)
      * @param fileName file's name to load statistics.
      * @throws DevFailed if read or load statistices from file failed.
-	 */
-	//=======================================================
-    public StatisticsPanel(JFrame parent, String fileName) throws DevFailed
-	{
+     */
+    //=======================================================
+    public StatisticsPanel(JFrame parent, String fileName) throws DevFailed {
         this.parent = parent;
         initComponents();
-		customizeMenus();
+        customizeMenus();
 
         globalStatistics = new GlobalStatistics(fileName);
         displayGlobalStatistics();
@@ -87,27 +86,28 @@ public class StatisticsPanel extends JFrame
         ATKGraphicsUtils.centerFrameOnScreen(this);
     }
     //=======================================================
+
     /**
-	 *	Creates new form StatisticsPanel
-	 */
-	//=======================================================
-    public StatisticsPanel()
-	{
+     * Creates new form StatisticsPanel
+     */
+    //=======================================================
+    public StatisticsPanel() {
         this(null);
     }
     //=======================================================
+
     /**
-	 *	Creates new form StatisticsPanel
+     * Creates new form StatisticsPanel
+     *
      * @param parent JFrame parent instance (if null, exit at exitBtn clicked)
-	 */
-	//=======================================================
-    public StatisticsPanel(JFrame parent)
-	{
+     */
+    //=======================================================
+    public StatisticsPanel(JFrame parent) {
         this.parent = parent;
-		AstorUtil.startSplash("Statistics ");
+        AstorUtil.startSplash("Statistics ");
         AstorUtil.increaseSplashProgress(5, "Initializing....");
         initComponents();
-		customizeMenus();
+        customizeMenus();
 
         titleLabel.setText("No Statistics Read");
         pack();
@@ -115,25 +115,26 @@ public class StatisticsPanel extends JFrame
         AstorUtil.stopSplash();
     }
     //=======================================================
+
     /**
      * @param hostList host names to be checked, if empty, check all Astor controlled hosts.
      */
     //=======================================================
-    public void readAndDisplayStatistics(Vector<String> hostList)
-    {
+    public void readAndDisplayStatistics(ArrayList<String> hostList) {
         titleLabel.setText("Reading and Computing Statistics");
         new ReadThread(hostList).start();
     }
+
     //=======================================================
     //=======================================================
-    private class ReadThread extends Thread
-    {
-        private Vector<String> hostList;
+    private class ReadThread extends Thread {
+        private ArrayList<String> hostList;
+
         //===================================================
-        private ReadThread(Vector<String> hostList)
-        {
+        private ReadThread(ArrayList<String> hostList) {
             this.hostList = hostList;
         }
+
         //===================================================
         public void run() {
             AstorUtil.startSplash("Statistics ");
@@ -141,29 +142,29 @@ public class StatisticsPanel extends JFrame
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             //  Read Statistics for all controlled starters
-             Vector<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
-             globalStatistics = new GlobalStatistics(starterStatistics);
+            ArrayList<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
+            globalStatistics = new GlobalStatistics(starterStatistics);
 
-             displayGlobalStatistics();
+            displayGlobalStatistics();
 
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             AstorUtil.stopSplash();
         }
 
     }
+
     //=======================================================
     //=======================================================
-    private void displayGlobalStatistics()
-    {
+    private void displayGlobalStatistics() {
         //  Build the server failed list and display it in a table
-        Vector<ServerStat>  failedServers = getServerFailedList(
+        ArrayList<ServerStat> failedServers = getServerFailedList(
                 globalStatistics.getStarterStatistics());
         statisticsTable = new GlobalStatisticsTable(this);
         statisticsTable.setStatistics(failedServers);
         globalStatTextArea.setText(globalStatistics.toString());
 
         //  Put it in a scrolled pane.
-        if (tableScrollPane!=null)
+        if (tableScrollPane != null)
             getContentPane().remove(tableScrollPane);
         tableScrollPane = new JScrollPane();
         tableScrollPane.setPreferredSize(new Dimension(
@@ -174,54 +175,54 @@ public class StatisticsPanel extends JFrame
         //  Build title
         String title = "During  " + Utils.formatDuration(globalStatistics.getDuration()) +
                 "      " + failedServers.size();
-        if (failedServers.size()<=1)
+        if (failedServers.size() <= 1)
             title += "  server has failed";
         else
             title += "  servers have failed";
         titleLabel.setText(title);
         pack();
-	}
-	//=======================================================
-	//=======================================================
+    }
+    //=======================================================
+    //=======================================================
 
-	//=======================================================
-	//=======================================================
-	private void customizeMenus()
-	{
-		fileMenu.setMnemonic ('F');
-		readItem.setMnemonic ('R');
-		readItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.CTRL_MASK));
-		openItem.setMnemonic ('O');
-		openItem.setAccelerator(KeyStroke.getKeyStroke('O', Event.CTRL_MASK));
-		saveItem.setMnemonic ('S');
-		saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Event.CTRL_MASK));
+    //=======================================================
+    //=======================================================
+    private void customizeMenus() {
+        fileMenu.setMnemonic('F');
+        readItem.setMnemonic('R');
+        readItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.CTRL_MASK));
+        openItem.setMnemonic('O');
+        openItem.setAccelerator(KeyStroke.getKeyStroke('O', Event.CTRL_MASK));
+        saveItem.setMnemonic('S');
+        saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Event.CTRL_MASK));
 
         String superTango = System.getenv("SUPER_TANGO");
-        if (superTango!=null && superTango.toLowerCase().equals("true")) {
-    		resetItem.setMnemonic ('R');
-	    	resetItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.ALT_MASK));
-        }
-        else
+        if (superTango != null && superTango.toLowerCase().equals("true")) {
+            resetItem.setMnemonic('R');
+            resetItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.ALT_MASK));
+        } else
             resetItem.setVisible(false);
 
-		exitItem.setMnemonic ('E');
-		exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
+        exitItem.setMnemonic('E');
+        exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
 
-        editMenu.setMnemonic ('E');
-        filterItem.setMnemonic ('F');
+        editMenu.setMnemonic('E');
+        filterItem.setMnemonic('F');
         filterItem.setAccelerator(KeyStroke.getKeyStroke('F', Event.CTRL_MASK));
-        errorItem.setMnemonic ('E');
+        errorItem.setMnemonic('E');
         errorItem.setAccelerator(KeyStroke.getKeyStroke('E', Event.CTRL_MASK));
 
         bottomPanel.setVisible(false);
-	}
-	//=======================================================
-    /** This method is called from within the constructor to
+    }
+    //=======================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//=======================================================
+    //=======================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -350,56 +351,56 @@ public class StatisticsPanel extends JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//=======================================================
-	//=======================================================
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void openItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openItemActionPerformed
         initChooser("Open");
-		int	retval = chooser.showOpenDialog(this);
-		if (retval==JFileChooser.APPROVE_OPTION) {
-			File	file = chooser.getSelectedFile();
-			if (file!=null) {
-				if (!file.isDirectory()) {
+        int retval = chooser.showOpenDialog(this);
+        if (retval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            if (file != null) {
+                if (!file.isDirectory()) {
                     try {
-                        String	filename = file.getAbsolutePath();
+                        String filename = file.getAbsolutePath();
                         globalStatistics = new GlobalStatistics(filename);
                         displayGlobalStatistics();
-                    }
-                    catch (DevFailed e) {
+                    } catch (DevFailed e) {
                         ErrorPane.showErrorMessage(this, null, e);
                     }
-				}
-			}
-		}
+                }
+            }
+        }
     }//GEN-LAST:event_openItemActionPerformed
+
     //=======================================================
     //=======================================================
-    private void initChooser(String str)
-    {
-        if (chooser==null) {
-            String  path = System.getProperty("FILES");
-            if (path==null)
+    private void initChooser(String str) {
+        if (chooser == null) {
+            String path = System.getProperty("FILES");
+            if (path == null)
                 path = "";
             chooser = new JFileChooser(new File(path).getAbsolutePath());
             chooser.setFileFilter(fileFilter);
         }
         chooser.setApproveButtonText(str);
     }
+
     //=======================================================
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void saveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveItemActionPerformed
 
-        if (globalStatistics==null)
+        if (globalStatistics == null)
             return;
         initChooser("Save");
-        int	retval = chooser.showOpenDialog(this);
-        if (retval==JFileChooser.APPROVE_OPTION) {
-            File	file = chooser.getSelectedFile();
-            if (file!=null) {
+        int retval = chooser.showOpenDialog(this);
+        if (retval == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            if (file != null) {
                 if (!file.isDirectory()) {
                     //  Get target file name
-                    String	fileName = file.getAbsolutePath();
+                    String fileName = file.getAbsolutePath();
                     if (!fileName.endsWith(".xml"))
                         fileName += ".xml";
 
@@ -408,7 +409,7 @@ public class StatisticsPanel extends JFrame
                         if (JOptionPane.showConfirmDialog(this,
                                 fileName + "   File already exists\n\n     Overwrite it ?",
                                 "Confirm Dialog",
-                                JOptionPane.YES_NO_OPTION)!=JOptionPane.OK_OPTION) {
+                                JOptionPane.YES_NO_OPTION) != JOptionPane.OK_OPTION) {
                             return;
                         }
 
@@ -417,33 +418,34 @@ public class StatisticsPanel extends JFrame
                     //  Save data
                     try {
                         globalStatistics.saveStatistics(fileName);
-                    }
-                    catch(DevFailed e) {
+                    } catch (DevFailed e) {
                         ErrorPane.showErrorMessage(this, null, e);
                     }
                 }
             }
         }
     }//GEN-LAST:event_saveItemActionPerformed
-	//=======================================================
-	//=======================================================
+
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
-        if (parent==null)
+        if (parent == null)
             System.exit(0);
         else
             setVisible(false);
     }//GEN-LAST:event_exitItemActionPerformed
 
-	//=======================================================
-	//=======================================================
+    //=======================================================
+    //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        if (parent==null)
+        if (parent == null)
             System.exit(0);
         else
-            setVisible(false);    
+            setVisible(false);
     }//GEN-LAST:event_exitForm
+
     //=======================================================
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -451,14 +453,15 @@ public class StatisticsPanel extends JFrame
 
         readAndDisplayStatistics(null);
     }//GEN-LAST:event_readItemActionPerformed
+
     //=======================================================
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void errorItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_errorItemActionPerformed
 
         //  Build error list if global stat have been read
-        StringBuffer    sb = new StringBuffer();
-        if (globalStatistics!=null) {
+        StringBuffer sb = new StringBuffer();
+        if (globalStatistics != null) {
             for (StarterStat starterStat : globalStatistics.getStarterStatistics()) {
                 if (!starterStat.readOK) {
                     sb.append(starterStat.name).append(":\t").append(starterStat.error).append("\n");
@@ -467,7 +470,7 @@ public class StatisticsPanel extends JFrame
         }
 
         //  if nothing, special message
-        if (sb.length()==0)
+        if (sb.length() == 0)
             sb.append("No Eror.");
         new PopupText(this, true).show(sb.toString());
     }//GEN-LAST:event_errorItemActionPerformed
@@ -475,10 +478,9 @@ public class StatisticsPanel extends JFrame
     //=======================================================
     //=======================================================
     private void filterTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_filterTextKeyPressed
-        if (evt.getKeyChar()==27) { //    Escape
+        if (evt.getKeyChar() == 27) { //    Escape
             resetFilter();
-        }
-        else {
+        } else {
             //  Delayed a bit to be able to read text
             new DelayedDisplay(evt).start();
         }
@@ -488,7 +490,7 @@ public class StatisticsPanel extends JFrame
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void filterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterItemActionPerformed
-        if (statisticsTable!=null) {
+        if (statisticsTable != null) {
             bottomPanel.setVisible(true);
             pack();
             new DelayedDisplay().start();
@@ -499,28 +501,28 @@ public class StatisticsPanel extends JFrame
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void resetItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetItemActionPerformed
-        // TODO add your handling code here:
+
         new ResetStatistics(this);
     }//GEN-LAST:event_resetItemActionPerformed
+
     //=======================================================
     //=======================================================
-    private void resetFilter()
-    {
-        if (statisticsTable!=null) {
+    private void resetFilter() {
+        if (statisticsTable != null) {
             statisticsTable.resetFilter();
             filterText.setText("");
             bottomPanel.setVisible(false);
             pack();
         }
     }
+
     //=======================================================
     //=======================================================
-    private Vector<ServerStat>  getServerFailedList(Vector<StarterStat> starterStats)
-    {
-        Vector<ServerStat>  serverStats = new Vector<ServerStat>();
+    private ArrayList<ServerStat> getServerFailedList(ArrayList<StarterStat> starterStats) {
+        ArrayList<ServerStat> serverStats = new ArrayList<ServerStat>();
         for (StarterStat starterStat : starterStats) {
             for (ServerStat server : starterStat) {
-                if (server.nbFailures>0) {
+                if (server.nbFailures > 0) {
                     serverStats.add(server);
                 }
             }
@@ -528,24 +530,24 @@ public class StatisticsPanel extends JFrame
         return serverStats;
     }
     //=======================================================
+
     /**
-    * @param args the command line arguments
-    */
-	//=======================================================
+     * @param args the command line arguments
+     */
+    //=======================================================
     public static void main(String args[]) {
         try {
-            if (args.length>0)
+            if (args.length > 0)
                 new StatisticsPanel(null, args[0]).setVisible(true);
             else
                 new StatisticsPanel().setVisible(true);
-        }
-        catch (DevFailed e) {
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);
         }
     }
 
 
-	//=======================================================
+    //=======================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JMenu editMenu;
@@ -561,42 +563,45 @@ public class StatisticsPanel extends JFrame
     private javax.swing.JMenuItem saveItem;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
-	//=======================================================
+    //=======================================================
 
     private String filter = "";
     //===============================================================
+
     /**
-     *  A Thread class to manage JTextField a bit later.
-     *  After main loop update.
+     * A Thread class to manage JTextField a bit later.
+     * After main loop update.
      */
     //===============================================================
-    private class DelayedDisplay extends Thread
-    {
+    private class DelayedDisplay extends Thread {
         private KeyEvent evt = null;
+
         //===============================================================
         private DelayedDisplay() {
             //
         }
+
         private DelayedDisplay(KeyEvent evt) {
             this.evt = evt;
         }
+
         //===============================================================
         public void run() {
-            try { sleep(10); } catch (InterruptedException e) {/*  */}
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {/*  */}
 
-            if (evt==null) {
+            if (evt == null) {
                 filterText.requestFocus();
-            }
-            else {
-                char    c = evt.getKeyChar();
-                if ((c & 0x8000)==0) { //  not Ctrl, Shift,...
-                    String  s = filterText.getText();
+            } else {
+                char c = evt.getKeyChar();
+                if ((c & 0x8000) == 0) { //  not Ctrl, Shift,...
+                    String s = filterText.getText();
                     //System.out.println(c+ "  " + ((int)c));
                     if (!filter.equals(s)) { // Has changed
-                        if (s.length()>0) {
+                        if (s.length() > 0) {
                             statisticsTable.setFilter(s);
-                        }
-                        else
+                        } else
                             statisticsTable.resetFilter();
                     }
                     filter = s;
