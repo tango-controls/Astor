@@ -35,12 +35,12 @@
 package admin.astor.tools;
 
 
-/** 
+/**
  *	This class is able to
  *
- * @author  verdier
+ * @author verdier
  */
- 
+
 import fr.esrf.tangoatk.core.ATKException;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -48,65 +48,63 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class  Utils
-{
-	static private Utils	instance = null;
+public class Utils {
+    static private Utils instance = null;
     static public final String img_path = "/admin/astor/images/";
-	//===============================================================
-	//===============================================================
-	private Utils()
-	{
-	}
-	//===============================================================
-	//===============================================================
-	static public Utils getInstance()
-	{
-		if (instance==null)
-			instance = new Utils();
-		return instance;
-	}
-	//===============================================================
-	//===============================================================
-	public ImageIcon getIcon(String filename)
-	{
-		java.net.URL	url =
-			getClass().getResource(img_path+filename);
-		if (url==null) {
-			System.err.println("WARNING:  " + img_path + filename + " : File not found");
-			return new ImageIcon();
-		}
-		return new ImageIcon(url);
-	}
+
     //===============================================================
-	//===============================================================
-    static public void popupMessage(Component c, String message, String filename)
-    {
-        ImageIcon	icon = new ImageIcon(c.getClass().getResource(filename));
+    //===============================================================
+    private Utils() {
+    }
+
+    //===============================================================
+    //===============================================================
+    static public Utils getInstance() {
+        if (instance == null)
+            instance = new Utils();
+        return instance;
+    }
+
+    //===============================================================
+    //===============================================================
+    public ImageIcon getIcon(String filename) {
+        java.net.URL url =
+                getClass().getResource(img_path + filename);
+        if (url == null) {
+            System.err.println("WARNING:  " + img_path + filename + " : File not found");
+            return new ImageIcon();
+        }
+        return new ImageIcon(url);
+    }
+
+    //===============================================================
+    //===============================================================
+    static public void popupMessage(Component c, String message, String filename) {
+        ImageIcon icon = new ImageIcon(c.getClass().getResource(filename));
         JOptionPane.showMessageDialog(c, message, "Info Window", JOptionPane.INFORMATION_MESSAGE, icon);
     }
+
     //===============================================================
-	//===============================================================
-    static public void popupMessage(Component c, String message)
-    {
+    //===============================================================
+    static public void popupMessage(Component c, String message) {
         JOptionPane.showMessageDialog(c, message, "Info Window", JOptionPane.INFORMATION_MESSAGE);
     }
+
     //===============================================================
-	//===============================================================
-    static public void popupError(Component c, String message, Exception e)
-    {
+    //===============================================================
+    static public void popupError(Component c, String message, Exception e) {
         ErrorPane.showErrorMessage(c, message, e);
     }
+
     //===============================================================
-	//===============================================================
-    static public void popupError(Component c, String message)
-    {
+    //===============================================================
+    static public void popupError(Component c, String message) {
         try {
             throw new ATKException(message);
-        }
-        catch (ATKException e) {
+        } catch (ATKException e) {
             ErrorPane.showErrorMessage(c, null, e);
         }
     }
     //===============================================================
-	//===============================================================
+    //===============================================================
 }

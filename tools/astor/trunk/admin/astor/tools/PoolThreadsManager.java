@@ -34,175 +34,171 @@
 
 package admin.astor.tools;
 
-import admin.astor.TangoServer;
 import admin.astor.TangoHost;
+import admin.astor.TangoServer;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
-import fr.esrf.TangoDs.Except;
 
 import javax.swing.*;
 import java.awt.*;
 
 //===============================================================
+
 /**
- *	JDialog Class to display info
+ * JDialog Class to display info
  *
- *	@author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //===============================================================
 
 
-public class PoolThreadsManager extends JDialog
-{
-	private Component	parent;
-	private TangoHost	host;
-	private TangoServer	server;
-	private PoolThreadsTree	tree;
+public class PoolThreadsManager extends JDialog {
+    private Component parent;
+    private TangoHost host;
+    private TangoServer server;
+    private PoolThreadsTree tree;
 
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JFrame parent, TangoHost host, TangoServer server) throws DevFailed
-	{
-		super(parent, true);
-		this.parent = parent;
-		this.host   = host;
-		this.server = server;
-		createForm();
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JFrame parent, TangoServer server) throws DevFailed
-	{
-		this(parent, null, server);
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JDialog parent, TangoHost host, TangoServer server) throws DevFailed
-	{
-		super(parent, true);
-		this.parent = parent;
-		this.host   = host;
-		this.server = server;
-		createForm();
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JDialog parent, TangoServer server) throws DevFailed
-	{
-		this(parent, null, server);
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JFrame parent, TangoHost host, String servname) throws DevFailed
-	{
-		this(parent, host, new TangoServer(
-			(servname.startsWith("dserver/"))? servname : "dserver/"+servname));
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JDialog parent, TangoHost host, String servname) throws DevFailed
-	{
-		this(parent, host, new TangoServer(
-			(servname.startsWith("dserver/"))? servname : "dserver/"+servname));
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JFrame parent, String servname) throws DevFailed
-	{
-		this(parent, null, servname);
-	}
-	//===============================================================
-	/*
-	 *	Creates new form PoolThreadsManager
-	 */
-	//===============================================================
-	public PoolThreadsManager(JDialog parent, String servname) throws DevFailed
-	{
-		this(parent, null, servname);
-	}
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JFrame parent, TangoHost host, TangoServer server) throws DevFailed {
+        super(parent, true);
+        this.parent = parent;
+        this.host = host;
+        this.server = server;
+        createForm();
+    }
 
-	//===============================================================
-	//===============================================================
-	private void createForm() throws DevFailed
-	{
-		initComponents();
-		//	Check IDL Version
-		int	idl;
-		try
-		{
-			idl = server.get_idl_version();
-		}
-		catch(DevFailed e)	{
-			idl = 0;
-		}
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JFrame parent, TangoServer server) throws DevFailed {
+        this(parent, null, server);
+    }
 
-		if (idl>0 &&idl<4)
-			Except.throw_non_supported_exception("BAD_IDL_VERSION",
-				"The server is compiled with IDL " + idl +
-				"\nThis feature is allowed only with IDL 4 (TANGO 7) and above",
-				"PoolThreadsManager.PoolThreadsManager()");
-		warningTextArea.setVisible(idl==0);	//	visible if server not running
-		initializeTree();
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JDialog parent, TangoHost host, TangoServer server) throws DevFailed {
+        super(parent, true);
+        this.parent = parent;
+        this.host = host;
+        this.server = server;
+        createForm();
+    }
 
-		pack();
- 		ATKGraphicsUtils.centerDialog(this);
-	}
-	//===============================================================
-	//===============================================================
-	private JScrollPane	scrowllPane = null;
-	public void initializeTree() throws DevFailed
-	{
-		if (scrowllPane==null)
-		{
-			scrowllPane = new JScrollPane();
-			scrowllPane.setPreferredSize(new Dimension(350, 400));
-			centerPanel.add(scrowllPane, BorderLayout.CENTER);
-		}
-		else
-		if (tree!=null)
-			scrowllPane.remove(tree);
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JDialog parent, TangoServer server) throws DevFailed {
+        this(parent, null, server);
+    }
 
-		//	Build users_tree to display uinfo
-		tree = new PoolThreadsTree(this, server);
-		scrowllPane.setViewportView(tree);
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JFrame parent, TangoHost host, String servname) throws DevFailed {
+        this(parent, host, new TangoServer(
+                (servname.startsWith("dserver/")) ? servname : "dserver/" + servname));
+    }
 
-		//	Customize menu
-		editMenu.setMnemonic ('E');
-		newThreadItem.setMnemonic ('N');
-		removeThreadItem.setMnemonic ('R');
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JDialog parent, TangoHost host, String servname) throws DevFailed {
+        this(parent, host, new TangoServer(
+                (servname.startsWith("dserver/")) ? servname : "dserver/" + servname));
+    }
 
-		newThreadItem.setAccelerator(KeyStroke.getKeyStroke('N', Event.CTRL_MASK));
-		removeThreadItem.setAccelerator(KeyStroke.getKeyStroke(Event.DELETE, 0));
-	}
-	//===============================================================
-    /** This method is called from within the constructor to
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JFrame parent, String servname) throws DevFailed {
+        this(parent, null, servname);
+    }
+
+    //===============================================================
+    /*
+      *	Creates new form PoolThreadsManager
+      */
+    //===============================================================
+    public PoolThreadsManager(JDialog parent, String servname) throws DevFailed {
+        this(parent, null, servname);
+    }
+
+    //===============================================================
+    //===============================================================
+    private void createForm() throws DevFailed {
+        initComponents();
+        //	Check IDL Version
+        int idl;
+        try {
+            idl = server.get_idl_version();
+        } catch (DevFailed e) {
+            idl = 0;
+        }
+
+        if (idl > 0 && idl < 4)
+            Except.throw_non_supported_exception("BAD_IDL_VERSION",
+                    "The server is compiled with IDL " + idl +
+                            "\nThis feature is allowed only with IDL 4 (TANGO 7) and above",
+                    "PoolThreadsManager.PoolThreadsManager()");
+        warningTextArea.setVisible(idl == 0);    //	visible if server not running
+        initializeTree();
+
+        pack();
+        ATKGraphicsUtils.centerDialog(this);
+    }
+
+    //===============================================================
+    //===============================================================
+    private JScrollPane scrowllPane = null;
+
+    public void initializeTree() throws DevFailed {
+        if (scrowllPane == null) {
+            scrowllPane = new JScrollPane();
+            scrowllPane.setPreferredSize(new Dimension(350, 400));
+            centerPanel.add(scrowllPane, BorderLayout.CENTER);
+        } else if (tree != null)
+            scrowllPane.remove(tree);
+
+        //	Build users_tree to display uinfo
+        tree = new PoolThreadsTree(this, server);
+        scrowllPane.setViewportView(tree);
+
+        //	Customize menu
+        editMenu.setMnemonic('E');
+        newThreadItem.setMnemonic('N');
+        removeThreadItem.setMnemonic('R');
+
+        newThreadItem.setAccelerator(KeyStroke.getKeyStroke('N', Event.CTRL_MASK));
+        removeThreadItem.setAccelerator(KeyStroke.getKeyStroke(Event.DELETE, 0));
+    }
+    //===============================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//===============================================================
+    //===============================================================
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         bottomPanel = new javax.swing.JPanel();
@@ -286,72 +282,70 @@ public class PoolThreadsManager extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void removeThreadItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeThreadItemActionPerformed
-		if (tree.selectedObjectIsThread())
-			tree.removeThread();
-	}//GEN-LAST:event_removeThreadItemActionPerformed
+        if (tree.selectedObjectIsThread())
+            tree.removeThread();
+    }//GEN-LAST:event_removeThreadItemActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void newThreadItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newThreadItemActionPerformed
-		tree.addThreadNode();
+        tree.addThreadNode();
     }//GEN-LAST:event_newThreadItemActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
+    private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
-		if (JOptionPane.showConfirmDialog(parent,
-				"Apply pool thread configuration to database ?",
-				"Confirm Dialog",
-				JOptionPane.YES_NO_OPTION)==JOptionPane.OK_OPTION)
-		{
-			tree.putPoolThreadInfo();
-			if (host!=null)
-				server.restart(parent, host, false);
-			else
-				JOptionPane.showMessageDialog(this,
-								"Database has been updated.\nRestart the server now.",
-								"Command Done",
-								JOptionPane.INFORMATION_MESSAGE);
-		}
-	}//GEN-LAST:event_okBtnActionPerformed
+        if (JOptionPane.showConfirmDialog(parent,
+                "Apply pool thread configuration to database ?",
+                "Confirm Dialog",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+            tree.putPoolThreadInfo();
+            if (host != null)
+                server.restart(parent, host, false);
+            else
+                JOptionPane.showMessageDialog(this,
+                        "Database has been updated.\nRestart the server now.",
+                        "Command Done",
+                        JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_okBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		doClose();
-	}//GEN-LAST:event_closeDialog
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        doClose();
+    }//GEN-LAST:event_closeDialog
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void doClose()
-	{
-		if (parent.getWidth()>0) {
-			setVisible(false);
-			dispose();
-		}
-		else
-			System.exit(0);
-	}
+    //===============================================================
 
-	//===============================================================
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    private void doClose() {
+        if (parent.getWidth() > 0) {
+            setVisible(false);
+            dispose();
+        } else
+            System.exit(0);
+    }
+
+    //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JButton cancelBtn;
@@ -365,29 +359,25 @@ public class PoolThreadsManager extends JDialog
     private javax.swing.JLabel titleLabel;
     private javax.swing.JTextArea warningTextArea;
     // End of variables declaration//GEN-END:variables
-	//===============================================================
+    //===============================================================
 
 
+    //===============================================================
+
+    /**
+     * @param args the command line arguments
+     */
+    //===============================================================
+    public static void main(String args[]) {
 
 
-	//===============================================================
-	/**
-	* @param args the command line arguments
-	*/
-	//===============================================================
-	public static void main(String args[]) {
-	
-		
-		try
-		{
-			//JDialog	dlg = new JDialog(new JFrame());
-			new PoolThreadsManager(new JFrame(), "PoolThreadTest/pv").setVisible(true);
+        try {
+            //JDialog	dlg = new JDialog(new JFrame());
+            new PoolThreadsManager(new JFrame(), "PoolThreadTest/pv").setVisible(true);
 //					new TangoHost("esrflinux1-2", true), "dserver/PoolThreadTest/pv").setVisible(true);
-		}
-		catch(DevFailed e)
-		{
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), "", e);
-		}
-	}
+        }
+    }
 
 }
