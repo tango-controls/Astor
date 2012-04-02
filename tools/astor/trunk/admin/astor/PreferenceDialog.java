@@ -34,160 +34,161 @@
 
 package admin.astor;
 
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
-import admin.astor.tools.Utils;
 
 //===============================================================
+
 /**
- *	Class Description: Basic Dialog Class to display info
+ * Class Description: Basic Dialog Class to display info
  *
- *	@author  Pascal Verdier
+ * @author Pascal Verdier
  */
 //===============================================================
 
 
-public class PreferenceDialog extends JDialog
-{
-	private JFrame	parent;
+public class PreferenceDialog extends JDialog {
+    private JFrame parent;
 
-	//===============================================================
-	/**
-	 *	Creates new form PreferenceDialog
+    //===============================================================
+
+    /**
+     * Creates new form PreferenceDialog
+     *
      * @param parent parent instance
      */
-	//===============================================================
-	public PreferenceDialog(JFrame parent)
-	{
-		super(parent, true);
-		this.parent = parent;
-		initComponents();
-		initialize();
+    //===============================================================
+    public PreferenceDialog(JFrame parent) {
+        super(parent, true);
+        this.parent = parent;
+        initComponents();
+        initialize();
 
-		titleLabel.setText(AstorUtil.getTangoHost() + "  preferences");
-		pack();
+        titleLabel.setText(AstorUtil.getTangoHost() + "  preferences");
+        pack();
         ATKGraphicsUtils.centerDialog(this);
-	}
-	//===============================================================
-	//===============================================================
-	private void storePreferences()
-	{
-		//	Get velues
-		String	rl_user  = rshUserTxt.getText();
-		String	rl_cmd   = rshCmdTxt.getText();
+    }
 
-		//	Check them
-		if (rl_user==null)              rl_user           = "";
-		if (rl_cmd==null)               rl_cmd            = "";
-		if (tools==null)                tools             = new String[0];
-		if (last_collection==null)      last_collection   = new String[0];
-		if (known_tango_hosts==null)    known_tango_hosts = new String[0];
-		if (pages==null)                pages             = new String[0];
+    //===============================================================
+    //===============================================================
+    private void storePreferences() {
+        //	Get velues
+        String rl_user = rshUserTxt.getText();
+        String rl_cmd = rshCmdTxt.getText();
 
-		//	Set them
-		AstorUtil	util = AstorUtil.getInstance();
-		util.setJiveReadOnly(jiveReadOnly);
-		util.setStarterStartup(starterStart);
-		AstorUtil.setRloginUser(rl_user);
-		AstorUtil.setRloginCmd(rl_cmd);
-		util.setLastCollectionList(last_collection);
-		AstorUtil.setKnownTangoHosts(known_tango_hosts);
-		AstorUtil.setTools(tools);
-		AstorUtil.setHtmlHelps(pages);
-		if (parent instanceof Astor) {
-			try {
-				int	w = Integer.parseInt(treeWidthtTxt.getText());
-				int	h = Integer.parseInt(treeHeighttTxt.getText());
-				Dimension	d = new Dimension(w, h);
-				((Astor)parent).setTreeSize(d);
-				AstorUtil.setPreferredSize(d);
+        //	Check them
+        if (rl_user == null) rl_user = "";
+        if (rl_cmd == null) rl_cmd = "";
+        if (tools == null) tools = new String[0];
+        if (last_collection == null) last_collection = new String[0];
+        if (known_tango_hosts == null) known_tango_hosts = new String[0];
+        if (pages == null) pages = new String[0];
 
-				w = Integer.parseInt(hostDlgWidthtTxt.getText());
-				h = Integer.parseInt(hostDlgHeighttTxt.getText());
-				d = new Dimension(w, h);
-				AstorUtil.setHostDialogPreferredSize(d);
-				((Astor)parent).tree.hostDialogs.setDialogPreferredSize(d);		
-			}
-			catch(NumberFormatException e) {
-				Utils.popupError(this, null, e);
-			}
-		}
-		try {
-			//	And write it in database
-			AstorUtil.putAstorProperties();
-			Utils.popupMessage(this,
-				"The preferences have been saved for " + AstorUtil.getTangoHost());
-		}
-		catch (DevFailed e) {
-			ErrorPane.showErrorMessage(this, "Cannot put Astor properties", e);
-		}
-	}
-	//===============================================================
-	//===============================================================
-	private String[]	last_collection = new String[0];
-	private String[]	known_tango_hosts= new String[0];
-	private String[]	tools = new String[0];
-	private String[]	pages = {
-			"Device Servers",
-			"http://www.esrf.fr/computing/cs/tango/tango_doc/ds_doc/index.html"
-		};
-	private boolean		jiveReadOnly = false;
-	private boolean		starterStart = true;
-	private void initialize()
-	{
-		AstorUtil	util = AstorUtil.getInstance();
-		
-		//	Get last collections
-		last_collection = util.getLastCollectionList();
+        //	Set them
+        AstorUtil util = AstorUtil.getInstance();
+        util.setJiveReadOnly(jiveReadOnly);
+        util.setStarterStartup(starterStart);
+        AstorUtil.setRloginUser(rl_user);
+        AstorUtil.setRloginCmd(rl_cmd);
+        util.setLastCollectionList(last_collection);
+        AstorUtil.setKnownTangoHosts(known_tango_hosts);
+        AstorUtil.setTools(tools);
+        AstorUtil.setHtmlHelps(pages);
+        if (parent instanceof Astor) {
+            try {
+                int w = Integer.parseInt(treeWidthtTxt.getText());
+                int h = Integer.parseInt(treeHeighttTxt.getText());
+                Dimension d = new Dimension(w, h);
+                ((Astor) parent).setTreeSize(d);
+                AstorUtil.setPreferredSize(d);
 
-		//	Get known TANGO_HOST
-		known_tango_hosts = AstorUtil.getKnownTangoHosts();
-		
-		//	Get additianal tools
-		tools = AstorUtil.getTools();
+                w = Integer.parseInt(hostDlgWidthtTxt.getText());
+                h = Integer.parseInt(hostDlgHeighttTxt.getText());
+                d = new Dimension(w, h);
+                AstorUtil.setHostDialogPreferredSize(d);
+                ((Astor) parent).tree.hostDialogs.setDialogPreferredSize(d);
+            } catch (NumberFormatException e) {
+                Utils.popupError(this, null, e);
+            }
+        }
+        try {
+            //	And write it in database
+            AstorUtil.putAstorProperties();
+            Utils.popupMessage(this,
+                    "The preferences have been saved for " + AstorUtil.getTangoHost());
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, "Cannot put Astor properties", e);
+        }
+    }
 
-		//	Get help pages
-		pages = AstorUtil.getHtmlHelps();
+    //===============================================================
+    //===============================================================
+    private String[] last_collection = new String[0];
+    private String[] known_tango_hosts = new String[0];
+    private String[] tools = new String[0];
+    private String[] pages = {
+            "Device Servers",
+            "http://www.esrf.fr/computing/cs/tango/tango_doc/ds_doc/index.html"
+    };
+    private boolean jiveReadOnly = false;
+    private boolean starterStart = true;
 
-		//	Get Jive startup mode
-		jiveReadOnly = util.jiveIsReadOnly();
-		manageToggleBtn(jiveRObtn, jiveReadOnly);
+    private void initialize() {
+        AstorUtil util = AstorUtil.getInstance();
 
-		//	Get starter startup mode
-		starterStart = util.getStarterStartup();
-		manageToggleBtn(starterStartupBtn, starterStart);
+        //	Get last collections
+        last_collection = util.getLastCollectionList();
 
-		//	Get rlogin info
-		String	rl_user = AstorUtil.getRloginUser();
-		if (rl_user!=null)
-			rshUserTxt.setText(rl_user);
-		String	rl_cmd  = AstorUtil.getRloginCmd();
-		if (rl_cmd!=null)
-			rshCmdTxt.setText(rl_cmd);
+        //	Get known TANGO_HOST
+        known_tango_hosts = AstorUtil.getKnownTangoHosts();
 
-		if (parent instanceof Astor)
-		{
-			Dimension	d = ((Astor)parent).getTreeSize();
-			treeWidthtTxt.setText(Integer.toString(d.width));
-			treeHeighttTxt.setText(Integer.toString(d.height));
+        //	Get additianal tools
+        tools = AstorUtil.getTools();
 
-			d = AstorUtil.getHostDialogPreferredSize();
-			hostDlgWidthtTxt.setText(Integer.toString(d.width));
-			hostDlgHeighttTxt.setText(Integer.toString(d.height));
-		}
-	}
+        //	Get help pages
+        pages = AstorUtil.getHtmlHelps();
 
-	//===============================================================
-    /** This method is called from within the constructor to
+        //	Get Jive startup mode
+        jiveReadOnly = util.jiveIsReadOnly();
+        manageToggleBtn(jiveRObtn, jiveReadOnly);
+
+        //	Get starter startup mode
+        starterStart = util.getStarterStartup();
+        manageToggleBtn(starterStartupBtn, starterStart);
+
+        //	Get rlogin info
+        String rl_user = AstorUtil.getRloginUser();
+        if (rl_user != null)
+            rshUserTxt.setText(rl_user);
+        String rl_cmd = AstorUtil.getRloginCmd();
+        if (rl_cmd != null)
+            rshCmdTxt.setText(rl_cmd);
+
+        if (parent instanceof Astor) {
+            Dimension d = ((Astor) parent).getTreeSize();
+            treeWidthtTxt.setText(Integer.toString(d.width));
+            treeHeighttTxt.setText(Integer.toString(d.height));
+
+            d = AstorUtil.getHostDialogPreferredSize();
+            hostDlgWidthtTxt.setText(Integer.toString(d.width));
+            hostDlgHeighttTxt.setText(Integer.toString(d.height));
+        }
+    }
+
+    //===============================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//===============================================================
+    //===============================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
@@ -508,108 +509,110 @@ public class PreferenceDialog extends JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     private void helpPagesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpPagesBtnActionPerformed
-		JButton	btn = (JButton)evt.getSource();
-		GetTextDialog	dlg = new GetTextDialog(this,
-				btn.getText(), btn.getToolTipText(), pages);
-		if (dlg.showDialog()==JOptionPane.OK_OPTION)
-			pages = dlg.getTextLines();
+        JButton btn = (JButton) evt.getSource();
+        GetTextDialog dlg = new GetTextDialog(this,
+                btn.getText(), btn.getToolTipText(), pages);
+        if (dlg.showDialog() == JOptionPane.OK_OPTION)
+            pages = dlg.getTextLines();
     }//GEN-LAST:event_helpPagesBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     private void toolsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolsBtnActionPerformed
-		JButton	btn = (JButton)evt.getSource();
-		GetTextDialog	dlg = new GetTextDialog(this,
-				btn.getText(), btn.getToolTipText(), tools);
-		if (dlg.showDialog()==JOptionPane.OK_OPTION)
-			tools = dlg.getTextLines();
+        JButton btn = (JButton) evt.getSource();
+        GetTextDialog dlg = new GetTextDialog(this,
+                btn.getText(), btn.getToolTipText(), tools);
+        if (dlg.showDialog() == JOptionPane.OK_OPTION)
+            tools = dlg.getTextLines();
 
-     }//GEN-LAST:event_toolsBtnActionPerformed
+    }//GEN-LAST:event_toolsBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     private void tangoHostsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tangoHostsBtnActionPerformed
-		JButton	btn = (JButton)evt.getSource();
-		GetTextDialog	dlg = new GetTextDialog(this,
-				btn.getText(), btn.getToolTipText(), known_tango_hosts);
-		if (dlg.showDialog()==JOptionPane.OK_OPTION)
-			known_tango_hosts = dlg.getTextLines();
+        JButton btn = (JButton) evt.getSource();
+        GetTextDialog dlg = new GetTextDialog(this,
+                btn.getText(), btn.getToolTipText(), known_tango_hosts);
+        if (dlg.showDialog() == JOptionPane.OK_OPTION)
+            known_tango_hosts = dlg.getTextLines();
     }//GEN-LAST:event_tangoHostsBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     private void lastCollectionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastCollectionBtnActionPerformed
 
-		JButton	btn = (JButton)evt.getSource();
-		GetTextDialog	dlg = new GetTextDialog(this,
-				btn.getText(), btn.getToolTipText(), last_collection);
-		if (dlg.showDialog()==JOptionPane.OK_OPTION)
-			last_collection = dlg.getTextLines();
+        JButton btn = (JButton) evt.getSource();
+        GetTextDialog dlg = new GetTextDialog(this,
+                btn.getText(), btn.getToolTipText(), last_collection);
+        if (dlg.showDialog() == JOptionPane.OK_OPTION)
+            last_collection = dlg.getTextLines();
     }//GEN-LAST:event_lastCollectionBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
-	private void manageToggleBtn(JToggleButton btn, boolean b)
-	{
-		btn.setSelected(b);
-		btn.setText(""+b);
-	}
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
+    private void manageToggleBtn(JToggleButton btn, boolean b) {
+        btn.setSelected(b);
+        btn.setText("" + b);
+    }
+
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void jiveRObtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jiveRObtnActionPerformed
-		jiveReadOnly = (jiveRObtn.getSelectedObjects()!=null);
-		manageToggleBtn(jiveRObtn, jiveReadOnly);
+        jiveReadOnly = (jiveRObtn.getSelectedObjects() != null);
+        manageToggleBtn(jiveRObtn, jiveReadOnly);
     }//GEN-LAST:event_jiveRObtnActionPerformed
 
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void starterStartupBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_starterStartupBtnActionPerformed
-        starterStart = (starterStartupBtn.getSelectedObjects()!=null);
+        starterStart = (starterStartupBtn.getSelectedObjects() != null);
         manageToggleBtn(starterStartupBtn, starterStart);
     }//GEN-LAST:event_starterStartupBtnActionPerformed
-	//===============================================================
-	//===============================================================
+
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
+    private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
-		storePreferences();
-		doClose();
-	}//GEN-LAST:event_okBtnActionPerformed
+        storePreferences();
+        doClose();
+    }//GEN-LAST:event_okBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-	//===============================================================
-	//===============================================================
+    //===============================================================
+    //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		doClose();
-	}//GEN-LAST:event_closeDialog
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        doClose();
+    }//GEN-LAST:event_closeDialog
 
 
-	//===============================================================
-	/**
-	 *	Closes the dialog
-	 */
-	//===============================================================
-	private void doClose()
-	{
-		setVisible(false);
-		if (parent instanceof Astor)
-			dispose();
-		else
-			System.exit(0);
-	}
-	//===============================================================
+    //===============================================================
+
+    /**
+     * Closes the dialog
+     */
+    //===============================================================
+    private void doClose() {
+        setVisible(false);
+        if (parent instanceof Astor)
+            dispose();
+        else
+            System.exit(0);
+    }
+
+    //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField hostDlgHeighttTxt;
     private javax.swing.JTextField hostDlgWidthtTxt;
@@ -621,18 +624,17 @@ public class PreferenceDialog extends JDialog
     private javax.swing.JTextField treeHeighttTxt;
     private javax.swing.JTextField treeWidthtTxt;
     // End of variables declaration//GEN-END:variables
-	//===============================================================
+    //===============================================================
 
 
+    //===============================================================
 
-
-	//===============================================================
-	/**
-	* @param args the command line arguments
-	*/
-	//===============================================================
-	public static void main(String args[]) {
-		new PreferenceDialog(new javax.swing.JFrame()).setVisible(true);
-	}
+    /**
+     * @param args the command line arguments
+     */
+    //===============================================================
+    public static void main(String args[]) {
+        new PreferenceDialog(new javax.swing.JFrame()).setVisible(true);
+    }
 
 }

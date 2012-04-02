@@ -35,36 +35,34 @@
 package admin.astor;
 
 
-/** 
+/**
  *	This class is able to define a tool object to be instancied 
  *	using introspection classes.
  *
- * @author  verdier
+ * @author verdier
  */
- 
+
 import javax.swing.*;
 
 
+public class OneTool {
+    String name;
+    String classname;
+    JFrame jframe = null;
 
-public class  OneTool
-{
-	String	name;
-	String	classname;
-	JFrame	jframe = null;
-	//===============================================================
-	//===============================================================
-	public OneTool(String name, String classname)
-	{
-		this.name      = name;
-		this.classname = classname;
-	}
-	//===============================================================
-	//===============================================================
-	public void setJFrame(JFrame jframe)
-	{
-		this.jframe = jframe;
-	}
-	//===============================================================
-	//===============================================================
-	
+    //===============================================================
+    //===============================================================
+    public OneTool(String name, String classname) {
+        this.name = name;
+        this.classname = classname;
+    }
+
+    //===============================================================
+    //===============================================================
+    public void setJFrame(JFrame jframe) {
+        this.jframe = jframe;
+    }
+    //===============================================================
+    //===============================================================
+
 }

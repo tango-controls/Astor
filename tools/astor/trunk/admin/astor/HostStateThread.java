@@ -69,8 +69,8 @@ public class HostStateThread extends Thread implements AstorDefs {
     /**
      * Thread constructor.
      *
-     * @param    parent Apllication.
-     * @param    host host object to control.
+     * @param parent Apllication.
+     * @param host   host object to control.
      */
     //======================================================================
     public HostStateThread(AstorTree parent, TangoHost host) {
@@ -89,7 +89,6 @@ public class HostStateThread extends Thread implements AstorDefs {
 
 
     //======================================================================
-
     /**
      * Running thread method.
      */
@@ -97,7 +96,7 @@ public class HostStateThread extends Thread implements AstorDefs {
     public void run() {
         /*	Done in AstorTree class to be serialized !
               When subscribed, monitor is updated.
-          if (host.use_events)
+          if (host.onEvents)
           {
               //	If on events -> Wait.
               subscribeChangeStateEvent();
@@ -109,9 +108,8 @@ public class HostStateThread extends Thread implements AstorDefs {
         long t0 = System.currentTimeMillis();
         while (!stop_it) {
             long t = System.currentTimeMillis();
-            if (!host.use_events) {
-                if (host.do_polling)
-                    manageSynchronousAttributes();
+            if (!host.onEvents) {
+                manageSynchronousAttributes();
             } else {
                 if ((t - t0) > 60000) {
                     //	Every minute, check in synchronous
@@ -122,10 +120,11 @@ public class HostStateThread extends Thread implements AstorDefs {
             }
             wait_next_loop(t);
             //if (host.getName().equals("orion"))
-            //	System.out.println(host.use_events);
+            //	System.out.println(host.onEvents);
         }
     }
     //======================================================================
+
     /**
      * Compute time to sleep before next loop, and sleep it.
      *
@@ -200,31 +199,38 @@ public class HostStateThread extends Thread implements AstorDefs {
 
     //======================================================================
     //======================================================================
+    private int timeout = -1;
     public void manageSynchronousAttributes() {
-        DevState host_state;
-        DevState notifd_state;
+        DevState hostState;
+        DevState notifdState;
+
         try {
+            if (timeout<0) {
+                timeout = host.get_timeout_millis();
+            }
+            host.set_timeout_millis(1000);
             DeviceAttribute[] att = host.read_attribute(attributes);
 
             if (att[StateAtt].hasFailed())
-                host_state = DevState.FAULT;
+                hostState = DevState.FAULT;
             else
-                host_state = att[StateAtt].extractState();
+                hostState = att[StateAtt].extractState();
 
             if (att[NotifdAtt].hasFailed())
-                notifd_state = DevState.UNKNOWN;
+                notifdState = DevState.UNKNOWN;
             else
-                notifd_state = att[NotifdAtt].extractState();
+                notifdState = att[NotifdAtt].extractState();
         } catch (DevFailed e) {
             //Except.print_exception(e);
             host.except = e;
-            notifd_state = DevState.UNKNOWN;
-            host_state = DevState.FAULT;
+            notifdState = DevState.UNKNOWN;
+            hostState = DevState.FAULT;
         }
-        updateHost(host_state);
+        try { host.set_timeout_millis(timeout); } catch (DevFailed e) { /* */ }
+        updateHost(hostState);
 
-        if (host.check_notifd)
-            updateNotifdHost(notifd_state);
+        if (host.manageNotifd)
+            updateNotifdHost(notifdState);
     }
 
 
@@ -242,7 +248,7 @@ public class HostStateThread extends Thread implements AstorDefs {
      */
     //======================================================================
     public void subscribeChangeStateEvent() {
-        String strerror = null;
+        String stringError = null;
         try {
 
             if (host.supplier == null)
@@ -256,25 +262,27 @@ public class HostStateThread extends Thread implements AstorDefs {
             }
         } catch (DevFailed e) {
             state_listener = null;
-            host.use_events = false;
+            host.onEvents = false;
 
-            System.err.println(host.name());
+            //System.err.println(host.name());
             //	Display exception
             if (!e.errors[0].desc.startsWith("Already connected to event"))
-                strerror = "subscribeChangeStateEvent() for " +
+                stringError = "subscribeChangeStateEvent() for " +
                         host.get_name() + " FAILED !\n" + e.errors[0].desc;
-            fr.esrf.TangoDs.Except.print_exception(e);
+            //fr.esrf.TangoDs.Except.print_exception(e);
+			//System.err.println(host.get_name() + ":	"+e.errors[0].desc);
         } catch (Exception e) {
             state_listener = null;
-            host.use_events = false;
+            host.onEvents = false;
             //	Display exception
-            strerror = "subscribeChangeStateEvent() for " +
+            stringError = "subscribeChangeStateEvent() for " +
                     host.get_name() + " FAILED !" + e.toString();
             e.printStackTrace();
         }
-        if (strerror != null)
-            System.out.println(strerror);
-        parent.updateMonitor(strerror);
+        
+		//if (stringError != null)
+        //    System.err.println(stringError);
+        parent.updateMonitor(stringError);
     }
     //=========================================================================
 
@@ -287,45 +295,55 @@ public class HostStateThread extends Thread implements AstorDefs {
         //=====================================================================
         public void change(TangoChangeEvent event) {
 
+            try {
+                if (event.isZmqEvent())
+                    host.eventSource = "(ZMQ)";
+                else
+                    host.eventSource = "(notifd)";
+            }
+            catch (NoSuchMethodError e) {
+                //  Cannot be ZMQ (too old)
+                host.eventSource = "(notifd)";
+            }
             //long	t0 = System.currentTimeMillis();
             TangoChange tc = (TangoChange) event.getSource();
-            String devname = tc.getEventSupplier().get_name();
-            DevState host_state;
-            DevState notifd_state;
+            String deviceName = tc.getEventSupplier().get_name();
+            DevState hostState;
+            DevState notifdState;
 
 //System.out.println("in public void change(TangoChangeEvent event)");
             try {
                 //	Get the host state from attribute value
                 DeviceAttribute attr = event.getValue();
                 if (attr.hasFailed())
-                    host_state = DevState.UNKNOWN;
+                    hostState = DevState.UNKNOWN;
                 else
-                    host_state = attr.extractState();
+                    hostState = attr.extractState();
 
             } catch (DevFailed e) {
                 System.err.println(host.name() + "  has received a DevFailed :	" + e.errors[0].desc);
-                host_state = DevState.ALARM;
+                hostState = DevState.ALARM;
                 if (e.errors[0].reason.equals("API_EventTimeout")) {
                     System.err.println("HostStateThread.StateEventListener" +
-                            devname + " : API_EventTimeout");
+                            deviceName + " : API_EventTimeout");
                     //fr.esrf.TangoDs.Except.print_exception(e);
                     //	Check if Starter stopped or notifd
                     try {
                         host.ping();
                     } catch (DevFailed e2) {
-                        host_state = DevState.FAULT;
+                        hostState = DevState.FAULT;
                     }
                 } else if (e.errors[0].reason.equals("TangoApi_CANNOT_IMPORT_DEVICE")) {
                     //fr.esrf.TangoDs.Except.print_exception(e);
                     System.out.println("HostStateThread.StateEventListener" +
-                            devname + " : TangoApi_CANNOT_IMPORT_DEVICE");
-                    host_state = DevState.FAULT;
+                            deviceName + " : TangoApi_CANNOT_IMPORT_DEVICE");
+                    hostState = DevState.FAULT;
                 }
             } catch (Exception e) {
-                System.out.println("AstorEvent." + devname);
+                System.out.println("AstorEvent." + deviceName);
                 System.out.println(e);
                 System.out.println("HostStateThread.StateEventListener : could not extract data!");
-                host_state = DevState.UNKNOWN;
+                hostState = DevState.UNKNOWN;
             }
 
 
@@ -333,16 +351,16 @@ public class HostStateThread extends Thread implements AstorDefs {
                 //	Check if notify daemon running in synchron
                 DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
                 if (att_synch.hasFailed())
-                    notifd_state = DevState.UNKNOWN;
+                    notifdState = DevState.UNKNOWN;
                 else
-                    notifd_state = att_synch.extractState();
-                //System.out.println("notifd_state=" + ApiUtil.stateName(notifd_state));
+                    notifdState = att_synch.extractState();
+                //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
             } catch (Exception e) {
-                notifd_state = DevState.UNKNOWN;
+                notifdState = DevState.UNKNOWN;
             }
-            updateNotifdHost(notifd_state);
+            updateNotifdHost(notifdState);
 
-            updateHost(host_state);
+            updateHost(hostState);
         }
     }
 }

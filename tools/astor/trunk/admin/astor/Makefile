@@ -12,9 +12,9 @@
 #-======================================================================
 
 
-MAJOR_REV   = 5
-MIDDLE_REV  = 5
-MINOR_REV   = 4
+MAJOR_REV   = 6
+MIDDLE_REV  = 0
+MINOR_REV   = 1
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
@@ -74,7 +74,7 @@ clean:
 	rm  -Rf $(BIN_DIR)/admin/astor/tools
 	rm  -Rf $(BIN_DIR)/admin/astor/access
 	rm  -Rf $(BIN_DIR)/admin/astor/statistics
-	rm      $(BIN_DIR)/admin/astor/*.class
+	rm  -f    $(BIN_DIR)/admin/astor/*.class
 
 JAVA=/segfs/tango/jdk/Linux/jdk1.6.0/bin/java
 MAIN_CLASS=		$(PACKAGE)

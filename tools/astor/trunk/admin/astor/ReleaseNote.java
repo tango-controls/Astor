@@ -17,7 +17,11 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Tue Dec 06 13:43:15 CET 2011)</Center><Br>\n" + 
+		"	(Generated Mon Apr 02 14:23:10 CEST 2012)</Center><Br>\n" + 
+		"<li><b>Astor-6.0.1 -  02/04/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Problem when removing server info fixed.<Br>\n" + 
+		"<li><b>Astor-6.0.0 -  08/02/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Comptibility with TangORB-8.x (ZMQ event system or supposed to be).<Br>\n" + 
 		"<li><b>Astor-5.5.4 -  06/12/11:</b><Br>\n" + 
 		"&nbsp; &nbsp; Create a Thread to update splash screen (to boost startup).<Br>\n" + 
 		"<li><b>Astor-5.5.3 -  07/09/11:</b><Br>\n" + 

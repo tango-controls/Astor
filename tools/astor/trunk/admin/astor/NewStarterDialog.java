@@ -39,104 +39,100 @@ package admin.astor;
  *	to create a new Starter server in TANGO database
  *	and add a new host in AstorTree.
  *
- * @author  verdier
+ * @author verdier
  */
 
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.*;
+import fr.esrf.TangoApi.DbDatum;
+import fr.esrf.TangoApi.DeviceProxy;
 
 import javax.swing.*;
-import admin.astor.tools.Utils;
+import java.util.ArrayList;
 
-import java.util.Vector;
+public class NewStarterDialog extends JDialog implements AstorDefs {
 
-public class NewStarterDialog extends JDialog implements AstorDefs{
+    private Astor parent;
+    private TangoHost[] hosts;
+    private TangoHost h;
+    private ArrayList<String> collec;
+    private int retVal = JOptionPane.CANCEL_OPTION;
+    private boolean creating;
 
-	private Astor		parent;
-	private TangoHost[]	hosts;
-	private	TangoHost	h;
-	private Vector<String>	collec;
-	private int			retVal = JOptionPane.CANCEL_OPTION;
-	private boolean		creating;
+    //======================================================================
+    //======================================================================
+    private boolean getUseEvents() {
+        //	Check if use events
+        //	Do not use host field because it could
+        //	have been reseted if notifd is stopped !!!!!
+        boolean ue = false;
+        try {
+            DbDatum data = h.get_property("UseEvents");
+            if (!data.is_empty())
+                ue = data.extractBoolean();
+        } catch (Exception e) { /* */ }
+        return ue;
+    }
 
-	//======================================================================
-	//======================================================================
-	private boolean getUseEvents()
-	{
-		//	Check if use events
-		//	Do not use host field because it could 
-		//	have been reseted if notifd is stopped !!!!!
-		boolean	ue = false;
-		try
-		{
-			DbDatum	data = h.get_property("UseEvents");
-			if (!data.is_empty())
-				ue = data.extractBoolean();
-		} catch(Exception e){ /* */ }
-		return ue;
-	}
-	//======================================================================
+    //======================================================================
     /*
 	 *	Creates new NewStarterDialog for editing properties
 	 */
-	//======================================================================
+    //======================================================================
     public NewStarterDialog(Astor parent, TangoHost h,
-				Vector<String> collec, TangoHost[] hosts, boolean creating)
-	{
+                            ArrayList<String> collec, TangoHost[] hosts, boolean creating) {
         super(parent, true);
-		this.parent = parent;
-		this.hosts  = hosts;
-		this.creating  = creating;
-		//	Take Off Database (first one)
-		this.collec = new Vector<String>();
-		for (int i=1 ; i<collec.size() ; i++)
-			this.collec.add(collec.get(i));
+        this.parent = parent;
+        this.hosts = hosts;
+        this.creating = creating;
+        //	Take Off Database (first one)
+        this.collec = new ArrayList<String>();
+        for (int i = 1; i < collec.size(); i++)
+            this.collec.add(collec.get(i));
 
         initComponents();
 
-		//	Init text fields with h object fields
-		this.h = h;
-		if (h!=null)
-		{
-			String		hostname = h.getName();
-			String[]	ds_path = h.getPath();
-			for (String path : ds_path)
-				pathText.append(path + "\n");
+        //	Init text fields with h object fields
+        this.h = h;
+        if (h != null) {
+            String hostname = h.getName();
+            String[] ds_path = h.getPath();
+            for (String path : ds_path)
+                pathText.append(path + "\n");
 
-			usageText.setText(h.usage);
-			familyText.setText(h.getFamily());
-			hostText.setText(hostname);
+            usageText.setText(h.usage);
+            familyText.setText(h.getFamily());
+            hostText.setText(hostname);
 
-			useEventsBtn.setSelected(getUseEvents());
-			if (creating)
-			{
-				familyText.setText(h.getFamily());
-				hostText.setText(hostname);
- 				hostText.select(0, hostname.length());
-			}
-			else
-			{
-				titleLbl.setText("Change property for " +
-									hostname + " starter in database");
-				jLabel2.setText("  ");
-				hostText.setVisible(false);
-				jLabel4.setVisible(false);
-				familyText.setVisible(false);
-				familyBtn.setVisible(false);
-				createBtn.setText("Apply");
-			}
-		}
-		pack();
-		AstorUtil.centerDialog(this, parent);
-   }
-	
-	//======================================================================
-    /** This method is called from within the constructor to
+            useEventsBtn.setSelected(getUseEvents());
+            if (creating) {
+                familyText.setText(h.getFamily());
+                hostText.setText(hostname);
+                hostText.select(0, hostname.length());
+            } else {
+                titleLbl.setText("Change property for " +
+                        hostname + " starter in database");
+                jLabel2.setText("  ");
+                hostText.setVisible(false);
+                jLabel4.setVisible(false);
+                familyText.setVisible(false);
+                familyBtn.setVisible(false);
+                createBtn.setText("Apply");
+            }
+        }
+        pack();
+        AstorUtil.centerDialog(this, parent);
+    }
+
+    //======================================================================
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-	//======================================================================
+    //======================================================================
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
@@ -299,29 +295,29 @@ public class NewStarterDialog extends JDialog implements AstorDefs{
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	//======================================================================
-	//======================================================================
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void hostTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostTextActionPerformed
         // Add your handling code here:
     }//GEN-LAST:event_hostTextActionPerformed
 
-	//======================================================================
-	//======================================================================
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void familyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_familyBtnActionPerformed
 
-		//	Create the list for host family
-		PropListDialog	list = new PropListDialog(parent, collec);
-		list.showDialog();
+        //	Create the list for host family
+        PropListDialog list = new PropListDialog(parent, collec);
+        list.showDialog();
 
-		String	family = list.getSelectedItem();
-		if (family!=null)
-			familyText.setText(family);
+        String family = list.getSelectedItem();
+        if (family != null)
+            familyText.setText(family);
     }//GEN-LAST:event_familyBtnActionPerformed
 
-	//======================================================================
-	//======================================================================
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void pathBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pathBtnActionPerformed
 
@@ -343,123 +339,121 @@ public class NewStarterDialog extends JDialog implements AstorDefs{
         }
         */
 
-		//	Create the list for Start DS Path
-		new PropListDialog(parent, pathText, hosts).showDialog();
+        //	Create the list for Start DS Path
+        new PropListDialog(parent, pathText, hosts).showDialog();
     }//GEN-LAST:event_pathBtnActionPerformed
 
-	//======================================================================
-	//======================================================================
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-		retVal = JOptionPane.CANCEL_OPTION;
-		doClose();
-	}//GEN-LAST:event_cancelBtnActionPerformed
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        retVal = JOptionPane.CANCEL_OPTION;
+        doClose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
-	//======================================================================
-	//======================================================================
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
-	private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
-		String	hostname = hostText.getText();
-		String	usage    = usageText.getText();
-		String	family   = familyText.getText();
-		String	str_ds_path  = pathText.getText().trim();
-		if (hostname.length()==0 || str_ds_path.length()==0) {
-			JOptionPane.showMessageDialog(parent,
-								"Fill the fields before creation !",
-								"Warning",
-								JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		try {
+    private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
+        String hostname = hostText.getText();
+        String usage = usageText.getText();
+        String family = familyText.getText();
+        String str_ds_path = pathText.getText().trim();
+        if (hostname.length() == 0 || str_ds_path.length() == 0) {
+            JOptionPane.showMessageDialog(parent,
+                    "Fill the fields before creation !",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
             str_ds_path = manageBackSlash(str_ds_path);
-            String[]	ds_path = AstorUtil.string2StringArray(str_ds_path);
-            boolean     use_events = (useEventsBtn.getSelectedObjects()!=null);
-            MkStarter   starter = new MkStarter(hostname, ds_path, use_events);
+            String[] ds_path = AstorUtil.string2StringArray(str_ds_path);
+            boolean use_events = (useEventsBtn.getSelectedObjects() != null);
+            MkStarter starter = new MkStarter(hostname, ds_path, use_events);
             if (creating)
                 starter.create();
             starter.setProperties();
 
-			//	Set usage and family propertes
+            //	Set usage and family propertes
             starter.setAdditionalProperties(usage, family);
 
-			//	And if not creating set usage to Host object
-			if (h!=null && !creating)
-				if (!usage.equals(h.usage)) {
-					h.usage = usage;
-					//	Re-create node to resize.
-					Astor	astor = parent;
-					astor.tree.changeHostNode(h);
-				}
+            //	And if not creating set usage to Host object
+            if (h != null && !creating)
+                if (!usage.equals(h.usage)) {
+                    h.usage = usage;
+                    //	Re-create node to resize.
+                    Astor astor = parent;
+                    astor.tree.changeHostNode(h);
+                }
 
-			String message;
-			if (creating)
-				message =
-					"A Starter server has been created in TANGO database.\n\n"+
-					"You can now start it on " + hostname + " machine." ;
-			else {
-				message = "The property has been modified in database";
-				try {
-                    String	devname  = starterDeviceHeader + hostname;
-					new DeviceProxy(devname).command_inout("Init");
-					message += "\nand the device has been re-initialized.";
-				}
-				catch (DevFailed e){
-					//	may be it is stopped
-				}
-			}
-			JOptionPane.showMessageDialog(parent, 
-					message, "Command Done", JOptionPane.INFORMATION_MESSAGE);
+            String message;
+            if (creating)
+                message =
+                        "A Starter server has been created in TANGO database.\n\n" +
+                                "You can now start it on " + hostname + " machine.";
+            else {
+                message = "The property has been modified in database";
+                try {
+                    String devname = starterDeviceHeader + hostname;
+                    new DeviceProxy(devname).command_inout("Init");
+                    message += "\nand the device has been re-initialized.";
+                } catch (DevFailed e) {
+                    //	may be it is stopped
+                }
+            }
+            JOptionPane.showMessageDialog(parent,
+                    message, "Command Done", JOptionPane.INFORMATION_MESSAGE);
 
-		}
-		catch (DevFailed e) {
-			Utils.popupError(parent, null, e);
-			return;
-		}
-		retVal = JOptionPane.OK_OPTION;
-		doClose();
-	}//GEN-LAST:event_createBtnActionPerformed
-	//===============================================================
-	//===============================================================
-	static String manageBackSlash(String str)
-	{
-		String	ret = "";
-		int idx = 0;
-		while ((idx=str.indexOf("\\", idx))>=0)
-		{
-			idx++;
-			ret += str.substring(0, idx);
-			ret += "\\";
-			str = str.substring(idx);
-			idx = 0;
-		}
-		ret += str;
-		return ret;
-	}
-	//======================================================================
-	//======================================================================
-	int	getValue()
-	{
-		return retVal;
-	}
-	//======================================================================
-	//======================================================================
-	@SuppressWarnings({"UnusedDeclaration"})
+        } catch (DevFailed e) {
+            Utils.popupError(parent, null, e);
+            return;
+        }
+        retVal = JOptionPane.OK_OPTION;
+        doClose();
+    }//GEN-LAST:event_createBtnActionPerformed
+
+    //===============================================================
+    //===============================================================
+    static String manageBackSlash(String str) {
+        String ret = "";
+        int idx = 0;
+        while ((idx = str.indexOf("\\", idx)) >= 0) {
+            idx++;
+            ret += str.substring(0, idx);
+            ret += "\\";
+            str = str.substring(idx);
+            idx = 0;
+        }
+        ret += str;
+        return ret;
+    }
+
+    //======================================================================
+    //======================================================================
+    int getValue() {
+        return retVal;
+    }
+
+    //======================================================================
+    //======================================================================
+    @SuppressWarnings({"UnusedDeclaration"})
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
-		retVal = JOptionPane.CANCEL_OPTION;
-		doClose();
-	}//GEN-LAST:event_closeDialog
-	//======================================================================
-	//======================================================================
-	private void doClose()
-	{
-		setVisible(false);
-		dispose();
-	}
-	//======================================================================
-	//======================================================================
+        retVal = JOptionPane.CANCEL_OPTION;
+        doClose();
+    }//GEN-LAST:event_closeDialog
+
+    //======================================================================
+    //======================================================================
+    private void doClose() {
+        setVisible(false);
+        dispose();
+    }
+    //======================================================================
+    //======================================================================
 
 
-	//======================================================================
+    //======================================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton createBtn;
     private javax.swing.JButton familyBtn;
@@ -472,6 +466,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs{
     private javax.swing.JTextField usageText;
     private javax.swing.JRadioButton useEventsBtn;
     // End of variables declaration//GEN-END:variables
-	//======================================================================
+    //======================================================================
 
 }

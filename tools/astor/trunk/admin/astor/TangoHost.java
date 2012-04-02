@@ -37,707 +37,682 @@ package admin.astor;
 import admin.astor.tools.BlackBoxTable;
 import admin.astor.tools.PopupTable;
 import admin.astor.tools.PopupText;
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevInfo;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoApi.events.TangoEventsAdapter;
-import fr.esrf.TangoApi.events.DbEventImportInfo;
 import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.awt.*;
-import admin.astor.tools.Utils;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
 
 
 /**
- *	Class Description:
- *	Host object containing servers list.
- *	This class inherit from device proxy.
- *	It is seen as the Starter device running on this host.
+ * Class Description:
+ * Host object containing servers list.
+ * This class inherit from device proxy.
+ * It is seen as the Starter device running on this host.
  *
- * @author  verdier
+ * @author verdier
  */
 
 
 @SuppressWarnings({"NestedTryStatement"})
-public class TangoHost extends DeviceProxy
-{
-	private TangoServer	starter = null;
-	private String		name;
-	private Vector<TangoServer>
-						servers;
-	public  String		usage = null;
-	public	int			state;
-	public  DevFailed	except;
-	public  boolean		do_polling  = false;
-	public	boolean		poll_serv_lists = false;
-	public	String		collection = null;
-	public	HostStateThread	thread = null;
-	public  int			notifyd_state;
-	public	JLabel		notifd_label;
-	public  boolean		use_events;
-	public  boolean		check_notifd;
-	public	HostInfoDialog	info_dialog = null;
+public class TangoHost extends DeviceProxy {
+    private TangoServer starter = null;
+    private String name;
+    private ArrayList<TangoServer>
+            servers;
+    public String usage = null;
+    public int state;
+    public DevFailed except;
+    public boolean poll_serv_lists = false;
+    public String collection = null;
+    public HostStateThread thread = null;
+    public int notifyd_state;
+    public JLabel notifd_label;
+    public boolean onEvents = true;
+    public boolean manageNotifd;
+    public HostInfoDialog info_dialog = null;
 
-	public	TangoEventsAdapter	supplier = null;
+    public TangoEventsAdapter supplier = null;
+    public String   eventSource = "";   //  notifd, ZMQ or empty
 
-	private String		adm_name;
+    private String adm_name;
 
-	//==============================================================
-	//==============================================================
-	public TangoHost(String name, boolean get_prop) throws DevFailed
-	{
-		//	Initialize device proxy class objects.
-		super("tango/admin/" + name);
-		adm_name = "dserver/starter/" + name;
-		set_transparency_reconnection(true);
+    //==============================================================
+    //==============================================================
+    public TangoHost(String name, boolean get_prop) throws DevFailed {
+        //	Initialize device proxy class objects.
+        super("tango/admin/" + name);
+        adm_name = "dserver/starter/" + name;
+        set_transparency_reconnection(true);
 
-		servers       = new Vector<TangoServer>();
-		notifyd_state = AstorDefs.unknown;
+        servers = new ArrayList<TangoServer>();
+        notifyd_state = AstorDefs.unknown;
 
-		//	Check if name contain sub network added, then cut it.
-		int	i;
-		if ((i=name.indexOf("."))<0)
-			this.name  = name;
-		else
-			this.name  = name.substring(0, i);
+        //	Check if name contain sub network added, then cut it.
+        int i;
+        if ((i = name.indexOf(".")) < 0)
+            this.name = name;
+        else
+            this.name = name.substring(0, i);
 
-		if (get_prop)
-		{
-			//	Get host collection from property
-			DbDatum	data = get_property(AstorDefs.collec_property);
-			if (!data.is_empty())
-				collection = data.extractString();
+        if (get_prop) {
+            //	Get host collection from property
+            DbDatum data = get_property(AstorDefs.collec_property);
+            if (!data.is_empty())
+                collection = data.extractString();
 
-			//	Get if Host usage is dedefined in database.
-			DbDatum	prop =get_property("HostUsage");
-			if (!prop.is_empty())
-			{
-				usage = prop.extractString();
-				if (usage.length()==0)
-					usage = null;
-			}
-			//	Check if notify daemon is used by the Starter ds
-			use_events = false;
-			try {
-				data = get_property("UseEvents");
-				if (!data.is_empty())
-					use_events = (data.extractShort()!=0);
-			}
-			catch(DevFailed e){
-				/*	Nothing */
-			}
-			check_notifd = use_events;
-		}
-		//	Else
-		//		at statup it is done on one call for all hosts
-	}
-	//==============================================================
-	//==============================================================
-	public TangoHost(DbDevImportInfo devinfo,
-					 DbDevImportInfo adminfo,
-					 DbEventImportInfo evtinfo) throws DevFailed
-	{
-		//	Initialize device proxy class objects.
-		super(devinfo);
-		try {
-		
-			if (devinfo.exported) {
-				import_admin_device(adminfo);
-				if (evtinfo!=null)
-					this.getAdm_dev().set_evt_import_info(evtinfo);
-				else
-					use_events = false;
-			}
-			else
-				use_events = false;
-		} catch (DevFailed e) {
-			Except.print_exception(e);
-			use_events = false;
-		}
-		adm_name = adminfo.name;
-		set_transparency_reconnection(true);
+            //	Get if Host usage is dedefined in database.
+            DbDatum prop = get_property("HostUsage");
+            if (!prop.is_empty()) {
+                usage = prop.extractString();
+                if (usage.length() == 0)
+                    usage = null;
+            }
+            //	Check if notify daemon is used by the Starter ds
+            manageNotifd = false;
+            try {
+                data = get_property("UseEvents");
+                if (!data.is_empty())
+                    manageNotifd = (data.extractShort() != 0);
+            } catch (DevFailed e) {
+                /*	Nothing */
+            }
+        }
+        //	Else
+        //		at statup it is done on one call for all hosts
+    }
 
-		servers       = new Vector<TangoServer>();
-		notifyd_state = AstorDefs.unknown;
+    //==============================================================
+    //==============================================================
+    static String controlMethod(boolean onEvt) {
+        return (onEvt)? "on events" : "on polling";
+    }
+    //==============================================================
+    //==============================================================
+    //  Event info managed from MySqlUtil removed
+    //  Because is unused in case ZMQ events.
+    /*
+    public TangoHost(DbDevImportInfo devinfo,
+                     DbDevImportInfo adminfo,
+                     DbEventImportInfo evtinfo) throws DevFailed {
+        //	Initialize device proxy class objects.
+        super(devinfo);
+        try {
 
-		//	Check if name contain sub network added, then cut it.
-		int	i;
-		if ((i=devinfo.name.indexOf("."))<0)
-			this.name  = devinfo.name;
-		else
-			this.name  = devinfo.name.substring(0, i);
-		//	Get only member as name
-		int idx = name.indexOf('/');
-		if (idx>0)
-			idx = name.indexOf('/', idx+1);
-		if (idx>0)
-			name = name.substring(idx+1);
-	}
-	//==============================================================
-	//==============================================================
-	public void addServer(TangoServer ts)
-	{
-		servers.addElement(ts);
-	}
-	//==============================================================
-	//==============================================================
-	public TangoServer getServer(String servname)
-	{
-		servname = servname.trim();
-		for (int i=0 ; i<nbServers() ; i++)
-		{
-			TangoServer	server = getServer(i);
-			if (server.getName().equals(servname))
-				return server;
-		}
-		return null;
-	}
-	//==============================================================
-	//==============================================================
-	public TangoServer getServer(int idx)
-	{
-		return servers.get(idx);
-	}
-	//==============================================================
-	//==============================================================
-	public void removeServer(int idx)
-	{
-		servers.removeElementAt(idx);
-	}
-	//==============================================================
-	//==============================================================
-	public void removeServer(String servname)
-	{
-		for (int i=0 ; i<nbServers() ; i++)
-		{
-			TangoServer	server = getServer(i);
-			if (server.getName().equals(servname))
-			{
-				removeServer(i);
-				return;
-			}
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public int nbServers()
-	{
-		if (servers==null)
-			return 0;
-		else
-			return servers.size();
-	}
-	//==============================================================
-	//==============================================================
-	public String[] getServerAttribute()
-	{
-		try
-		{
-			DeviceAttribute	att = read_attribute("Servers");
-			return att.extractStringArray();
-		}
-		catch (DevFailed e)
-		{
-			Except.print_exception(e);
-			return new String[0];
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public String readLogFile(String servname) throws DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert(servname);
-		DeviceData	argout = command_inout("DevReadLog", argin);
-		//System.out.println(argout.extractString());
-		return argout.extractString();
-	}
-	//==============================================================
-	/**
-	 *	Register server (export/unexport admin device )
-	 *	to be known by starter.
+            if (devinfo.exported) {
+                import_admin_device(adminfo);
+                if (evtinfo != null)
+                    this.getAdm_dev().set_evt_import_info(evtinfo);
+                else
+                    onEvents = false;
+            } else
+                onEvents = false;
+        } catch (DevFailed e) {
+            Except.print_exception(e);
+            onEvents = false;
+        }
+        adm_name = adminfo.name;
+        set_transparency_reconnection(true);
+
+        servers = new ArrayList<TangoServer>();
+        notifyd_state = AstorDefs.unknown;
+
+        //	Check if name contain sub network added, then cut it.
+        int i;
+        if ((i = devinfo.name.indexOf(".")) < 0)
+            this.name = devinfo.name;
+        else
+            this.name = devinfo.name.substring(0, i);
+        //	Get only member as name
+        int idx = name.indexOf('/');
+        if (idx > 0)
+            idx = name.indexOf('/', idx + 1);
+        if (idx > 0)
+            name = name.substring(idx + 1);
+    }
+    */
+    //==============================================================
+    //==============================================================
+    public TangoHost(DbDevImportInfo devinfo,
+                     DbDevImportInfo adminfo) throws DevFailed {
+        //	Initialize device proxy class objects.
+        super(devinfo);
+        adm_name = adminfo.name;
+        set_transparency_reconnection(true);
+
+        servers = new ArrayList<TangoServer>();
+        notifyd_state = AstorDefs.unknown;
+
+        //	Check if name contain sub network added, then cut it.
+        int i;
+        if ((i = devinfo.name.indexOf(".")) < 0)
+            this.name = devinfo.name;
+        else
+            this.name = devinfo.name.substring(0, i);
+        //	Get only member as name
+        int idx = name.indexOf('/');
+        if (idx > 0)
+            idx = name.indexOf('/', idx + 1);
+        if (idx > 0)
+            name = name.substring(idx + 1);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void addServer(TangoServer ts) {
+        servers.add(ts);
+    }
+
+    //==============================================================
+    //==============================================================
+    public TangoServer getServer(String servname) {
+        servname = servname.trim();
+        for (int i = 0; i < nbServers(); i++) {
+            TangoServer server = getServer(i);
+            if (server.getName().equals(servname))
+                return server;
+        }
+        return null;
+    }
+
+    //==============================================================
+    //==============================================================
+    public TangoServer getServer(int idx) {
+        return servers.get(idx);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void removeServer(int idx) {
+        servers.remove(idx);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void removeServer(String servname) {
+        for (int i = 0; i < nbServers(); i++) {
+            TangoServer server = getServer(i);
+            if (server.getName().equals(servname)) {
+                removeServer(i);
+                return;
+            }
+        }
+    }
+
+    //==============================================================
+    //==============================================================
+    public int nbServers() {
+        if (servers == null)
+            return 0;
+        else
+            return servers.size();
+    }
+
+    //==============================================================
+    //==============================================================
+    public String[] getServerAttribute() {
+        try {
+            DeviceAttribute att = read_attribute("Servers");
+            return att.extractStringArray();
+        } catch (DevFailed e) {
+            Except.print_exception(e);
+            return new String[0];
+        }
+    }
+
+    //==============================================================
+    //==============================================================
+    public String readLogFile(String servname) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert(servname);
+        DeviceData argout = command_inout("DevReadLog", argin);
+        //System.out.println(argout.extractString());
+        return argout.extractString();
+    }
+    //==============================================================
+
+    /**
+     * Register server (export/unexport admin device )
+     * to be known by starter.
+     *
      * @param servname servers name
      * @throws DevFailed in case of server already running
-	 */
-	//==============================================================
-	public void registerServer(String servname) throws DevFailed
-	{
-		//	Check before if already running
-		String	devname = "dserver/" + servname;
-		boolean running = false;
-		DeviceProxy	dev;
-		try {
-			dev = new DeviceProxy(devname);
-			dev.ping();
-			running = true;
-		}
-		catch(DevFailed e) {  /** */ }
-
-		if (running)
-		{
-			IORdump	d = new IORdump(devname);
-			Except.throw_exception("StartServerFailed",
-					servname + " is already running on " + d.get_host(),
-					"DevWizard.startServer()");
-		}
-		DbDevExportInfo	info =
-			new DbDevExportInfo(devname, "null", name, "null");
-		ApiUtil.get_db_obj().export_device(info);
-		ApiUtil.get_db_obj().unexport_device(devname);
-	}
-	//==============================================================
-	//==============================================================
-	public void startOneServer(String servname) throws DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert(servname);
-		System.out.println("command_inout(DevStart, "+servname+") on "+ get_name());
-		command_inout("DevStart", argin);
-	}
-	//==============================================================
-	//==============================================================
-	public void startServer(String servname) throws  DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert(servname);
-		command_inout("DevStart", argin);
-	}
-	//==============================================================
-	//==============================================================
-	public void stopServer(String servname) throws  DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert(servname);
-		command_inout("DevStop", argin);
-	}
-	//==============================================================
-	//==============================================================
-	public void hardKillServer(String servname) throws  DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert(servname);
-		command_inout("HardKillServer", argin);
-	}
-	//==============================================================
-	//==============================================================
-	public void startServers(int level) throws  DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert((short)level);
-		command_inout("DevStartAll", argin);
-	}
-	//==============================================================
-	//==============================================================
-	public void stopServers(int level) throws DevFailed
-	{
-		DeviceData	argin = new DeviceData();
-		argin.insert((short)level);
-		command_inout("DevStopAll", argin);
-	}
-    //======================================================
-    //======================================================
-    public void displayUptimes(JFrame parent)
-    {
-        Vector<String[]>    v = new Vector<String[]>();
+     */
+    //==============================================================
+    public void registerServer(String servname) throws DevFailed {
+        //	Check before if already running
+        String devname = "dserver/" + servname;
+        boolean running = false;
+        DeviceProxy dev;
         try {
-            Database	db = ApiUtil.get_db_obj();
-            DeviceData	argin = new DeviceData();
+            dev = new DeviceProxy(devname);
+            dev.ping();
+            running = true;
+        } catch (DevFailed e) {  /** */}
+
+        if (running) {
+            IORdump d = new IORdump(devname);
+            Except.throw_exception("StartServerFailed",
+                    servname + " is already running on " + d.get_host(),
+                    "DevWizard.startServer()");
+        }
+        DbDevExportInfo info =
+                new DbDevExportInfo(devname, "null", name, "null");
+        ApiUtil.get_db_obj().export_device(info);
+        ApiUtil.get_db_obj().unexport_device(devname);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void startOneServer(String servname) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert(servname);
+        System.out.println("command_inout(DevStart, " + servname + ") on " + get_name());
+        command_inout("DevStart", argin);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void startServer(String servname) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert(servname);
+        command_inout("DevStart", argin);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void stopServer(String servname) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert(servname);
+        command_inout("DevStop", argin);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void hardKillServer(String servname) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert(servname);
+        command_inout("HardKillServer", argin);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void startServers(int level) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert((short) level);
+        command_inout("DevStartAll", argin);
+    }
+
+    //==============================================================
+    //==============================================================
+    public void stopServers(int level) throws DevFailed {
+        DeviceData argin = new DeviceData();
+        argin.insert((short) level);
+        command_inout("DevStopAll", argin);
+    }
+
+    //======================================================
+    //======================================================
+    public void displayUptimes(JFrame parent) {
+        ArrayList<String[]> v = new ArrayList<String[]>();
+        try {
+            Database db = ApiUtil.get_db_obj();
+            DeviceData argin = new DeviceData();
             argin.insert(name);
-            DeviceData	argout = db.command_inout("DbGetHostServerList", argin);
-            String[]	servnames = argout.extractStringArray();
+            DeviceData argout = db.command_inout("DbGetHostServerList", argin);
+            String[] servnames = argout.extractStringArray();
             for (String sevname : servnames) {
 
-                String[]    exportedStr = new TangoServer("dserver/"+sevname).getServerUptime();
-                v.add(new String[] {
-                        sevname, exportedStr[0], exportedStr[1] } );
+                String[] exportedStr = new TangoServer("dserver/" + sevname).getServerUptime();
+                v.add(new String[]{
+                        sevname, exportedStr[0], exportedStr[1]});
             }
 
-            String[]    columns = new String[] { "Server", "Last   exported", "Last unexported" };
-            String[][]  table = new String[v.size()][];
-            for (int i=0 ; i<v.size() ; i++) {
+            String[] columns = new String[]{"Server", "Last   exported", "Last unexported"};
+            String[][] table = new String[v.size()][];
+            for (int i = 0; i < v.size(); i++) {
                 table[i] = v.get(i);
                 System.out.println(table[i][0] + ":\t" + table[i][1]);
             }
             PopupTable ppt = new PopupTable(parent, name,
-                        columns, table, new Dimension(650, 250));
+                    columns, table, new Dimension(650, 250));
             ppt.setVisible(true);
-        }
-        catch(DevFailed e) {
+        } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }
-	//==============================================================
-	//==============================================================
-	public void displayLogging(JFrame parent)
-	{
-		displayLogging(parent, null);
-	}
-	//==============================================================
-	//==============================================================
-	public void displayLogging(Component parent, String filter)
-	{
-		try
-		{
-			////	new LoggingDialog(parent, this).setVisible(true);
 
-			DeviceData	argin = new DeviceData();
-			argin.insert("Starter");
-			DeviceData	argout = command_inout("DevReadLog", argin);
-			String	str = argout.extractString();
-			String[]	array = AstorUtil.string2array(str, "\n");
-			Vector<String[]>	v = new Vector<String[]>();
-			String	prev_date = null;
-			for (String line : array) {
-				String[]	words = AstorUtil.string2array(line);
-				//	Swap servers and action
-				String	server = words[2];
-				words[2] = words[3];
-				words[3] = server;
-				//	filter with server name if any
-				if (filter==null || server.equals(filter)) {
-					//	Check if date changed
-					if (prev_date!=null) {
-						if (!words[0].equals(prev_date))
-							v.add(new String[]{ "-", "-", "-", "-" } );
-					}
-					prev_date = words[0];
-					v.add(words);
-				}
-			}
-			if (v.size()>0) {
-				String[][]	lines = new String[v.size()][];
-				for (int i=0 ; i<v.size() ; i++)
-					lines[i] = v.get(i);
-				String[]	colnames = { "Date", "Time", "Action", "Server" };
-				PopupTable	table;
-				if (parent instanceof JFrame)
-					table = new PopupTable((JFrame) parent, "Starter on " + name, colnames, lines);
-				else
-					table = new PopupTable((JDialog) parent, "Starter on " + name, colnames, lines);
-				table.setColumnWidth(new int[] {70, 70,70, 250});
-				table.setSortAvailable(false);
-				table.setVisible(true);
-			}
-			else {
-				String	desc = "no record found";
-				if (filter!=null)
-					desc += "  for  " + filter;
-				Except.throw_exception("", desc,"");
-			}
-		}
-		catch(DevFailed e) {
-			Utils.popupError(parent, e.errors[0].desc);//"Cannot read Starter logging...");
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public void displayInfo(java.awt.Component parent)
-	{
-		String	str = "";
-		//	Query database for Controlled servers list
-		try
-		{
-			if (starter==null)
-				starter = new TangoServer(adm_name);
-			str += starter.getServerInfo(parent, (state==AstorDefs.all_ok));
-			str += "\n\n----------- Controlled servers -----------\n";
+    //==============================================================
+    //==============================================================
+    public void displayLogging(JFrame parent) {
+        displayLogging(parent, null);
+    }
 
-			Database	db = ApiUtil.get_db_obj();
-			DeviceData	argin = new DeviceData();
-			argin.insert(name);
-			DeviceData	argout = db.command_inout("DbGetHostServerList", argin);
-			String[]	servnames = argout.extractStringArray();
+    //==============================================================
+    //==============================================================
+    public void displayLogging(Component parent, String filter) {
+        try {
+            ////	new LoggingDialog(parent, this).setVisible(true);
 
-			//	Query database for control mode.
-			for (String servname : servnames)
-			{
-				DbServInfo s = db.get_server_info(servname);
-				//	store only controlled servers
-				if (s.controlled)
-					str += s.name + "\n";
-			}
+            DeviceData argin = new DeviceData();
+            argin.insert("Starter");
+            DeviceData argout = command_inout("DevReadLog", argin);
+            String str = argout.extractString();
+            String[] array = AstorUtil.string2array(str, "\n");
+            ArrayList<String[]> v = new ArrayList<String[]>();
+            String prev_date = null;
+            for (String line : array) {
+                String[] words = AstorUtil.string2array(line);
+                //	Swap servers and action
+                String server = words[2];
+                words[2] = words[3];
+                words[3] = server;
+                //	filter with server name if any
+                if (filter == null || server.equals(filter)) {
+                    //	Check if date changed
+                    if (prev_date != null) {
+                        if (!words[0].equals(prev_date))
+                            v.add(new String[]{"-", "-", "-", "-"});
+                    }
+                    prev_date = words[0];
+                    v.add(words);
+                }
+            }
+            if (v.size() > 0) {
+                String[][] lines = new String[v.size()][];
+                for (int i = 0; i < v.size(); i++)
+                    lines[i] = v.get(i);
+                String[] colnames = {"Date", "Time", "Action", "Server"};
+                PopupTable table;
+                if (parent instanceof JFrame)
+                    table = new PopupTable((JFrame) parent, "Starter on " + name, colnames, lines);
+                else
+                    table = new PopupTable((JDialog) parent, "Starter on " + name, colnames, lines);
+                table.setColumnWidth(new int[]{70, 70, 70, 250});
+                table.setSortAvailable(false);
+                table.setVisible(true);
+            } else {
+                String desc = "no record found";
+                if (filter != null)
+                    desc += "  for  " + filter;
+                Except.throw_exception("", desc, "");
+            }
+        } catch (DevFailed e) {
+            Utils.popupError(parent, e.errors[0].desc);//"Cannot read Starter logging...");
+        }
+    }
 
-			String  tagName = "";
-			try
-			{
-				DevInfo info = info();
-				String  servinfo = info.doc_url;
-				String  tag = "CVS Tag = ";
-				int start = servinfo.indexOf(tag);
-				if (start>0)
-				{
-					start += tag.length();
-					int end = servinfo.indexOf('\n', start);
-					if (end>start)
-						tagName = servinfo.substring(start, end);
-					str += "\n----------- Tag Release -----------\n" +
-						   "        " + tagName;
-				}
-			}
-			catch(DevFailed e) { /** Nothing to do */}
+    //==============================================================
+    //==============================================================
+    public void displayInfo(java.awt.Component parent) {
+        String str = "";
+        //	Query database for Controlled servers list
+        try {
+            if (starter == null)
+                starter = new TangoServer(adm_name);
+            str += starter.getServerInfo(parent, (state == AstorDefs.all_ok));
+            str += "\n\n----------- Controlled servers -----------\n";
 
-		}
-		catch(DevFailed e) {
-			str += e.errors[0].desc;
-			Utils.popupError(parent, str, e);
-			return;
-		}
-		str +="\n\n";
-		Utils.popupMessage(parent, str);
-	}
-	//==============================================================
-	//==============================================================
-	public void testStarter(java.awt.Component parent)
-	{
-		try {
-			if (starter==null)
-				starter = new TangoServer(adm_name);
-			starter.testDevice(parent);
-		}
-		catch(DevFailed e) {
-			ErrorPane.showErrorMessage(parent, "", e);
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public void unexportStarter(java.awt.Component parent)
-	{
-		try {
-			//	Check if exported
-			DbDevImportInfo	info = import_device();
-			if (!info.exported) {
-				Utils.popupError(parent,
-							get_name() + "  NOT  exported !");
-				return;
-			}
+            Database db = ApiUtil.get_db_obj();
+            DeviceData argin = new DeviceData();
+            argin.insert(name);
+            DeviceData argout = db.command_inout("DbGetHostServerList", argin);
+            String[] servnames = argout.extractStringArray();
 
-			//	Unexport device
-			unexport_device();
-			//	And administrative device
-			String	adm = "dserver/Starter/" + name;
-			new DeviceProxy(adm).unexport_device();
+            //	Query database for control mode.
+            for (String servname : servnames) {
+                DbServInfo s = db.get_server_info(servname);
+                //	store only controlled servers
+                if (s.controlled)
+                    str += s.name + "\n";
+            }
 
-			//	Stop polling because it is not exported
-			do_polling = false;
-			Utils.popupMessage(parent,
-							adm + "   and    " + get_name() +
-							"\n\n       have been unexported !");
-		}
-		catch(DevFailed e) {
-			ErrorPane.showErrorMessage(parent, "", e);
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public void setCollection(String new_collec) throws DevFailed
-	{
-		DbDatum[] prop = new DbDatum[1];
-		prop[0] = new DbDatum(AstorDefs.collec_property, new_collec);
+            String tagName = "";
+            try {
+                DevInfo info = info();
+                String servinfo = info.doc_url;
+                String tag = "CVS Tag = ";
+                int start = servinfo.indexOf(tag);
+                if (start > 0) {
+                    start += tag.length();
+                    int end = servinfo.indexOf('\n', start);
+                    if (end > start)
+                        tagName = servinfo.substring(start, end);
+                    str += "\n----------- Tag Release -----------\n" +
+                            "        " + tagName;
+                }
+            } catch (DevFailed e) { /** Nothing to do */}
 
-		put_property(prop);
-		collection = new_collec;
-	}
-	//==============================================================
-	//==============================================================
-	public String getName()
-	{
-		return name;
-	}
-	//==============================================================
-	//==============================================================
-	void setPolling(String[] enabled_hosts)
-	{
-		if (enabled_hosts==null)
-			do_polling = true;
-		else
-		if (enabled_hosts.length>0 && enabled_hosts[0].equals("none"))
-			do_polling = false;
-		else
-		if (enabled_hosts.length>0 && enabled_hosts[0].equals("all"))
-			do_polling = true;
-		else
-			//	search if this host is enable
-			for (String enabled_host : enabled_hosts)
-				if (name.equals(enabled_host))
-					do_polling = true;
-	}
-	//===============================================================
-	//===============================================================
-	public void startServer(java.awt.Component parent, String servname)
-	{
-		try
-		{
-			startServer(servname);
-		}
-		catch (DevFailed e) {
-			ErrorPane.showErrorMessage(parent, "", e);
-		}
-	}
-	//===============================================================
-	//===============================================================
-	void readStdErrorFile(java.awt.Frame parent, String servname)
-	{
-		try{
-			String	logStr = readLogFile(servname);
+        } catch (DevFailed e) {
+            str += e.errors[0].desc;
+            Utils.popupError(parent, str, e);
+            return;
+        }
+        str += "\n\n";
+        Utils.popupMessage(parent, str);
+    }
 
-			//	Get size to know if scrollable is necessary
-			//------------------------------------------------
-			PopupText	dialog = new PopupText(parent, true);
-			dialog.show(logStr, 700, 500);
-		}
-		catch(DevFailed e){
-			ErrorPane.showErrorMessage(parent, "", e);
-		}
-		catch(Exception e){
-			ErrorPane.showErrorMessage(parent, "", e);
-			  e.printStackTrace();
-		}
-	}
-	//==============================================================
-	//==============================================================
-	void updateServersList(JFrame parent)
-	{
-		try
-		{
-			command_inout("UpdateServersInfo");
-		}
-		catch(DevFailed e)
-		{
-			ErrorPane.showErrorMessage(parent, "", e);
-		}
-	}
-	//==============================================================
-	/**
-	 *	Awake thread to read host.
-	 */
-	//==============================================================
-	void updateData()
-	{
-		thread.updateData();
-	}
-	//==============================================================
-	//==============================================================
-	void stopThread()
-	{
-		thread.stop_it = true;
-		thread.updateData();
-	}
-	//==============================================================
-	//==============================================================
-	String[] getPath()
-	{
-		String[]	path = { "" };
-		try
-		{
+    //==============================================================
+    //==============================================================
+    public void testStarter(java.awt.Component parent) {
+        try {
+            if (starter == null)
+                starter = new TangoServer(adm_name);
+            starter.testDevice(parent);
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+        }
+    }
 
-			DbDatum	datum = get_property("StartDsPath");
-			if (!datum.is_empty())
-				path = datum.extractStringArray();
-		}
-		catch(DevFailed e){
-			Except.print_exception(e);
-		}
-		return path;
-	}
-	//==============================================================
-	//==============================================================
-	String getFamily()
-	{
-		String	family = "";
-		try
-		{
+    //==============================================================
+    //==============================================================
+    public void unexportStarter(java.awt.Component parent) {
+        try {
+            //	Check if exported
+            DbDevImportInfo info = import_device();
+            if (!info.exported) {
+                Utils.popupError(parent,
+                        get_name() + "  NOT  exported !");
+                return;
+            }
 
-			DbDatum	datum = get_property("HostCollection");
-			if (!datum.is_empty())
-				family = datum.extractString();
-		}
-		catch(DevFailed e){
-			Except.print_exception(e);
-		}
-		return family;
-	}
-	//==============================================================
-	//==============================================================
-	public void displayBlackBox(JFrame parent)
-	{
-		String[] devices = { this.get_name(), this.adm_name };
-		String	choice;
-		if ((choice=(String)JOptionPane.showInputDialog(parent,
-								"Device selection :", "",
-								JOptionPane.INFORMATION_MESSAGE, null,
-								devices, devices[0])) != null) {
-			try {
-				new BlackBoxTable(parent, choice).setVisible(true);
-			}
-			catch(DevFailed e) {
-				Utils.popupError(parent, null, e);
-			}
-		}
-	}
-	//==============================================================
-	//==============================================================
-	public String hostStatus()
-	{
-		String	str = name + ":";
-		try {
-			if (state==AstorDefs.faulty)
-				str += "     is faulty\n";
-			else {
-				DeviceAttribute	att = read_attribute("Servers");
-				if (att.hasFailed())
-					str += "     " + att.getErrStack()[0].desc + "\n";
-				else {
-					str +="\n";
-					Vector<String>	running = new Vector<String>();
-					Vector<String>	moving  = new Vector<String>();
-					Vector<String>	stopped = new Vector<String>();
-					String[]	list = att.extractStringArray();
-					for (String line : list) {
-						StringTokenizer stk = new StringTokenizer(line);
-						String name = stk.nextToken();
-						String st = stk.nextToken();
-						String str_ctrl = stk.nextToken();
-						if (str_ctrl.equals("1")) {
-							if (st.equals("FAULT"))
-								stopped.add(name);
-							else if (st.equals("MOVING"))
-								moving.add(name);
-							else
-								running.add(name);
-						}
-					}
-					if (stopped.size()>0)
-						str += "     " + stopped.size() + "  servers stopped\n";
-					if (moving.size()>0)
-						str += "     " + moving.size()  + " servers moving\n";
-					if (running.size()>0)
-						str += "     " + running.size() + " servers running\n";
+            //	Unexport device
+            unexport_device();
+            //	And administrative device
+            String adm = "dserver/Starter/" + name;
+            new DeviceProxy(adm).unexport_device();
 
-				}
-			}
-		}
-		catch(DevFailed e) {
-			str += "     " + e.errors[0].desc;
-		}
-		return str;
-	}
-	//==============================================================
-	//==============================================================
-    public String hostName()
-    {
+            //	Stop polling because it is not exported
+            Utils.popupMessage(parent,
+                    adm + "   and    " + get_name() +
+                            "\n\n       have been unexported !");
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+        }
+    }
+
+    //==============================================================
+    //==============================================================
+    public void setCollection(String new_collec) throws DevFailed {
+        DbDatum[] prop = new DbDatum[1];
+        prop[0] = new DbDatum(AstorDefs.collec_property, new_collec);
+
+        put_property(prop);
+        collection = new_collec;
+    }
+
+    //==============================================================
+    //==============================================================
+    public String getName() {
         return name;
     }
-	//==============================================================
-	//==============================================================
-	public String toString()
-	{
-		if (usage==null || usage.length()==0)
-			return name;
-		else
-			return name + "  ( "+ usage + " )";
-	}
+
+    //===============================================================
+    //===============================================================
+    public void startServer(java.awt.Component parent, String servname) {
+        try {
+            startServer(servname);
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+        }
+    }
+
+    //===============================================================
+    //===============================================================
+    void readStdErrorFile(java.awt.Frame parent, String servname) {
+        try {
+            String logStr = readLogFile(servname);
+
+            //	Get size to know if scrollable is necessary
+            //------------------------------------------------
+            PopupText dialog = new PopupText(parent, true);
+            dialog.show(logStr, 700, 500);
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+        } catch (Exception e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+            e.printStackTrace();
+        }
+    }
+
+    //==============================================================
+    //==============================================================
+    void updateServersList(JFrame parent) {
+        try {
+            command_inout("UpdateServersInfo");
+        } catch (DevFailed e) {
+            ErrorPane.showErrorMessage(parent, "", e);
+        }
+    }
+    //==============================================================
+
+    /**
+     * Awake thread to read host.
+     */
+    //==============================================================
+    void updateData() {
+        thread.updateData();
+    }
+
+    //==============================================================
+    //==============================================================
+    void stopThread() {
+        thread.stop_it = true;
+        thread.updateData();
+    }
+
+    //==============================================================
+    //==============================================================
+    String[] getPath() {
+        String[] path = {""};
+        try {
+
+            DbDatum datum = get_property("StartDsPath");
+            if (!datum.is_empty())
+                path = datum.extractStringArray();
+        } catch (DevFailed e) {
+            Except.print_exception(e);
+        }
+        return path;
+    }
+
+    //==============================================================
+    //==============================================================
+    String getFamily() {
+        String family = "";
+        try {
+
+            DbDatum datum = get_property("HostCollection");
+            if (!datum.is_empty())
+                family = datum.extractString();
+        } catch (DevFailed e) {
+            Except.print_exception(e);
+        }
+        return family;
+    }
+
+    //==============================================================
+    //==============================================================
+    public void displayBlackBox(JFrame parent) {
+        String[] devices = {this.get_name(), this.adm_name};
+        String choice;
+        if ((choice = (String) JOptionPane.showInputDialog(parent,
+                "Device selection :", "",
+                JOptionPane.INFORMATION_MESSAGE, null,
+                devices, devices[0])) != null) {
+            try {
+                new BlackBoxTable(parent, choice).setVisible(true);
+            } catch (DevFailed e) {
+                Utils.popupError(parent, null, e);
+            }
+        }
+    }
+
+    //==============================================================
+    //==============================================================
+    public String hostStatus() {
+        String str = name + ":";
+        try {
+            if (state == AstorDefs.faulty)
+                str += "     is faulty\n";
+            else {
+                DeviceAttribute att = read_attribute("Servers");
+                if (att.hasFailed())
+                    str += "     " + att.getErrStack()[0].desc + "\n";
+                else {
+                    str += "\n";
+                    ArrayList<String> running = new ArrayList<String>();
+                    ArrayList<String> moving = new ArrayList<String>();
+                    ArrayList<String> stopped = new ArrayList<String>();
+                    String[] list = att.extractStringArray();
+                    for (String line : list) {
+                        StringTokenizer stk = new StringTokenizer(line);
+                        String name = stk.nextToken();
+                        String st = stk.nextToken();
+                        String str_ctrl = stk.nextToken();
+                        if (str_ctrl.equals("1")) {
+                            if (st.equals("FAULT"))
+                                stopped.add(name);
+                            else if (st.equals("MOVING"))
+                                moving.add(name);
+                            else
+                                running.add(name);
+                        }
+                    }
+                    if (stopped.size() > 0)
+                        str += "     " + stopped.size() + "  servers stopped\n";
+                    if (moving.size() > 0)
+                        str += "     " + moving.size() + " servers moving\n";
+                    if (running.size() > 0)
+                        str += "     " + running.size() + " servers running\n";
+
+                }
+            }
+        } catch (DevFailed e) {
+            str += "     " + e.errors[0].desc;
+        }
+        return str;
+    }
+
+    //==============================================================
+    //==============================================================
+    public String hostName() {
+        return name;
+    }
+
+    //==============================================================
+    //==============================================================
+    public String toString() {
+        if (usage == null || usage.length() == 0)
+            return name;
+        else
+            return name + "  ( " + usage + " )";
+    }
 }

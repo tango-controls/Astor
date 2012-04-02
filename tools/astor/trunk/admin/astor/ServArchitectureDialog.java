@@ -44,8 +44,8 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 
 //===============================================================
@@ -62,8 +62,8 @@ public class ServArchitectureDialog extends JDialog {
 
     private String servname;
     private boolean from_appli = true;
-    private boolean modified   = false;
-    private TgServer    server;
+    private boolean modified = false;
+    private TgServer server;
 
     private ServInfoTree tree;
     static public final boolean EXPAND_NOT_FULL = false;
@@ -114,7 +114,6 @@ public class ServArchitectureDialog extends JDialog {
         tree.expandTree(EXPAND_NOT_FULL);
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -125,22 +124,50 @@ public class ServArchitectureDialog extends JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        javax.swing.JPanel titlePanel = new javax.swing.JPanel();
+        javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
+        titleLabel = new javax.swing.JLabel();
+        zmqButton = new javax.swing.JRadioButton();
+        javax.swing.JPanel scrollPanel = new javax.swing.JPanel();
+        textScrollPane = new javax.swing.JScrollPane();
+        textArea = new javax.swing.JTextArea();
+        treeScrollPane = new javax.swing.JScrollPane();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         expandBtn = new javax.swing.JRadioButton();
         infoBtn = new javax.swing.JRadioButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
-        javax.swing.JPanel titlePanel = new javax.swing.JPanel();
-        titleLabel = new javax.swing.JLabel();
-        javax.swing.JPanel scrollPanel = new javax.swing.JPanel();
-        treeScrollPane = new javax.swing.JScrollPane();
-        textScrollPane = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
         });
+
+        titlePanel.setLayout(new java.awt.BorderLayout());
+
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        titleLabel.setText("Dialog Title");
+        jPanel1.add(titleLabel);
+
+        titlePanel.add(jPanel1, java.awt.BorderLayout.CENTER);
+
+        zmqButton.setText("ZMQ event system compatible");
+        zmqButton.setEnabled(false);
+        titlePanel.add(zmqButton, java.awt.BorderLayout.SOUTH);
+
+        getContentPane().add(titlePanel, java.awt.BorderLayout.NORTH);
+
+        scrollPanel.setLayout(new java.awt.BorderLayout());
+
+        textScrollPane.setPreferredSize(new java.awt.Dimension(200, 170));
+
+        textArea.setEditable(false);
+        textScrollPane.setViewportView(textArea);
+
+        scrollPanel.add(textScrollPane, java.awt.BorderLayout.NORTH);
+        scrollPanel.add(treeScrollPane, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(scrollPanel, java.awt.BorderLayout.CENTER);
 
         expandBtn.setText("Expand tree");
         expandBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -168,24 +195,6 @@ public class ServArchitectureDialog extends JDialog {
         bottomPanel.add(cancelBtn);
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
-
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
-        titleLabel.setText("Dialog Title");
-        titlePanel.add(titleLabel);
-
-        getContentPane().add(titlePanel, java.awt.BorderLayout.NORTH);
-
-        scrollPanel.setLayout(new java.awt.BorderLayout());
-        scrollPanel.add(treeScrollPane, java.awt.BorderLayout.CENTER);
-
-        textScrollPane.setPreferredSize(new java.awt.Dimension(200, 170));
-
-        textArea.setEditable(false);
-        textScrollPane.setViewportView(textArea);
-
-        scrollPanel.add(textScrollPane, java.awt.BorderLayout.NORTH);
-
-        getContentPane().add(scrollPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -227,7 +236,6 @@ public class ServArchitectureDialog extends JDialog {
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -307,19 +315,19 @@ public class ServArchitectureDialog extends JDialog {
     private javax.swing.JScrollPane textScrollPane;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JScrollPane treeScrollPane;
+    private javax.swing.JRadioButton zmqButton;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 
 
     //===============================================================
-
     /**
      * JTree Class
      */
     //===============================================================
     class ServInfoTree extends JTree {
         private Component parent;
-        private DeviceProxy dev = null;
+        private DeviceProxy deviceProxy = null;
         private String[] devlist = null;
         private DefaultTreeModel treeModel;
         private DefaultMutableTreeNode root;
@@ -397,16 +405,18 @@ public class ServArchitectureDialog extends JDialog {
                     treeMouseClicked(evt);
                 }
             });
+
+            zmqButton.setSelected(isZmqCompatible());
         }
 
         //===============================================================
         /*
-           *	Create the server tree
-           */
+         *	Create the server tree
+         */
         //===============================================================
         private void createNodes(DefaultMutableTreeNode root) throws DevFailed {
-            if (dev == null)
-                dev = new DeviceProxy("dserver/" + servname);
+            if (deviceProxy == null)
+                deviceProxy = new DeviceProxy("dserver/" + servname);
 
             TgClass[] classes = getClasses();
             server.nbDevices = 0;
@@ -447,7 +457,7 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         private TgDevice[] getDevices(String classname) throws DevFailed {
             if (devlist == null) {
-                DeviceData argout = dev.command_inout("QueryDevice");
+                DeviceData argout = deviceProxy.command_inout("QueryDevice");
                 devlist = argout.extractStringArray();
             }
             //	get only the device name for specified class
@@ -472,7 +482,7 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         private TgClass[] getClasses() throws DevFailed {
             //	Get the class list
-            DeviceData argout = dev.command_inout("QueryClass");
+            DeviceData argout = deviceProxy.command_inout("QueryClass");
             String[] classnames = argout.extractStringArray();
 
             //	Build properties for each class
@@ -490,7 +500,7 @@ public class ServArchitectureDialog extends JDialog {
             DeviceData argin = new DeviceData();
             argin.insert(classname);
             String cmd = "QueryWizard" + source + "Property";
-            DeviceData argout = dev.command_inout(cmd, argin);
+            DeviceData argout = deviceProxy.command_inout(cmd, argin);
             String[] str = argout.extractStringArray();
             TgProperty[] prop = new TgProperty[str.length / 3];
             for (int i = 0, n = 0; i < str.length; n++, i += 3)
@@ -500,9 +510,20 @@ public class ServArchitectureDialog extends JDialog {
         }
 
         //======================================================
+        //======================================================
+        private boolean isZmqCompatible() {
+            try {
+                deviceProxy.command_query("ZmqEventSubscriptionChange");
+                return true;
+            }
+            catch (DevFailed e) {
+                return false;
+            }
+        }
+        //======================================================
         /*
-           *	Manage event on clicked mouse on PogoTree object.
-           */
+         *	Manage event on clicked mouse on PogoTree object.
+         */
         //======================================================
         private void treeMouseClicked(java.awt.event.MouseEvent evt) {
             //	Check if click is on a node
@@ -596,7 +617,7 @@ public class ServArchitectureDialog extends JDialog {
     class TgServer {
         String name;
         String desc;
-        int    nbDevices  = 0;
+        int nbDevices = 0;
 
         //===============================================================
         public TgServer(String name) {
@@ -897,7 +918,7 @@ public class ServArchitectureDialog extends JDialog {
                     setIcon(class_icon);
                     setFont(fonts[CLASS]);
                     tip = ((TgClass) user_obj).desc;
-                    tip += "\n"+((TgClass) user_obj).nbDevices + "  devices";
+                    tip += "\n" + ((TgClass) user_obj).nbDevices + "  devices";
                 } else if (user_obj instanceof TgDevice) {
                     setIcon(class_icon);
                     setFont(fonts[DEVICE]);

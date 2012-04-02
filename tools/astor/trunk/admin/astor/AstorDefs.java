@@ -33,13 +33,12 @@
 
 
 package admin.astor;
- 
 
 
-/** 
+/**
  *	Constant definition interface for Astor package.
  *
- * @author  verdier
+ * @author verdier
  */
 
 
@@ -48,88 +47,88 @@ import java.awt.*;
 
 public interface AstorDefs {
 
-	public final String		notifyd_prg = "notify_daemon";
+    public final String notifyd_prg = "notify_daemon";
 
-	public final String		starterDeviceHeader = "tango/admin/";
-	public final String		img_path = "/admin/astor/images/";
-	public final String		collec_property = "HostCollection";
-	public final String		usage_property = "HostUsage";
-	public final String[]	logging_properties = {
-										"logging_level", 
-										"logging_target",
-										"logging_rft"
-									};
+    public final String starterDeviceHeader = "tango/admin/";
+    public final String img_path = "/admin/astor/images/";
+    public final String collec_property = "HostCollection";
+    public final String usage_property = "HostUsage";
+    public final String[] logging_properties = {
+            "logging_level",
+            "logging_target",
+            "logging_rft"
+    };
 
-	public final int		do_not_close = 0;
-	public final int		do_close     = -1;
-	static final int		COLLECTION = 0;
-	static final int		LEAF       = 1;
+    public final int do_not_close = 0;
+    public final int do_close = -1;
+    static final int COLLECTION = 0;
+    static final int LEAF = 1;
 
-	public final int		ALL_SERVERS     = 0;
-	public final int		RUNNING_SERVERS = 1;
-	public final int		StartAllServers = 0;
-	public final int		StopAllServers  = 1;
-	public final int		StartNewServer  = 2;
-	public final String[]	cmdStr = {
-							"Starting ",
-							"Stopping "
-							};
+    public final int ALL_SERVERS = 0;
+    public final int RUNNING_SERVERS = 1;
+    public final int StartAllServers = 0;
+    public final int StopAllServers = 1;
+    public final int StartNewServer = 2;
+    public final String[] cmdStr = {
+            "Starting ",
+            "Stopping "
+    };
 
-	public final int		LEVEL_NOT_CTRL   = 0;
-	public final int		NO_STATE          = 0;
-	public final int		SERVER_STATES     = 1;
-	public final int		STARTER_STATE     = 2;
-	public final int		ALL_STATES        = 3;
+    public final int LEVEL_NOT_CTRL = 0;
+    public final int NO_STATE = 0;
+    public final int SERVER_STATES = 1;
+    public final int STARTER_STATE = 2;
+    public final int ALL_STATES = 3;
 
-	public final String		DocLocationUnknown = "Doc location unknown....";
-	public final String		DerfaultDocLocation =
-		"http://www.esrf.fr/tango/tango_doc/index.html";
+    public final String DocLocationUnknown = "Doc location unknown....";
+    public final String DerfaultDocLocation =
+            "http://www.esrf.fr/tango/tango_doc/index.html";
 
-	public final int		PollPeriod  = 2000;
-	//======================================================================
-	//	States colors definitions
-	//======================================================================
-	public static final int unavailable = -1;
-	public static final int unknown     =  0;
-	public static final int faulty      =  1;
-	public static final int alarm       =  2;
-	public static final int all_ok      =  3;
-	public static final int moving      =  4;
-	public static final int failed      =  5;
-	public static final int NbStates    =  6;
-	public static Color[]	bg = {
-			Color.gray,
-			Color.red,   
-			Color.orange,
-			Color.green,
-			Color.blue,
-			Color.white
-			};
+    public final int PollPeriod = 2000;
+    //======================================================================
+    //	States colors definitions
+    //======================================================================
+    public static final int unavailable = -1;
+    public static final int unknown = 0;
+    public static final int faulty = 1;
+    public static final int alarm = 2;
+    public static final int all_ok = 3;
+    public static final int moving = 4;
+    public static final int failed = 5;
+    public static final int NbStates = 6;
+    public static Color[] bg = {
+            Color.gray,
+            Color.red,
+            Color.orange,
+            Color.green,
+            Color.blue,
+            Color.white
+    };
 
-	public static Color[]	fg = {	
-			Color.white,
-			Color.white,
-			Color.black,
-			Color.black,
-			Color.white,
-			Color.black
-			};
-	//======================================================================
-	static final String	HtmlHeader = 
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" + 
-"<HTML>\n" + 
-"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#FF0000\" ALINK=\"#FF0000\">\n" + 
-"\n" + 
-"<table width=\"100%\" height=\"20%\"><tr>\n" +
-"<td align=CENTER>\n" + 
-"<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>E</FONT></FONT><FONT SIZE=+1>UROPEAN</FONT>\n" + 
-"<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>S</FONT></FONT><FONT SIZE=+1>YNCHROTRON</FONT>\n" + 
-"<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>R</FONT></FONT><FONT SIZE=+1>ADIATION</FONT>\n" + 
-"<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>F</FONT></FONT><FONT SIZE=+1>ACILITY</FONT>\n" + 
-"</td><td>\n" + 
-"<IMG SRC=\"http://www.esrf.fr/gifs/logo/80.gif\">\n" + 
-"</td></tr></table>\n" + 
-"<P><Br>\n";
+    public static Color[] fg = {
+            Color.white,
+            Color.white,
+            Color.black,
+            Color.black,
+            Color.white,
+            Color.black
+    };
+    //======================================================================
+    static final String HtmlHeader =
+            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" +
+                    "<HTML>\n" +
+                    "<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#FF0000\" ALINK=\"#FF0000\">\n" +
+                    "\n" +
+                    "<table width=\"100%\" height=\"20%\"><tr>\n" +
+                    "<td align=CENTER>\n" +
+                    "<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>E</FONT></FONT><FONT SIZE=+1>UROPEAN</FONT>\n" +
+                    "<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>S</FONT></FONT><FONT SIZE=+1>YNCHROTRON</FONT>\n" +
+                    "<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>R</FONT></FONT><FONT SIZE=+1>ADIATION</FONT>\n" +
+                    "<FONT COLOR=\"#0000FF\"><FONT SIZE=+4>F</FONT></FONT><FONT SIZE=+1>ACILITY</FONT>\n" +
+                    "</td><td>\n" +
+                    "<IMG SRC=\"http://www.esrf.fr/gifs/logo/80.gif\">\n" +
+                    "</td></tr></table>\n" +
+                    "<P><Br>\n";
 
-	static final String	HtmlFooter = "\n</Body>\n</Html>\n";
+    static final String HtmlFooter = "\n</Body>\n</Html>\n";
 }

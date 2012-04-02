@@ -11,6 +11,12 @@
 #
 #-======================================================================
 
+Astor-6.0.1 -  02/04/12:
+	Problem when removing server info fixed.
+
+Astor-6.0.0 -  08/02/12:
+	Comptibility with TangORB-8.x (ZMQ event system or supposed to be).
+
 Astor-5.5.4 -  06/12/11:
 	Create a Thread to update splash screen (to boost startup).
 
