@@ -196,7 +196,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         packTheDialog();
     }
     //===============================================================
-
     /**
      * Pack the window and check if it needs scroll bars or not.
      * If very big, needs scroll bars.
@@ -207,6 +206,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         if (!isVisible())
             return;
 
+        Point p = getLocation();
         pack();
         int width = levelsPanel.getWidth();
         int height = levelsPanel.getHeight();
@@ -219,8 +219,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             centerPanel.remove(levelsPanel);
             Dimension d = new Dimension(preferred_size);
             //	Check to resize only in one way
-            if (width < preferred_size.width - bw) d.width = width + bw;
-            if (height < preferred_size.height - bw) d.height = height + bw;
+            if (width < preferred_size.width - bw)
+                d.width = width + bw;
+            if (height < preferred_size.height - bw)
+                d.height = height + bw;
             scrollPane.setPreferredSize(d);
             scrollPane.add(levelsPanel);
             scrollPane.setViewportView(levelsPanel);
@@ -232,7 +234,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             centerPanel.add(levelsPanel, java.awt.BorderLayout.CENTER);
         }
         pack();
-    }
+        setLocation(p);
+   }
 
     //===============================================================
     //===============================================================

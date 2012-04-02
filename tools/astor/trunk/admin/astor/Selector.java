@@ -50,23 +50,22 @@ import java.util.ArrayList;
 
 public class Selector extends JDialog {
     private String retVal = "";
-    private ArrayList    values = new ArrayList();
+    private ArrayList<String>    values = new ArrayList<String>();
 
     //===============================================================
-
-    /**
+    /*
      * Creates new form Selector
      */
     //===============================================================
-    public Selector(JFrame parent, String title, ArrayList values, String def_val) {
+    public Selector(JFrame parent, String title, ArrayList<String> values, String def_val) {
         super(parent, true);
         initComponents();
 
         this.values = values;
         comboBox.addItem("");
         for (int i = 0; values != null && i < values.size(); i++) {
-            comboBox.addItem(values.get(i).toString());
-            if (values.get(i).toString().equals(def_val))
+            comboBox.addItem(values.get(i));
+            if (values.get(i).equals(def_val))
                 comboBox.setSelectedIndex(i + 1);
         }
         comboBox.setEditable(true);
@@ -76,8 +75,7 @@ public class Selector extends JDialog {
     }
 
     //===============================================================
-
-    /**
+    /*
      * Creates new form Selector
      */
     //===============================================================
@@ -162,18 +160,20 @@ public class Selector extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void comboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxActionPerformed
     }//GEN-LAST:event_comboBoxActionPerformed
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
         retVal = (String) comboBox.getSelectedItem();
 
         //	Check if already in combo box or a new one
         boolean found = false;
-        for (int i = 0; i < values.size(); i++)
-            if (values.get(i).toString().equals(retVal))
+        for (String value : values)
+            if (value.equals(retVal))
                 found = true;
         //	If not foun add for a next usage
         if (!found)
@@ -187,24 +187,21 @@ public class Selector extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         retVal = null;
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         retVal = null;
         doClose();
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -242,7 +239,7 @@ public class Selector extends JDialog {
     public static void main(String args[]) {
         String title = "TANGO_HOST ?";
         String[] tgh = {"corvus:10000", "orion:10000"};
-        ArrayList v = new ArrayList();
+        ArrayList<String> v = new ArrayList<String>();
         v.add(tgh[0]);
         v.add(tgh[1]);
         Selector sel = new Selector(new JFrame(), title, v, "orion:10000");
