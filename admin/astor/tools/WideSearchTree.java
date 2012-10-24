@@ -54,6 +54,7 @@ public class WideSearchTree extends JTree implements TangoConst {
     private WideSearchTreePopupMenu menu;
     private JDialog parent;
 
+    @SuppressWarnings("InspectionUsingGrayColors")
     private static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
     //===============================================================
@@ -243,11 +244,11 @@ public class WideSearchTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String getAliasInfo(TangoAlias alias) throws DevFailed {
-        StringBuffer sb = new StringBuffer("------------ ");
+        StringBuilder sb = new StringBuilder("------------ ");
         sb.append(alias.name).append(" Info ------------\n\n");
-        String devname = ApiUtil.get_db_obj().get_alias_device(alias.name);
-        sb.append("Alias for device :   ").append(devname).append("\n\n");
-        sb.append(getDeviceInfo(devname));
+        String deviceName = ApiUtil.get_db_obj().get_device_from_alias(alias.name);
+        sb.append("Alias for device :   ").append(deviceName).append("\n\n");
+        sb.append(getDeviceInfo(deviceName));
         return sb.toString();
     }
 
@@ -260,7 +261,7 @@ public class WideSearchTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String getDeviceInfo(String devname) throws DevFailed {
-        StringBuffer sb = new StringBuffer("------------ ");
+        StringBuilder sb = new StringBuilder("------------ ");
         sb.append(devname).append("  Info ------------\n\n");
         DeviceInfo info = getDevInfo(devname);
         sb.append(info);
@@ -270,7 +271,7 @@ public class WideSearchTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String getServerInfo(TangoServer server) throws DevFailed {
-        StringBuffer sb = new StringBuffer("------------ ");
+        StringBuilder sb = new StringBuilder("------------ ");
         sb.append(server.name).append("  Info ------------\n\n");
         DeviceInfo info = getDevInfo("dserver/" + server.name);
         sb.append(info);
@@ -313,16 +314,16 @@ public class WideSearchTree extends JTree implements TangoConst {
     private void displayHostPanel() {
         try {
             Object obj = getSelectedObject();
-            String devname;
+            String deviceName;
             if (obj instanceof TangoServer)
-                devname = "dserver/" + ((TangoServer) obj).name;
+                deviceName = "dserver/" + ((TangoServer) obj).name;
             else if (obj instanceof TangoAlias)
-                devname = ApiUtil.get_db_obj().get_alias_device(
+                deviceName = ApiUtil.get_db_obj().get_device_from_alias(
                         ((TangoAlias) obj).name);
             else
-                devname = ((TangoDevice) obj).name;
+                deviceName = ((TangoDevice) obj).name;
 
-            DeviceInfo info = getDevInfo(devname);
+            DeviceInfo info = getDevInfo(deviceName);
             String hostname = info.hostname;
             ((WideSearchDialog) parent).displayHostPanel(hostname);
         } catch (DevFailed e) {
@@ -408,33 +409,15 @@ public class WideSearchTree extends JTree implements TangoConst {
         private final int TITLE = 0;
         private final int COLLEC = 1;
         private final int LEAF = 2;
-        private Cursor dd_cursor;
 
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            /*
-               Utils	utils = Utils.getInstance();
-               tango_icon      = utils.getIcon("network5.gif");
-               class_icon      = utils.getIcon("class.gif");
-               cmd_icon        = utils.getIcon("attleaf.gif");
-               */
-            dd_cursor = getNodeCursor("drg-drp.gif");
-
             fonts = new Font[LEAF + 1];
             fonts[TITLE] = new Font("Dialog", Font.BOLD, 18);
             fonts[COLLEC] = new Font("Dialog", Font.BOLD, 12);
             fonts[LEAF] = new Font("Dialog", Font.PLAIN, 12);
         }
-        //===============================================================
-        //===============================================================
-        Cursor getNodeCursor(String filename) {
-            java.net.URL url =
-                    getClass().getResource(Utils.img_path + filename);
-            Image image = Toolkit.getDefaultToolkit().getImage(url);
-            return Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), filename);
-        }
-
         //===============================================================
         //===============================================================
         public Component getTreeCellRendererComponent(
