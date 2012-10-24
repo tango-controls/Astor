@@ -237,7 +237,6 @@ public class PopupHtml extends JDialog implements TangoConst {
     //======================================================
     //======================================================
     private String header = "http://www";
-
     protected synchronized void setPage(URL url, boolean way) {
         URL prev_url = null;
         try {
@@ -298,7 +297,28 @@ public class PopupHtml extends JDialog implements TangoConst {
         pane.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
     //======================================================
-
+    /**
+     * Show the dialog window.
+     *
+     * @param url an URL address.
+     */
+    //======================================================
+    public void show(URL url) {
+        show(url.toString(), 700, 750);
+    }
+    //======================================================
+    /**
+     * Show the dialog window.
+     *
+     * @param url an URL address.
+     * @param width  window width
+     * @param height window height
+     */
+    //======================================================
+    public void show(URL url, int width, int height) {
+        show(url.toString(),width, height);
+    }
+    //======================================================
     /**
      * Show the dialog window.
      *
