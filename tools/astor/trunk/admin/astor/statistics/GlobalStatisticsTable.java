@@ -100,7 +100,8 @@ public class GlobalStatisticsTable extends JTable {
     //=======================================================
     public GlobalStatisticsTable(JFrame parent) {
         this.parent = parent;
-        //  Create the table.
+
+       //  Create the table.
         setRowSelectionAllowed(true);
         setColumnSelectionAllowed(true);
         setDragEnabled(false);
@@ -201,6 +202,7 @@ public class GlobalStatisticsTable extends JTable {
     //===============================================================
     private void headerTableActionPerformed(MouseEvent evt) {
 
+		System.out.println("headerTableActionPerformed(evt); called");
         sort(getTableHeader().columnAtPoint(
                 new Point(evt.getX(), evt.getY())));
     }
@@ -208,9 +210,16 @@ public class GlobalStatisticsTable extends JTable {
     //=======================================================
     //=======================================================
     private void sort(int column) {
-        MyCompare compare = new MyCompare();
-        compare.setSelectedColumn(column);
-        Collections.sort(filteredServerStatistics, compare);
+        for (ServerStat serverStat : filteredServerStatistics) {
+            System.out.println(serverStat.name);
+        }
+        ServersComparator comparator = new ServersComparator();
+        comparator.setSelectedColumn(column);
+        Collections.sort(filteredServerStatistics, comparator);
+        System.out.println("==============================================================================");
+        for (ServerStat serverStat : filteredServerStatistics) {
+            System.out.println(serverStat.name);
+        }
 
         model.fireTableDataChanged();
     }
@@ -320,7 +329,7 @@ public class GlobalStatisticsTable extends JTable {
      * MyCompare class to sort collection
      */
     //======================================================
-    class MyCompare implements Comparator<ServerStat> {
+    class ServersComparator implements Comparator<ServerStat> {
         private int column;
 
         private void setSelectedColumn(int column) {
@@ -330,22 +339,22 @@ public class GlobalStatisticsTable extends JTable {
         public int compare(ServerStat server1, ServerStat server2) {
             switch (column) {
                 case SERVER_NAME:
-                    return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : 0);
+                    return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : -1);
                 case HOST_NAME:
-                    return ((server1.starterStat.name.compareToIgnoreCase(server2.starterStat.name) > 0) ? 1 : 0);
+                    return ((server1.starterStat.name.compareToIgnoreCase(server2.starterStat.name) > 0) ? 1 : -1);
                 case NB_FAILURES:
-                    return ((server1.nbFailures < server2.nbFailures) ? 1 : 0);
+                    return ((server1.nbFailures < server2.nbFailures) ? 1 : -1);
                 case TIME_FAILURE:
-                    return ((server1.failedDuration < server2.failedDuration) ? 1 : 0);
+                    return ((server1.failedDuration < server2.failedDuration) ? 1 : -1);
                 //case TIME_RUNNING:
-                //    return ((server1.runDuration < server2.runDuration)? 1 : 0);
+                //    return ((server1.runDuration < server2.runDuration)? 1 : -1);
                 case AVAILABILITY:
-                    return ((server1.getAvailability() < server2.getAvailability()) ? 1 : 0);
+                    return ((server1.getAvailability() < server2.getAvailability()) ? 1 : -1);
                 case LAST_FAILURE:
-                    return ((server1.getLastFailure() < server2.getLastFailure()) ? 1 : 0);
+                    return ((server1.getLastFailure() < server2.getLastFailure()) ? 1 : -1);
             }
             //	default case by name
-            return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : 0);
+            return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : -1);
         }
     }
     //==============================================================================

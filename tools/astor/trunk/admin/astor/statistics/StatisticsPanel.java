@@ -460,7 +460,7 @@ public class StatisticsPanel extends JFrame {
     private void errorItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_errorItemActionPerformed
 
         //  Build error list if global stat have been read
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (globalStatistics != null) {
             for (StarterStat starterStat : globalStatistics.getStarterStatistics()) {
                 if (!starterStat.readOK) {
