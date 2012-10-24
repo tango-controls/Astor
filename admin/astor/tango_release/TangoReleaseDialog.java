@@ -91,9 +91,6 @@ public class TangoReleaseDialog extends JDialog {
             ArrayList<String>   serverNames = getControlledServers(hostName);
             for (String server : serverNames)
                 serverList.add(server);
-
-            //  Add the Starter itself
-            serverList.add("Starter/"+hostName);
         }
         System.out.println(serverList.size());
         String  rootName = ApiUtil.getTangoHost();
@@ -154,6 +151,9 @@ public class TangoReleaseDialog extends JDialog {
                 String serverName = stringTokenizer.nextToken();
                 controlledServers.add(serverName);
             }
+
+            //  Add the Starter itself
+            controlledServers.add("Starter/"+hostName);
         }
         catch (DevFailed e) {
             //  Do nothing
@@ -275,7 +275,7 @@ public class TangoReleaseDialog extends JDialog {
         URL url = getClass().getResource("TangoRelease.html");
         PopupHtml   dialog = new PopupHtml(null);
         dialog.setLocation(getLocation());
-        dialog.show(url, 800, 600);
+        dialog.show(url, 850, 600);
     }//GEN-LAST:event_helpBtnActionPerformed
 
 	//===============================================================
