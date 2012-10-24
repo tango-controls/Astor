@@ -64,6 +64,7 @@ full:
 	$(JAVAC) statistics/*.java
 	$(JAVAC) tango_release/*.java
 	$(JAVAC) *.java
+	@cp tango_release/*.html $(BIN_DIR)/admin/astor/tango_release
 
 images:
 	cp -R img $(BIN_DIR)/admin/astor

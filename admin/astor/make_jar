@@ -45,6 +45,7 @@ jar cmvf $MANIF_FILE        \
 		admin/astor/access/*.class \
 		admin/astor/statistics/*.class \
 		admin/astor/tango_release/*.class \
+		admin/astor/tango_release/*.html \
 		admin/astor/images/*.jpg \
 		admin/astor/images/*.gif
 
