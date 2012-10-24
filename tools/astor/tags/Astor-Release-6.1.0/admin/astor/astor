@@ -1,0 +1,22 @@
+#!/bin/sh
+#---------------------------------------------------------
+#	
+#---------------------------------------------------------
+
+
+
+ASTOR=../../bin
+CLASSPATH=$ASTOR:$CLASSPATH
+export CLASSPATH
+echo "CLASSPATH=$CLASSPATH"
+
+#---------------------------------------------------------
+#	Start the Pogo process
+#---------------------------------------------------------
+
+CMD="java admin.astor.Astor $*"
+
+echo $CMD
+$CMD 
+#2>/dev/null
+
