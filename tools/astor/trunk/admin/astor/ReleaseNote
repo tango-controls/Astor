@@ -11,6 +11,22 @@
 #
 #-======================================================================
 
+Astor-6.1.0 -  24/10/12:
+	Tango release for servers tool added.
+
+Astor-6.0.6 -  09/10/12:
+	Pb with back slash fixed (?)
+
+Astor-6.0.5 -  21/08/12:
+	Open Jive on a selected server.
+
+Astor-6.0.4 -  24/05/12:
+	Distribution release.
+
+Astor-6.0.3 -  05/04/12:
+	Add a control system name management.
+	User preferences for tango host list added.
+
 Astor-6.0.1 -  02/04/12:
 	Problem when removing server info fixed.
 

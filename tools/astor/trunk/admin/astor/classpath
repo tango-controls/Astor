@@ -1,5 +1,3 @@
-JDK_5=/segfs/tango/jdk/Linux/jdk1.5.0_02/bin
-PATH=$JDK_5:$PATH
 
 TANGO_HOME=/segfs/tango
 LIB_HOME=$TANGO_HOME/release/java/lib
@@ -9,6 +7,7 @@ ASTOR=$TANGO_HOME/tools/admin/astor
 ASTOR_BIN=$ASTOR/bin
 
 TANGO=$LIB_HOME/TangORB.jar
+#TANGO=$TANGO_HOME/javaapi/build-tangorb/TangORB-8.1.0.jar
 ATK=$LIB_HOME/ATKWidget.jar:$LIB_HOME/ATKCore.jar:$APPLI_HOME/atkpanel.jar
 JIVE=$APPLI_HOME/Jive.jar
 PANELS=$APPLI_HOME/tool_panels.jar

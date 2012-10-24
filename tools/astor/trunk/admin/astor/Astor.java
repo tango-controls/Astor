@@ -44,10 +44,7 @@ package admin.astor;
 import admin.astor.statistics.StatisticsPanel;
 import admin.astor.tools.*;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.ApiUtil;
-import fr.esrf.TangoApi.Database;
-import fr.esrf.TangoApi.DeviceProxy;
-import fr.esrf.TangoApi.TangORBversion;
+import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -59,6 +56,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Astor extends JFrame implements AstorDefs {
@@ -67,7 +65,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "Release 6.0.1  -  Mon Apr 02 14:23:08 CEST 2012";
+            "Release 6.1.0  -  Wed Oct 24 09:19:31 CEST 2012";
     /**
      * JTree object to display control system.
      */
@@ -93,7 +91,6 @@ public class Astor extends JFrame implements AstorDefs {
 
     static long t0;
     //======================================================================
-
     /**
      * Creates new form Astor
      *
@@ -108,6 +105,7 @@ public class Astor extends JFrame implements AstorDefs {
         customizeMenu();
 
         setTitle("TANGO Manager - " + revNumber);
+        setControlSystemTitle();
         buildTree();
         ImageIcon icon = new ImageIcon(
                 getClass().getResource(img_path + "tango_icon.jpg"));
@@ -119,8 +117,8 @@ public class Astor extends JFrame implements AstorDefs {
             tango_host = ApiUtil.get_db_obj().get_tango_host();
         } catch (DevFailed e) { /* do nothing */ }
 
-        //	There is some problem between environement and change
-        changeTgHostBtn.setVisible(false);
+        //	There is some problem between environment and change
+        //changeTgHostBtn.setVisible(false);
     }
 	//===========================================================
     /**
@@ -139,7 +137,20 @@ public class Astor extends JFrame implements AstorDefs {
 
     //======================================================================
     //======================================================================
+    private void setControlSystemTitle() throws DevFailed {
+        //  Get control system name if any
+        String  name = AstorUtil.getControlSystemName();
+        if (name!=null && name.length()>0) {
+            titleLabel.setText(name);
+            topPanel.setVisible(true);
+        }
+        else
+            topPanel.setVisible(false);
+    }
+    //======================================================================
+    //======================================================================
     private void buildTree() throws DevFailed {
+
         //	Build Splash Screen
         String title = "Astor (TANGO Manager)";
         int end = revNumber.indexOf("-");
@@ -153,7 +164,7 @@ public class Astor extends JFrame implements AstorDefs {
         myBar.setProgressBarColors(Color.gray, Color.gray, Color.gray);
 
         ImageIcon icon = new ImageIcon(
-                getClass().getResource(img_path + "TangoCollaboration.jpg"));
+                getClass().getResource(img_path + "CollaborationSplash.gif"));
         Splash splash = new Splash(icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");
@@ -336,7 +347,6 @@ public class Astor extends JFrame implements AstorDefs {
     private ArrayList<OneTool> app_tools = new ArrayList<OneTool>();
     private ArrayList<ActionListener> tools_al = new ArrayList<ActionListener>();
     //======================================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -347,10 +357,13 @@ public class Astor extends JFrame implements AstorDefs {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        topPanel = new javax.swing.JPanel();
+        titleLabel = new javax.swing.JLabel();
         javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         changeTgHostBtn = new javax.swing.JMenuItem();
         ctrlPreferenceBtn = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem usePreferenceBtn = new javax.swing.JMenuItem();
         exitBtn = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         deviceBrowserBtn = new javax.swing.JMenuItem();
@@ -389,6 +402,11 @@ public class Astor extends JFrame implements AstorDefs {
             }
         });
 
+        titleLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        topPanel.add(titleLabel);
+
+        getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
+
         fileMenu.setText("File");
 
         changeTgHostBtn.setText("Change Tango Host");
@@ -406,6 +424,16 @@ public class Astor extends JFrame implements AstorDefs {
             }
         });
         fileMenu.add(ctrlPreferenceBtn);
+
+        usePreferenceBtn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        usePreferenceBtn.setMnemonic('U');
+        usePreferenceBtn.setText("User Preferences");
+        usePreferenceBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usePreferenceBtnActionPerformed(evt);
+            }
+        });
+        fileMenu.add(usePreferenceBtn);
 
         exitBtn.setText("Exit");
         exitBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -648,8 +676,28 @@ public class Astor extends JFrame implements AstorDefs {
     @SuppressWarnings({"UnusedDeclaration"})
     private void ctrlPreferenceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctrlPreferenceBtnActionPerformed
         new PreferenceDialog(this).setVisible(true);
+        try {
+            setControlSystemTitle();    //  Could have changed.
+        } catch (DevFailed e) { /* **/ }
 
     }//GEN-LAST:event_ctrlPreferenceBtnActionPerformed
+    //======================================================================
+    //======================================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void usePreferenceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usePreferenceBtnActionPerformed
+        List<String> knownTangoHosts = AstorUtil.getAllKnownTangoHosts();
+        GetTextDialog dlg = new GetTextDialog(this,
+                "List of User Tango Hosts", null, knownTangoHosts);
+        if (dlg.showDialog() == JOptionPane.OK_OPTION) {
+            knownTangoHosts = dlg.getTextLines();
+            try {
+                AstorUtil.saveUserKownTangoHost(knownTangoHosts);
+            }
+            catch(DevFailed e) {
+                ErrorPane.showErrorMessage(this, null, e);
+            }
+        }
+    }//GEN-LAST:event_usePreferenceBtnActionPerformed
 
     //======================================================================
     //======================================================================
@@ -671,56 +719,35 @@ public class Astor extends JFrame implements AstorDefs {
 
     //======================================================================
     //======================================================================
-    private Selector tango_host_selector = null;
-
     @SuppressWarnings({"UnusedDeclaration"})
     private void changeTgHostBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeTgHostBtnActionPerformed
-        try {
-            String tmp_tgh;
-            String[] known_tgh;
-            if (tango_host_selector == null) {
-                known_tgh = AstorUtil.getKnownTangoHosts();
-                tango_host_selector = new Selector(this, "Tango Host  (e.g.  hal:2001)", known_tgh, tango_host);
-                ATKGraphicsUtils.centerDialog(tango_host_selector);
-            }
-            tmp_tgh = tango_host_selector.showDialog();
 
-            if (tmp_tgh == null || tmp_tgh.length() == 0)
+        try {
+            String newTangoHost;
+            List<String> knownTangoHosts = AstorUtil.getAllKnownTangoHosts();
+            Selector    tangoHostSelector = new Selector(this,
+                        "Tango Host  (e.g.  hal:2001)", knownTangoHosts, tango_host);
+            ATKGraphicsUtils.centerDialog(tangoHostSelector);
+            newTangoHost = tangoHostSelector.showDialog();
+
+            if (newTangoHost == null || newTangoHost.length() == 0)
                 return;
 
             //	Check if connection OK
-            String[] tgh_arr = tmp_tgh.split(":");
+            String[] tgh_arr = newTangoHost.split(":");
             if (tgh_arr.length != 2) {
-                Utils.popupError(this, "Input syntax error\n" + tmp_tgh + "\n is not a valid TANGO_HOST");
+                Utils.popupError(this, "Input syntax error\n" + newTangoHost + "\n is not a valid TANGO_HOST");
                 return;
             }
             ApiUtil.get_db_obj(tgh_arr[0], tgh_arr[1]);
 
-            if (tango_host.equals(tmp_tgh))
+            if (tango_host.equals(newTangoHost))
                 return;
 
-            tango_host = tmp_tgh;
-
-            //	Close all host info dialogs
-            tree.hostDialogs.close();
-            tree.hostDialogs.clear();
-            if (dev_browser != null) {
-                dev_browser.setVisible(false);
-                dev_browser = null;
-            }
-            //  Change the Tango host and rebuid tree
-            AstorUtil.setTangoHost(tango_host);
-            ApiUtil.change_db_obj(tgh_arr[0], tgh_arr[1]);
-            AstorUtil.readAstorProperties();//	could have changed with new Tango Host
-
-            //	Method has been deprecated
-            //fr.esrf.TangoApi.events.EventConsumer.create().updateDatabaseObject();
-
-            buildTree();
-
-            //  Re-build tools MenuItems
-            buildToolsItems();
-        } catch (DevFailed e) {
+            String classpath = System.getenv("CLASSPATH");
+            String  cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor";
+            AstorUtil.executeShellCmdAndReturn(cmd);
+        } catch (Exception e) {
             ErrorPane.showErrorMessage(this,
                     "Cannot change TANGO_HOST", e);
         }
@@ -758,15 +785,19 @@ public class Astor extends JFrame implements AstorDefs {
                 "Input Dialog",
                 JOptionPane.INFORMATION_MESSAGE,
                 null, null, searched_host);
-        /*
-        String hostname = InputDialog.getInput(this, "Host name ?", tree.getHostList());
-        */
+
         //	if host has been typed,
         //	select it on tree and open control panel
         if (hostname != null) {
-            tree.setSelectionPath(hostname);
-            tree.displayHostInfo();
-            searched_host = hostname;
+            try {
+                tree.setSelectionRoot();
+                tree.setSelectionPath(hostname);
+                tree.displayHostInfo();
+                searched_host = hostname;
+            }
+            catch (DevFailed e) {
+                ErrorPane.showErrorMessage(this, null, e);
+            }
         }
 
     }//GEN-LAST:event_findHostItemActionPerformed
@@ -782,12 +813,24 @@ public class Astor extends JFrame implements AstorDefs {
                         "        and it could take a long time !\n\n" +
                         "Start it any way ?",
                 "Confirm Dialog",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)
+                JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+
             new DeviceTreeDialog(this);
+
+            // ToDo
+            /*
+             * Really too slow And too much threads
+            try {
+                new TangoReleaseDialog(this).setVisible(true);
+            }
+            catch (DevFailed e) {
+                ErrorPane.showErrorMessage(this, null, e);
+            }
+            */
+        }
     }//GEN-LAST:event_tangoStatBtnActionPerformed
 
     //======================================================================
-
     /**
      * Start tools found in Astor/Tools property
      *
@@ -802,7 +845,7 @@ public class Astor extends JFrame implements AstorDefs {
                 try {
                     System.out.println("Starting " + app.classname);
 
-                    //	Check if tool is already instancied.
+                    //	Check if tool is already instanced.
                     if (app.jframe == null) {
                         //	Retrieve class name
                         Class cl = Class.forName(app.classname);
@@ -810,11 +853,10 @@ public class Astor extends JFrame implements AstorDefs {
                         //	And build object
                         Class[] param = new Class[1];
                         param[0] = JFrame.class;
-                        Constructor contructor = cl.getConstructor(param);
+                        Constructor constructor = cl.getConstructor(param);
 
                         // ----------------- Java 5 -----------------
-                        JFrame jf = (JFrame) contructor.newInstance(this);
-                        //JFrame	jf = (JFrame)contructor.newInstance(new Object[] { this });
+                        JFrame jf = (JFrame) constructor.newInstance(this);
                         app.setJFrame(jf);
                     }
                     app.jframe.setVisible(true);
@@ -998,7 +1040,7 @@ public class Astor extends JFrame implements AstorDefs {
         }
 
         String  title;
-        StringBuffer  message = new StringBuffer();
+        StringBuilder message = new StringBuilder();
         if (hostsList.size() == 0) {
             title = "There is no host controlled " + TangoHost.controlMethod(onEvt);
         }
@@ -1022,8 +1064,6 @@ public class Astor extends JFrame implements AstorDefs {
             ppt.setVisible(true);
         }
     }
-    //======================================================================
-    //======================================================================
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1173,13 +1213,14 @@ public class Astor extends JFrame implements AstorDefs {
     private javax.swing.JMenuItem starterNoEventsItem;
     private javax.swing.JMenuItem stateIconsBtn;
     private javax.swing.JMenuItem tangorbBtn;
+    private javax.swing.JLabel titleLabel;
     private javax.swing.JMenu toolsMenu;
+    private javax.swing.JPanel topPanel;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     //======================================================================
 
     //======================================================================
-
     /**
      * @param args the command line arguments
      */
@@ -1227,7 +1268,6 @@ public class Astor extends JFrame implements AstorDefs {
 
 
     //===============================================================
-
     /**
      * A thread class to execute a hosts scan
      */

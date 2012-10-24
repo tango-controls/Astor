@@ -367,7 +367,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
             return;
         }
         try {
-            str_ds_path = manageBackSlash(str_ds_path);
             String[] ds_path = AstorUtil.string2StringArray(str_ds_path);
             boolean use_events = (useEventsBtn.getSelectedObjects() != null);
             MkStarter starter = new MkStarter(hostname, ds_path, use_events);
@@ -412,22 +411,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
         retVal = JOptionPane.OK_OPTION;
         doClose();
     }//GEN-LAST:event_createBtnActionPerformed
-
-    //===============================================================
-    //===============================================================
-    static String manageBackSlash(String str) {
-        String ret = "";
-        int idx = 0;
-        while ((idx = str.indexOf("\\", idx)) >= 0) {
-            idx++;
-            ret += str.substring(0, idx);
-            ret += "\\";
-            str = str.substring(idx);
-            idx = 0;
-        }
-        ret += str;
-        return ret;
-    }
 
     //======================================================================
     //======================================================================

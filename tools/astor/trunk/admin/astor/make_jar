@@ -38,13 +38,14 @@ EOF
 #	build jar file
 #--------------------------------------------------------
 cd $PACK_HOME
-jar cmvf $MANIF_FILE		\
-		$JAR_DIR/$JAR_FILE	\
-		admin/astor/*.class	\
-		admin/astor/tools/*.class	\
-		admin/astor/access/*.class	\
-		admin/astor/statistics/*.class	\
-		admin/astor/images/*.jpg	\
+jar cmvf $MANIF_FILE        \
+		$JAR_DIR/$JAR_FILE  \
+		admin/astor/*.class \
+		admin/astor/tools/*.class \
+		admin/astor/access/*.class \
+		admin/astor/statistics/*.class \
+		admin/astor/tango_release/*.class \
+		admin/astor/images/*.jpg \
 		admin/astor/images/*.gif
 
 

@@ -74,7 +74,6 @@ public class TangoHost extends DeviceProxy {
     public String collection = null;
     public HostStateThread thread = null;
     public int notifyd_state;
-    public JLabel notifd_label;
     public boolean onEvents = true;
     public boolean manageNotifd;
     public HostInfoDialog info_dialog = null;
@@ -226,6 +225,22 @@ public class TangoHost extends DeviceProxy {
     //==============================================================
     public TangoServer getServer(int idx) {
         return servers.get(idx);
+    }
+    //==============================================================
+    //==============================================================
+    public ArrayList<String> getServerNames() {
+        ArrayList<String>  controlledServers = new ArrayList<String>();
+        try {
+            DeviceAttribute attribute = read_attribute("Servers");
+            String[]  lines = attribute.extractStringArray();
+            for (String line : lines) {
+                StringTokenizer stringTokenizer = new StringTokenizer(line);
+                String serverName = stringTokenizer.nextToken();
+                controlledServers.add(serverName);
+            }
+        }
+        catch(DevFailed e) { /* */ }
+        return controlledServers;
     }
 
     //==============================================================

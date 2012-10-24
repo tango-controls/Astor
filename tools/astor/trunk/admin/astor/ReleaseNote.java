@@ -17,7 +17,18 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Mon Apr 02 14:23:10 CEST 2012)</Center><Br>\n" + 
+		"	(Generated Wed Oct 24 09:19:32 CEST 2012)</Center><Br>\n" + 
+		"<li><b>Astor-6.1.0 -  24/10/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Tango release for servers tool added.<Br>\n" + 
+		"<li><b>Astor-6.0.6 -  09/10/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Pb with back slash fixed (?)<Br>\n" + 
+		"<li><b>Astor-6.0.5 -  21/08/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Open Jive on a selected server.<Br>\n" + 
+		"<li><b>Astor-6.0.4 -  24/05/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Distribution release.<Br>\n" + 
+		"<li><b>Astor-6.0.3 -  05/04/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Add a control system name management.<Br>\n" + 
+		"&nbsp; &nbsp; User preferences for tango host list added.<Br>\n" + 
 		"<li><b>Astor-6.0.1 -  02/04/12:</b><Br>\n" + 
 		"&nbsp; &nbsp; Problem when removing server info fixed.<Br>\n" + 
 		"<li><b>Astor-6.0.0 -  08/02/12:</b><Br>\n" + 

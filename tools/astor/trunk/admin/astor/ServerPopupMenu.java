@@ -68,7 +68,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     private TangoHost host;
     private TangoServer server;
     private LevelTree tree;
-    private JFrame frame;
+    private Astor appli;
     private HostInfoDialog parent;
     private int mode;
 
@@ -84,7 +84,8 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             "Polling Manager",
             "Polling Profiler",
             "Pool Threads Manager",
-            "Configure (Wizard)",
+            "Configure With Jive",
+            "Configure With Wizard",
             "DB Attribute Properties",
             "Server Info",
             "Class  Info",
@@ -114,16 +115,17 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     static private final int POLLING_MANAGER = 4;
     static private final int POLLING_PROFILER = 5;
     static private final int POOL_THREAD_MAN = 6;
-    static private final int CONFIGURE = 7;
-    static private final int DB_ATTRIBUTES = 8;
-    static private final int SERVER_INFO = 9;
-    static private final int CLASS_INFO = 10;
-    static private final int DEPENDENCIES = 11;
-    static private final int TEST_DEVICE = 12;
-    static private final int CHECK_STATES = 13;
-    static private final int BLACK_BOX = 14;
-    static private final int STARTER_LOGS = 15;
-    static private final int STD_ERROR = 16;
+    static private final int CONFIGURE_JIVE   = 7;
+    static private final int CONFIGURE_WIZARD = 8;
+    static private final int DB_ATTRIBUTES = 9;
+    static private final int SERVER_INFO = 10;
+    static private final int CLASS_INFO = 11;
+    static private final int DEPENDENCIES = 12;
+    static private final int TEST_DEVICE = 13;
+    static private final int CHECK_STATES = 14;
+    static private final int BLACK_BOX = 15;
+    static private final int STARTER_LOGS = 16;
+    static private final int STD_ERROR = 17;
 
     static private final int START = 0;
     static private final int STOP = 1;
@@ -136,9 +138,9 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 
     //==========================================================
     //==========================================================
-    public ServerPopupMenu(JFrame frame, HostInfoDialog parent, TangoHost host, int mode) {
+    public ServerPopupMenu(Astor appli, HostInfoDialog parent, TangoHost host, int mode) {
         super();
-        this.frame = frame;
+        this.appli= appli;
         this.parent = parent;
         this.host = host;
         this.mode = mode;
@@ -217,12 +219,14 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
         getComponent(TEST_DEVICE + OFFSET).setEnabled(running);
         getComponent(CHECK_STATES + OFFSET).setEnabled(running);
         getComponent(BLACK_BOX + OFFSET).setEnabled(running);
-        getComponent(CONFIGURE + OFFSET).setEnabled(running);
+        getComponent(CONFIGURE_WIZARD + OFFSET).setEnabled(running);
         getComponent(DB_ATTRIBUTES + OFFSET).setVisible(!running);
 
 
         getComponent(POOL_THREAD_MAN + OFFSET).setVisible(TANGO_7);
         getComponent(DEPENDENCIES + OFFSET).setVisible(TANGO_7);
+
+        getComponent(CONFIGURE_JIVE + OFFSET).setEnabled(true);
 
         //	Get position and display Popup menu
         location = tree.getLocationOnScreen();
@@ -392,7 +396,10 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             case STARTER_LOGS:
                 host.displayLogging(parent, server.toString());
                 break;
-            case CONFIGURE:
+            case CONFIGURE_JIVE:
+                server.showJive(appli);
+                break;
+            case CONFIGURE_WIZARD:
                 server.configureWithWizard(parent);
                 break;
             case SERVER_INFO:
@@ -402,7 +409,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
                 server.manageMemorizedAttributes(parent);
                 break;
             case CLASS_INFO:
-                server.displayClassInfo(frame);
+                server.displayClassInfo(appli);
                 break;
             case DEPENDENCIES:
                 try {
@@ -414,9 +421,9 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
                 break;
             case STD_ERROR:
                 if (server != null)
-                    host.readStdErrorFile(frame, server.getName());
+                    host.readStdErrorFile(appli, server.getName());
                 else
-                    host.readStdErrorFile(frame, notifyd_prg + "/" + host.getName());
+                    host.readStdErrorFile(appli, notifyd_prg + "/" + host.getName());
                 break;
             case RESTART:
                 server.restart(parent, host, true);
