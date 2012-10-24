@@ -59,10 +59,8 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 //===============================================================
 
@@ -92,6 +90,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     private JPanel levelsPanel = null;
     private JPanel[] treePanels;
     private JPanel notifdPanel;
+    private JLabel notifdLabel;
     private ServerPopupMenu notifd_menu;
     //===============================================================
 
@@ -157,18 +156,18 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             //	First time build notifd label
             if (host.manageNotifd) {
                 notifdPanel = new JPanel();
-                host.notifd_label = new JLabel("Event Notify Daemon");
-                host.notifd_label.setFont(new Font("Dialog", 1, 12));
+                notifdLabel = new JLabel("Event Notify Daemon");
+                notifdLabel.setFont(new Font("Dialog", 1, 12));
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.gridwidth = nb_levels;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                notifdPanel.add(host.notifd_label, gbc);
+                notifdPanel.add(notifdLabel, gbc);
                 levelsPanel.add(notifdPanel, gbc);
 
                 //	Add Action listener
-                host.notifd_label.addMouseListener(new java.awt.event.MouseAdapter() {
+                notifdLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mouseClicked(java.awt.event.MouseEvent evt) {
                         serverBtnMouseClicked(evt);
                     }
@@ -305,7 +304,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
         //	Update  notifd state
         if (host.manageNotifd)
-            host.notifd_label.setIcon(AstorUtil.state_icons[host.notifyd_state]);
+            notifdLabel.setIcon(AstorUtil.state_icons[host.notifyd_state]);
     }
 
 
@@ -887,92 +886,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 System.err.println(e);
                 System.err.println("HostStateThread.ServerEventListener : could not extract data!");
             }
-        }
-    }
-
-    //======================================================
-    //======================================================
-    class Blink {
-        private JComponent obj;
-        private int cnt;
-        private Timer timer;
-        private Color color;
-        private long t0 = 0;
-        private int duration;
-        private String text = null;
-
-        //======================================================
-
-        /**
-         * Constructor for blicking object
-         *
-         * @param obj JComponent to start blinking
-         */
-        //======================================================
-        Blink(JComponent obj) {
-            this.obj = obj;
-            cnt = 0;
-            color = obj.getBackground();
-        }
-        //======================================================
-
-        /**
-         * Constructor for blicking object
-         *
-         * @param obj      JComponent to start blinking
-         * @param duration Duration to blink in second
-         */
-        //======================================================
-        Blink(JComponent obj, int duration) {
-            this(obj);
-            this.duration = duration;
-            if (obj instanceof JLabel)
-                text = ((JLabel) obj).getText();
-            else
-                color = obj.getBackground();
-            t0 = System.currentTimeMillis();
-        }
-
-        //======================================================
-        //======================================================
-        @SuppressWarnings({"UnusedDeclaration"})
-        void blinkPerformer(ActionEvent evt) {
-            cnt++;
-            if (cnt % 2 == 0) {
-                if (obj instanceof JLabel)
-                    ((JLabel) obj).setText("-> " + text);
-                else
-                    obj.setBackground(color);
-            } else {
-                if (obj instanceof JLabel)
-                    ((JLabel) obj).setText(text);
-                else
-                    obj.setBackground(Color.lightGray);
-            }
-            //    Check if terminated.
-            if (duration != 0) {
-                long t1 = System.currentTimeMillis();
-                if (t1 - t0 >= duration * 1000) {
-                    timer.stop();
-                    if (obj instanceof JLabel)
-                        ((JLabel) obj).setText(text);
-                    else
-                        obj.setBackground(color);
-                }
-            }
-        }
-
-        //======================================================
-        //======================================================
-        private void start() {
-            //	Fire a timer every once in a while make blink the button
-            ActionListener taskPerformer = new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    blinkPerformer(evt);
-                }
-            };
-            timer = new Timer(200, taskPerformer);
-            timer.start();
         }
     }
 }

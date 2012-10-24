@@ -39,6 +39,8 @@ import admin.astor.statistics.ResetStatistics;
 import admin.astor.tools.PopupText;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.ApiUtil;
+import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoApi.IORdump;
 import fr.esrf.TangoDs.Except;
@@ -89,6 +91,7 @@ public class AstorTree extends JTree implements AstorDefs {
     private static ArrayList<String> collecNames = new ArrayList<String>();
     private static DefaultMutableTreeNode root;
     private static int hostSubscribed = 0;
+    @SuppressWarnings("InspectionUsingGrayColors")
     public static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
     // startup objects
@@ -244,7 +247,7 @@ public class AstorTree extends JTree implements AstorDefs {
             //	Concat. error messages at startup if any
             splash.setVisible(false);
             if (subscribeError.size() > 0) {
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < subscribeError.size(); i++) {
                     sb.append(subscribeError.get(i));
                     if (i < subscribeError.size() - 1)
@@ -304,7 +307,7 @@ public class AstorTree extends JTree implements AstorDefs {
     //===============================================================
     private void initComponent() throws DevFailed {
 
-        //Create the nodes.
+        // Create the nodes.
         root = new DefaultMutableTreeNode("TANGO Control System");
         initTangoObjects();
         createNodes(root);
@@ -314,7 +317,6 @@ public class AstorTree extends JTree implements AstorDefs {
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         //	Create Tree and Tree model
-        //------------------------------------
         treeModel = new DefaultTreeModel(root);
         setModel(treeModel);
 
@@ -344,7 +346,6 @@ public class AstorTree extends JTree implements AstorDefs {
             }
         });
         //	Add Action listener
-        //------------------------------------
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 treeMouseClicked(evt);
@@ -722,9 +723,15 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void setSelectionPath(String hostname) {
+    public void setSelectionRoot() {
+        setSelectionPath(new TreePath(root.getPath()));
+    }
+    //======================================================
+    //======================================================
+    public void setSelectionPath(String hostname) throws DevFailed{
         DefaultMutableTreeNode collec;
         DefaultMutableTreeNode node;
+        boolean found = false;
         for (int i = 0; i < root.getChildCount(); i++) {
             collec = (DefaultMutableTreeNode) root.getChildAt(i);
             for (int j = 0; j < collec.getChildCount(); j++) {
@@ -735,11 +742,17 @@ public class AstorTree extends JTree implements AstorDefs {
                     int idx = name.indexOf('(');
                     if (idx > 0)    //	remove description
                         name = name.substring(0, idx).trim();
-                    if (name.equals(hostname))
+                    if (name.equals(hostname)) {
                         setSelectionPath(new TreePath(node.getPath()));
+                        found = true;
+                    }
                 }
             }
         }
+        if (!found)
+            Except.throw_exception("HOST_NOT_FOUND",
+                    hostname + "  is not controlled by Astor !",
+                    "AstorTree.setSelectionPath()");
     }
 
     //======================================================
@@ -763,7 +776,12 @@ public class AstorTree extends JTree implements AstorDefs {
         }
     }
     //===============================================================
-
+    //===============================================================
+    public void showJive(TangoServer server) {
+        displayJiveAppli();
+        jive3.goToServerNode(server.getName());
+    }
+    //===============================================================
     /**
      * Replace an old leaf by a new one containing the new object.
      * This method is mainly used to re size node (when usage changed)
@@ -799,18 +817,23 @@ public class AstorTree extends JTree implements AstorDefs {
     //======================================================
     //======================================================
     public void displayHostInfoDialog(String hostname) {
-        //	Take off IP address if exists
-        StringTokenizer st = new StringTokenizer(hostname);
-        hostname = st.nextToken();
-        //	Take off name extention (e.g. .esrf.fr) if exists
-        st = new StringTokenizer(hostname, ".");
-        hostname = st.nextToken();
+        try {
+            //	Take off IP address if exists
+            StringTokenizer st = new StringTokenizer(hostname);
+            hostname = st.nextToken();
+            //	Take off name extention (e.g. .esrf.fr) if exists
+            st = new StringTokenizer(hostname, ".");
+            hostname = st.nextToken();
 
-        //	Select Host on main Tree and Popup host panel
-        parent.setVisible(true);
-        setSelectionPath(new TreePath(root.getPath()));    // remove previous selection
-        setSelectionPath(hostname);
-        displayHostInfo();
+            //	Select Host on main Tree and Popup host panel
+            parent.setVisible(true);
+            setSelectionPath(new TreePath(root.getPath()));    // remove previous selection
+            setSelectionPath(hostname);
+            displayHostInfo();
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+        }
     }
 
     //======================================================

@@ -13,8 +13,8 @@
 
 
 MAJOR_REV   = 6
-MIDDLE_REV  = 0
-MINOR_REV   = 1
+MIDDLE_REV  = 1
+MINOR_REV   = 0
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
@@ -22,7 +22,7 @@ SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 PACKAGE        = Astor
 TANGO_HOME     = /segfs/tango
 SVN_ASTOR_PATH = $(SVN_TCS)/tools/astor
-DOC_ORIG   = $(TANGO_HOME)/tools/admin/doc
+DOC_ORIG   = $(TANGO_HOME)/tools/admin/astor/doc
 DOC_HOME   = $(TANGO_HOME)/doc/www/tango/tango_doc/tools_doc/astor_doc/
 JAR_DIR    = $(TANGO_HOME)/release/java/appli
 
@@ -33,7 +33,7 @@ JAR_DIR    = $(TANGO_HOME)/release/java/appli
 #------------------------------------------------------------------
 
 BIN_DIR   = ../../bin
-JAVAFLAGS = -deprecation -d $(BIN_DIR)
+JAVAFLAGS = -Xlint:unchecked -deprecation -d $(BIN_DIR)
 JAVAC = javac $(JAVAFLAGS)
 
 #-------------------------------------------------------------------
@@ -62,6 +62,7 @@ full:
 	$(JAVAC) tools/*.java
 	$(JAVAC) access/*.java
 	$(JAVAC) statistics/*.java
+	$(JAVAC) tango_release/*.java
 	$(JAVAC) *.java
 
 images:
@@ -74,6 +75,7 @@ clean:
 	rm  -Rf $(BIN_DIR)/admin/astor/tools
 	rm  -Rf $(BIN_DIR)/admin/astor/access
 	rm  -Rf $(BIN_DIR)/admin/astor/statistics
+	rm  -Rf $(BIN_DIR)/admin/astor/tango_release
 	rm  -f    $(BIN_DIR)/admin/astor/*.class
 
 JAVA=/segfs/tango/jdk/Linux/jdk1.6.0/bin/java
@@ -90,14 +92,16 @@ jar:
 	@make_jar $(PACKAGE) $(APPLI_VERS) $(JAR_DIR)
 
 install_doc:
-	$(JAVA) pogo.make_util.ReleaseNote2html -html  "Astor Release Note"
+	$(JAVA) -classpath /segfs/tango/release/java/appli/org.tango.pogo.jar  \
+					pogo.make_util.ReleaseNote2html -html  "Astor Release Note"
 	mv ReleaseNote.html $(DOC_ORIG)
 	cp $(DOC_ORIG)/*.html    $(DOC_HOME)/
+	cp $(DOC_ORIG)/*.pdf    $(DOC_HOME)/
 	cp $(DOC_ORIG)/img/*     $(DOC_HOME)/img
 	cp $(DOC_ORIG)/movies/*  $(DOC_HOME)/movies
 	tango2www astor
 
-FTP_TARGET	=	maya:/ftp/pub/cs/tango/Astor
+FTP_TARGET	=	webserv02:/ftp/pub/cs/tango/Astor
 JAR_FILE	=	Astor-$(APPLI_VERS).jar
 install_ftp:
 	@echo "rcp $(JAR_FILE) $(FTP_TARGET)"

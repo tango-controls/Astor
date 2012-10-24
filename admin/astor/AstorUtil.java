@@ -46,7 +46,6 @@ import admin.astor.tools.MySqlUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.ErrSeverity;
 import fr.esrf.TangoApi.*;
-import fr.esrf.TangoApi.events.DbEventImportInfo;
 import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -55,11 +54,9 @@ import fr.esrf.tangoatk.widget.util.Splash;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
+import java.util.List;
 
 public class AstorUtil implements AstorDefs {
 
@@ -80,8 +77,6 @@ public class AstorUtil implements AstorDefs {
     private static String[] last_collec = null;
     private static boolean jiveReadOnly = false;
     private static boolean starterStartup = true;
-    private static String serverHelpURL = "http://www.esrf.fr/computing/cs/tango/";
-    private static String appliHelpURL = "http://www.esrf.fr/computing/cs/tango/";
     private static boolean properties_read = false;
     private static boolean debug = false;
     private static String[] helps;
@@ -124,13 +119,28 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
+    public static String getControlSystemName() throws DevFailed {
+        DbDatum datum = ApiUtil.get_db_obj().get_property("CtrlSystem", "Name");
+        if (!datum.is_empty())
+            return  datum.extractString();
+        return null;
+    }
+    //===============================================================
+    //===============================================================
+    public static void setControlSystemName(String name) throws DevFailed {
+        DbDatum datum = new DbDatum("Name");
+        datum.insert(name);
+        ApiUtil.get_db_obj().put_property("CtrlSystem", new DbDatum[] { datum });
+    }
+    //===============================================================
+    //===============================================================
     public void initIcons() {
         state_icons[unknown] = new ImageIcon(getClass().getResource(img_path + "greyball.gif"));
-        state_icons[faulty] = new ImageIcon(getClass().getResource(img_path + "redball.gif"));
-        state_icons[alarm] = new ImageIcon(getClass().getResource(img_path + "orangebal.gif"));
-        state_icons[all_ok] = new ImageIcon(getClass().getResource(img_path + "greenbal.gif"));
-        state_icons[moving] = new ImageIcon(getClass().getResource(img_path + "blueball.gif"));
-        state_icons[failed] = new ImageIcon(getClass().getResource(img_path + "failed.gif"));
+        state_icons[faulty] = new ImageIcon(getClass().getResource(img_path  + "redball.gif"));
+        state_icons[alarm] = new ImageIcon(getClass().getResource(img_path   + "orangebal.gif"));
+        state_icons[all_ok] = new ImageIcon(getClass().getResource(img_path  + "greenbal.gif"));
+        state_icons[moving] = new ImageIcon(getClass().getResource(img_path  + "blueball.gif"));
+        state_icons[failed] = new ImageIcon(getClass().getResource(img_path  + "failed.gif"));
     }
 
     //===============================================================
@@ -228,10 +238,189 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public static String[] getKnownTangoHosts() {
+    public static String[] getDbaseKnownTangoHosts() {
         if (!properties_read)
             readAstorProperties();
         return known_tango_hosts;
+    }
+    //===============================================================
+    //===============================================================
+    public static List<String> getUserKnownTangoHosts() {
+        String astorRC = getAstorRC();
+        return getFromEnvFile("KnownTangoHosts", astorRC);
+    }
+    //===============================================================
+    //===============================================================
+    public static List<String> getAllKnownTangoHosts() {
+
+        //  Get tango hosts from database
+        String[]        csTangoHosts = getDbaseKnownTangoHosts();
+        List<String>    list = new ArrayList<String>();
+        if (csTangoHosts!=null)
+            Collections.addAll(list, csTangoHosts);
+
+        //  Get tango hosts from user file and merge
+        List<String>    userTangoHosts = getUserKnownTangoHosts();
+        for (String userTH : userTangoHosts) {
+            boolean exists = false;
+            if (csTangoHosts!=null) {
+                //  Check if already exists from database
+                for (String csTH : csTangoHosts)
+                    if (csTH.equals(userTH))
+                        exists = true;
+            }
+            if (!exists)
+                list.add(userTH);
+        }
+
+        return list;
+    }
+    //===============================================================
+    //===============================================================
+    private static String getAstorRC()  {
+        String  astorRC;
+        String home = System.getProperty("user.home");
+        if (osIsUnix())  {
+            astorRC = home+"/."+rcFileName;
+        }
+        else {	//	WIN 32
+            astorRC = home+"/"+rcFileName;
+        }
+        return astorRC;
+    }
+    //===============================================================
+    //===============================================================
+    public static void saveUserKownTangoHost(List<String> list) throws DevFailed {
+
+        //  Build the line
+        final String tag = "KnownTangoHosts:";
+        StringBuilder  sb = new StringBuilder(tag+"  ");
+        for (String host : list) {
+            sb.append(host).append(", ");
+        }
+        //  Remove last ','
+        String  tangoHosts = sb.substring(0, sb.length()-2) + '\n';
+
+        //  Get existing file content
+        String  astorRC = getAstorRC();
+        String  code;
+        try {
+            code = readFile(astorRC);
+        }
+        catch (DevFailed e) {
+            code = "#\n#  Astor (TANGO Manager) configuration file\n#\n#\n";
+        }
+
+        //  And insert line
+        int start = code.indexOf(tag);
+        if (start<0) {
+            code +=tangoHosts;
+        }
+        else {
+            int end = code.indexOf('\n', start);
+            if (end<0) {
+                code = code.substring(0, start) + tangoHosts;
+            }
+            else {
+                code = code.substring(0, start) + tangoHosts + code.substring(end);
+            }
+        }
+        writeFile(astorRC, code);
+    }
+    //===============================================================
+    //===============================================================
+    private static List<String> getFromEnvFile(String propertyName, String fileName) {
+        List<String>    list = new ArrayList<String>();
+        try {
+            //  Get file content
+            String	code = readFile(fileName);
+            StringTokenizer stk = new StringTokenizer(code, "\n");
+            List<String>    lines = new ArrayList<String>();
+            while (stk.hasMoreTokens())  {
+                String line = stk.nextToken().trim();
+                if (!line.startsWith("#"))  {
+                    lines.add(line);
+                }
+            }
+
+            //  Get property value
+            for (String line : lines) {
+                if (line.startsWith(propertyName + ":")) {
+                    //  Get value part
+                    String s = line.substring(propertyName.length() + 1).trim();
+                    stk = new StringTokenizer(s, ",");
+                    while (stk.hasMoreTokens())
+                        list.add(stk.nextToken().trim());
+                    //  OK, -> can return now
+                    return list;
+                }
+            }
+        }
+        catch(DevFailed e) {
+            //System.err.println(e);
+        }
+        return list;
+    }
+    //===============================================================
+    /**
+     * Open a file and return text read.
+     *
+     * @param filename file to be read.
+     * @return the file content read.
+     * @throws fr.esrf.Tango.DevFailed in case of failure during read file.
+     */
+    //===============================================================
+    public static String readFile(String filename) throws DevFailed {
+        String str = "";
+        try {
+            FileInputStream fid = new FileInputStream(filename);
+            int nb = fid.available();
+            byte[] inStr = new byte[nb];
+            nb = fid.read(inStr);
+            fid.close();
+
+            if (nb > 0)
+                str = new String(inStr);
+        } catch (Exception e) {
+            Except.throw_exception("READ_FAILED",
+                    e.toString(), "AstorUtil.readFile()");
+        }
+        return str;
+    }
+    //===============================================================
+    /**
+     * Open a file and return text read as lines.
+     *
+     * @param filename file to be read.
+     * @return the file content read as lines.
+     * @throws fr.esrf.Tango.DevFailed in case of failure during read file.
+     */
+    //===============================================================
+    @SuppressWarnings("UnusedDeclaration")
+    public static ArrayList<String> readFileLines(String filename) throws DevFailed {
+        ArrayList<String>   lines = new ArrayList<String>();
+        try {
+            String str = readFile(filename);
+            StringTokenizer stk = new StringTokenizer(str, "\n");
+            while (stk.hasMoreTokens())
+                lines.add(stk.nextToken());
+        } catch (Exception e) {
+            Except.throw_exception("READ_FAILED",
+                    e.toString(), "AstorUtil.readFile()");
+        }
+        return lines;
+    }
+    //===============================================================
+    //===============================================================
+    public static void writeFile(String filename, String code) throws DevFailed {
+        try {
+            FileOutputStream fid = new FileOutputStream(filename);
+            fid.write(code.getBytes());
+            fid.close();
+        } catch (Exception e) {
+            Except.throw_exception("WRITE_FAILED",
+                    e.toString(), "AstorUtil.readFile()");
+        }
     }
 
     //===============================================================
@@ -412,18 +601,6 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public static String getStarterPathHome() {
-        String path = System.getenv("StarterPathHome");
-        if (path == null)
-            path = System.getProperty("StarterPathHome");
-        if (path != null)
-            return path;
-        else
-            return ".";
-    }
-
-    //===============================================================
-    //===============================================================
     String[] getLastCollectionList() {
         if (!properties_read)
             readAstorProperties();
@@ -541,17 +718,6 @@ public class AstorUtil implements AstorDefs {
     }
 
     //===============================================================
-    //===============================================================
-    private DbEventImportInfo getEventImportInfo(String admname, DbEventImportInfo[] evtinfo) {
-        if (evtinfo != null)
-            for (DbEventImportInfo info : evtinfo)
-                if (info.name.equals(admname))
-                    return info;
-        //	not found
-        return null;
-    }
-    //===============================================================
-
     /**
      * Get the devices controlled by Starter DS
      * and return the hosts list.
@@ -598,15 +764,6 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public static void setTangoHost(String tango_host) {
-        Properties props = System.getProperties();
-        props.put("TANGO_HOST", tango_host);
-        System.setProperties(props);
-        _class = null;
-    }
-
-    //===============================================================
-    //===============================================================
     public static short getStarterReadPeriod() {
         if (_class == null) {
             getStarterClassProperties();
@@ -621,24 +778,6 @@ public class AstorUtil implements AstorDefs {
             getStarterClassProperties();
         }
         return nbStartupLevels;
-    }
-
-    //===============================================================
-    //===============================================================
-    public static String getStarterHelpURL() {
-        if (_class == null) {
-            getStarterClassProperties();
-        }
-        return serverHelpURL;
-    }
-
-    //===============================================================
-    //===============================================================
-    public static String getAppliHelpURL() {
-        if (_class == null) {
-            getStarterClassProperties();
-        }
-        return appliHelpURL;
     }
 
     //===============================================================
@@ -661,22 +800,12 @@ public class AstorUtil implements AstorDefs {
             if (!properties[i].is_empty())
                 readInfoPeriod = properties[i].extractShort();
             readInfoPeriod *= 1000;    //	sec -> ms
-
-            i++;
-            if (!properties[i].is_empty())
-                serverHelpURL = properties[i].extractString();
-
-            i++;
-            if (!properties[i].is_empty())
-                appliHelpURL = properties[i].extractString();
         } catch (DevFailed e) {
             Except.print_exception(e);
         }
         if (getDebug()) {
             System.out.println("NbStartupLevels:  " + nbStartupLevels);
             System.out.println("ReadInfoDbPeriod: " + readInfoPeriod);
-            System.out.println("server doc_url:   " + serverHelpURL);
-            System.out.println("appli_doc_url:    " + appliHelpURL);
         }
     }
 
@@ -804,26 +933,6 @@ public class AstorUtil implements AstorDefs {
 
     //======================================================
     //======================================================
-    static public void rightShiftDialog(JDialog dialog, JDialog parent) {
-        Point p = parent.getLocationOnScreen();
-        p.x += parent.getWidth();
-        p.y += ((parent.getHeight() - dialog.getHeight()) / 2);
-        if (p.y <= 0) p.y = 20;
-        if (p.x <= 0) p.x = 20;
-        dialog.setLocation(p);
-    }
-
-    //======================================================
-    //======================================================
-    static public void cascadeDialog(JDialog dialog, JFrame parent) {
-        Point p = parent.getLocationOnScreen();
-        p.x += 20;
-        p.y += 20;
-        dialog.setLocation(p);
-    }
-
-    //======================================================
-    //======================================================
     static public void cascadeDialog(JDialog dialog, JDialog parent) {
         Point p = parent.getLocationOnScreen();
         p.x += 20;
@@ -857,6 +966,7 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     public static void executeShellCmdAndReturn(String cmd)
             throws IOException {
+        System.out.println(cmd);
         Process proc = Runtime.getRuntime().exec(cmd);
 
         // get command's output stream and
@@ -869,58 +979,9 @@ public class AstorUtil implements AstorDefs {
         // Do not check its exit value
     }
     //===============================================================
-    /**
-     * Execute a shell command and throw exception if command failed.
-     *
-     * @param cmd shell command to be executed.
-     * @return command execution standard out
-     * @throws fr.esrf.Tango.DevFailed        command execution standard error if any
-     * @throws java.io.IOException            In case of exec failed
-     * @throws java.lang.InterruptedException In case of exec wait failed
-     */
     //===============================================================
-    public static String executeShellCmd(String cmd)
-            throws IOException, InterruptedException, DevFailed {
-        Process proc = Runtime.getRuntime().exec(cmd);
 
-        // get command's output stream and
-        // put a buffered reader input stream on it.
-        //-------------------------------------------
-        InputStream istr = proc.getInputStream();
-        BufferedReader br =
-                new BufferedReader(new InputStreamReader(istr));
-        String sb = "";
 
-        // read output lines from command
-        //-------------------------------------------
-        String str;
-        while ((str = br.readLine()) != null) {
-            //System.out.println(str);
-            sb += str + "\n";
-        }
-
-        // wait for end of command
-        //---------------------------------------
-        proc.waitFor();
-
-        // check its exit value
-        //------------------------
-        int retVal;
-        if ((retVal = proc.exitValue()) != 0) {
-            //	An error occured try to read it
-            InputStream errstr = proc.getErrorStream();
-            br = new BufferedReader(new InputStreamReader(errstr));
-            while ((str = br.readLine()) != null) {
-                System.out.println(str);
-                sb += str + "\n";
-            }
-            Except.throw_exception("SHELL_CMD_FAILED",
-                    "the shell command\n" + cmd + "\nreturns : " + retVal
-                            + " !\n\n" + sb,
-                    "AstorUtil.executeShellCmd()");
-        }
-        return sb;
-    }
 
     //===============================================================
     //===============================================================
@@ -965,12 +1026,10 @@ public class AstorUtil implements AstorDefs {
     public static void showInHtmBrowser(String url) {
         //  Check for browser
         String browser;
-        if ((browser = System.getProperty("BROWSER")) == null) {
-            if (AstorUtil.osIsUnix())
-                browser = "firefox - turbo";
-            else
-                browser = "explorer";
-        }
+        if (AstorUtil.osIsUnix())
+            browser = "firefox - turbo";
+        else
+            browser = "explorer";
         String cmd = browser + " " + url;
         try {
             executeShellCmdAndReturn(cmd);
@@ -1016,7 +1075,7 @@ public class AstorUtil implements AstorDefs {
 
         if (tango_icon == null)
             tango_icon = new ImageIcon(
-                    getInstance().getClass().getResource(img_path + "TangoCollaboration.jpg"));
+                    getInstance().getClass().getResource(img_path + "CollaborationSplash.gif"));
         splash = new Splash(tango_icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");
@@ -1041,15 +1100,32 @@ public class AstorUtil implements AstorDefs {
         if (splash != null) {
             splash_progress += i;
             if (splash_progress > 99)
-                splash_progress = 99;
+                splash_progress = 10;
             splash.progress(splash_progress);
             splash.setMessage(message);
         }
     }
-
-
     //===============================================================
     //===============================================================
+    public static void increaseSplashProgress(double ratio, String message) {
+        if (splash != null) {
+            splash_progress = (int)(100*ratio);
+            if (splash_progress > 99)
+                splash_progress = 10;
+            splash.progress(splash_progress);
+            splash.setMessage(message);
+        }
+    }
+        //===============================================================
+        //===============================================================
+    public static void setSplashMessage(String message) {
+        splash.setMessage(message);
+    }
+    //===============================================================
+    //===============================================================
+
+
+
 
 
     //===============================================================
@@ -1161,6 +1237,17 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     public void sort(ArrayList<String> arrayList) {
         Collections.sort(arrayList, new StringComparator());
+    }
+    //===============================================================
+    //===============================================================
+
+
+
+
+    //===============================================================
+    //===============================================================
+    public static void main(String[] args) {
+        AstorUtil.getAllKnownTangoHosts();
     }
     //===============================================================
     //===============================================================

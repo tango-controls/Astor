@@ -72,14 +72,14 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public LevelTree(JFrame frame, HostInfoDialog parent, TangoHost host, int level_row) {
+    public LevelTree(Astor astor, HostInfoDialog parent, TangoHost host, int level_row) {
         this.parent = parent;
         this.host = host;
 
         bg = parent.getBackgroundColor();
         setBackground(bg);
-        server_menu = new ServerPopupMenu(frame, parent, host, ServerPopupMenu.SERVERS);
-        level_menu = new ServerPopupMenu(frame, parent, host, ServerPopupMenu.LEVELS);
+        server_menu = new ServerPopupMenu(astor, parent, host, ServerPopupMenu.SERVERS);
+        level_menu = new ServerPopupMenu(astor, parent, host, ServerPopupMenu.LEVELS);
 
         level = new Level(level_row);
         initComponent();

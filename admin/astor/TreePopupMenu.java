@@ -35,6 +35,7 @@
 package admin.astor;
 
 import admin.astor.statistics.StarterStatTable;
+import admin.astor.tango_release.TangoReleaseDialog;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -44,6 +45,7 @@ import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     private Astor astor;
@@ -53,15 +55,19 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     private TangoHost[] collec_hosts;
 
     static private String[] menuLabels = {
+            //  Host
             "Open control Panel",
             "Remote Login",
             "Starter info",
             "Starter test",
             "Unexport Starter device",
+
+            //  Collection
             "Branch  info",
             "Start all Servers",
             "Stop  all Servers",
             "Reset Statistics",
+            //  edit
             "Clone",
             "Change branch",
             "Edit Properties",
@@ -69,7 +75,8 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             "Black Box",
             "Starter Logs",
             "Starter Statistics",
-            "Uptime for Servers",
+            "Tango Version for Servers",
+            "Up-time for Servers",
             "Force Update",
             "Change Name",
     };
@@ -97,9 +104,10 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     static private final int BLACK_BOX = 13;
     static private final int STARTER_LOGS = 14;
     static private final int STARTER_STAT = 15;
-    static private final int UPTIME_SERVERS = 16;
-    static private final int UPDATE = 17;
-    static private final int CHANGE_NAME = 18;
+    static private final int SERVER_VERSIONS = 16;
+    static private final int UPTIME_SERVERS = 17;
+    static private final int UPDATE = 18;
+    static private final int CHANGE_NAME = 19;
 
     //===============================================================
     //===============================================================
@@ -220,6 +228,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + STARTER_TEST).setEnabled(can_test);
             getComponent(OFFSET + STARTER_LOGS).setEnabled(can_test);
             getComponent(OFFSET + STARTER_STAT).setEnabled(can_test);
+            getComponent(OFFSET + SERVER_VERSIONS).setEnabled(can_test);
             getComponent(OFFSET + UPTIME_SERVERS).setVisible(true);
             getComponent(OFFSET + REMOVE_HOST).setEnabled(!can_test);
             getComponent(OFFSET + UPDATE).setEnabled(can_test);
@@ -235,12 +244,13 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 lbl.setText("  " + collec_name + "  :");
 
                 //	Modify visibility
-                getComponent(OFFSET + OPEN_PANEL).setEnabled(false);
+                getComponent(OFFSET + OPEN_PANEL).setVisible(false);
                 getComponent(OFFSET + REM_LOGIN).setVisible(false);
                 getComponent(OFFSET + STARTER_INFO).setVisible(false);
                 getComponent(OFFSET + STARTER_TEST).setVisible(false);
                 getComponent(OFFSET + STARTER_LOGS).setVisible(false);
                 getComponent(OFFSET + STARTER_STAT).setVisible(false);
+                getComponent(OFFSET + SERVER_VERSIONS).setVisible(false);
                 getComponent(OFFSET + UPTIME_SERVERS).setVisible(false);
                 getComponent(OFFSET + UPDATE).setVisible(false);
 
@@ -291,6 +301,12 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 } catch (DevFailed e) {
                     ErrorPane.showErrorMessage(astor, null, e);
                 }
+                break;
+            case SERVER_VERSIONS:
+                ArrayList<String> serverNames = host.getServerNames();
+                //  Add the Starter itself
+                serverNames.add("Starter/"+host.hostName());
+                new TangoReleaseDialog(astor, host.hostName(), serverNames).setVisible(true);
                 break;
             case UPTIME_SERVERS:
                 host.displayUptimes(astor);

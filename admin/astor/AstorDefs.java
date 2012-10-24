@@ -59,6 +59,8 @@ public interface AstorDefs {
             "logging_rft"
     };
 
+    public static final String  rcFileName = "astorrc";
+
     public final int do_not_close = 0;
     public final int do_close = -1;
     static final int COLLECTION = 0;

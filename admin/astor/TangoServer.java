@@ -37,7 +37,7 @@ package admin.astor;
 /**
  *	Server object containing devices list.
  *	This class inherit from device proxy.
- *	It is seen as the administrative device of this server.
+ *	It is seen as the administrative device of this dbServer.
  *
  * @author verdier
  */
@@ -62,7 +62,7 @@ import java.util.ArrayList;
 
 public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     private String name;
-    private DbServer server = null;
+    private DbServer dbServer = null;
     private String devname;
     private DevState state;
 
@@ -83,7 +83,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         super("dserver/" + name);
         set_transparency_reconnection(true);
         this.name = name;
-        this.devname = get_name();    //	Not the server name but
+        this.devname = get_name();    //	Not the dbServer name but
         // the administrative device name
         this.state = state;
     }
@@ -96,7 +96,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         super(name);
         set_transparency_reconnection(true);
         this.name = name;
-        this.devname = get_name();    //	Not the server name but
+        this.devname = get_name();    //	Not the dbServer name but
         // the administrative device name
         this.state = DevState.ON;
     }
@@ -104,18 +104,18 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //=============================================================
     //=============================================================
     public void putStartupInfo(DbServInfo si) throws DevFailed {
-        if (server == null)
-            server = new DbServer(name);
+        if (dbServer == null)
+            dbServer = new DbServer(name);
         info = si;
-        server.put_info(info);
+        dbServer.put_info(info);
     }
 
     //=============================================================
     //=============================================================
     public void updateStartupInfo() throws DevFailed {
-        if (server == null)
-            server = new DbServer(name);
-        info = server.get_info();
+        if (dbServer == null)
+            dbServer = new DbServer(name);
+        info = dbServer.get_info();
     }
 
     //=============================================================
@@ -156,14 +156,14 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //=============================================================
     //=============================================================
     public String[] queryDeviceFromDb() throws DevFailed {
-        if (server == null) {
+        if (dbServer == null) {
             String servname = name.substring(name.indexOf('/') + 1);
-            server = new DbServer(servname);
+            dbServer = new DbServer(servname);
         }
         ArrayList<String> v = new ArrayList<String>();
-        String[] class_list = server.get_class_list();
+        String[] class_list = dbServer.get_class_list();
         for (String cl : class_list) {
-            String[] devnames = server.get_device_name(cl);
+            String[] devnames = dbServer.get_device_name(cl);
             v.addAll(Arrays.asList(devnames));
         }
         String[] devnames = new String[v.size()];
@@ -223,7 +223,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     public boolean startupLevel(JDialog parent, String hostname, Point p) {
         boolean modif = false;
         try {
-            //	Get server startup info and popup dialog
+            //	Get dbServer startup info and popup dialog
             PutServerInfoDialog dialog = new PutServerInfoDialog(parent, true);
             dialog.setLocation(p);
             updateStartupInfo();
@@ -235,19 +235,19 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                     info.host = hostname;
                     putStartupInfo(info);
                 } else {
-                    //	Check if server is stopped (it must be)
+                    //	Check if dbServer is stopped (it must be)
                     if (state == DevState.ON) {
                         Utils.popupMessage(parent,
-                                "Stop " + name + "  server before !");
+                                "Stop " + name + "  dbServer before !");
                         return modif;
                     }
-                    //	Remove server info in database
+                    //	Remove dbServer info in database
                     putStartupInfo(new DbServInfo(name, hostname, false, 0));
 
                     //	Register devices on empty host and unexport.
-                    if (server == null)
-                        server = new DbServer(name);
-                    String[] devname = server.get_device_class_list();
+                    if (dbServer == null)
+                        dbServer = new DbServer(name);
+                    String[] devname = dbServer.get_device_class_list();
                     for (int i = 0; i < devname.length; i += 2) {
                         ApiUtil.get_db_obj().export_device(
                                 new DbDevExportInfo(devname[i], "", "", ""));
@@ -329,6 +329,11 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }
+    //===============================================================
+    //===============================================================
+    public void showJive(Astor astor) {
+        astor.tree.showJive(this);
+    }
 
     //===============================================================
     //===============================================================
@@ -343,7 +348,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         }
         if (ds_present) {
             try {
-                //	Query info from server if running
+                //	Query info from dbServer if running
                 String[] devices = queryDevice();
                 servinfo += "\n\n----------- Device(s) Served -----------\n\n";
                 for (String devname : devices)
@@ -365,9 +370,9 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     public void manageMemorizedAttributes(JDialog parent) {
         try {
             /*
-               if (server==null)
-                   server = new DbServer(name);
-               new AttMemoDialog(parent, server).setVisible(true);
+               if (dbServer==null)
+                   dbServer = new DbServer(name);
+               new AttMemoDialog(parent, dbServer).setVisible(true);
                */
             //	Replaced by following  class
             new DbServerArchitecture(parent, name).setVisible(true);
@@ -423,7 +428,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     public void displayServerInfo(JDialog parent) {
-        //	Dispplay info from database and from server if any.
+        //	Dispplay info from database and from dbServer if any.
         boolean done = false;
         if (state == DevState.ON)
             done = displayArchitecture(parent);
@@ -438,12 +443,12 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     public void displayClassInfo(JFrame parent) {
         try {
-            if (server == null)
-                server = new DbServer(name);
+            if (dbServer == null)
+                dbServer = new DbServer(name);
             //	Prepeare text
             //------------------------
-            String[] classes = server.get_class_list();
-            StringBuffer sb = new StringBuffer(
+            String[] classes = dbServer.get_class_list();
+            StringBuilder sb = new StringBuilder(
                     "<FONT SIZE=+2>Tango Device Server " +
                             name + " : </font>\n\n");
             sb.append("<ul>\n");
@@ -590,7 +595,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         //==================================
         try {
             String servinfo = "";
-            //	Query info from server
+            //	Query info from dbServer
             String[] _devices = queryDevice();
             //	add admin device
             String[] devices = new String[_devices.length + 1];
@@ -658,9 +663,12 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
 
 
+
+    
+    
     //===============================================================
     /*
-      *	A thread class to staop, Wait a bit and restat server.
+      *	A thread class to stop, Wait a bit and restatt dbServer.
       */
     //===============================================================
     private class restartThread extends Thread {
@@ -701,7 +709,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 }
                 if (state == DevState.ON) {
                     Except.throw_exception("STOP_TIMOUT",
-                            "Stopping server " + name + " timeout\n" +
+                            "Stopping dbServer " + name + " timeout\n" +
                                     "may be, it cannot be stopped.",
                             "TangoServer.restartThread.run()");
                 }

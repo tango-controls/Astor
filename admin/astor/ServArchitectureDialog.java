@@ -34,6 +34,7 @@
 
 package admin.astor;
 
+import admin.astor.tango_release.TangoServerRelease;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevInfo;
@@ -129,13 +130,13 @@ public class ServArchitectureDialog extends JDialog {
         titleLabel = new javax.swing.JLabel();
         zmqButton = new javax.swing.JRadioButton();
         javax.swing.JPanel scrollPanel = new javax.swing.JPanel();
-        textScrollPane = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
         treeScrollPane = new javax.swing.JScrollPane();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         expandBtn = new javax.swing.JRadioButton();
         infoBtn = new javax.swing.JRadioButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        textScrollPane = new javax.swing.JScrollPane();
+        textArea = new javax.swing.JTextArea();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -158,13 +159,6 @@ public class ServArchitectureDialog extends JDialog {
         getContentPane().add(titlePanel, java.awt.BorderLayout.NORTH);
 
         scrollPanel.setLayout(new java.awt.BorderLayout());
-
-        textScrollPane.setPreferredSize(new java.awt.Dimension(200, 170));
-
-        textArea.setEditable(false);
-        textScrollPane.setViewportView(textArea);
-
-        scrollPanel.add(textScrollPane, java.awt.BorderLayout.NORTH);
         scrollPanel.add(treeScrollPane, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(scrollPanel, java.awt.BorderLayout.CENTER);
@@ -195,6 +189,13 @@ public class ServArchitectureDialog extends JDialog {
         bottomPanel.add(cancelBtn);
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
+
+        textScrollPane.setPreferredSize(new java.awt.Dimension(200, 170));
+
+        textArea.setEditable(false);
+        textScrollPane.setViewportView(textArea);
+
+        getContentPane().add(textScrollPane, java.awt.BorderLayout.EAST);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -625,10 +626,12 @@ public class ServArchitectureDialog extends JDialog {
             this.desc = "";
 
             try {
+                TangoServerRelease  serverRelease = new TangoServerRelease(name);
+
                 String admin = "dserver/" + name;
                 DeviceInfo info = new DbDevice(admin).get_info();
                 desc = info.toString();
-                textArea.setText(desc);
+                textArea.setText(desc + "\n\n"+ serverRelease.toStringFull());
             } catch (DevFailed e) { /** Nothing to do **/}
         }
 
@@ -937,7 +940,7 @@ public class ServArchitectureDialog extends JDialog {
             return this;
         }
     }
-    //===============================================================
+   //===============================================================
     //===============================================================
 
 

@@ -53,10 +53,10 @@ import java.awt.*;
 
 
 public class PreferenceDialog extends JDialog {
-    private JFrame parent;
+    private JFrame  parent;
+    private String  csName = "";
 
     //===============================================================
-
     /**
      * Creates new form PreferenceDialog
      *
@@ -68,6 +68,12 @@ public class PreferenceDialog extends JDialog {
         this.parent = parent;
         initComponents();
         initialize();
+        try {
+            csName = AstorUtil.getControlSystemName();
+            if (csName!=null)
+                nameText.setText(csName);
+        }
+        catch (DevFailed e) { /*  */ }
 
         titleLabel.setText(AstorUtil.getTangoHost() + "  preferences");
         pack();
@@ -124,6 +130,19 @@ public class PreferenceDialog extends JDialog {
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, "Cannot put Astor properties", e);
         }
+        
+        //  For CS name
+        try {
+            String  name = nameText.getText();
+            if (!name.equals(csName)) {
+                //  If it has changed, write it in database.
+                AstorUtil.setControlSystemName(name);
+                csName = name;
+            }
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+        }
     }
 
     //===============================================================
@@ -145,7 +164,7 @@ public class PreferenceDialog extends JDialog {
         last_collection = util.getLastCollectionList();
 
         //	Get known TANGO_HOST
-        known_tango_hosts = AstorUtil.getKnownTangoHosts();
+        known_tango_hosts = AstorUtil.getDbaseKnownTangoHosts();
 
         //	Get additianal tools
         tools = AstorUtil.getTools();
@@ -193,11 +212,12 @@ public class PreferenceDialog extends JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
-        javax.swing.JButton okBtn = new javax.swing.JButton();
-        javax.swing.JButton cancelBtn = new javax.swing.JButton();
-        javax.swing.JPanel jPanel2 = new javax.swing.JPanel();
+        javax.swing.JPanel topPanel = new javax.swing.JPanel();
+        javax.swing.JPanel topTopPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
+        javax.swing.JPanel bottomTopPanel = new javax.swing.JPanel();
+        javax.swing.JLabel nameLabel = new javax.swing.JLabel();
+        nameText = new javax.swing.JTextField();
         javax.swing.JPanel prefPanel = new javax.swing.JPanel();
         javax.swing.JLabel treeWidthLbl = new javax.swing.JLabel();
         treeWidthtTxt = new javax.swing.JTextField();
@@ -224,6 +244,9 @@ public class PreferenceDialog extends JDialog {
         hostDlgHeighttTxt = new javax.swing.JTextField();
         javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
         starterStartupBtn = new javax.swing.JRadioButton();
+        javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
+        javax.swing.JButton okBtn = new javax.swing.JButton();
+        javax.swing.JButton cancelBtn = new javax.swing.JButton();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -231,33 +254,29 @@ public class PreferenceDialog extends JDialog {
             }
         });
 
-        okBtn.setText("OK");
-        okBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okBtnActionPerformed(evt);
-            }
-        });
-        jPanel1.add(okBtn);
+        topPanel.setLayout(new java.awt.BorderLayout());
 
-        cancelBtn.setText("Cancel");
-        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelBtnActionPerformed(evt);
-            }
-        });
-        jPanel1.add(cancelBtn);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Dialog Title");
-        jPanel2.add(titleLabel);
+        topTopPanel.add(titleLabel);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
+        topPanel.add(topTopPanel, java.awt.BorderLayout.NORTH);
+
+        nameLabel.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        nameLabel.setText("name:");
+        bottomTopPanel.add(nameLabel);
+
+        nameText.setColumns(20);
+        nameText.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        bottomTopPanel.add(nameText);
+
+        topPanel.add(bottomTopPanel, java.awt.BorderLayout.SOUTH);
+
+        getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
         prefPanel.setLayout(new java.awt.GridBagLayout());
 
-        treeWidthLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        treeWidthLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         treeWidthLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         treeWidthLbl.setText("Hosts Tree Width:  ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -273,7 +292,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(treeWidthtTxt, gridBagConstraints);
 
-        treeHeightLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        treeHeightLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         treeHeightLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         treeHeightLbl.setText("Hosts Tree Height:  ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -296,7 +315,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         prefPanel.add(jSeparator1, gridBagConstraints);
 
-        jLabel1.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        jLabel1.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Remote login user :  ");
         jLabel1.setToolTipText("Default user name used for remote login on a host.");
@@ -307,7 +326,7 @@ public class PreferenceDialog extends JDialog {
         prefPanel.add(jLabel1, gridBagConstraints);
 
         rshUserTxt.setColumns(12);
-        rshUserTxt.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        rshUserTxt.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         rshUserTxt.setToolTipText("Default user name used for remote login on a host.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -315,7 +334,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(rshUserTxt, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        jLabel2.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Remote login command :  ");
         jLabel2.setToolTipText("Command used for remote login on a host (rlogin, ssh, ...).");
@@ -326,7 +345,7 @@ public class PreferenceDialog extends JDialog {
         prefPanel.add(jLabel2, gridBagConstraints);
 
         rshCmdTxt.setColumns(12);
-        rshCmdTxt.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        rshCmdTxt.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         rshCmdTxt.setText("rlogin");
         rshCmdTxt.setToolTipText("Command used for remote login on a host (rlogin, ssh, ...).");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -349,7 +368,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         prefPanel.add(jSeparator3, gridBagConstraints);
 
-        jLabel5.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        jLabel5.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         jLabel5.setText("Start Jive in READ_ONLY mode :");
         jLabel5.setToolTipText("Mode to start jive");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -359,7 +378,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         prefPanel.add(jLabel5, gridBagConstraints);
 
-        jiveRObtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        jiveRObtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         jiveRObtn.setText("false");
         jiveRObtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         jiveRObtn.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -383,13 +402,13 @@ public class PreferenceDialog extends JDialog {
         prefPanel.add(jSeparator5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         prefPanel.add(jSeparator7, gridBagConstraints);
 
-        lastCollectionBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        lastCollectionBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         lastCollectionBtn.setText("Last Collections :");
         lastCollectionBtn.setToolTipText("List of collections (families) displayed at the end of the control system tree.");
         lastCollectionBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -403,7 +422,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(lastCollectionBtn, gridBagConstraints);
 
-        tangoHostsBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        tangoHostsBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         tangoHostsBtn.setText("Known Tango Hosts");
         tangoHostsBtn.setToolTipText("List of   TANGO_HOST known (used to change during execution).");
         tangoHostsBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -417,7 +436,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(tangoHostsBtn, gridBagConstraints);
 
-        toolsBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        toolsBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         toolsBtn.setText("Additional tools :");
         toolsBtn.setToolTipText("List of  additiannal tools (see  Astor pages).");
         toolsBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -431,7 +450,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(toolsBtn, gridBagConstraints);
 
-        helpPagesBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        helpPagesBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         helpPagesBtn.setText("Help pages");
         helpPagesBtn.setToolTipText("List of   help  pages (as tools see Astor pages).");
         helpPagesBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -445,7 +464,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(helpPagesBtn, gridBagConstraints);
 
-        hostDlgWidthLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        hostDlgWidthLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         hostDlgWidthLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         hostDlgWidthLbl.setText("Host Panel Width:  ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -454,7 +473,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(hostDlgWidthLbl, gridBagConstraints);
 
-        hostDlgHeightLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        hostDlgHeightLbl.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         hostDlgHeightLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         hostDlgHeightLbl.setText("Host Panel Height:  ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -477,7 +496,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         prefPanel.add(hostDlgHeighttTxt, gridBagConstraints);
 
-        jLabel6.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        jLabel6.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         jLabel6.setText("Starter starts servers at startup:");
         jLabel6.setToolTipText("Mode to start jive");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -487,7 +506,7 @@ public class PreferenceDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         prefPanel.add(jLabel6, gridBagConstraints);
 
-        starterStartupBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12));
+        starterStartupBtn.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
         starterStartupBtn.setSelected(true);
         starterStartupBtn.setText("true");
         starterStartupBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -506,6 +525,24 @@ public class PreferenceDialog extends JDialog {
 
         getContentPane().add(prefPanel, java.awt.BorderLayout.CENTER);
 
+        okBtn.setText("OK");
+        okBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okBtnActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(okBtn);
+
+        cancelBtn.setText("Cancel");
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(cancelBtn);
+
+        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -516,7 +553,7 @@ public class PreferenceDialog extends JDialog {
         GetTextDialog dlg = new GetTextDialog(this,
                 btn.getText(), btn.getToolTipText(), pages);
         if (dlg.showDialog() == JOptionPane.OK_OPTION)
-            pages = dlg.getTextLines();
+            pages = dlg.getTextLinesAsArray();
     }//GEN-LAST:event_helpPagesBtnActionPerformed
 
     //===============================================================
@@ -526,7 +563,7 @@ public class PreferenceDialog extends JDialog {
         GetTextDialog dlg = new GetTextDialog(this,
                 btn.getText(), btn.getToolTipText(), tools);
         if (dlg.showDialog() == JOptionPane.OK_OPTION)
-            tools = dlg.getTextLines();
+            tools = dlg.getTextLinesAsArray();
 
     }//GEN-LAST:event_toolsBtnActionPerformed
 
@@ -537,7 +574,7 @@ public class PreferenceDialog extends JDialog {
         GetTextDialog dlg = new GetTextDialog(this,
                 btn.getText(), btn.getToolTipText(), known_tango_hosts);
         if (dlg.showDialog() == JOptionPane.OK_OPTION)
-            known_tango_hosts = dlg.getTextLines();
+            known_tango_hosts = dlg.getTextLinesAsArray();
     }//GEN-LAST:event_tangoHostsBtnActionPerformed
 
     //===============================================================
@@ -548,7 +585,7 @@ public class PreferenceDialog extends JDialog {
         GetTextDialog dlg = new GetTextDialog(this,
                 btn.getText(), btn.getToolTipText(), last_collection);
         if (dlg.showDialog() == JOptionPane.OK_OPTION)
-            last_collection = dlg.getTextLines();
+            last_collection = dlg.getTextLinesAsArray();
     }//GEN-LAST:event_lastCollectionBtnActionPerformed
 
     //===============================================================
@@ -597,9 +634,7 @@ public class PreferenceDialog extends JDialog {
         doClose();
     }//GEN-LAST:event_closeDialog
 
-
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -617,6 +652,7 @@ public class PreferenceDialog extends JDialog {
     private javax.swing.JTextField hostDlgHeighttTxt;
     private javax.swing.JTextField hostDlgWidthtTxt;
     private javax.swing.JRadioButton jiveRObtn;
+    private javax.swing.JTextField nameText;
     private javax.swing.JTextField rshCmdTxt;
     private javax.swing.JTextField rshUserTxt;
     private javax.swing.JRadioButton starterStartupBtn;
