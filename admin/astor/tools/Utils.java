@@ -79,6 +79,28 @@ public class Utils {
 
     //===============================================================
     //===============================================================
+    public ImageIcon getIcon(String filename, double ratio) {
+        ImageIcon icon = getIcon(filename);
+        return getIcon(icon, ratio);
+    }
+    //===============================================================
+    //===============================================================
+    public ImageIcon getIcon(ImageIcon icon, double ratio) {
+        if (icon != null) {
+            int width = icon.getIconWidth();
+            int height = icon.getIconHeight();
+
+            width = (int) (ratio * width);
+            height = (int) (ratio * height);
+
+            icon = new ImageIcon(
+                    icon.getImage().getScaledInstance(
+                            width, height, Image.SCALE_SMOOTH));
+        }
+        return icon;
+    }
+    //===============================================================
+    //===============================================================
     static public void popupMessage(Component c, String message, String filename) {
         ImageIcon icon = new ImageIcon(c.getClass().getResource(filename));
         JOptionPane.showMessageDialog(c, message, "Info Window", JOptionPane.INFORMATION_MESSAGE, icon);
