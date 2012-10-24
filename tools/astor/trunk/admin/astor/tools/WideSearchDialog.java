@@ -58,8 +58,7 @@ public class WideSearchDialog extends JDialog {
     private JScrollPane scrollPane;
 
     //===============================================================
-
-    /**
+    /*
      * Creates new form WideSearchDialog
      */
     //===============================================================
@@ -159,25 +158,21 @@ public class WideSearchDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"UNUSED_SYMBOL"})
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
-    @SuppressWarnings({"UNUSED_SYMBOL"})
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"UNUSED_SYMBOL"})
+    @SuppressWarnings("UnusedParameters")
     private void wildcardTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wildcardTxtActionPerformed
 
         try {
@@ -186,9 +181,9 @@ public class WideSearchDialog extends JDialog {
                 Except.throw_exception("BAD_PARAM",
                         "Filter is empty !",
                         "wildcardTxt.getText()");
-            if (wildcard.startsWith("*") == false)
+            if (!wildcard.startsWith("*"))
                 wildcard = "*" + wildcard;
-            if (wildcard.endsWith("*") == false)
+            if (!wildcard.endsWith("*"))
                 wildcard = wildcard + "*";
             WideSearchTree tree = new WideSearchTree(this, wildcard);
             scrollPane.setViewportView(tree);

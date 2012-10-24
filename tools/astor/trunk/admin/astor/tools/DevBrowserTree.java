@@ -151,11 +151,11 @@ public class DevBrowserTree extends JTree implements TangoConst {
 
         Database db = ApiUtil.get_db_obj();
         String[] aliases = db.get_device_alias_list("*");
-        for (String aliase : aliases) {
+        for (String alias : aliases) {
             //	Create a node for domain
             try {
-                String devname = ApiUtil.get_db_obj().get_alias_device(aliase);
-                al_node = new DefaultMutableTreeNode(new BrowserDevice(devname, aliase));
+                String deviceName = ApiUtil.get_db_obj().get_device_from_alias(alias);
+                al_node = new DefaultMutableTreeNode(new BrowserDevice(deviceName, alias));
                 al_node.add(new DefaultMutableTreeNode("dummy"));
                 c_node.add(al_node);
             } catch (DevFailed e) {/** Do Nothing */}
