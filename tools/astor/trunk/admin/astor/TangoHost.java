@@ -73,7 +73,7 @@ public class TangoHost extends DeviceProxy {
     public boolean poll_serv_lists = false;
     public String collection = null;
     public HostStateThread thread = null;
-    public int notifyd_state;
+    public int notifydState;
     public boolean onEvents = true;
     public boolean manageNotifd;
     public HostInfoDialog info_dialog = null;
@@ -92,7 +92,7 @@ public class TangoHost extends DeviceProxy {
         set_transparency_reconnection(true);
 
         servers = new ArrayList<TangoServer>();
-        notifyd_state = AstorDefs.unknown;
+        notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;
@@ -161,7 +161,7 @@ public class TangoHost extends DeviceProxy {
         set_transparency_reconnection(true);
 
         servers = new ArrayList<TangoServer>();
-        notifyd_state = AstorDefs.unknown;
+        notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;
@@ -187,7 +187,7 @@ public class TangoHost extends DeviceProxy {
         set_transparency_reconnection(true);
 
         servers = new ArrayList<TangoServer>();
-        notifyd_state = AstorDefs.unknown;
+        notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;
@@ -722,12 +722,12 @@ public class TangoHost extends DeviceProxy {
         return name;
     }
 
-    //==============================================================
-    //==============================================================
     public String toString() {
         if (usage == null || usage.length() == 0)
             return name;
         else
             return name + "  ( " + usage + " )";
     }
+    //==============================================================
+    //==============================================================
 }

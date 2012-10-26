@@ -331,17 +331,32 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     }
     //===============================================================
     //===============================================================
-    public void showJive(Astor astor) {
-        astor.tree.showJive(this);
+    private jive3.MainPanel jive3 = null;
+    public void showJive(JFrame jFrame) {
+        if (jFrame instanceof Astor) {
+            //  Do it on astor one
+            ((Astor)jFrame).tree.showJive(this);
+        }
+        else {  // Do it on local one
+            //	Check already Started
+            if (jive3 == null) {
+                boolean from_shell = false;
+                boolean read_only = AstorUtil.getInstance().jiveIsReadOnly();
+                jive3 = new jive3.MainPanel(from_shell, read_only);
+            }
+            jive3.setVisible(true);
+            jive3.toFront();
+            jive3.goToServerNode(getName());
+        }
     }
 
     //===============================================================
     //===============================================================
     public String getServerInfo(Component parent, boolean ds_present) {
-        String servinfo = "------------ Server Info ------------\n\n";
+        String serverInfo = "------------ Server Info ------------\n\n";
         try {
             //	Query info from database
-            servinfo += get_info().toString();
+            serverInfo += get_info().toString();
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
             return "";
@@ -350,12 +365,12 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             try {
                 //	Query info from dbServer if running
                 String[] devices = queryDevice();
-                servinfo += "\n\n----------- Device(s) Served -----------\n\n";
+                serverInfo += "\n\n----------- Device(s) Served -----------\n\n";
                 for (String devname : devices)
-                    servinfo += devname + "\n";
+                    serverInfo += devname + "\n";
             } catch (DevFailed e) { /* */ }
         }
-        return servinfo;
+        return serverInfo;
     }
 
     //===============================================================
