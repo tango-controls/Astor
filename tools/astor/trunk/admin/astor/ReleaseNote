@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.1.2 -  26/10/12:
+	Fix a problem when too much devices in SubDevices.
+
 Astor-6.1.1 -  26/10/12:
 	HostInfoDialog can be run in stand alone.
 
