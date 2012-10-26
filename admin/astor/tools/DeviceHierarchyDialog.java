@@ -59,8 +59,7 @@ public class DeviceHierarchyDialog extends JDialog {
     private String name;
 
     //===============================================================
-
-    /**
+    /*
      * Creates new form DeviceHierarchyDialog
      */
     //===============================================================
@@ -71,8 +70,7 @@ public class DeviceHierarchyDialog extends JDialog {
         init();
     }
     //===============================================================
-
-    /**
+    /*
      * Creates new form DeviceHierarchyDialog
      */
     //===============================================================
@@ -93,9 +91,11 @@ public class DeviceHierarchyDialog extends JDialog {
 
             titleLabel.setText("Device hierarchy for  " + name);
             pack();
-            Point p = parent.getLocation();
-            p.translate(40, 30);
-            this.setLocation(p);
+            if (parent!=null) {
+                Point p = parent.getLocation();
+                p.translate(40, 30);
+                this.setLocation(p);
+            }
             AstorUtil.stopSplash();
         } catch (DevFailed e) {
             AstorUtil.stopSplash();
@@ -188,18 +188,14 @@ public class DeviceHierarchyDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"UNUSED_SYMBOL"})
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
-    @SuppressWarnings({"UNUSED_SYMBOL"})
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
@@ -217,14 +213,12 @@ public class DeviceHierarchyDialog extends JDialog {
         }
     }
     //===============================================================
-
     /**
      * Closes the dialog
      */
     //===============================================================
     private void doClose() {
-        int w = parent.getWidth();
-        if (w > 0) {
+        if (parent!=null) {
             setVisible(false);
             tree.stopThread();
             dispose();
@@ -250,13 +244,17 @@ public class DeviceHierarchyDialog extends JDialog {
     //===============================================================
     public static void main(String args[]) {
 
-        String servname = "PoolThreadTest/pv";
+        //String serverName = "VacTemperature/c24-wago";
+        String serverName = "VacGaugeServer/sr_c27-ip";
+        //String serverName = "PLCmodbus/d23";
+
+        
         if (args.length > 0)
-            servname = args[0];
+            serverName = args[0];
         try {
             AstorUtil.getInstance().initIcons();
             DeviceHierarchyDialog dlg =
-                    new DeviceHierarchyDialog(new JFrame(), servname);
+                    new DeviceHierarchyDialog((JFrame) null, serverName);
             dlg.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), null, e);
