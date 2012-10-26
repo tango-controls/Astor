@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.1.1 -  26/10/12:
+	HostInfoDialog can be run in stand alone.
+
 Astor-6.1.0 -  24/10/12:
 	Tango release for servers tool added.
 

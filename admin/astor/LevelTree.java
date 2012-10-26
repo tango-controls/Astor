@@ -72,14 +72,14 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public LevelTree(Astor astor, HostInfoDialog parent, TangoHost host, int level_row) {
+    public LevelTree(JFrame jFrame, HostInfoDialog parent, TangoHost host, int level_row) {
         this.parent = parent;
         this.host = host;
 
         bg = parent.getBackgroundColor();
         setBackground(bg);
-        server_menu = new ServerPopupMenu(astor, parent, host, ServerPopupMenu.SERVERS);
-        level_menu = new ServerPopupMenu(astor, parent, host, ServerPopupMenu.LEVELS);
+        server_menu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.SERVERS);
+        level_menu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.LEVELS);
 
         level = new Level(level_row);
         initComponent();
@@ -142,14 +142,8 @@ public class LevelTree extends JTree implements AstorDefs {
         treeModel = new DefaultTreeModel(root);
         setModel(treeModel);
 
-        //Enable tool tips.
+        // Enable tool tips.
         ToolTipManager.sharedInstance().registerComponent(this);
-
-        /*
-           * Set the icon for leaf nodes.
-           * Note: In the Swing 1.0.x release, we used
-           * swing.plaf.basic.BasicTreeCellRenderer.
-           */
         setCellRenderer(new TangoRenderer());
 
         //	Add Action listener
@@ -495,12 +489,11 @@ public class LevelTree extends JTree implements AstorDefs {
     }
 
 
-//===============================================================
-
+    //===============================================================
     /**
      * Renderer Class
      */
-//===============================================================
+    //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
         private Font[] fonts;
 

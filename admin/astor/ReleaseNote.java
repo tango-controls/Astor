@@ -17,7 +17,9 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Wed Oct 24 09:19:32 CEST 2012)</Center><Br>\n" + 
+		"	(Generated Fri Oct 26 10:46:37 CEST 2012)</Center><Br>\n" + 
+		"<li><b>Astor-6.1.1 -  26/10/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; HostInfoDialog can be run in stand alone.<Br>\n" + 
 		"<li><b>Astor-6.1.0 -  24/10/12:</b><Br>\n" + 
 		"&nbsp; &nbsp; Tango release for servers tool added.<Br>\n" + 
 		"<li><b>Astor-6.0.6 -  09/10/12:</b><Br>\n" + 

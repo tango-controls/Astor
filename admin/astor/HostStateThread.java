@@ -65,7 +65,16 @@ public class HostStateThread extends Thread implements AstorDefs {
     private static final int NotifdAtt = 1;
 
     //======================================================================
-
+    /**
+     * Thread constructor.
+     *
+     * @param host   host object to control.
+     */
+    //======================================================================
+    public HostStateThread(TangoHost host) {
+        this(null, host);
+    }
+    //======================================================================
     /**
      * Thread constructor.
      *
@@ -76,7 +85,6 @@ public class HostStateThread extends Thread implements AstorDefs {
     public HostStateThread(AstorTree parent, TangoHost host) {
         this.parent = parent;
         this.host = host;
-        //readInfoPeriod = 1000;
         host.thread = this;
         readInfoPeriod = AstorUtil.getStarterReadPeriod() / 2;
     }
@@ -94,14 +102,14 @@ public class HostStateThread extends Thread implements AstorDefs {
      */
     //======================================================================
     public void run() {
-        /*	Done in AstorTree class to be serialized !
-              When subscribed, monitor is updated.
-          if (host.onEvents)
-          {
-              //	If on events -> Wait.
+        /*
+         *	Done in AstorTree class to be serialized !
+         *    When subscribed, monitor is updated.
+         *     Do it only if not from astor
+         */
+          if (parent==null && host.onEvents)  {
               subscribeChangeStateEvent();
           }
-          */
 
         //	Else or failed
         //	Manage polling on synchronous calls
@@ -180,19 +188,21 @@ public class HostStateThread extends Thread implements AstorDefs {
 
     //======================================================================
     //======================================================================
-    //public synchronized void updateNotifdHost(DevState notifd_state)
     public void updateNotifdHost(DevState notifd_state) {
         //	Convert to int
         int notifyd_state = unknown;
         if (notifd_state == DevState.ON) notifyd_state = all_ok;
         else if (notifd_state == DevState.FAULT) notifyd_state = faulty;
 
-        if (host.notifyd_state == notifyd_state)
+        if (host.notifydState == notifyd_state)
             return;
 
-        host.notifyd_state = notifyd_state;
+        host.notifydState = notifyd_state;
         if (parent != null)
             parent.updateState();
+        else {
+            host.notifydState = notifyd_state;
+        }
         if (host.info_dialog != null)
             host.info_dialog.updateHostState();
     }
@@ -282,7 +292,8 @@ public class HostStateThread extends Thread implements AstorDefs {
         
 		//if (stringError != null)
         //    System.err.println(stringError);
-        parent.updateMonitor(stringError);
+        if (parent!=null)
+            parent.updateMonitor(stringError);
     }
     //=========================================================================
 
