@@ -17,7 +17,9 @@ public interface ReleaseNote
 		"<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" + 
 		"<P><!-------TITLE------></P>\n" + 
 		"<Center>	<h2>Astor Release Note</h2>\n" + 
-		"	(Generated Fri Oct 26 10:46:37 CEST 2012)</Center><Br>\n" + 
+		"	(Generated Fri Oct 26 15:41:14 CEST 2012)</Center><Br>\n" + 
+		"<li><b>Astor-6.1.2 -  26/10/12:</b><Br>\n" + 
+		"&nbsp; &nbsp; Fix a problem when too much devices in SubDevices.<Br>\n" + 
 		"<li><b>Astor-6.1.1 -  26/10/12:</b><Br>\n" + 
 		"&nbsp; &nbsp; HostInfoDialog can be run in stand alone.<Br>\n" + 
 		"<li><b>Astor-6.1.0 -  24/10/12:</b><Br>\n" + 
