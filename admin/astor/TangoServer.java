@@ -157,19 +157,19 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //=============================================================
     public String[] queryDeviceFromDb() throws DevFailed {
         if (dbServer == null) {
-            String servname = name.substring(name.indexOf('/') + 1);
-            dbServer = new DbServer(servname);
+            String serverName = name.substring(name.indexOf('/') + 1);
+            dbServer = new DbServer(serverName);
         }
         ArrayList<String> v = new ArrayList<String>();
-        String[] class_list = dbServer.get_class_list();
-        for (String cl : class_list) {
-            String[] devnames = dbServer.get_device_name(cl);
-            v.addAll(Arrays.asList(devnames));
+        String[] classList = dbServer.get_class_list();
+        for (String class_ : classList) {
+            String[] deviceNames = dbServer.get_device_name(class_);
+            v.addAll(Arrays.asList(deviceNames));
         }
-        String[] devnames = new String[v.size()];
+        String[] deviceNames = new String[v.size()];
         for (int i = 0; i < v.size(); i++)
-            devnames[i] = v.get(i);
-        return devnames;
+            deviceNames[i] = v.get(i);
+        return deviceNames;
     }
 
     //=============================================================
