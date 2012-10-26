@@ -36,10 +36,7 @@ package admin.astor.tools;
 
 import admin.astor.*;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.DbDatum;
-import fr.esrf.TangoApi.DeviceData;
-import fr.esrf.TangoApi.DeviceInfo;
-import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -59,16 +56,19 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
     private static ImageIcon root_icon;
     private Astor astor = null;
     private boolean running = true;
-    private Device[] devices = null;
+    private ArrayList<Device> devices = null;
     private String rootname = null;
     private DefaultMutableTreeNode root;
     private DeviceHierarchyPopupMenu menu;
     private DeviceHierarchyDialog parent;
 
+    @SuppressWarnings("InspectionUsingGrayColors")
     private static final Color background = new Color(0xf0, 0xf0, 0xf0);
     private static final String SUB_DEV_PROP_NAME = "__SubDevices";
     private static final boolean CHECK_SUB = true;
 
+
+    private static int maxDevices = 32;
     //===============================================================
     //===============================================================
     public DeviceHierarchy(DeviceHierarchyDialog parent, Astor astor, String name) throws DevFailed {
@@ -76,6 +76,16 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         this.parent = parent;
         this.astor = astor;
         setBackground(background);
+
+        //  Get DeviceDependenciesMaxDevices property
+        try {
+            DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "DeviceDependenciesMaxDevices");
+            if (!datum.is_empty())
+                maxDevices = datum.extractLong();
+        }
+        catch (DevFailed e) {
+            System.err.println(e.errors[0].desc);
+        }
 
         initNames(name);
         buildTree();
@@ -90,20 +100,20 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         ArrayList<String> v = new ArrayList<String>();
         while (stk.hasMoreTokens())
             v.add(stk.nextToken());
-        String[] devnames = new String[0];
+        String[] deviceNames = new String[0];
         switch (v.size()) {
             case 2:    //	Is a server name
                 rootname = v.get(0) + "/" + v.get(1);
                 String admin = "dserver/" + rootname;
                 String[] tmp = new TangoServer(admin).queryDeviceFromDb();
-                devnames = new String[tmp.length + 1];
-                System.arraycopy(tmp, 0, devnames, 0, tmp.length);
-                devnames[tmp.length] = admin; //	Add amdin dev in last position
+                deviceNames = new String[tmp.length + 1];
+                System.arraycopy(tmp, 0, deviceNames, 0, tmp.length);
+                deviceNames[tmp.length] = admin; //	Add amdin dev in last position
                 break;
             case 3:    //	Is a device name
                 rootname = "Device";
-                devnames = new String[1];
-                devnames[0] = v.get(0) + "/" + v.get(1) + "/" + v.get(2);
+                deviceNames = new String[1];
+                deviceNames[0] = v.get(0) + "/" + v.get(1) + "/" + v.get(2);
                 break;
             default:
                 Except.throw_exception("BAD_PARAMETER",
@@ -111,12 +121,49 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
                         "DeviceHierarchy.initNames()");
         }
 
-        devices = new Device[devnames.length];
-        for (int i = 0; i < devnames.length; i++)
-            devices[i] = new Device(null, devnames[i], CHECK_SUB);
+        devices = new ArrayList<Device>();
+        for (String deviceName : deviceNames)
+            devices.add(new Device(null, deviceName, CHECK_SUB));
+        checkToRemoveMultipleDevices();
+
         new Refresher().start();
     }
 
+    //===============================================================
+    /**
+     * Check for all devices if they are also sub-devices.
+     * If true keep only sub-devices
+     */
+    //===============================================================
+    private void checkToRemoveMultipleDevices() {
+        ArrayList<Device>   deviceListToRemove = new ArrayList<Device>();
+        //  For all device
+        for (int i=0 ; i<devices.size() ; i++) {
+            String  rootName = devices.get(i).name;
+
+            //  For each following device, compare to all sub device
+            boolean found = false;
+            for (int j=0 ; !found && j<devices.size() ; j++) {
+                AstorUtil.increaseSplashProgress(5, "checking if multiple devices for " + rootName);
+                if (j!=i) { //  Do not compare with itself
+                    for (Device sudDevice : devices.get(j)) {
+                        //  Check if equals
+                        if (rootName.equals(sudDevice.name)){
+                            //  Set it to be removed, and continue analysis
+                            deviceListToRemove.add(devices.get(i));
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //  And finally, remove found ones
+        for (Device device : deviceListToRemove) {
+            devices.remove(device);
+        }
+    }
     //===============================================================
     //===============================================================
     private void buildTree() {
@@ -308,7 +355,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
     //===============================================================
     //===============================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Device dev : devices) {
             sb.append(dev.toFullString());
             for (int i = 0; i < dev.size(); i++)
@@ -543,10 +590,11 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         boolean too_old = false;
         short state = unknown;
         Device parent;
+        int tooMuchDevices = 0;
 
         //===========================================================
         private Device(Device parent, String name, boolean check_sub) {
-            AstorUtil.increaseSplashProgress(5, "checking for " + name);
+            AstorUtil.increaseSplashProgress(1, "checking for " + name);
             try {
                 this.parent = parent;
                 this.name = name;
@@ -555,41 +603,56 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
                 if (check_sub) {
                     //	Try to ask to the admin device
                     //	noinspection NestedTryStatement
+                    /*
                     try {
                         DeviceData argout = proxy.get_adm_dev().command_inout("QuerySubDevice");
                         String[] dependencies = argout.extractStringArray();
-                        for (String dependency : dependencies) {
-                            //	get sub device only for this device
-                            int idx = dependency.indexOf(' ');
-                            if (idx > 0) {
-                                String org = dependency.substring(0, idx).trim();
-                                boolean exists = (parent != null && parent.alreadyHave(dependency.substring(idx).trim()));
-                                if (org.toLowerCase().equals(name.toLowerCase()))
-                                    add(new Device(this, dependency.substring(idx).trim(), !exists));
-                            } else {
-                                //	This case is sub-devices not attached to device
-                                //	(e.g. in case of custum thread has sub-devices)
-                                //	Attach it on admin device
-                                if (name.startsWith("dserver/"))
-                                    add(new Device(this, dependency, CHECK_SUB));
+                        if (dependencies.length<=maxDevices) {
+                            for (String dependency : dependencies) {
+                                //	get sub device only for this device
+                                int idx = dependency.indexOf(' ');
+                                if (idx > 0) {
+                                    String org = dependency.substring(0, idx).trim();
+                                    boolean exists = (parent != null && parent.alreadyHave(dependency.substring(idx).trim()));
+                                    if (org.toLowerCase().equals(name.toLowerCase()))
+                                        add(new Device(this, dependency.substring(idx).trim(), !exists));
+                                } else {
+                                    //	This case is sub-devices not attached to device
+                                    //	(e.g. in case of custum thread has sub-devices)
+                                    //	Attach it on admin device
+                                    if (name.startsWith("dserver/"))
+                                        add(new Device(this, dependency, CHECK_SUB));
+                                }
                             }
+                        }
+                        else {
+                            tooMuchDevices = dependencies.length;
                         }
                     } catch (DevFailed e) {
                         if (e.errors[0].reason.equals("API_CommandNotFound")) {
                             too_old = true;
                         } else {
+                        */
+                    {
+                        {
                             //	If failed, check on property
                             DbDatum datum = proxy.get_property(SUB_DEV_PROP_NAME);
                             if (!datum.is_empty()) {
                                 String[] dependencies = datum.extractStringArray();
-                                for (String dependency : dependencies)
-                                    if (parent == null)
-                                        add(new Device(this, dependency, CHECK_SUB));
-                                    else {
-                                        //	to do not have a non ending loop
-                                        boolean exists = parent.alreadyHave(dependency);
-                                        add(new Device(this, dependency, !exists));
+                                if (dependencies.length<=maxDevices) {
+                                    for (String dependency : dependencies) {
+                                        if (parent == null)
+                                            add(new Device(this, dependency, CHECK_SUB));
+                                        else {
+                                            //	to do not have a non ending loop
+                                            boolean exists = parent.alreadyHave(dependency);
+                                            add(new Device(this, dependency, !exists));
+                                        }
                                     }
+                                }
+                                else {
+                                    tooMuchDevices = dependencies.length;
+                                }
                             }
                         }
                     }
@@ -619,7 +682,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
 
         //===========================================================
         private String toFullString() {
-            StringBuffer sb = new StringBuffer(name);
+            StringBuilder sb = new StringBuilder(name);
             sb.append('\n');
             for (int i = 0; i < size(); i++) {
                 Device d = getDevice(i);
@@ -658,7 +721,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
             if (failed != null)
                 return Except.str_exception(failed);
             else {
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 if (too_old)
                     sb.append("   WARNING:  Too Old TANGO Release \n")
                             .append("             To get dependencies !!!\n")
@@ -678,7 +741,10 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
 
         //===========================================================
         public String toString() {
-            return name;
+            String  str = name;
+            if (tooMuchDevices>0)
+                str += "  (Too Much Devices " + tooMuchDevices + ">"+ maxDevices + ")";
+            return str;
         }
         //===========================================================
     }
