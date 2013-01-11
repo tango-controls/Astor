@@ -874,7 +874,6 @@ public class UsersTree extends JTree implements TangoConst {
                     return;
 
                 //  Update the JTree
-                System.out.println("Move " + user + " from " + srcGroup + "  to " + targetGroup);
                 treeModel.removeNodeFromParent(node);
                 groupNode = getGroupNode(targetGroup.getName());
                 if (groupNode==null) {
