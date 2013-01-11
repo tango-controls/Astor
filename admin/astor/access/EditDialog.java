@@ -45,7 +45,6 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 
 //===============================================================
-
 /**
  * Class Description: Basic Dialog Class to display info
  *
@@ -59,73 +58,92 @@ public class EditDialog extends JDialog {
 
     static final int CHECK_ACCESS = 0;
     static final int EDIT_USER = 1;
+    static final int CLONE_USER = 2;
     private int mode = EDIT_USER;
 
     private static String[] titles;
     private static final String[] check_titles = {"User Name", "IP Address", "Device"};
     private static final String[] edit_titles = {"User Name", "Allowed Address", "Device"};
+    private static final String[] clone_titles = {"User Name"};
     static final int USER = 0;
     static final int ADDRESS = 1;
     static final int DEVICE = 2;
 
-    private AccessProxy access_dev;
+    private AccessProxy accessProxy;
     private JTextField[] textFields;
-    private JLabel check_result;
+    private JLabel checkResultLabel;
     private JLabel[] labels;
+    private JComboBox   groupBox;
     //===============================================================
-
     /**
      * Creates new form EditDialog
      *
      * @param parent  JFrame parent instance
      * @param user    default name for users
      * @param address default address
+     * @param groups groups of user list
+     * @param defaultGroup group selection
      */
     //===============================================================
-    public EditDialog(JFrame parent, String user, String address) {
+    public EditDialog(JFrame parent, String user,
+                      String address, ArrayList<UserGroup> groups, UserGroup defaultGroup) {
         super(parent, true);
-        mode = EDIT_USER;
-        titles = edit_titles;
+        mode = (address==null)? CLONE_USER : EDIT_USER;
+        titles = (address==null)? clone_titles : edit_titles;
         initComponents();
         initOwnComponents(titles);
 
-        labels[DEVICE].setVisible(false);
-        textFields[DEVICE].setVisible(false);
-        textFields[USER].setText(user);
-        textFields[USER].setText(user);
-        textFields[ADDRESS].setText(address);
+        //  Add a JComboBox for groups
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        groupBox = new JComboBox();
+        for (UserGroup group : groups) {
+            groupBox.addItem(group);
+        }
+        groupBox.setEditable(true);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        centerPanel.add(groupBox, gbc);
+        gbc.gridx = 0;
+        centerPanel.add(new JLabel("Group:"), gbc);
+        if (defaultGroup!=null)
+            groupBox.setSelectedItem(defaultGroup);
+        else
+            groupBox.setSelectedItem("");
 
-        titleLabel.setText("");
-        pack();
-
-        //	Center dialog
-        Point p = parent.getLocationOnScreen();
-        p.x += ((parent.getWidth() - this.getWidth()) / 2);
-        p.y += ((parent.getHeight() - this.getHeight()) / 2);
-        if (p.y <= 0) p.y = 20;
-        if (p.x <= 0) p.x = 20;
-        this.setLocation(p);
+        //  Customize for edition
+        if (mode!=CLONE_USER) {
+            labels[DEVICE].setVisible(false);
+            textFields[DEVICE].setVisible(false);
+            textFields[USER].setText(user);
+            textFields[ADDRESS].setText(address);
+        }
+        centerDialog(parent);
+        textFields[USER].requestFocus();
     }
     //===============================================================
-
     /**
      * Creates new form EditDialog
      *
      * @param parent     JFrame parent instance
-     * @param access_dev access device parameters
+     * @param accessProxy access device parameters
      */
     //===============================================================
-    public EditDialog(JFrame parent, AccessProxy access_dev) {
+    public EditDialog(JFrame parent, AccessProxy accessProxy) {
         super(parent, true);
         mode = CHECK_ACCESS;
         titles = check_titles;
-        this.access_dev = access_dev;
+        this.accessProxy = accessProxy;
         initComponents();
         initOwnComponents(titles);
+        centerDialog(parent);
+    }
 
-        titleLabel.setText("");
+    //===============================================================
+    //===============================================================
+    private void centerDialog(JFrame parent) {
+
         pack();
-
         //	Center dialog
         Point p = parent.getLocationOnScreen();
         p.x += ((parent.getWidth() - this.getWidth()) / 2);
@@ -134,7 +152,6 @@ public class EditDialog extends JDialog {
         if (p.x <= 0) p.x = 20;
         this.setLocation(p);
     }
-
     //===============================================================
     //===============================================================
     private void initOwnComponents(String[] titles) {
@@ -142,12 +159,13 @@ public class EditDialog extends JDialog {
 
         textFields = new JTextField[titles.length];
         labels = new JLabel[titles.length];
-        for (int i = 0; i < titles.length; i++) {
+        int i;
+        for (i=0; i<titles.length ; i++) {
             labels[i] = new JLabel(titles[i] + ":  ");
             gbc.gridx = 0;
-            gbc.gridy = i;
+            gbc.gridy = i+1;
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            jPanel3.add(labels[i], gbc);
+            centerPanel.add(labels[i], gbc);
 
             textFields[i] = new JTextField();
             textFields[i].setColumns(20);
@@ -157,13 +175,12 @@ public class EditDialog extends JDialog {
                 }
             });
             gbc.gridx = 1;
-            gbc.gridy = i;
+            gbc.gridy = i+1;
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            jPanel3.add(textFields[i], gbc);
+            centerPanel.add(textFields[i], gbc);
         }
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -171,14 +188,13 @@ public class EditDialog extends JDialog {
      * always regenerated by the Form Editor.
      */
     //===============================================================
-    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
+
+        javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         okBtn = new javax.swing.JButton();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        titleLabel = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        centerPanel = new javax.swing.JPanel();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -192,8 +208,7 @@ public class EditDialog extends JDialog {
                 okBtnActionPerformed(evt);
             }
         });
-
-        jPanel1.add(okBtn);
+        bottomPanel.add(okBtn);
 
         cancelBtn.setText("Cancel");
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -201,20 +216,12 @@ public class EditDialog extends JDialog {
                 cancelBtnActionPerformed(evt);
             }
         });
+        bottomPanel.add(cancelBtn);
 
-        jPanel1.add(cancelBtn);
+        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
-        titleLabel.setText("Dialog Title");
-        jPanel2.add(titleLabel);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        jPanel3.setLayout(new java.awt.GridBagLayout());
-
-        getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
+        centerPanel.setLayout(new java.awt.GridBagLayout());
+        getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -223,70 +230,88 @@ public class EditDialog extends JDialog {
     //===============================================================
     private boolean checkInputs() {
         String user = textFields[USER].getText().trim().toLowerCase();
-        String add = textFields[ADDRESS].getText().trim();
-        String dev = textFields[DEVICE].getText().trim().toLowerCase();
-        if (user.length() == 0 || add.length() == 0 || (mode == CHECK_ACCESS && dev.length() == 0)) {
-            admin.astor.tools.Utils.popupError(this, "Please fill all fields !");
-            return false;
-        }
-        //  set after trim
         textFields[USER].setText(user);
-        textFields[DEVICE].setText(dev);
-        textFields[ADDRESS].setText(add);
+        
+        if (mode!=CHECK_ACCESS) {
+            String grpName = groupBox.getSelectedItem().toString();
+            if (grpName.startsWith("All") || grpName.endsWith("Users")) {
+                admin.astor.tools.Utils.popupError(this, "Incoherent group name !");
+                return false;
+            }
+            if (mode==EDIT_USER && grpName.length()==0) {
+                admin.astor.tools.Utils.popupError(this, "Group name ?");
+                return false;
+            }
+        }
+        if (user.length()==0) {
+            admin.astor.tools.Utils.popupError(this, "User name NOT defined !");
+            return false;
+        }
 
-        //	Check if host name as address
-        try {
-            java.net.InetAddress iadd =
-                    java.net.InetAddress.getByName(add);
-
-            //	If found replace by address
-            add = iadd.getHostAddress();
+        if (mode!=CLONE_USER) {
+            String add = textFields[ADDRESS].getText().trim();
+            String dev = textFields[DEVICE].getText().trim().toLowerCase();
+            if (add.length()==0 || (mode==CHECK_ACCESS && dev.length()==0) ) {
+                admin.astor.tools.Utils.popupError(this, "Please fill all fields !");
+                return false;
+            }
+            //  set after trim
+            textFields[DEVICE].setText(dev);
             textFields[ADDRESS].setText(add);
-        } catch (Exception e) { /* */ }
-
-        //  Check dev name
-        ArrayList<String> v = new ArrayList<String>();
-        if (mode == CHECK_ACCESS) {
-            //	Try to split with '.' separator
-            StringTokenizer stk = new StringTokenizer(dev, "/");
-            while (stk.hasMoreTokens())
-                v.add(stk.nextToken());
-            if (v.size() > 3) {
-                admin.astor.tools.Utils.popupError(this, "Incorrect device name  (too many members)");
-                return false;
-            }
-            if (v.size() < 3) {
-                admin.astor.tools.Utils.popupError(this, "Incorrect device name  (not enough members)");
-                return false;
-            }
-        }
-        //  check IP add name
-        StringTokenizer stk1 = new StringTokenizer(add, ".");
-        v.clear();
-        while (stk1.hasMoreTokens())
-            v.add(stk1.nextToken());
-        if (v.size() > 4) {
-            admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (Too many members)");
-            return false;
-        } else if (v.size() < 4) {
-            admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (not enougth members)");
-            return false;
-        }
-        //	rebuild add string to be sure that there is no too much '.'
-        //		like xxx.xxx....xx....xx
-        add = v.get(0) + "." + v.get(1) + "." + v.get(2) + "." + v.get(3);
-        textFields[ADDRESS].setText(add);
-
-        for (int i = 0; i < v.size(); i++) {
-            //  Check if numbers
+            //	Check if host name as address
             try {
-                Short.parseShort(v.get(i));
-            } catch (NumberFormatException e) {
-                //  Or if wildcard
-                if (!v.get(i).equals("*")) {
-                    admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (member #" +
-                            (i + 1) + " (" + v.get(i) + ") is not a number)");
+                java.net.InetAddress iadd =
+                        java.net.InetAddress.getByName(add);
+
+                //	If found replace by address
+                add = iadd.getHostAddress();
+                textFields[ADDRESS].setText(add);
+            } catch (Exception e) { /* */ }
+
+            //  Check dev name
+            ArrayList<String> v = new ArrayList<String>();
+            if (mode == CHECK_ACCESS) {
+                //	Try to split with '.' separator
+                StringTokenizer stk = new StringTokenizer(dev, "/");
+                while (stk.hasMoreTokens())
+                    v.add(stk.nextToken());
+                if (v.size() > 3) {
+                    admin.astor.tools.Utils.popupError(this, "Incorrect device name  (too many members)");
                     return false;
+                }
+                if (v.size() < 3) {
+                    admin.astor.tools.Utils.popupError(this, "Incorrect device name  (not enough members)");
+                    return false;
+                }
+            }
+            //  check IP add name
+            StringTokenizer stk1 = new StringTokenizer(add, ".");
+            v.clear();
+            while (stk1.hasMoreTokens())
+                v.add(stk1.nextToken());
+            if (v.size() > 4) {
+                admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (Too many members)");
+                return false;
+            } else if (v.size() < 4) {
+                admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (not enougth members)");
+                return false;
+            }
+            //	rebuild add string to be sure that there is no too much '.'
+            //		like xxx.xxx....xx....xx
+            add = v.get(0) + "." + v.get(1) + "." + v.get(2) + "." + v.get(3);
+            textFields[ADDRESS].setText(add);
+
+            for (int i = 0; i < v.size(); i++) {
+                //  Check if numbers
+                try {
+                    Short.parseShort(v.get(i));
+                } catch (NumberFormatException e) {
+                    //  Or if wildcard
+                    if (!v.get(i).equals("*")) {
+                        admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (member #" +
+                                (i + 1) + " (" + v.get(i) + ") is not a number)");
+                        return false;
+                    }
                 }
             }
         }
@@ -298,12 +323,12 @@ public class EditDialog extends JDialog {
     private void checkAccess() {
         try {
             //  Check security
-            String result = access_dev.getAccess(getInputs());
-            check_result.setText(result);
+            String result = accessProxy.getAccess(getInputs());
+            checkResultLabel.setText(result);
             if (result.equals("read"))
-                check_result.setIcon(UsersTree.read_icon);
+                checkResultLabel.setIcon(UsersTree.read_icon);
             else
-                check_result.setIcon(UsersTree.write_icon);
+                checkResultLabel.setIcon(UsersTree.write_icon);
         } catch (DevFailed e) {
             fr.esrf.tangoatk.widget.util.ErrorPane.showErrorMessage(this, "Cannot check TANGO Access", e);
         }
@@ -324,6 +349,7 @@ public class EditDialog extends JDialog {
             case 10:
                 switch (mode) {
                     case EDIT_USER:
+                    case CLONE_USER:
                         //  Equivalent to okBtn
                         if (checkInputs()) {
                             retVal = JOptionPane.OK_OPTION;
@@ -338,8 +364,8 @@ public class EditDialog extends JDialog {
                 break;
             default:
                 if (mode == CHECK_ACCESS) {
-                    check_result.setText("...");
-                    check_result.setIcon(null);
+                    checkResultLabel.setText("...");
+                    checkResultLabel.setIcon(null);
                 }
         }
     }
@@ -351,10 +377,10 @@ public class EditDialog extends JDialog {
         if (checkInputs()) {
             retVal = JOptionPane.OK_OPTION;
             //  do not close if test mode
-            if (mode == EDIT_USER)
-                doClose();
-            else
+            if (mode == CHECK_ACCESS)
                 checkAccess();
+            else
+                doClose();
         }
     }//GEN-LAST:event_okBtnActionPerformed
 
@@ -393,7 +419,20 @@ public class EditDialog extends JDialog {
             val[i] = textFields[i].getText().trim();
         return val;
     }
-
+    //===============================================================
+    //===============================================================
+    public UserGroup getUserGroup() {
+        Object  object = groupBox.getSelectedItem();
+        if (object instanceof UserGroup) {
+            return (UserGroup) object;
+        }
+        else {
+            String  name = object.toString();
+            if (name.length()==0)
+                return null;
+            return new UserGroup(name);
+        }
+    }
     //===============================================================
     //===============================================================
     public int showDialog() {
@@ -405,11 +444,11 @@ public class EditDialog extends JDialog {
 
                 //  Add a button to display check result
                 GridBagConstraints gbc = new GridBagConstraints();
-                check_result = new JLabel("...");
+                checkResultLabel = new JLabel("...");
                 gbc.gridx = 1;
-                gbc.gridy = titles.length;
+                gbc.gridy = titles.length+1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                jPanel3.add(check_result, gbc);
+                centerPanel.add(checkResultLabel, gbc);
                 pack();
             } catch (UnknownHostException e) {
                 admin.astor.tools.Utils.popupError(this, null, e);
@@ -422,12 +461,8 @@ public class EditDialog extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelBtn;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel centerPanel;
     private javax.swing.JButton okBtn;
-    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 

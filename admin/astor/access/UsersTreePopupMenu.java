@@ -49,7 +49,8 @@ public class UsersTreePopupMenu extends JPopupMenu {
     static private final int EDIT = 4;
     static private final int CLONE = 5;
     static private final int REMOVE = 6;
-    static private final int TOGGLE_RIGHTS = 7;
+    static private final int CHANGE_GROUP = 7;
+    static private final int TOGGLE_RIGHTS = 8;
 
     static private String[] menuLabels = {
             "Add User",
@@ -59,6 +60,7 @@ public class UsersTreePopupMenu extends JPopupMenu {
             "Edit",
             "Clone",
             "Remove",
+            "Change Group",
             "Toggle rights",
     };
 
@@ -75,7 +77,6 @@ public class UsersTreePopupMenu extends JPopupMenu {
         buildBtnPopupMenu();
     }
     //===============================================================
-
     /**
      * Create a Popup menu for host control
      */
@@ -101,7 +102,6 @@ public class UsersTreePopupMenu extends JPopupMenu {
         }
     }
     //======================================================
-
     /**
      * Show menu on root
      *
@@ -150,6 +150,7 @@ public class UsersTreePopupMenu extends JPopupMenu {
                 getComponent(OFFSET + CLONE).setVisible(true);
                 if (!obj.toString().equals("All Users"))
                     getComponent(OFFSET + REMOVE).setVisible(true);
+                    getComponent(OFFSET + CHANGE_GROUP).setVisible(true);
                 break;
             case UsersTree.COLLECTION:
                 getComponent(OFFSET + ADD_ITEM).setVisible(true);
@@ -208,6 +209,9 @@ public class UsersTreePopupMenu extends JPopupMenu {
                 break;
             case REMOVE:
                 parent.removeItem();
+                break;
+            case CHANGE_GROUP:
+                parent.changeGroup();
                 break;
             case TOGGLE_RIGHTS:
                 parent.toggleRight();

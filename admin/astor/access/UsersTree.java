@@ -46,8 +46,10 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.StringTokenizer;
 
 
 public class UsersTree extends JTree implements TangoConst {
@@ -64,6 +66,7 @@ public class UsersTree extends JTree implements TangoConst {
 
     static ImageIcon tango_icon;
     static ImageIcon all_users_icon;
+    static ImageIcon group_icon;
     static ImageIcon user_icon;
     static ImageIcon add_icon;
     static ImageIcon dev_icon;
@@ -76,17 +79,20 @@ public class UsersTree extends JTree implements TangoConst {
     private UsersTreePopupMenu menu;
     private JFrame parent;
 
-    private AccessProxy access_dev;
+    private AccessProxy accessProxy;
     CopiedAddresses copied_addresses = new CopiedAddresses();
     CopiedDevices copied_devices = new CopiedDevices();
     private static final Color background = admin.astor.AstorTree.background;
 
+
+
+    private ArrayList<UserGroup>  groups = new ArrayList<UserGroup>();
     //===============================================================
     //===============================================================
-    public UsersTree(JFrame parent, AccessProxy access_dev) throws DevFailed {
+    public UsersTree(JFrame parent, AccessProxy access_proxy) throws DevFailed {
         super();
         this.parent = parent;
-        this.access_dev = access_dev;
+        this.accessProxy = access_proxy;
         setBackground(background);
         buildTree();
         menu = new UsersTreePopupMenu(this);
@@ -126,7 +132,7 @@ public class UsersTree extends JTree implements TangoConst {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                expandedPerfomed(e);
+                expandedPerformed(e);
             }
         });
         //	Add Action listener
@@ -137,7 +143,6 @@ public class UsersTree extends JTree implements TangoConst {
         });
     }
     //======================================================
-
     /**
      * Manage event on clicked mouse on JTree object.
      *
@@ -145,7 +150,7 @@ public class UsersTree extends JTree implements TangoConst {
      */
     //======================================================
     private void treeMouseClicked(java.awt.event.MouseEvent evt) {
-        if (access_dev.getAccessControl() == TangoConst.ACCESS_READ)
+        if (accessProxy.getAccessControl() == TangoConst.ACCESS_READ)
             return;
 
         //	Set selection at mouse position
@@ -164,7 +169,9 @@ public class UsersTree extends JTree implements TangoConst {
                 editItem();
         } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             if (node == root)
-                menu.showMenu(evt, (String) o);
+                menu.showMenu(evt, o.toString());
+            else if (o instanceof UserGroup)
+                menu.showMenu(evt, o.toString());
             else if (o instanceof AccessAddress)
                 menu.showMenu(evt, ADDRESS, o);
             else if (o instanceof AccessDevice)
@@ -178,7 +185,7 @@ public class UsersTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    public void expandedPerfomed(TreeExpansionEvent evt) {
+    public void expandedPerformed(TreeExpansionEvent evt) {
         if (!manage_expand)
             return;
         //	Get path
@@ -191,17 +198,14 @@ public class UsersTree extends JTree implements TangoConst {
         DefaultMutableTreeNode node =
                 (DefaultMutableTreeNode) tp.getPathComponent(path.length - 1);
 
-        switch (path.length) {
-            case 2:
-                expendUserNode(node.toString());
-                break;
-
-            case 3:
-                if (node.toString().equals(collecStr[ADDRESS]))
-                    createAddressNodes(node);
-                else
-                    createDeviceNodes(node);
-                break;
+        if (node.getUserObject() instanceof AccessUser)
+            expendUserNode(node.toString());
+        else {
+            if (node.toString().equals(collecStr[ADDRESS]))
+                createAddressNodes(node);
+            else
+            if (node.toString().equals(collecStr[DEVICE]))
+                createDeviceNodes(node);
         }
     }
 
@@ -256,33 +260,71 @@ public class UsersTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    private void createUserNode(String name) {
-        DefaultMutableTreeNode u_node;
-        DefaultMutableTreeNode a_node;
-        DefaultMutableTreeNode d_node;
+    private void createUserNode(String name, DefaultMutableTreeNode groupNode) {
+        DefaultMutableTreeNode userNode;
+        DefaultMutableTreeNode addrNode;
+        DefaultMutableTreeNode dummyNode;
 
-        u_node = new DefaultMutableTreeNode(new AccessUser(name));
-        a_node = new DefaultMutableTreeNode(collecStr[ADDRESS]);
-        d_node = new DefaultMutableTreeNode(collecStr[DEVICE]);
-        a_node.add(new DefaultMutableTreeNode(new Dummy()));
-        d_node.add(new DefaultMutableTreeNode(new Dummy()));
-        u_node.add(a_node);
-        u_node.add(d_node);
-        root.add(u_node);
+        userNode = new DefaultMutableTreeNode(new AccessUser(name));
+        addrNode = new DefaultMutableTreeNode(collecStr[ADDRESS]);
+        dummyNode = new DefaultMutableTreeNode(collecStr[DEVICE]);
+        addrNode.add(new DefaultMutableTreeNode(new Dummy()));
+        dummyNode.add(new DefaultMutableTreeNode(new Dummy()));
+        userNode.add(addrNode);
+        userNode.add(dummyNode);
+        if (groupNode==null)
+            root.add(userNode);
+        else
+            groupNode.add(userNode);
     }
 
     //===============================================================
     //===============================================================
     private void createUserNodes() throws DevFailed {
-        String[] users = access_dev.getUsers();
+        String[] users = accessProxy.getUsers();
+        buildGroups(users);
         int ratio = 80 / users.length;
-        for (String user : users) {
-            AstorUtil.increaseSplashProgress(
-                    ratio, "building tree for " + user);
-            createUserNode(user);
+
+        //  Do the first one ("*")
+        createUserNode(users[0], null);
+        //  Do groups
+        for (UserGroup group : groups) {
+            DefaultMutableTreeNode  groupNode = new DefaultMutableTreeNode(group);
+            for (String user : group) {
+                AstorUtil.increaseSplashProgress(
+                        ratio, "building tree for " + user);
+                createUserNode(user, groupNode);
+            }
+            root.add(groupNode);
         }
     }
+    //===============================================================
+    //===============================================================
+    private void buildGroups(String[] users) {
+        //  Get defined group/users from DB
+        groups = UserGroup.getUserGroupsFromDatabase(users);
 
+        //  Build a dummy group for non defined users
+        UserGroup   unsorted = new UserGroup(UserGroup.unsorted);
+        for (String user : users) {
+            boolean found = false;
+            if (!user.equals("*")) {
+                for (UserGroup group : groups) {
+                    for (String member : group) {
+                        if (user.equals(member)) {
+                            found = true;
+                        }
+                    }
+                }
+                if (!found)
+                    unsorted.add(user);
+            }
+        }
+        if (unsorted.size()>0) {
+            unsorted.sortMembers();
+            groups.add(unsorted);
+        }
+    }
     //===============================================================
     //===============================================================
     private boolean createChildNodes(DefaultMutableTreeNode node, AccessAddress[] address) {
@@ -309,7 +351,7 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private AccessDevice[] getDevices(String user) throws DevFailed {
-        String[] result = access_dev.getDevicesByUser(user);
+        String[] result = accessProxy.getDevicesByUser(user);
 
         AccessDevice[] ret = new AccessDevice[result.length / 2];
         for (int i = 0; i < result.length / 2; i++)
@@ -320,7 +362,7 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private AccessAddress[] getAddresses(String user) throws DevFailed {
-        String[] result = access_dev.getAddressesByUser(user);
+        String[] result = accessProxy.getAddressesByUser(user);
 
         AccessAddress[] ret = new AccessAddress[result.length];
         for (int i = 0; i < result.length; i++)
@@ -380,36 +422,60 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     void addUser() {
-        String user = "";
+        String userName = "";
         String address = "";
         String devname = "*/*/*";
 
+        //  Get default group if any
+        Object  obj = getSelectedObject();
+        UserGroup   userGroup = null;
+        if (obj instanceof UserGroup)
+               userGroup = (UserGroup) obj;
+
+        //  Display dialog to get user and address
         boolean ok = false;
         while (!ok) {
-            EditDialog dlg = new EditDialog(parent, user, address);
+            EditDialog dlg = new EditDialog(parent, userName, address, groups, userGroup);
             if (dlg.showDialog() != JOptionPane.OK_OPTION)
                 return;
 
-            String[] str = dlg.getInputs();
-            user = str[EditDialog.USER];
-            address = str[EditDialog.ADDRESS];
-            ok = checkUserName(user);
+            userGroup = dlg.getUserGroup();
+            if (userGroup!=null) {
+                String[] str = dlg.getInputs();
+
+                userName = str[EditDialog.USER];
+                address = str[EditDialog.ADDRESS];
+                ok = checkUserName(userName);
+            }
         }
 
         //  If does not already exist, create it
         try {
-            access_dev.addAddress(user, address);
-            access_dev.addDevice(user, devname, rightsStr[WRITE]);
+            accessProxy.addAddress(userName, address);
+            accessProxy.addDevice(userName, devname, rightsStr[WRITE]);
         } catch (DevFailed e) {
-            ErrorPane.showErrorMessage(parent,
-                    "Error during Database access", e);
+            ErrorPane.showErrorMessage(parent, null, e);
             return;
         }
 
-        TreeNode[] path = new TreeNode[4];
+        //  Get the group node
+        DefaultMutableTreeNode groupNode = getGroupNode(userGroup.getName());
+        if (groupNode==null) {
+            //  It is a new group
+            groups.add(userGroup);
+            Collections.sort(groups, new GroupComparator());
+            groupNode = new DefaultMutableTreeNode(userGroup);
+            treeModel.insertNodeInto(groupNode, root, root.getChildCount());
+        }
+        userGroup.add(userName);
 
+
+        //  Update group list and put in DB
+        UserGroup.setUserGroupsToDatabase(this, groups);
+
+        //  Build nodes
         DefaultMutableTreeNode new_user_node =
-                new DefaultMutableTreeNode(new AccessUser(user));
+                new DefaultMutableTreeNode(new AccessUser(userName));
         DefaultMutableTreeNode new_str_add_node =
                 new DefaultMutableTreeNode(collecStr[ADDRESS]);
         DefaultMutableTreeNode new_str_dev_node =
@@ -419,26 +485,40 @@ public class UsersTree extends JTree implements TangoConst {
         DefaultMutableTreeNode new_dev_node =
                 new DefaultMutableTreeNode(new AccessDevice(devname, WRITE));
 
-        treeModel.insertNodeInto(new_user_node, root, root.getChildCount());
+        //  And insert in tree
+        treeModel.insertNodeInto(new_user_node, groupNode, groupNode.getChildCount());
         treeModel.insertNodeInto(new_str_add_node, new_user_node, 0);
         treeModel.insertNodeInto(new_str_dev_node, new_user_node, 1);
         treeModel.insertNodeInto(new_add_node, new_str_add_node, 0);
         treeModel.insertNodeInto(new_dev_node, new_str_dev_node, 0);
 
+        //  Expend to show new user
+        TreeNode[] path = new TreeNode[5];
         path[0] = root;
-        path[1] = new_user_node;
-        path[2] = new_str_add_node;
-        path[3] = new_add_node;
+        path[1] = groupNode;
+        path[2] = new_user_node;
+        path[3] = new_str_add_node;
+        path[4] = new_add_node;
         TreePath tp = new TreePath(path);
         setSelectionPath(tp);
 
-        path[2] = new_str_dev_node;
-        path[3] = new_dev_node;
+        path[3] = new_str_dev_node;
+        path[4] = new_dev_node;
         tp = new TreePath(path);
         setSelectionPath(tp);
         scrollPathToVisible(tp);
     }
 
+    //===============================================================
+    //===============================================================
+    private DefaultMutableTreeNode getGroupNode(String groupName) {
+        
+        for (int i=0 ; i<root.getChildCount() ; i++) {
+            if (root.getChildAt(i).toString().equals(groupName))
+                return (DefaultMutableTreeNode) root.getChildAt(i);
+        }
+        return null;
+    }
     //===============================================================
     //===============================================================
     private boolean manage_expand = true;
@@ -533,15 +613,15 @@ public class UsersTree extends JTree implements TangoConst {
                 switch (obj_type) {
                     case ADDRESS:
                         AccessAddress add = (AccessAddress) o;
-                        access_dev.removeAddress(user, add.name);
-                        access_dev.addAddress(user, new_name);
+                        accessProxy.removeAddress(user, add.name);
+                        accessProxy.addAddress(user, new_name);
                         add.setName(new_name);
                         rebuildNode(node, add);
                         break;
                     case DEVICE:
                         AccessDevice dev = (AccessDevice) o;
-                        access_dev.removeDevice(user, dev.name, rightsStr[dev.right]);
-                        access_dev.addDevice(user, new_name, rightsStr[dev.right]);
+                        accessProxy.removeDevice(user, dev.name, rightsStr[dev.right]);
+                        accessProxy.addDevice(user, new_name, rightsStr[dev.right]);
                         dev.name = new_name;
                         rebuildNode(node, dev);
                         break;
@@ -642,17 +722,33 @@ public class UsersTree extends JTree implements TangoConst {
             switch (obj_type) {
                 case ADDRESS:
                     AccessAddress add = (AccessAddress) o;
-                    access_dev.removeAddress(user, add.name);
+                    accessProxy.removeAddress(user, add.name);
+                    treeModel.removeNodeFromParent(node);
                     break;
                 case DEVICE:
                     AccessDevice dev = (AccessDevice) o;
-                    access_dev.removeDevice(user, dev.name, rightsStr[dev.right]);
+                    accessProxy.removeDevice(user, dev.name, rightsStr[dev.right]);
+                    treeModel.removeNodeFromParent(node);
                     break;
                 case USER_NODE:
-                    access_dev.removeUser(user);
+                    accessProxy.removeUser(user);
+                    DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode) node.getParent();
+                    for (UserGroup userGroup : groups) {
+                        if (userGroup.getName().equals(groupNode.toString())) {
+                            userGroup.remove(user);
+                            if (userGroup.isEmpty()) {
+                                groups.remove(userGroup);
+                                treeModel.removeNodeFromParent(groupNode);
+                            }
+                            else
+                                treeModel.removeNodeFromParent(node);
+                            //  Update db
+                            UserGroup.setUserGroupsToDatabase(this, groups);
+                            return;
+                        }
+                    }
                     break;
             }
-            treeModel.removeNodeFromParent(node);
 
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent,
@@ -663,13 +759,16 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String[] getDefinedUsers() {
-        ArrayList<String> v = new ArrayList<String>();
-        for (int i = 0; i < root.getChildCount(); i++)
-            v.add(root.getChildAt(i).toString());
+        ArrayList<String> userList = new ArrayList<String>();
+        for (UserGroup group : groups) {
+            for (String member : group) {
+                userList.add(member);
+            }
+        }
 
-        String[] str = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            str[i] = v.get(i);
+        String[] str = new String[userList.size()];
+        for (int i = 0; i < userList.size(); i++)
+            str[i] = userList.get(i);
         return str;
     }
 
@@ -677,46 +776,63 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     private void expendUserNode(String name) {
         //  If  already exist, show it
-        DefaultMutableTreeNode user_node = getUserNode(name);
-        DefaultMutableTreeNode collec_node;
-        TreePath tp;
+        DefaultMutableTreeNode userNode = getUserNode(name);
+        int depth = userNode.getPath().length;
+
         //  expand address nodes
-        TreeNode[] path = new TreeNode[4];
-        path[0] = root;
-        path[1] = user_node;
-        collec_node = (DefaultMutableTreeNode) user_node.getChildAt(ADDRESS);
-        if (collec_node.getChildCount() > 0) {
-            path[2] = collec_node;
-            path[3] = collec_node.getChildAt(0);
-            tp = new TreePath(path);
+        TreeNode[] path = new TreeNode[depth+2];
+        int idx = 0;
+        path[idx++] = root;
+        if (depth>2)
+            path[idx++] = userNode.getParent();
+        path[idx++] = userNode;
+
+        DefaultMutableTreeNode  addressNode = (DefaultMutableTreeNode) userNode.getChildAt(ADDRESS);
+        if (addressNode.getChildCount() > 0) {
+            path[idx] = addressNode;
+            path[idx+1]   = addressNode.getChildAt(0);
+            TreePath tp = new TreePath(path);
             setSelectionPath(tp);
         }
         //  expand device nodes if exists
-        collec_node = (DefaultMutableTreeNode) user_node.getChildAt(DEVICE);
-        if (collec_node.getChildCount() > 0) {
-            path[2] = collec_node;
-            path[3] = collec_node.getChildAt(0);
-            tp = new TreePath(path);
+        DefaultMutableTreeNode deviceNode = (DefaultMutableTreeNode) userNode.getChildAt(DEVICE);
+        if (addressNode.getChildCount() > 0) {
+            path[idx] = deviceNode;
+            path[idx+1] = deviceNode.getChildAt(0);
+            TreePath tp = new TreePath(path);
             setSelectionPath(tp);
         }
 
         //  Select user node.
-        path = new TreeNode[2];
-        path[0] = root;
-        path[1] = user_node;
-        tp = new TreePath(path);
+        path = new TreeNode[depth];
+        idx = 0;
+        path[idx++] = root;
+        if (depth>2)
+            path[idx++] = userNode.getParent();
+        path[idx] = userNode;
+        TreePath tp = new TreePath(path);
         setSelectionPath(tp);
     }
 
     //===============================================================
     //===============================================================
     private DefaultMutableTreeNode getUserNode(String name) {
-        for (int i = 0; i < root.getChildCount(); i++) {
+        for (int i=0 ; i<root.getChildCount() ; i++) {
+            //  Check group node
             DefaultMutableTreeNode node =
                     (DefaultMutableTreeNode) root.getChildAt(i);
-            Object o = node.getUserObject();
-            if (o.toString().equals(name))
+            Object userObject = node.getUserObject();
+            if (userObject.toString().equals(name))
                 return node;
+
+            //  Check user nodes
+            for (int j=0 ; j<node.getChildCount() ; j++) {
+                DefaultMutableTreeNode userNode =
+                        (DefaultMutableTreeNode) node.getChildAt(j);
+                userObject = userNode.getUserObject();
+                if (userObject.toString().equals(name))
+                    return userNode;
+            }
         }
         return new DefaultMutableTreeNode(name);
     }
@@ -732,43 +848,123 @@ public class UsersTree extends JTree implements TangoConst {
     }
 
     //===============================================================
+    //  ToDo
+    //===============================================================
+    void changeGroup() {
+        DefaultMutableTreeNode node = getSelectedNode();
+        if (node == null)
+            return;
+        DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode) node.getParent();
+        UserGroup   srcGroup;
+        Object  object = groupNode.getUserObject();
+        if (object instanceof UserGroup)
+            srcGroup = (UserGroup) object;
+        else
+            return;
+
+        Object o = node.getUserObject();
+        if (o instanceof AccessUser) {
+            String user = ((AccessUser) o).getName();
+            //  Get target group
+            String title = "Move " + user + " from " + srcGroup + "  to ";
+            ChooseGroupDialog   dialog = new ChooseGroupDialog(parent, title, groups);
+            if (dialog.showDialog()!=JOptionPane.CANCEL_OPTION) {
+                UserGroup   targetGroup = dialog.getUserGroup();
+                if (targetGroup==srcGroup)
+                    return;
+
+                //  Update the JTree
+                System.out.println("Move " + user + " from " + srcGroup + "  to " + targetGroup);
+                treeModel.removeNodeFromParent(node);
+                groupNode = getGroupNode(targetGroup.getName());
+                if (groupNode==null) {
+                    groupNode = new DefaultMutableTreeNode(targetGroup);
+                    treeModel.insertNodeInto(groupNode, root, root.getChildCount());
+                    groups.add(targetGroup);
+                }
+                treeModel.insertNodeInto(node, groupNode, groupNode.getChildCount());
+                srcGroup.remove(user);
+                targetGroup.add(user);
+
+                //  Update group list and put in DB
+                UserGroup.setUserGroupsToDatabase(this, groups);
+
+                //  Expend to show new user
+                TreeNode[] path = new TreeNode[3];
+                path[0] = root;
+                path[1] = groupNode;
+                path[2] = node;
+                TreePath tp = new TreePath(path);
+                setSelectionPath(tp);
+
+                tp = new TreePath(path);
+                setSelectionPath(tp);
+                scrollPathToVisible(tp);
+            }
+        }
+    }
+    //===============================================================
     //===============================================================
     void cloneUser() {
         DefaultMutableTreeNode node = getSelectedNode();
         if (node == null)
             return;
+        DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode) node.getParent();
+        UserGroup   userGroup = null;
+        Object  object = groupNode.getUserObject();
+        if (object instanceof UserGroup)
+            userGroup = (UserGroup) object;
+
         Object o = node.getUserObject();
         if (o instanceof AccessUser) {
-            String src_user = ((AccessUser) o).getName();
-            String new_user = "";
+            String srcUser = ((AccessUser) o).getName();
+            String newUser;
+            String[]    inputs = {""};
             boolean ok = false;
             while (!ok) {
                 //	Get new user name and check if already exists.
-                new_user = (String) JOptionPane.showInputDialog(parent,
-                        "New User name  ?",
-                        "Clone " + src_user + "  ?",
-                        JOptionPane.INFORMATION_MESSAGE,
-                        null, null, new_user);
-                ok = checkUserName(new_user);
+                EditDialog dlg = new EditDialog(parent, "", null, groups, userGroup);
+                if (dlg.showDialog() != JOptionPane.OK_OPTION)
+                    return;
+
+                inputs = dlg.getInputs();
+                ok = checkUserName(inputs[0]);
+                userGroup = dlg.getUserGroup();
             }
+            newUser = inputs[0];
+            groupNode = getGroupNode(userGroup.getName());
+            if (groupNode==null) { //   Not already exist
+                groupNode = new DefaultMutableTreeNode(userGroup);
+                treeModel.insertNodeInto(groupNode, root, root.getChildCount());
+                groups.add(userGroup);
+                Collections.sort(groups, new GroupComparator());
+            }
+            
+            //  Update Access proxy
             try {
-                access_dev.cloneUser(src_user, new_user);
+                accessProxy.cloneUser(srcUser, newUser);
             } catch (DevFailed e) {
                 ErrorPane.showErrorMessage(parent,
                         "Error during Database access", e);
                 return;
             }
+            userGroup.add(newUser);
+
+            //  Update JTree
             DefaultMutableTreeNode u_node =
-                    new DefaultMutableTreeNode(new AccessUser(new_user));
+                    new DefaultMutableTreeNode(new AccessUser(newUser));
             DefaultMutableTreeNode a_node = new DefaultMutableTreeNode(collecStr[ADDRESS]);
             DefaultMutableTreeNode d_node = new DefaultMutableTreeNode(collecStr[DEVICE]);
             treeModel.insertNodeInto(a_node, u_node, 0);
             treeModel.insertNodeInto(d_node, u_node, 1);
-            treeModel.insertNodeInto(u_node, root, root.getChildCount());
+            treeModel.insertNodeInto(u_node, groupNode, groupNode.getChildCount());
 
             //  Add dummy nodes
             treeModel.insertNodeInto(new DefaultMutableTreeNode(new Dummy()), a_node, 0);
             treeModel.insertNodeInto(new DefaultMutableTreeNode(new Dummy()), d_node, 0);
+
+            //  update database
+            UserGroup.setUserGroupsToDatabase(this,groups);
 
             //  And expand
             TreeNode[] path = new DefaultMutableTreeNode[3];
@@ -807,14 +1003,14 @@ public class UsersTree extends JTree implements TangoConst {
             switch (obj_type) {
                 case ADDRESS:
                     String address = copied_addresses.addressAt(0).name;
-                    access_dev.addAddress(user, address);
+                    accessProxy.addAddress(user, address);
                     new_node = new DefaultMutableTreeNode(new AccessAddress(address));
                     treeModel.insertNodeInto(new_node, node, node.getChildCount());
                     break;
                 case DEVICE:
                     String devname = copied_devices.deviceAt(0).name;
                     int right = copied_devices.deviceAt(0).right;
-                    access_dev.addDevice(user, devname, rightsStr[right]);
+                    accessProxy.addDevice(user, devname, rightsStr[right]);
                     new_node = new DefaultMutableTreeNode(new AccessDevice(devname, right));
                     treeModel.insertNodeInto(new_node, node, node.getChildCount());
                     break;
@@ -880,8 +1076,8 @@ public class UsersTree extends JTree implements TangoConst {
             else
                 new_right = READ;
 
-            access_dev.removeDevice(user, dev.name, rightsStr[dev.right]);
-            access_dev.addDevice(user, dev.name, rightsStr[new_right]);
+            accessProxy.removeDevice(user, dev.name, rightsStr[dev.right]);
+            accessProxy.addDevice(user, dev.name, rightsStr[new_right]);
             dev.right = new_right;
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent,
@@ -909,9 +1105,16 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     public void findUser(String userName) {
-        for (int i = 0; i < root.getChildCount(); i++) {
+        for (int i=0 ; i<root.getChildCount() ; i++) {
+            findUser(userName, (DefaultMutableTreeNode) root.getChildAt(i));
+        }
+    }
+    //===============================================================
+    //===============================================================
+    public void findUser(String userName, DefaultMutableTreeNode node) {
+        for (int i=0 ; i<node.getChildCount() ; i++) {
             DefaultMutableTreeNode childNode =
-                    (DefaultMutableTreeNode) root.getChildAt(i);
+                    (DefaultMutableTreeNode) node.getChildAt(i);
             Object obj = childNode.getUserObject();
             if (obj instanceof AccessUser) {
                 AccessUser user = (AccessUser) obj;
@@ -978,8 +1181,9 @@ public class UsersTree extends JTree implements TangoConst {
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
             tango_icon = utils.getIcon("network5.gif");
-            all_users_icon = utils.getIcon("user.gif", 1.2);
-            user_icon = utils.getIcon("user.gif", 0.8);
+            all_users_icon = utils.getIcon("user.gif", 1.0);
+            group_icon = utils.getIcon("user.gif", 0.8);
+            user_icon = utils.getIcon("user.gif", 0.6);
             add_icon = utils.getIcon("server.gif");
             dev_icon = utils.getIcon("device.gif");
             write_icon = utils.getIcon("greenbal.gif");
@@ -1020,6 +1224,12 @@ public class UsersTree extends JTree implements TangoConst {
             } else {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) obj;
 
+                if (node.getUserObject() instanceof UserGroup) {
+                    UserGroup group = (UserGroup) node.getUserObject();
+                    setFont(group.getFont());
+                    setIcon(group_icon);
+                }
+                else
                 if (node.getUserObject() instanceof AccessUser) {
                     String user = ((AccessUser) node.getUserObject()).getName();
                     if (user.equals("*")) {
@@ -1054,8 +1264,8 @@ public class UsersTree extends JTree implements TangoConst {
 
     //===============================================================
     /*
-          *	Classes difining structures used in tree
-          */
+     *	Classes defining structures used in tree
+     */
     //===============================================================
     class AccessUser {
         private String name;
@@ -1183,4 +1393,15 @@ public class UsersTree extends JTree implements TangoConst {
         }
     }
 
+    //===============================================================
+    //===============================================================
+    private class GroupComparator implements Comparator<UserGroup> {
+        public int compare(UserGroup group1, UserGroup group2) {
+            if (group1.getName().equals(UserGroup.unsorted))
+                return 1;
+            if (group1.getName().equals(UserGroup.unsorted))
+                return -1;
+            return group1.getName().compareTo(group2.getName());
+        }
+    }
 }

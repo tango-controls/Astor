@@ -47,7 +47,6 @@ import javax.swing.*;
 import java.awt.*;
 
 //=======================================================
-
 /**
  * Class Description: Basic JFrame Class to display info
  *
@@ -55,23 +54,22 @@ import java.awt.*;
  */
 //=======================================================
 public class TangoAccess extends JFrame {
-    String access_devname;
+    String accessDeviceName;
     UsersTree usersTree;
     /**
      * Access proxy instance
      */
-    private AccessProxy access_dev;
+    private AccessProxy accessProxy;
 
     /**
      * Dialog to check access
      */
-    private EditDialog check_dlg = null;
+    private EditDialog checkDialog = null;
 
     private JFrame parent;
 
     static private final Dimension pane_size = new Dimension(350, 500);
     //=======================================================
-
     /**
      * Creates new form TangoAccess
      *
@@ -88,7 +86,7 @@ public class TangoAccess extends JFrame {
             if (test == null)
                 getTangoService();
             else
-                access_devname = test;
+                accessDeviceName = test;
 
             initComponents();
             initOwnComponents();
@@ -100,7 +98,7 @@ public class TangoAccess extends JFrame {
             if (isSuperUser())
                 superUserLabel.setVisible(true);
             else {
-                if (access_dev.getAccessControl() == TangoConst.ACCESS_READ) {
+                if (accessProxy.getAccessControl() == TangoConst.ACCESS_READ) {
                     superUserLabel.setVisible(true);
                     superUserLabel.setText("Read Only Mode !");
                     superUserLabel.setForeground(Color.red);
@@ -153,7 +151,7 @@ public class TangoAccess extends JFrame {
             Except.throw_communication_failed("Service_DoesNotExist",
                     "There is no AccessControl service defined !",
                     "TangoAccess.TangoAccess()");
-        access_devname = services[0];
+        accessDeviceName = services[0];
     }
 
     //===========================================================
@@ -178,8 +176,8 @@ public class TangoAccess extends JFrame {
         principleItem.setAccelerator(KeyStroke.getKeyStroke('P', Event.CTRL_MASK));
 
         //	Check if write allowed
-        access_dev = new AccessProxy(access_devname);
-        if (access_dev.getAccessControl() == TangoConst.ACCESS_READ) {
+        accessProxy = new AccessProxy(accessDeviceName);
+        if (accessProxy.getAccessControl() == TangoConst.ACCESS_READ) {
             checkAccessBtn.setEnabled(false);
             actionMenu.setEnabled(false);
         }
@@ -189,13 +187,13 @@ public class TangoAccess extends JFrame {
         tabbedPane.setTitleAt(1, "Allowed Cmd");
 
         //	Build users_tree to display users rights
-        usersTree = new UsersTree(this, access_dev);
+        usersTree = new UsersTree(this, accessProxy);
         JScrollPane scrowllPane = new JScrollPane();
         scrowllPane.setViewportView(usersTree);
         usersPanel.add(scrowllPane, BorderLayout.CENTER);
 
         //	Build users_tree to display users rights
-        AllowedCmdTree cmd_tree = new AllowedCmdTree(this, access_dev);
+        AllowedCmdTree cmd_tree = new AllowedCmdTree(this, accessProxy);
         scrowllPane = new JScrollPane();
         scrowllPane.setViewportView(cmd_tree);
         cmdClassPanel.add(scrowllPane, BorderLayout.CENTER);
@@ -356,7 +354,7 @@ public class TangoAccess extends JFrame {
     private void registerItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerItemActionPerformed
         try {
             boolean b = (registerItem.getSelectedObjects() != null);
-            access_dev.registerService(b);
+            accessProxy.registerService(b);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this,
                     "Cannot start TangoAccess class", e);
@@ -367,11 +365,11 @@ public class TangoAccess extends JFrame {
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void checkAccessBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkAccessBtnActionPerformed
-        if (check_dlg == null) {
-            check_dlg = new EditDialog(this, access_dev);
-            check_dlg.showDialog();
+        if (checkDialog == null) {
+            checkDialog = new EditDialog(this, accessProxy);
+            checkDialog.showDialog();
         } else
-            check_dlg.setVisible(true);
+            checkDialog.setVisible(true);
     }//GEN-LAST:event_checkAccessBtnActionPerformed
 
     //=======================================================
