@@ -535,20 +535,22 @@ public class UsersTree extends JTree implements TangoConst {
             return;
 
         DefaultMutableTreeNode new_node;
-        TreeNode[] path = new DefaultMutableTreeNode[4];
+        int i = 0;
+        TreeNode[] path = new DefaultMutableTreeNode[5];
         TreePath tp;
-        path[0] = root;
-        path[1] = node.getParent();
-        path[2] = node;
+        path[i++] = root;
+        path[i++] = node.getParent().getParent();   //  Group
+        path[i++] = node.getParent();               //  User
+        path[i++] = node;                           //  Address/Device
 
         //  Expand to see additional node.
         DefaultMutableTreeNode dummy_node = null;
         if (node.getChildCount() > 0)
-            path[3] = node.getChildAt(0);
+            path[i] = node.getChildAt(0);
         else {
             dummy_node = new DefaultMutableTreeNode(new Dummy());
             treeModel.insertNodeInto(dummy_node, node, node.getChildCount());
-            path[3] = dummy_node;
+            path[i] = dummy_node;
             manage_expand = false;
         }
         tp = new TreePath(path);
@@ -560,7 +562,7 @@ public class UsersTree extends JTree implements TangoConst {
                 //	Create a node for devices
                 new_node = new DefaultMutableTreeNode(new AccessAddress("*.*.*.*"));
                 treeModel.insertNodeInto(new_node, node, node.getChildCount());
-                path[3] = new_node;
+                path[i] = new_node;
                 tp = new TreePath(path);
                 setSelectionPath(tp);
                 scrollPathToVisible(tp);
@@ -569,7 +571,7 @@ public class UsersTree extends JTree implements TangoConst {
                 //	Create a node for devices
                 new_node = new DefaultMutableTreeNode(new AccessDevice("*/*/*", WRITE));
                 treeModel.insertNodeInto(new_node, node, node.getChildCount());
-                path[3] = new_node;
+                path[i] = new_node;
                 tp = new TreePath(path);
                 setSelectionPath(tp);
                 scrollPathToVisible(tp);
@@ -848,7 +850,6 @@ public class UsersTree extends JTree implements TangoConst {
     }
 
     //===============================================================
-    //  ToDo
     //===============================================================
     void changeGroup() {
         DefaultMutableTreeNode node = getSelectedNode();
