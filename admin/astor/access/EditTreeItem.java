@@ -229,19 +229,21 @@ public class EditTreeItem extends JDialog {
      * Compute bound rectangle for a node
      *
      * @param tree the tree to compute bonds
-     * @return the computed boundspr
+     * @return the computed bounds
      */
     //===============================================================
     private Rectangle computeBounds(JTree tree) {
         TreePath selPath = tree.getSelectionPath();
         tree.scrollPathToVisible(selPath);
         Rectangle r = tree.getPathBounds(selPath);
-        Point p = r.getLocation();
-        SwingUtilities.convertPointToScreen(p, tree);
-        r.setLocation(p);
-        r.width = 250;
-        r.height += 2;
-        r.x += TXT_OFFSET;
+        if (r!=null) {
+            Point p = r.getLocation();
+            SwingUtilities.convertPointToScreen(p, tree);
+            r.setLocation(p);
+            r.width = 250;
+            r.height += 2;
+            r.x += TXT_OFFSET;
+        }
         return r;
     }
 }
