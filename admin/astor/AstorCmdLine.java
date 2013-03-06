@@ -190,6 +190,12 @@ public class AstorCmdLine {
     //===============================================================
     private void displaySyntax() {
         System.out.println("Syntax:");
+        System.out.println("astor <mode>");
+        System.out.println("mode:");
+        System.out.println("    -rw    : Astor will be in Read/Write mode");
+        System.out.println("    -db_ro : Database will be in Read Only mode");
+        System.out.println("    -ro    : Astor will be in read only mode");
+        System.out.println("\nor");
         System.out.println("astor <action> <-h hostname>");
         System.out.println();
         System.out.println("Actions:");

@@ -61,6 +61,11 @@ public interface AstorDefs {
 
     public static final String  rcFileName = "astorrc";
 
+    public static final int READ_WRITE   = 0;
+    public static final int DB_READ_ONLY = 1;
+    public static final int READ_ONLY    = 2;
+    public static final String[] strMode = { "Read/Write mode", "Database is read only", "Read Only mode"};
+
     public final int do_not_close = 0;
     public final int do_close = -1;
     static final int COLLECTION = 0;
@@ -77,14 +82,8 @@ public interface AstorDefs {
     };
 
     public final int LEVEL_NOT_CTRL = 0;
-    public final int NO_STATE = 0;
-    public final int SERVER_STATES = 1;
-    public final int STARTER_STATE = 2;
-    public final int ALL_STATES = 3;
 
     public final String DocLocationUnknown = "Doc location unknown....";
-    public final String DerfaultDocLocation =
-            "http://www.esrf.fr/tango/tango_doc/index.html";
 
     public final int PollPeriod = 2000;
     //======================================================================

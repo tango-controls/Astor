@@ -103,7 +103,7 @@ public class DeviceTree extends JTree implements AstorDefs {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                //expandedPerfomed(e);
+                //expandedPerformed(e);
             }
         });
         //	Add Action listener

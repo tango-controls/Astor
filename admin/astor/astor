@@ -16,6 +16,8 @@ echo "CLASSPATH=$CLASSPATH"
 
 CMD="java admin.astor.Astor $*"
 
+#CMD="java admin.astor.HostInfoDialog $*"
+
 echo $CMD
 $CMD 
 #2>/dev/null
