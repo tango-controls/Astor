@@ -70,13 +70,23 @@ public class DevPollStatus extends ArrayList<PolledElement> {
             full_name = ATTR_NAME;
         for (String devname : devnames) {
             dev = new DeviceProxy(devname).get_adm_dev();
-            readData(devname, full_name);
+            readData(removeTangoHostIfAny(devname), full_name);
         }
     }
 
     //===============================================================
     //===============================================================
-    private void readData(String devname, boolean full_name) throws DevFailed {
+	private String removeTangoHostIfAny(String deviceName) {
+		String	tangoHeader = "tango://";
+		if (deviceName.startsWith(tangoHeader)) {
+			deviceName = deviceName.substring(tangoHeader.length());
+			deviceName = deviceName.substring(deviceName.indexOf('/')+1);
+		}
+		return deviceName;
+	}
+    //===============================================================
+    //===============================================================
+   private void readData(String devname, boolean full_name) throws DevFailed {
         //long	t0 = System.currentTimeMillis();
         DeviceData argin = new DeviceData();
         argin.insert(devname);

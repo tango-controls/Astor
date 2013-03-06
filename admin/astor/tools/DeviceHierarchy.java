@@ -193,7 +193,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                //expandedPerfomed(e);
+                //expandedPerformed(e);
             }
         });
         //	Add Action listener
@@ -546,6 +546,11 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
                 getComponent(OFFSET + REM_LOGIN).setEnabled(AstorUtil.osIsUnix());
                 getComponent(OFFSET + HOST_PANEL).setEnabled(astor != null);
                 getComponent(OFFSET + TEST_DEVICE).setEnabled(dev.state == all_ok);
+
+                //  Manage for READ_ONLY mode
+                if (Astor.rwMode==AstorDefs.READ_ONLY) {
+                    getComponent(OFFSET + TEST_DEVICE).setVisible(false);
+                }
                 show(tree, evt.getX(), evt.getY());
             }
         }
@@ -576,6 +581,11 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
             }
         }
     }
+    //===============================================================
+    //===============================================================
+
+
+
 
 
     //===============================================================
