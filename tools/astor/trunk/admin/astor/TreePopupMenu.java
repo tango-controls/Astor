@@ -236,6 +236,17 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
 
             boolean can_unexport = (host.state == unknown);
             getComponent(OFFSET + UNEXPORT_STARTER).setVisible(can_unexport);
+
+            //  Manage for READ_ONLY mode
+            if (Astor.rwMode==AstorDefs.READ_ONLY) {
+                getComponent(OFFSET + STARTER_TEST).setVisible(false);
+            }
+            if (Astor.rwMode!=AstorDefs.READ_WRITE) {
+                getComponent(OFFSET + CLONE_HOST).setVisible(false);
+                getComponent(OFFSET + CHANGE_BRANCHE).setVisible(false);
+                getComponent(OFFSET + REMOVE_HOST).setVisible(false);
+                getComponent(OFFSET + EDIT_PROP).setVisible(false);
+            }
         } else
             //	if selection is collection
             if (collec_name != null) {
@@ -262,6 +273,15 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 getComponent(OFFSET + UNEXPORT_STARTER).setVisible(false);
 
                 getComponent(OFFSET + RESET_STAT).setVisible(AstorUtil.getInstance().isSuperTango());
+
+                //  Manage for READ_ONLY mode
+                if (Astor.rwMode==AstorDefs.READ_ONLY) {
+                    getComponent(OFFSET + START_SERVERS).setVisible(false);
+                    getComponent(OFFSET + STOP_SERVERS).setVisible(false);
+                }
+                if (Astor.rwMode!=AstorDefs.READ_WRITE) {
+                    getComponent(OFFSET + CHANGE_NAME).setVisible(false);
+                }
             }
 
         //	Do not do it if Windows

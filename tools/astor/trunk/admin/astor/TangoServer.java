@@ -477,8 +477,8 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 if (prop[2].equals(DocLocationUnknown))
                     sb.append(DocLocationUnknown + "<Br><Br>\n");
                     //{
-                    //	sb.append("<a href=\"" + DerfaultDocLocation + "\">\n	");
-                    //	sb.append(DerfaultDocLocation + "</a>\n<Br><Br>\n");
+                    //	sb.append("<a href=\"" + DefaultDocLocation + "\">\n	");
+                    //	sb.append(DefaultDocLocation + "</a>\n<Br><Br>\n");
                     //}
                 else {
                     sb.append("<a href=\"").append(prop[2]).append("\">\n	");

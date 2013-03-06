@@ -65,7 +65,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "Release 6.1.2  -  Fri Oct 26 15:41:13 CEST 2012";
+            "6.3.0  -  Wed Mar 06 13:19:23 CET 2013";
     /**
      * JTree object to display control system.
      */
@@ -86,10 +86,9 @@ public class Astor extends JFrame implements AstorDefs {
 
     public static DevBrowser dev_browser = null;
     private String tango_host = "";
-
     private MultiServerCommand multiServerCommand = null;
-
     static long t0;
+    public static int rwMode = READ_WRITE;
     //======================================================================
     /**
      * Creates new form Astor
@@ -222,6 +221,8 @@ public class Astor extends JFrame implements AstorDefs {
         String s = System.getProperty("NO_PREF");
         if (s != null && s.toLowerCase().equals("true"))
             ctrlPreferenceBtn.setEnabled(false);
+        ctrlPreferenceBtn.setEnabled(rwMode==READ_WRITE);
+        usePreferenceBtn.setEnabled(rwMode==READ_WRITE);
 
         changeTgHostBtn.setMnemonic('T');
         changeTgHostBtn.setAccelerator(KeyStroke.getKeyStroke('T', Event.CTRL_MASK));
@@ -242,9 +243,13 @@ public class Astor extends JFrame implements AstorDefs {
         multiServersCmdItem.setAccelerator(KeyStroke.getKeyStroke('M', Event.CTRL_MASK));
         jiveMenuItem.setAccelerator(KeyStroke.getKeyStroke('J', Event.CTRL_MASK));
         logviewerMenuItem.setAccelerator(KeyStroke.getKeyStroke('L', Event.CTRL_MASK));
+        multiServersCmdItem.setEnabled(rwMode==READ_WRITE);
+        jiveMenuItem.setEnabled(rwMode!=READ_ONLY);
+        accessControlBtn.setEnabled(rwMode!=READ_ONLY);
 
         //	Command menu
         cmdMenu.setMnemonic('C');
+        cmdMenu.setEnabled(rwMode!=READ_ONLY);
 
         newHostBtn.setAccelerator(KeyStroke.getKeyStroke('H', Event.CTRL_MASK));
 
@@ -253,6 +258,9 @@ public class Astor extends JFrame implements AstorDefs {
         buildAdditionnalHelps();
 
         expandBtn.setVisible(false);
+
+        modeLabel.setText(strMode[rwMode]);
+        bottomPanel.setVisible(rwMode!=READ_WRITE);
     }
 
 
@@ -359,11 +367,13 @@ public class Astor extends JFrame implements AstorDefs {
 
         topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
+        bottomPanel = new javax.swing.JPanel();
+        modeLabel = new javax.swing.JLabel();
         javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         changeTgHostBtn = new javax.swing.JMenuItem();
         ctrlPreferenceBtn = new javax.swing.JMenuItem();
-        javax.swing.JMenuItem usePreferenceBtn = new javax.swing.JMenuItem();
+        usePreferenceBtn = new javax.swing.JMenuItem();
         exitBtn = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         deviceBrowserBtn = new javax.swing.JMenuItem();
@@ -406,6 +416,11 @@ public class Astor extends JFrame implements AstorDefs {
         topPanel.add(titleLabel);
 
         getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
+
+        modeLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        bottomPanel.add(modeLabel);
+
+        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText("File");
 
@@ -744,8 +759,16 @@ public class Astor extends JFrame implements AstorDefs {
             if (tango_host.equals(newTangoHost))
                 return;
 
-            String classpath = System.getenv("CLASSPATH");
-            String  cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor";
+            //  Set the rw mode for new astor
+            String rights;
+            if (rwMode==READ_WRITE)
+                rights = "-rw";
+            else
+            if (rwMode==DB_READ_ONLY)
+                rights = "-db_ro";
+            else
+                rights = "-ro";
+            String  cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
             AstorUtil.executeShellCmdAndReturn(cmd);
         } catch (Exception e) {
             ErrorPane.showErrorMessage(this,
@@ -1193,6 +1216,7 @@ public class Astor extends JFrame implements AstorDefs {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutBtn;
     private javax.swing.JMenuItem accessControlBtn;
+    private javax.swing.JPanel bottomPanel;
     private javax.swing.JMenuItem changeTgHostBtn;
     private javax.swing.JMenu cmdMenu;
     private javax.swing.JMenuItem ctrlPreferenceBtn;
@@ -1204,6 +1228,7 @@ public class Astor extends JFrame implements AstorDefs {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem jiveMenuItem;
     private javax.swing.JMenuItem logviewerMenuItem;
+    private javax.swing.JLabel modeLabel;
     private javax.swing.JMenuItem multiServersCmdItem;
     private javax.swing.JMenuItem newBranchBtn;
     private javax.swing.JMenuItem newHostBtn;
@@ -1216,6 +1241,7 @@ public class Astor extends JFrame implements AstorDefs {
     private javax.swing.JLabel titleLabel;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JMenuItem usePreferenceBtn;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     //======================================================================
@@ -1229,15 +1255,31 @@ public class Astor extends JFrame implements AstorDefs {
 
         //	Check if line command
         if (args.length > 0) {
-            try {
-                new AstorCmdLine(args);
-            } catch (DevFailed e) {
-                Except.print_exception(e);
-            } catch (Exception e) {
-                System.out.println(e);
-                e.printStackTrace();
+            if (args[0].equals("-ro")) {
+                System.out.println("Astor is in READ_ONLY mode !!!");
+                rwMode = READ_ONLY;
             }
-            System.exit(0);
+            else
+            if (args[0].equals("-db_ro")) {
+                System.out.println("Astor is in DB_READ_ONLY mode !!!");
+                rwMode = DB_READ_ONLY;
+            }
+            else
+            if (args[0].equals("-rw")) {
+                System.out.println("Astor is in READ_WRITE mode !!!");
+                rwMode = READ_WRITE;
+            }
+            else {
+                try {
+                    new AstorCmdLine(args);
+                } catch (DevFailed e) {
+                    Except.print_exception(e);
+                } catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
+                System.exit(0);
+            }
         }
         //	Else start application
 
@@ -1265,6 +1307,11 @@ public class Astor extends JFrame implements AstorDefs {
         long t1 = System.currentTimeMillis();
         System.out.println("Build  GUI :" + (t1 - t0) + " ms");
     }
+    //===============================================================
+    //===============================================================
+
+
+
 
 
     //===============================================================

@@ -228,6 +228,18 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 
         getComponent(CONFIGURE_JIVE + OFFSET).setEnabled(true);
 
+        //  Manage for READ_ONLY mode
+        if (Astor.rwMode==AstorDefs.READ_ONLY) {
+            getComponent(OFFSET + START_STOP).setVisible(false);
+            getComponent(OFFSET + RESTART).setVisible(false);
+            getComponent(OFFSET + STARTUP_LEVEL).setVisible(false);
+            getComponent(OFFSET + POLLING_MANAGER).setVisible(false);
+            getComponent(OFFSET + POOL_THREAD_MAN).setVisible(false);
+            getComponent(OFFSET + TEST_DEVICE).setVisible(false);
+        }
+        if (Astor.rwMode!=AstorDefs.READ_WRITE) {
+            getComponent(OFFSET + CONFIGURE_WIZARD).setVisible(false);
+        }
         //	Get position and display Popup menu
         location = tree.getLocationOnScreen();
         location.x += evt.getX();
@@ -253,6 +265,13 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 
         getComponent(SERVER_LEVELS + OFFSET).setVisible(false);
 
+        //  Manage for READ_ONLY mode
+        if (Astor.rwMode==AstorDefs.READ_ONLY) {
+            getComponent(OFFSET + START).setVisible(false);
+            getComponent(OFFSET + STOP).setVisible(false);
+            getComponent(OFFSET + CHANGE_LEVEL).setVisible(false);
+        }
+
         //	Get position and display Popup menu
         location = tree.getLocationOnScreen();
         location.x += evt.getX();
@@ -266,8 +285,11 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
       */
     //======================================================
     public void showMenu(MouseEvent evt) {
-        JLabel lbl = (JLabel) evt.getSource();
+        if (Astor.rwMode==AstorDefs.READ_ONLY) {
+            return;
+        }
 
+        JLabel lbl = (JLabel) evt.getSource();
         boolean running = (host.notifydState == all_ok);
         getComponent(START + OFFSET).setEnabled(!running);
 

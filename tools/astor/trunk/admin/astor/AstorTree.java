@@ -39,8 +39,6 @@ import admin.astor.statistics.ResetStatistics;
 import admin.astor.tools.PopupText;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.ApiUtil;
-import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoApi.IORdump;
 import fr.esrf.TangoDs.Except;
@@ -57,8 +55,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 
 public class AstorTree extends JTree implements AstorDefs {
@@ -342,7 +340,7 @@ public class AstorTree extends JTree implements AstorDefs {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                //expandedPerfomed(e);
+                //expandedPerformed(e);
             }
         });
         //	Add Action listener
@@ -765,6 +763,8 @@ public class AstorTree extends JTree implements AstorDefs {
         } else {
             boolean from_shell = false;
             boolean read_only = AstorUtil.getInstance().jiveIsReadOnly();
+            if (Astor.rwMode!=AstorDefs.READ_WRITE)
+                read_only = true;
 
             //	Check if it has changed
             //	or not already Started
@@ -1348,6 +1348,7 @@ public class AstorTree extends JTree implements AstorDefs {
             JLabel lbl = (JLabel) getComponent(0);
             lbl.setText(obj.toString() + "  :");
             show(tree, evt.getX(), evt.getY());
+            getComponent(OFFSET + MANAGER_PANEL).setEnabled(Astor.rwMode==AstorDefs.READ_WRITE);
         }
 
         //===========================================================

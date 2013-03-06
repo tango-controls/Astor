@@ -11,6 +11,18 @@
 #
 #-======================================================================
 
+Astor-6.3.0 -  06/03/13:
+	implement READ_ONLY, DB_READ_ONLY, READ_WRITE modes.
+
+Astor-6.2.2 -  21/01/13:
+	Fix a bug in adding item on TAC
+
+Astor-6.2.1 -  14/01/13:
+	Pb on notif icon fixed.
+
+Astor-6.2.0 -  07/01/13:
+	Group management added on TAC panel.
+
 Astor-6.1.2 -  26/10/12:
 	Fix a problem when too much devices in SubDevices.
 

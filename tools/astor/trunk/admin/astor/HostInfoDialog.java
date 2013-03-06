@@ -136,6 +136,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         titleLabel.setText("Controlled Servers on " + name);
         notifd_menu = new ServerPopupMenu(jFrame, this, host, ServerPopupMenu.NOTIFD);
 
+        //  Manage for READ_ONLY mode
+        if (Astor.rwMode==AstorDefs.READ_ONLY) {
+            startNewBtn.setVisible(false);
+            startAllBtn.setVisible(false);
+            stopAllBtn.setVisible(false);
+        }
+
         pack();
         ATKGraphicsUtils.centerDialog(this);
     }
@@ -325,13 +332,12 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             titlePanel.setBackground(bg);
 
         //	Update  notifd state
-        if (host.manageNotifd)
+        if (host.manageNotifd && notifdLabel!=null)
             notifdLabel.setIcon(AstorUtil.state_icons[host.notifydState]);
     }
 
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -344,8 +350,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         startNewBtn = new javax.swing.JButton();
-        javax.swing.JButton StartAllBtn = new javax.swing.JButton();
-        javax.swing.JButton stopAllBtn = new javax.swing.JButton();
+        startAllBtn = new javax.swing.JButton();
+        stopAllBtn = new javax.swing.JButton();
         displayAllBtn = new javax.swing.JRadioButton();
         centerPanel = new javax.swing.JPanel();
         titlePanel = new javax.swing.JPanel();
@@ -367,13 +373,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         });
         topPanel.add(startNewBtn);
 
-        StartAllBtn.setText("Start All");
-        StartAllBtn.addActionListener(new java.awt.event.ActionListener() {
+        startAllBtn.setText("Start All");
+        startAllBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                StartAllBtnActionPerformed(evt);
+                startAllBtnActionPerformed(evt);
             }
         });
-        topPanel.add(StartAllBtn);
+        topPanel.add(startAllBtn);
 
         stopAllBtn.setText("Stop All");
         stopAllBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -468,7 +474,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    private void StartAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartAllBtnActionPerformed
+    private void startAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startAllBtnActionPerformed
 
         //	Check levels used by servers
         ArrayList<Integer> used = new ArrayList<Integer>();
@@ -482,7 +488,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         //	And start them
         new ServerCmdThread(this, host, StartAllServers, used).start();
 
-    }//GEN-LAST:event_StartAllBtnActionPerformed
+    }//GEN-LAST:event_startAllBtnActionPerformed
 
     //===============================================================
     //===============================================================
@@ -699,7 +705,9 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
     private javax.swing.JRadioButton displayAllBtn;
+    private javax.swing.JButton startAllBtn;
     private javax.swing.JButton startNewBtn;
+    private javax.swing.JButton stopAllBtn;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JPanel titlePanel;
     // End of variables declaration//GEN-END:variables
