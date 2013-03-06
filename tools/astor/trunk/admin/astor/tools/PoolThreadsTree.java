@@ -111,7 +111,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                //expandedPerfomed(e);
+                //expandedPerformed(e);
             }
         });
         //	Add Action listener

@@ -197,29 +197,31 @@ public class UnAvailableHostsDialog extends JDialog {
     @SuppressWarnings({"UnusedDeclaration"})
     private void unexportAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unexportAllBtnActionPerformed
 
-        Object[] options = {"Un Export", "Next Host", "Cancel"};
-        if (JOptionPane.showConfirmDialog(parent,
-                "Unexport all devices registered on " + stoppedHosts.size() + " hosts ?",
-                "Confirm Dialog",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+        if (stoppedHosts.size()>0) {
+            Object[] options = {"Un Export", "Next Host", "Cancel"};
+            if (JOptionPane.showConfirmDialog(parent,
+                    "Unexport all devices registered on " + stoppedHosts.size() + " hosts ?",
+                    "Confirm Dialog",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
 
-            //  OK Un export
-            AstorUtil.startSplash("Un export");
-            int ratio = 100 / stoppedHosts.size();
-            for (String hostName : stoppedHosts) {
-                AstorUtil.increaseSplashProgress(ratio, "un export devices for " + hostName);
-                try {
-                    setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                    OneHost host = new OneHost(hostName);
-                    host.unExportDevices();
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                } catch (DevFailed e) {
-                    AstorUtil.stopSplash();
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                    ErrorPane.showErrorMessage(this, null, e);
+                //  OK Un export
+                AstorUtil.startSplash("Un export");
+                int ratio = 100 / stoppedHosts.size();
+                for (String hostName : stoppedHosts) {
+                    AstorUtil.increaseSplashProgress(ratio, "un export devices for " + hostName);
+                    try {
+                        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                        OneHost host = new OneHost(hostName);
+                        host.unExportDevices();
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    } catch (DevFailed e) {
+                        AstorUtil.stopSplash();
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        ErrorPane.showErrorMessage(this, null, e);
+                    }
                 }
+                AstorUtil.stopSplash();
             }
-            AstorUtil.stopSplash();
         }
     }//GEN-LAST:event_unexportAllBtnActionPerformed
 
