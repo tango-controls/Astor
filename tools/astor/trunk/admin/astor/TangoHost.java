@@ -277,6 +277,7 @@ public class TangoHost extends DeviceProxy {
             DeviceAttribute att = read_attribute("Servers");
             return att.extractStringArray();
         } catch (DevFailed e) {
+			System.out.println(name);
             Except.print_exception(e);
             return new String[0];
         }
