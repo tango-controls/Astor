@@ -871,12 +871,12 @@ public class Astor extends JFrame implements AstorDefs {
                     //	Check if tool is already instanced.
                     if (app.jframe == null) {
                         //	Retrieve class name
-                        Class cl = Class.forName(app.classname);
+                        Class clazz = Class.forName(app.classname);
 
                         //	And build object
                         Class[] param = new Class[1];
                         param[0] = JFrame.class;
-                        Constructor constructor = cl.getConstructor(param);
+                        Constructor constructor = clazz.getConstructor(param);
 
                         // ----------------- Java 5 -----------------
                         JFrame jf = (JFrame) constructor.newInstance(this);

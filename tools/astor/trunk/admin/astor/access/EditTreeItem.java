@@ -224,7 +224,6 @@ public class EditTreeItem extends JDialog {
     }
 
     //===============================================================
-
     /**
      * Compute bound rectangle for a node
      *
