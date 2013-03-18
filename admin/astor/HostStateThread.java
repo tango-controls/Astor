@@ -296,9 +296,8 @@ public class HostStateThread extends Thread implements AstorDefs {
             parent.updateMonitor(stringError);
     }
     //=========================================================================
-
     /**
-     * Change State eventz listener
+     * Change State events listener
      */
     //=========================================================================
     class StateEventListener implements ITangoChangeListener {
@@ -334,7 +333,7 @@ public class HostStateThread extends Thread implements AstorDefs {
             } catch (DevFailed e) {
                 System.err.println(host.name() + "  has received a DevFailed :	" + e.errors[0].desc);
                 hostState = DevState.ALARM;
-                if (e.errors[0].reason.equals("API_EventTimeout")) {
+                //if (e.errors[0].reason.equals("API_EventTimeout")) {
                     System.err.println("HostStateThread.StateEventListener" +
                             deviceName + " : API_EventTimeout");
                     //fr.esrf.TangoDs.Except.print_exception(e);
@@ -344,12 +343,14 @@ public class HostStateThread extends Thread implements AstorDefs {
                     } catch (DevFailed e2) {
                         hostState = DevState.FAULT;
                     }
-                } else if (e.errors[0].reason.equals("TangoApi_CANNOT_IMPORT_DEVICE")) {
+                /*} else
+                 if (e.errors[0].reason.equals("TangoApi_CANNOT_IMPORT_DEVICE")) {
                     //fr.esrf.TangoDs.Except.print_exception(e);
                     System.out.println("HostStateThread.StateEventListener" +
                             deviceName + " : TangoApi_CANNOT_IMPORT_DEVICE");
                     hostState = DevState.FAULT;
                 }
+                */
             } catch (Exception e) {
                 System.out.println("AstorEvent." + deviceName);
                 System.out.println(e);
@@ -358,19 +359,20 @@ public class HostStateThread extends Thread implements AstorDefs {
             }
 
 
-            try {
-                //	Check if notify daemon running in synchron
-                DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
-                if (att_synch.hasFailed())
+            if (host.eventSource.equals("(notifd)")) {
+                try {
+                    //	Check if notify daemon running in synchron
+                    DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
+                    if (att_synch.hasFailed())
+                        notifdState = DevState.UNKNOWN;
+                    else
+                        notifdState = att_synch.extractState();
+                    //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
+                } catch (Exception e) {
                     notifdState = DevState.UNKNOWN;
-                else
-                    notifdState = att_synch.extractState();
-                //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
-            } catch (Exception e) {
-                notifdState = DevState.UNKNOWN;
+                }
+                updateNotifdHost(notifdState);
             }
-            updateNotifdHost(notifdState);
-
             updateHost(hostState);
         }
     }
