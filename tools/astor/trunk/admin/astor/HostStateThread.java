@@ -321,7 +321,7 @@ public class HostStateThread extends Thread implements AstorDefs {
             DevState hostState;
             DevState notifdState;
 
-//System.out.println("in public void change(TangoChangeEvent event)");
+            int timeout = -1;
             try {
                 //	Get the host state from attribute value
                 DeviceAttribute attr = event.getValue();
@@ -333,46 +333,40 @@ public class HostStateThread extends Thread implements AstorDefs {
             } catch (DevFailed e) {
                 System.err.println(host.name() + "  has received a DevFailed :	" + e.errors[0].desc);
                 hostState = DevState.ALARM;
-                //if (e.errors[0].reason.equals("API_EventTimeout")) {
-                    System.err.println("HostStateThread.StateEventListener" +
-                            deviceName + " : API_EventTimeout");
-                    //fr.esrf.TangoDs.Except.print_exception(e);
-                    //	Check if Starter stopped or notifd
-                    try {
-                        host.ping();
-                    } catch (DevFailed e2) {
-                        hostState = DevState.FAULT;
-                    }
-                /*} else
-                 if (e.errors[0].reason.equals("TangoApi_CANNOT_IMPORT_DEVICE")) {
-                    //fr.esrf.TangoDs.Except.print_exception(e);
-                    System.out.println("HostStateThread.StateEventListener" +
-                            deviceName + " : TangoApi_CANNOT_IMPORT_DEVICE");
+                System.err.println("HostStateThread.StateEventListener" +
+                        deviceName + " : API_EventTimeout");
+                try {
+                    timeout = host.get_timeout_millis();
+                    host.set_timeout_millis(500);
+                    host.ping();
+                } catch (DevFailed e2) {
                     hostState = DevState.FAULT;
                 }
-                */
             } catch (Exception e) {
                 System.out.println("AstorEvent." + deviceName);
                 System.out.println(e);
                 System.out.println("HostStateThread.StateEventListener : could not extract data!");
                 hostState = DevState.UNKNOWN;
             }
-
-
-            if (host.eventSource.equals("(notifd)")) {
-                try {
-                    //	Check if notify daemon running in synchron
-                    DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
-                    if (att_synch.hasFailed())
-                        notifdState = DevState.UNKNOWN;
-                    else
-                        notifdState = att_synch.extractState();
-                    //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
-                } catch (Exception e) {
-                    notifdState = DevState.UNKNOWN;
-                }
-                updateNotifdHost(notifdState);
+            try {
+                if (timeout>0)
+                    host.set_timeout_millis(timeout);
+            }catch (DevFailed e) {
+                System.err.println(e.errors[0].desc);
             }
+
+            try {
+                //	Check if notify daemon running in synchronous
+                DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
+                if (att_synch.hasFailed())
+                    notifdState = DevState.UNKNOWN;
+                else
+                    notifdState = att_synch.extractState();
+                //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
+            } catch (Exception e) {
+                notifdState = DevState.UNKNOWN;
+            }
+            updateNotifdHost(notifdState);
             updateHost(hostState);
         }
     }
