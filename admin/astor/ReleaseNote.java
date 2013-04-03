@@ -31,8 +31,14 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Mar 06 13:19:23 CET 2013)" + 
+			"(Generated Wed Apr 03 09:57:07 CEST 2013)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.3.2 -  03/04/13:</li></b>" +
+			"	Add a display for statistics reset by host.<br>" +
+
+		"<br><li><b>Astor-6.3.1 -  19/03/13:</li></b>" +
+			"	Fix a problem when starter is killed.<br>" +
 
 		"<br><li><b>Astor-6.3.0 -  06/03/13:</li></b>" +
 			"	implement READ_ONLY, DB_READ_ONLY, READ_WRITE modes.<br>" +
