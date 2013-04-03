@@ -11,6 +11,12 @@
 #
 #-======================================================================
 
+Astor-6.3.2 -  03/04/13:
+	Add a display for statistics reset by host.
+
+Astor-6.3.1 -  19/03/13:
+	Fix a problem when starter is killed.
+
 Astor-6.3.0 -  06/03/13:
 	implement READ_ONLY, DB_READ_ONLY, READ_WRITE modes.
 
