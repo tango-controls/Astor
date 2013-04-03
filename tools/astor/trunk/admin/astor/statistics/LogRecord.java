@@ -62,7 +62,10 @@ public class LogRecord {
         name = stk.nextToken();
         newState = getState(stk.nextToken());
         startedTime = getValue(stk.nextToken()) * 1000;
-        failedTime = getValue(stk.nextToken()) * 1000;
+        if (stk.hasMoreTokens())
+            failedTime = getValue(stk.nextToken()) * 1000;
+        else
+            failedTime = -1;
         if (failedTime > 0)
             if (startedTime > failedTime)
                 failedDuration = startedTime - failedTime;

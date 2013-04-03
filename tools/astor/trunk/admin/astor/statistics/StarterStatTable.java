@@ -266,7 +266,6 @@ public class StarterStatTable extends JDialog {
 
 
     //=========================================================================
-
     /**
      * A class to sort table data
      */
@@ -294,7 +293,6 @@ public class StarterStatTable extends JDialog {
 
         private int column;
         //======================================================
-
         /**
          * MyCompare class to sort collection
          */

@@ -54,9 +54,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Date;
-import java.util.StringTokenizer;
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class Utils {
@@ -150,14 +148,14 @@ public class Utils {
         }
 
         int increment = 80 / ctrlHosts.size();
-        ArrayList<StarterStat> vStat = new ArrayList<StarterStat>();
+        ArrayList<StarterStat> stats = new ArrayList<StarterStat>();
         for (String host : ctrlHosts) {
             AstorUtil.increaseSplashProgress(increment, "Get statistics for " + host);
             //System.out.println(host);
-            vStat.add(new StarterStat(host));
+            stats.add(new StarterStat(host));
         }
-        //System.out.println(new GlobalStatistics(vStat));
-        return vStat;
+        //System.out.println(new GlobalStatistics(stats));
+        return stats;
     }
 
     //=======================================================

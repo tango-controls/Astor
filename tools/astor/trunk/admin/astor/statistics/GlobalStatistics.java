@@ -101,6 +101,24 @@ public class GlobalStatistics {
 
     //=======================================================
     //=======================================================
+    public String[][] getStarterResetDates() {
+        String[][] dates = new String[starterStats.size()][];
+        int i=0;
+        for (StarterStat starterStat : starterStats) {
+            String[]    array = new String[2];
+            array[0] = starterStat.name;
+            long t = starterStat.resetTime;
+            if (t<0)
+                array[1] = " ? ? ";
+            else {
+                array[1] = Utils.formatDate(t);
+            }
+            dates[i++] = array;
+        }
+        return dates;
+    }
+    //=======================================================
+    //=======================================================
     public ArrayList<StarterStat> getStarterStatistics() {
         return starterStats;
     }
@@ -140,10 +158,24 @@ public class GlobalStatistics {
         for (StarterStat starterStat : starterStats) {
             if (starterStat.resetTime < t) {
                 t = starterStat.resetTime;
-                //System.out.println(starterStat.name + ":	" + starterStat.resetTime);
+                //System.out.println(starterStat.name + ":	" + Utils.formatDate(starterStat.resetTime));
             }
         }
         return t;
+    }
+    //=======================================================
+    //=======================================================
+    public String getHostForOldestTime() {
+        String hostName = "";
+        long t = System.currentTimeMillis();
+        for (StarterStat starterStat : starterStats) {
+            if (starterStat.resetTime < t) {
+                t = starterStat.resetTime;
+                hostName = starterStat.name;
+                //System.out.println(starterStat.name + ":	" + Utils.formatDate(starterStat.resetTime));
+            }
+        }
+        return hostName + " (" + Utils.formatDate(t) + ")";
     }
 
     //=======================================================
@@ -200,7 +232,7 @@ public class GlobalStatistics {
     //=======================================================
     //=======================================================
     public void saveStatistics(String fileName) throws DevFailed {
-        StringBuffer sb = new StringBuffer(header);
+        StringBuilder sb = new StringBuilder(header);
         sb.append("\n");
 
         sb.append("\t").append(toXml()).append("\n");
@@ -225,7 +257,7 @@ public class GlobalStatistics {
     //=======================================================
     //=======================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (fileName == null)
             sb.append("Statistics from Starters\n");
