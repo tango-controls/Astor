@@ -36,6 +36,7 @@ package admin.astor.statistics;
 
 import admin.astor.AstorUtil;
 import admin.astor.tools.PopupText;
+import admin.astor.tools.PopupTable;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -45,6 +46,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 //=======================================================
 
@@ -127,34 +130,6 @@ public class StatisticsPanel extends JFrame {
 
     //=======================================================
     //=======================================================
-    private class ReadThread extends Thread {
-        private ArrayList<String> hostList;
-
-        //===================================================
-        private ReadThread(ArrayList<String> hostList) {
-            this.hostList = hostList;
-        }
-
-        //===================================================
-        public void run() {
-            AstorUtil.startSplash("Statistics ");
-            AstorUtil.increaseSplashProgress(5, "Reading....");
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-            //  Read Statistics for all controlled starters
-            ArrayList<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
-            globalStatistics = new GlobalStatistics(starterStatistics);
-
-            displayGlobalStatistics();
-
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            AstorUtil.stopSplash();
-        }
-
-    }
-
-    //=======================================================
-    //=======================================================
     private void displayGlobalStatistics() {
         //  Build the server failed list and display it in a table
         ArrayList<ServerStat> failedServers = getServerFailedList(
@@ -207,11 +182,7 @@ public class StatisticsPanel extends JFrame {
         exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
 
         editMenu.setMnemonic('E');
-        filterItem.setMnemonic('F');
-        filterItem.setAccelerator(KeyStroke.getKeyStroke('F', Event.CTRL_MASK));
-        errorItem.setMnemonic('E');
-        errorItem.setAccelerator(KeyStroke.getKeyStroke('E', Event.CTRL_MASK));
-
+        showMenu.setMnemonic('S');
         bottomPanel.setVisible(false);
     }
     //=======================================================
@@ -241,8 +212,10 @@ public class StatisticsPanel extends JFrame {
         resetItem = new javax.swing.JMenuItem();
         exitItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        filterItem = new javax.swing.JMenuItem();
-        errorItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem filterItem = new javax.swing.JMenuItem();
+        showMenu = new javax.swing.JMenu();
+        javax.swing.JMenuItem datesItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem errorItem = new javax.swing.JMenuItem();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -252,7 +225,7 @@ public class StatisticsPanel extends JFrame {
 
         topPanel.setLayout(new java.awt.BorderLayout());
 
-        titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 14));
+        titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         titleLabel.setText("Title");
         topPanel.add(titleLabel, java.awt.BorderLayout.PAGE_END);
 
@@ -260,7 +233,7 @@ public class StatisticsPanel extends JFrame {
 
         globalStatTextArea.setColumns(20);
         globalStatTextArea.setEditable(false);
-        globalStatTextArea.setFont(new java.awt.Font("Monospaced", 1, 12));
+        globalStatTextArea.setFont(new java.awt.Font("Monospaced", 1, 12)); // NOI18N
         globalStatTextArea.setRows(5);
         globalStatScrollPane.setViewportView(globalStatTextArea);
 
@@ -328,6 +301,7 @@ public class StatisticsPanel extends JFrame {
 
         editMenu.setText("Edit");
 
+        filterItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
         filterItem.setText("Find Server");
         filterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -336,15 +310,29 @@ public class StatisticsPanel extends JFrame {
         });
         editMenu.add(filterItem);
 
+        jMenuBar1.add(editMenu);
+
+        showMenu.setText("Show");
+
+        datesItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        datesItem.setText("Show Reset Dates");
+        datesItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                datesItemActionPerformed(evt);
+            }
+        });
+        showMenu.add(datesItem);
+
+        errorItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
         errorItem.setText("Show Errors");
         errorItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 errorItemActionPerformed(evt);
             }
         });
-        editMenu.add(errorItem);
+        showMenu.add(errorItem);
 
-        jMenuBar1.add(editMenu);
+        jMenuBar1.add(showMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -507,6 +495,23 @@ public class StatisticsPanel extends JFrame {
 
     //=======================================================
     //=======================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void datesItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_datesItemActionPerformed
+
+        if (globalStatistics!=null) {
+            try {
+                new PopupTable(this, null,
+                        new String[] { "Host", "Statistics starting Date"},
+                        globalStatistics.getStarterResetDates()).setVisible(true);
+            }
+            catch (DevFailed e) {
+                ErrorPane.showErrorMessage(this, null, e);
+            }
+        }
+    }//GEN-LAST:event_datesItemActionPerformed
+
+    //=======================================================
+    //=======================================================
     private void resetFilter() {
         if (statisticsTable != null) {
             statisticsTable.resetFilter();
@@ -551,23 +556,84 @@ public class StatisticsPanel extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem errorItem;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenuItem filterItem;
     private javax.swing.JTextField filterText;
     private javax.swing.JTextArea globalStatTextArea;
     private javax.swing.JMenuItem openItem;
     private javax.swing.JMenuItem readItem;
     private javax.swing.JMenuItem resetItem;
     private javax.swing.JMenuItem saveItem;
+    private javax.swing.JMenu showMenu;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //=======================================================
 
-    private String filter = "";
+
+
+
+
+
+
+
+
+
+
+
+
+    //=======================================================
+    //=======================================================
+    private class ReadThread extends Thread {
+        private ArrayList<String> hostList;
+
+        //===================================================
+        private ReadThread(ArrayList<String> hostList) {
+            this.hostList = hostList;
+        }
+        //===================================================
+        public void run() {
+            AstorUtil.startSplash("Statistics ");
+            AstorUtil.increaseSplashProgress(5, "Reading....");
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+            //  Read Statistics for all controlled starters
+            ArrayList<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
+            Collections.sort(starterStatistics, new CompareStarterResetTime());
+            globalStatistics = new GlobalStatistics(starterStatistics);
+
+            displayGlobalStatistics();
+
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            AstorUtil.stopSplash();
+        }
+        //===================================================
+    }
+    //===============================================================
     //===============================================================
 
+
+
+
+    //======================================================
+    /**
+     * MyCompare class to sort collection
+     */
+    //======================================================
+    class CompareStarterResetTime implements Comparator<StarterStat> {
+        public int compare(StarterStat stat1, StarterStat stat2) {
+
+            return (stat1.resetTime>stat2.resetTime)? 1 : 0;
+        }
+    }
+
+
+
+
+
+
+
+    private String filter = "";
+    //===============================================================
     /**
      * A Thread class to manage JTextField a bit later.
      * After main loop update.
