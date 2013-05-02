@@ -31,15 +31,7 @@
 //
 //-======================================================================
 
-
 package admin.astor;
-
-/**
- *	This class is the Astor main panel
- *	containing the Jtree used to display hosts.
- *
- * @author verdier
- */
 
 import admin.astor.statistics.StatisticsPanel;
 import admin.astor.tools.*;
@@ -59,13 +51,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ *	This class is the Astor main panel
+ *	containing the Jtree used to display hosts.
+ *
+ * @author verdier
+ */
+
 public class Astor extends JFrame implements AstorDefs {
 
     /**
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.3.2  -  Wed Apr 03 09:57:07 CEST 2013";
+            "6.3.3  -  Tue Apr 30 15:47:47 CEST 2013";
     /**
      * JTree object to display control system.
      */
@@ -98,7 +97,13 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     public Astor() throws DevFailed {
         t0 = System.currentTimeMillis();
-
+		/*
+		double	zmqVersion = ApiUtil.getZmqVersion();
+		if (zmqVersion>0)
+	        System.out.println("ZMQ release is  "+ zmqVersion);
+		else
+	        System.out.println("ZMQ is not available !");
+		*/
         initComponents();
         AstorUtil.getInstance().initIcons();
         customizeMenu();
@@ -874,13 +879,16 @@ public class Astor extends JFrame implements AstorDefs {
                         Class clazz = Class.forName(app.classname);
 
                         //	And build object
-                        Class[] param = new Class[1];
-                        param[0] = JFrame.class;
-                        Constructor constructor = clazz.getConstructor(param);
-
-                        // ----------------- Java 5 -----------------
-                        JFrame jf = (JFrame) constructor.newInstance(this);
-                        app.setJFrame(jf);
+                        Class[] params = new Class[] { JFrame.class };
+                        //noinspection unchecked
+                        Constructor constructor = clazz.getConstructor(params);
+                        if (constructor!=null) {
+                            // ----------------- Java 5 -----------------
+                            JFrame jf = (JFrame) constructor.newInstance(this);
+                            app.setJFrame(jf);
+                        }
+                        else
+                            throw new Exception("Cannot find constructor for " + app.classname);
                     }
                     app.jframe.setVisible(true);
                 } catch (Exception e) {

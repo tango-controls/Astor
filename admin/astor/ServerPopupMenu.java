@@ -92,7 +92,8 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             "Device Dependencies",
             "Test   Device",
             "Check  States",
-            "Black Box",
+            "Black  Box",
+            "Export Server to another TANGO_HOST",
             "Starter logs",
             "Standard Error",
     };
@@ -124,8 +125,9 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     static private final int TEST_DEVICE = 13;
     static private final int CHECK_STATES = 14;
     static private final int BLACK_BOX = 15;
-    static private final int STARTER_LOGS = 16;
-    static private final int STD_ERROR = 17;
+    static private final int EXPORT_SERVER = 16;
+    static private final int STARTER_LOGS = 17;
+    static private final int STD_ERROR = 18;
 
     static private final int START = 0;
     static private final int STOP = 1;
@@ -219,6 +221,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
         getComponent(TEST_DEVICE + OFFSET).setEnabled(running);
         getComponent(CHECK_STATES + OFFSET).setEnabled(running);
         getComponent(BLACK_BOX + OFFSET).setEnabled(running);
+        getComponent(EXPORT_SERVER + OFFSET).setEnabled(true);
         getComponent(CONFIGURE_WIZARD + OFFSET).setEnabled(running);
         getComponent(DB_ATTRIBUTES + OFFSET).setVisible(!running);
 
@@ -229,6 +232,9 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
         getComponent(CONFIGURE_JIVE + OFFSET).setEnabled(true);
 
         //  Manage for READ_ONLY mode
+        if (Astor.rwMode!=AstorDefs.READ_WRITE) {
+            getComponent(OFFSET + EXPORT_SERVER).setVisible(false);
+        }
         if (Astor.rwMode==AstorDefs.READ_ONLY) {
             getComponent(OFFSET + START_STOP).setVisible(false);
             getComponent(OFFSET + RESTART).setVisible(false);
@@ -446,6 +452,14 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
                     host.readStdErrorFile(jFrame, server.getName());
                 else
                     host.readStdErrorFile(jFrame, notifyd_prg + "/" + host.getName());
+                break;
+            case EXPORT_SERVER:
+                try {
+                    new admin.astor.tools.Server2TangoHost(parent, server.get_server_name()).setVisible(true);
+                    parent.updateData();
+                } catch (DevFailed e) {
+                    ErrorPane.showErrorMessage(parent, null, e);
+                }
                 break;
             case RESTART:
                 server.restart(parent, host, true);

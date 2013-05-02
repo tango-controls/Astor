@@ -112,7 +112,7 @@ public class AstorTree extends JTree implements AstorDefs {
         setBackground(background);
 
         //	Check hosts using or not events.
-        //  since ZMQ event system, all hosts are controlled on events
+        //  since ZMQ event system, all hosts are tried to be controlled on events
         hostSubscribed = 0;
         updateSplashThread = new UpdateSplashThread(hosts.length);
         updateSplashThread.start();
