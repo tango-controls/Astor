@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.3.3 -  30/04/13:
+	Add a tool to export server from database to another one.
+
 Astor-6.3.2 -  03/04/13:
 	Add a display for statistics reset by host.
 
