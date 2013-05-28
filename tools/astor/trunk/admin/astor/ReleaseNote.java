@@ -31,8 +31,14 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Tue Apr 30 15:47:48 CEST 2013)" + 
+			"(Generated Tue May 28 09:17:58 CEST 2013)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.3.5 -  28/05/13:</li></b>" +
+			"	Update splash screen with new logos.<br>" +
+
+		"<br><li><b>Astor-6.3.4 -  16/05/13:</li></b>" +
+			"	Minor changes.<br>" +
 
 		"<br><li><b>Astor-6.3.3 -  30/04/13:</li></b>" +
 			"	Add a tool to export server from database to another one.<br>" +
