@@ -42,7 +42,6 @@ package admin.astor.statistics;
  */
 
 import admin.astor.AstorUtil;
-import com.braju.format.Format;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.Database;
@@ -103,8 +102,8 @@ public class Utils {
     //===============================================================
     //===============================================================
     public static String formatPercentage(double ratio) {
-        Object[] o = {100.0 * ratio};
-        return Format.sprintf(percentageFormat, o) + " %";
+        double d = 100.0 * ratio;
+        return String.format(percentageFormat, d) + " %";
     }
 
     //===============================================================
