@@ -3,6 +3,7 @@
 #	
 #---------------------------------------------------------
 
+#PATH=/segfs/tango/jdk/Linux_64/jdk1.7.0_17/bin:$PATH
 
 
 ASTOR=../../bin
@@ -13,8 +14,8 @@ echo "CLASSPATH=$CLASSPATH"
 #---------------------------------------------------------
 #	Start the Pogo process
 #---------------------------------------------------------
-
-CMD="java admin.astor.Astor $*"
+java -version
+CMD="java -DSUPER_TANGO=true   admin.astor.Astor $*"
 
 #CMD="java admin.astor.HostInfoDialog $*"
 

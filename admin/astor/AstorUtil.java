@@ -55,6 +55,7 @@ import fr.esrf.tangoatk.widget.util.Splash;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 import java.util.List;
 
@@ -1024,20 +1025,36 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     public static void showInHtmBrowser(String url) {
-        //  Check for browser
-        String browser;
-        if (AstorUtil.osIsUnix())
-            browser = "firefox - turbo";
-        else
-            browser = "explorer";
-        String cmd = browser + " " + url;
-        try {
-            executeShellCmdAndReturn(cmd);
-        } catch (Exception e) {
-            ErrorPane.showErrorMessage(new JFrame(), null, e);
+
+        // Verify if class Desktop is supported :
+        if (Desktop.isDesktopSupported()) {
+            // get desktop instance
+            Desktop desktop = Desktop.getDesktop();
+            // Verify if browse feature is supported
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    // launch associated application
+                    desktop.browse(new URI(url));
+                } catch (Exception e) {
+                    ErrorPane.showErrorMessage(new JFrame(), null, e);
+                }
+            }
+        }
+        else {
+            //  Check for browser
+            String browser;
+            if (AstorUtil.osIsUnix())
+                browser = "firefox - turbo";
+            else
+                browser = "explorer";
+            String cmd = browser + " " + url;
+            try {
+                executeShellCmdAndReturn(cmd);
+            } catch (Exception e) {
+                ErrorPane.showErrorMessage(new JFrame(), null, e);
+            }
         }
     }
-
     //===============================================================
     //===============================================================
     public static String getAccessControlDeviceName() {
