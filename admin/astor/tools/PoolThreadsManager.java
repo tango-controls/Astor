@@ -44,8 +44,8 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 
-//===============================================================
 
+//===============================================================
 /**
  * JDialog Class to display info
  *
@@ -62,8 +62,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JFrame parent, TangoHost host, TangoServer server) throws DevFailed {
         super(parent, true);
@@ -75,8 +75,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JFrame parent, TangoServer server) throws DevFailed {
         this(parent, null, server);
@@ -84,8 +84,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JDialog parent, TangoHost host, TangoServer server) throws DevFailed {
         super(parent, true);
@@ -97,8 +97,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JDialog parent, TangoServer server) throws DevFailed {
         this(parent, null, server);
@@ -106,8 +106,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JFrame parent, TangoHost host, String servname) throws DevFailed {
         this(parent, host, new TangoServer(
@@ -116,8 +116,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JDialog parent, TangoHost host, String servname) throws DevFailed {
         this(parent, host, new TangoServer(
@@ -126,8 +126,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JFrame parent, String servname) throws DevFailed {
         this(parent, null, servname);
@@ -135,8 +135,8 @@ public class PoolThreadsManager extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PoolThreadsManager
-      */
+     *	Creates new form PoolThreadsManager
+     */
     //===============================================================
     public PoolThreadsManager(JDialog parent, String servname) throws DevFailed {
         this(parent, null, servname);
@@ -191,7 +191,6 @@ public class PoolThreadsManager extends JDialog {
         removeThreadItem.setAccelerator(KeyStroke.getKeyStroke(Event.DELETE, 0));
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -332,13 +331,12 @@ public class PoolThreadsManager extends JDialog {
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
     //===============================================================
     private void doClose() {
-        if (parent.getWidth() > 0) {
+        if (parent!=null) {
             setVisible(false);
             dispose();
         } else
@@ -370,13 +368,15 @@ public class PoolThreadsManager extends JDialog {
     //===============================================================
     public static void main(String args[]) {
 
-
         try {
-            //JDialog	dlg = new JDialog(new JFrame());
-            new PoolThreadsManager(new JFrame(), "PoolThreadTest/pv").setVisible(true);
+            if (args.length==0)
+                Except.throw_exception("BAD_SYNTAX", "Server name ?",
+                        "admin.astor.tools.PoolThreadsManager.main()");
+            new PoolThreadsManager((JFrame)null, args[0]).setVisible(true);
 //					new TangoHost("esrflinux1-2", true), "dserver/PoolThreadTest/pv").setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), "", e);
+            System.exit(0);
         }
     }
 
