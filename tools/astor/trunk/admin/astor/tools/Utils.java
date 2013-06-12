@@ -121,11 +121,7 @@ public class Utils {
     //===============================================================
     //===============================================================
     static public void popupError(Component c, String message) {
-        try {
-            throw new ATKException(message);
-        } catch (ATKException e) {
-            ErrorPane.showErrorMessage(c, null, e);
-        }
+        ErrorPane.showErrorMessage(c, null, new ATKException(message));
     }
     //===============================================================
     //===============================================================
