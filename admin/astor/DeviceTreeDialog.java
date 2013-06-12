@@ -35,8 +35,8 @@
 package admin.astor;
 
 import admin.astor.tools.PopupTable;
-import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -147,6 +147,7 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
     //============================================================
     private PopupTable tableDialog = null;
 
+    @SuppressWarnings("UnusedParameters")
     private void ctrlServersButtonActionPerformed(java.awt.event.ActionEvent evt) {
 
         if (tableDialog == null) {
@@ -157,7 +158,7 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
                 String[] columns = {"Server Name", "Last exported date"};
                 tableDialog = new PopupTable(this, title, columns, servers);
             } catch (DevFailed e) {
-                Utils.popupError(this, null, e);
+                ErrorPane.showErrorMessage(this, null, e);
             }
         }
         tableDialog.setVisible(true);

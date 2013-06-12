@@ -38,6 +38,7 @@ import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -225,7 +226,7 @@ public class DeviceTree extends JTree implements AstorDefs {
                 Thread.sleep(10);
             }
         } catch (DevFailed e) {
-            Utils.popupError(appli, null, e);
+            ErrorPane.showErrorMessage(appli, null, e);
         } catch (InterruptedException e) { /* */ }
     }
 
@@ -243,23 +244,25 @@ public class DeviceTree extends JTree implements AstorDefs {
             return;
 
         TreePath path = getPathForLocation(evt.getX(), evt.getY());
+        if (path==null)
+            return;
         int mask = evt.getModifiers();
         //	Check if btn1
         //-------------------------------------
         if ((mask & MouseEvent.BUTTON1_MASK) != 0) {
-            String devname;
+            String deviceName;
             switch (path.getPathCount()) {
                 //	If device
                 case 5:
                     //	Get the device name from path
-                    devname = getDeviceName(path);
-                    if (devname == null) return;
+                    deviceName = getDeviceName(path);
+                    if (deviceName == null) return;
                     break;
                 //	if server
                 case 4:
-                    String servname = getServerName(path);
-                    if (servname == null) return;
-                    devname = "dserver/" + servname;
+                    String serverName = getServerName(path);
+                    if (serverName == null) return;
+                    deviceName = "dserver/" + serverName;
                     break;
                 default:
                     return;
@@ -267,7 +270,7 @@ public class DeviceTree extends JTree implements AstorDefs {
             try {
                 //	Display device Info
                 DeviceInfo info =
-                        ApiUtil.get_db_obj().get_device_info(devname);
+                        ApiUtil.get_db_obj().get_device_info(deviceName);
                 infoLabel.setText(info.toString());
             } catch (DevFailed e) {
                 infoLabel.setText(" ");
@@ -276,7 +279,7 @@ public class DeviceTree extends JTree implements AstorDefs {
             //	Popup Host Info Dialog only if double click
             //--------------------------------------------------
             if (evt.getClickCount() == 2) {
-                showHostInfoDialogForDevice(devname, evt);
+                showHostInfoDialogForDevice(deviceName, evt);
             }
         }
     }
@@ -365,7 +368,7 @@ public class DeviceTree extends JTree implements AstorDefs {
             appli.tree.setSelectionPath(hostname);
             appli.tree.displayHostInfo();
         } catch (DevFailed e) {
-            Utils.popupError(this, null, e);
+            ErrorPane.showErrorMessage(this, null, e);
         }
     }
 

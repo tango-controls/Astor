@@ -119,7 +119,7 @@ public class PreferenceDialog extends JDialog {
                 AstorUtil.setHostDialogPreferredSize(d);
                 ((Astor) parent).tree.hostDialogs.setDialogPreferredSize(d);
             } catch (NumberFormatException e) {
-                Utils.popupError(this, null, e);
+                ErrorPane.showErrorMessage(this, null, e);
             }
         }
         try {

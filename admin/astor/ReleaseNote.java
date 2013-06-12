@@ -31,8 +31,11 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Tue May 28 09:17:58 CEST 2013)" + 
+			"(Generated Wed Jun 12 10:02:52 CEST 2013)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.3.6 -  12/06/13:</li></b>" +
+			"	Server list to be started can now be taken from another host.<br>" +
 
 		"<br><li><b>Astor-6.3.5 -  28/05/13:</li></b>" +
 			"	Update splash screen with new logos.<br>" +

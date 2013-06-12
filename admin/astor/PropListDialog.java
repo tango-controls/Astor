@@ -45,6 +45,7 @@ import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -142,7 +143,7 @@ public class PropListDialog extends javax.swing.JDialog {
             for (int i = 0; i < pathList.size(); i++)
                 props[i] = pathList.get(i);
         } catch (DevFailed e) {
-            Utils.popupError(parent, null, e);
+            ErrorPane.showErrorMessage(parent, null, e);
         }
     }
 
