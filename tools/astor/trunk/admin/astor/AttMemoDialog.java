@@ -38,6 +38,7 @@ import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -302,7 +303,7 @@ public class AttMemoDialog extends JDialog {
                     memo.value = val_str;
                     message += attLbl[i].getText() + "  set to  " + val_str + "\n";
                 } catch (DevFailed e) {
-                    Utils.popupError(parent, null, e);
+                    ErrorPane.showErrorMessage(parent, null, e);
                     return false;
                 }
             }

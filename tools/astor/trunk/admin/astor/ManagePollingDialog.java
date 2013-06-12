@@ -47,6 +47,7 @@ import fr.esrf.TangoApi.CommandInfo;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.TangoConst;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,7 +102,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
             attrBtn.setSelected(true);
             getAttrCmdLists(devices[0]);
         } catch (DevFailed e) {
-            Utils.popupError(this, null, e);
+            ErrorPane.showErrorMessage(this, null, e);
         }
 
     }
@@ -129,7 +130,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
             attributes = dev.get_attribute_list();
             setCmdAttrBox();
         } catch (DevFailed e) {
-            Utils.popupError(this, null, e);
+            ErrorPane.showErrorMessage(this, null, e);
         }
     }
 
@@ -460,7 +461,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
                 if (status.length > 0)
                     message += "\n\n";
             } catch (DevFailed e) {
-                Utils.popupError(this, null, e);
+                ErrorPane.showErrorMessage(this, null, e);
                 return;
             }
         }
@@ -496,7 +497,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
                         dev.stop_poll_attribute(polled_obj_name);
                     message += devname + "\n";
                 } catch (DevFailed e) {
-                    Utils.popupError(this, null, e);
+                    ErrorPane.showErrorMessage(this, null, e);
                     return;
                 }
             }
@@ -542,7 +543,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
             }
         }
         String polled_obj_name = cmdBox.getSelectedItem().toString();
-        StringBuffer message = new StringBuffer(polled_obj_name +
+        StringBuilder message = new StringBuilder(polled_obj_name +
                 " polling has been added for:\n");
         for (String devname : devnames) {
             try {
@@ -555,7 +556,7 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
                     dev.poll_attribute(polled_obj_name, polling_period);
                 message.append(devname).append('\n');
             } catch (DevFailed e) {
-                Utils.popupError(this, null, e);
+                ErrorPane.showErrorMessage(this, null, e);
             }
         }
         Utils.popupMessage(this, message.toString());

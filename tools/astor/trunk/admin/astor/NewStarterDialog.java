@@ -42,10 +42,10 @@ package admin.astor;
  * @author verdier
  */
 
-import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -405,7 +405,7 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
                     message, "Command Done", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (DevFailed e) {
-            Utils.popupError(parent, null, e);
+            ErrorPane.showErrorMessage(parent, null, e);
             return;
         }
         retVal = JOptionPane.OK_OPTION;

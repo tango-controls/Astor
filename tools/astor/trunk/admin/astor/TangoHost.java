@@ -508,7 +508,7 @@ public class TangoHost extends DeviceProxy {
 
         } catch (DevFailed e) {
             str += e.errors[0].desc;
-            Utils.popupError(parent, str, e);
+            ErrorPane.showErrorMessage(parent, str, e);
             return;
         }
         str += "\n\n";
@@ -534,8 +534,7 @@ public class TangoHost extends DeviceProxy {
             //	Check if exported
             DbDevImportInfo info = import_device();
             if (!info.exported) {
-                Utils.popupError(parent,
-                        get_name() + "  NOT  exported !");
+                Utils.popupError(parent,get_name() + "  NOT  exported !");
                 return;
             }
 
@@ -666,7 +665,7 @@ public class TangoHost extends DeviceProxy {
             try {
                 new BlackBoxTable(parent, choice).setVisible(true);
             } catch (DevFailed e) {
-                Utils.popupError(parent, null, e);
+                ErrorPane.showErrorMessage(parent, null, e);
             }
         }
     }

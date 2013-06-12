@@ -484,7 +484,6 @@ public class AstorTree extends JTree implements AstorDefs {
 //
 //===============================================================
     //===============================================================
-
     /**
      * Compute bound rectangle for a node
      *
@@ -495,11 +494,13 @@ public class AstorTree extends JTree implements AstorDefs {
     private Rectangle computeBounds(TreePath selPath) {
         scrollPathToVisible(selPath);
         Rectangle r = getPathBounds(selPath);
-        Point p = r.getLocation();
-        SwingUtilities.convertPointToScreen(p, this);
-        r.setLocation(p);
-        r.width += 20;
-        r.height += 2;
+        if (r!=null) {
+            Point p = r.getLocation();
+            SwingUtilities.convertPointToScreen(p, this);
+            r.setLocation(p);
+            r.width += 20;
+            r.height += 2;
+        }
         return r;
     }
 
@@ -872,8 +873,7 @@ public class AstorTree extends JTree implements AstorDefs {
     public void displayHostInfo() {
         //	Check if a host is selected
         if (selectedHost == null) {
-            Utils.popupError(this,
-                    "this Host is not controlled by Astor !");
+            Utils.popupError(this, "this Host is not controlled by Astor !");
             return;
         }
 
@@ -901,11 +901,10 @@ public class AstorTree extends JTree implements AstorDefs {
                     }
                 } else
                     Utils.popupError(parent,
-                            "Starter is not running on " +
-                                    selectedHost + " !!!");
+                            "Starter is not running on " + selectedHost + " !!!");
             } else
                 //	Display exception
-                Utils.popupError(parent,
+                ErrorPane.showErrorMessage(parent,
                         "Starter on " + selectedHost,
                         selectedHost.except);
         } else if (selectedHost.state == unknown)

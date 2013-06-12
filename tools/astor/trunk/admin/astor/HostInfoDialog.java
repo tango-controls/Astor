@@ -502,25 +502,35 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         p.translate(50, 50);
         jlist.setLocation(p);
         jlist.showDialog();
-        ArrayList<String> servnames = jlist.getSelectedItems();
-        if (servnames == null)
+        ArrayList<String> serverNames = jlist.getSelectedItems();
+        if (serverNames == null)
             return;
-        for (String servname : servnames) {
-            if (servname != null) {
+        for (String serverName : serverNames) {
+            if (serverName != null) {
                 try {
                     //	OK to start, do it.
                     //------------------------------------------------------------
-                    host.registerServer(servname);
-                    host.startOneServer(servname);
+                    host.registerServer(serverName);
+                    host.startOneServer(serverName);
 
                     //	OK to start get the Startup control params.
                     //--------------------------------------------------
-                    TangoServer ts = new TangoServer(servname, DevState.OFF);
+                    TangoServer ts = new TangoServer(serverName, DevState.OFF);
                     ts.startupLevel(this, host.getName(), p);
                 } catch (DevFailed e) {
                     ErrorPane.showErrorMessage(jFrame, null, e);
                 }
             }
+        }
+        //  Force a Starter update
+        host.updateServersList(jFrame);
+        try {
+            //  And force asynchronous update
+            DeviceAttribute attribute = host.read_attribute("Servers");
+            manageServersAttribute(attribute);
+        }
+        catch(DevFailed e) {
+            // Nothing
         }
     }//GEN-LAST:event_startNewBtnActionPerformed
 
@@ -587,9 +597,9 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         ArrayList<Server> servers = new ArrayList<Server>();
         try {
             if (!att.hasFailed()) {
-                String[] list = att.extractStringArray();
-                for (String item : list)
-                    servers.add(new Server(item));
+                String[] lines = att.extractStringArray();
+                for (String line : lines)
+                    servers.add(new Server(line));
             }
         } catch (DevFailed e) {
             System.err.println(name);
@@ -959,7 +969,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         //=====================================================================
         public void change(TangoChangeEvent event) {
             TangoChange tc = (TangoChange) event.getSource();
-            String devname = tc.getEventSupplier().get_name();
+            String deviceName = tc.getEventSupplier().get_name();
 
             try {
                 DeviceAttribute att = event.getValue();
@@ -970,13 +980,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 System.out.println(name);
                 if (e.errors[0].reason.equals("API_EventTimeout")) {
                     System.err.println("HostStataThread.ServerEventListener" +
-                            devname + " : API_EventTimeout");
+                            deviceName + " : API_EventTimeout");
                     //fr.esrf.TangoDs.Except.print_exception(e);
                 } else
                     fr.esrf.TangoDs.Except.print_exception(e);
             } catch (Exception e) {
                 System.err.println(name);
-                System.err.println("AstorEvent." + devname);
+                System.err.println("AstorEvent." + deviceName);
                 System.err.println(e);
                 System.err.println("HostStateThread.ServerEventListener : could not extract data!");
             }

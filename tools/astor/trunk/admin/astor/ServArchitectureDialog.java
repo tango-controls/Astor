@@ -40,6 +40,7 @@ import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevInfo;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -252,7 +253,7 @@ public class ServArchitectureDialog extends JDialog {
                 try {
                     new DeviceProxy("dserver/" + servname).command_inout("init");
                 } catch (DevFailed e) {
-                    Utils.popupError(this, null, e);
+                    ErrorPane.showErrorMessage(this, null, e);
                 }
             }
         }
@@ -581,7 +582,7 @@ public class ServArchitectureDialog extends JDialog {
                     } else
                         System.out.println("object " + o + "  not implemented !");
                 } catch (DevFailed e) {
-                    Utils.popupError(this, null, e);
+                    ErrorPane.showErrorMessage(this, null, e);
                 }
             }
         }
@@ -957,7 +958,7 @@ public class ServArchitectureDialog extends JDialog {
         try {
             new ServArchitectureDialog(null, servname).setVisible(true);
         } catch (DevFailed e) {
-            Utils.popupError(new javax.swing.JDialog(), null, e);
+            ErrorPane.showErrorMessage(new javax.swing.JDialog(), null, e);
             System.exit(0);
         }
 
