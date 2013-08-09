@@ -36,10 +36,7 @@ package admin.astor.tools;
 
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.ApiUtil;
-import fr.esrf.TangoApi.DbServer;
-import fr.esrf.TangoApi.DeviceData;
-import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoApi.*;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -60,12 +57,41 @@ import java.util.ArrayList;
 
 public class UnAvailableHostsDialog extends JDialog {
     private JFrame parent;
-    private ArrayList<String> stoppedHosts;
+    private ArrayList<StoppedHost> stoppedHosts;
+    private String[] lastCollections;
+
+    //===============================================================
+    //===============================================================
+    private class StoppedHost {
+        String name;
+        String collection = "Not Defined";
+        boolean inLastCollections = true;
+        //===========================================================
+        private StoppedHost(String name) {
+            this.name = name;
+            try {
+                DbDatum datum = new DeviceProxy("tango/admin/"+name).get_property("HostCollection");
+                if (!datum.is_empty()) {
+                    collection = datum.extractString();
+                    boolean found = false;
+                    for (String s: lastCollections) {
+                        if (s.equals(collection)) {
+                            found = true;
+                        }
+                    }
+                    inLastCollections = found;
+                }
+            }
+            catch (DevFailed e) { /* */ }
+        }
+        //===========================================================
+    }
+
 
     //===============================================================
     /*
-      *	Creates new form UnAvailableHostsDialog
-      */
+     *	Creates new form UnAvailableHostsDialog
+     */
     //===============================================================
     public UnAvailableHostsDialog(JFrame parent) throws DevFailed {
         super(parent, true);
@@ -73,15 +99,28 @@ public class UnAvailableHostsDialog extends JDialog {
         initComponents();
 
         AstorUtil.startSplash("Pinging crates.....");
+        AstorUtil.increaseSplashProgress(0.3, "Get host list from database");
         String[] ctrlHosts = AstorUtil.getInstance().getHostControlledList();
+        lastCollections = AstorUtil.getInstance().getLastCollectionList();
+        AstorUtil.increaseSplashProgress(0.6, "Checking " + ctrlHosts.length + " hosts");
+
         PingHosts pg = new PingHosts(ctrlHosts);
-        stoppedHosts = pg.getStopped();
+        stoppedHosts = buildStoppedHosts(pg.getStopped());
         int x = 0;
         int y = 0;
-        for (String hostName : stoppedHosts) {
-            JButton btn = new JButton(hostName);
-            btn.setBackground(Color.red);
-            btn.setForeground(Color.white);
+        int modulo = (int)Math.sqrt(stoppedHosts.size());
+        for (StoppedHost host : stoppedHosts) {
+            JButton btn = new JButton(host.name);
+            if (host.inLastCollections) {
+                btn.setBackground(Color.orange);
+                btn.setForeground(Color.black);
+            }
+            else {
+                btn.setBackground(Color.red);
+                btn.setForeground(Color.white);
+            }
+            btn.setToolTipText(host.collection);
+
             btn.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     hostBtnActionPerformed(evt);
@@ -94,19 +133,27 @@ public class UnAvailableHostsDialog extends JDialog {
             gbc.insets = new java.awt.Insets(10, 10, 10, 10);
             centerPanel.add(btn, gbc);
 
-            if (x == 4) {
+            if (x == modulo) {
                 x = 0;
                 y++;
             }
         }
-
+        titleLabel.setText(stoppedHosts.size() + " Unreachable Hosts");
         pack();
         ATKGraphicsUtils.centerDialog(this);
         AstorUtil.stopSplash();
     }
 
     //===============================================================
-
+    //===============================================================
+    private ArrayList<StoppedHost> buildStoppedHosts(ArrayList<String> hostNames) {
+        ArrayList<StoppedHost>  list = new ArrayList<StoppedHost>();
+        for (String hostName : hostNames) {
+            list.add(new StoppedHost(hostName));
+        }
+        return list;
+    }
+    //===============================================================
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -118,9 +165,10 @@ public class UnAvailableHostsDialog extends JDialog {
     private void initComponents() {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
-        javax.swing.JLabel titleLabel = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
         centerPanel = new javax.swing.JPanel();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
+        javax.swing.JButton updateBtn = new javax.swing.JButton();
         javax.swing.JButton unexportAllBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
 
@@ -130,7 +178,7 @@ public class UnAvailableHostsDialog extends JDialog {
             }
         });
 
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Unreachable Hosts");
         topPanel.add(titleLabel);
 
@@ -140,6 +188,14 @@ public class UnAvailableHostsDialog extends JDialog {
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
         bottomPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 50, 5));
+
+        updateBtn.setText("Update List");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(updateBtn);
 
         unexportAllBtn.setText("Unexport All ");
         unexportAllBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -198,7 +254,6 @@ public class UnAvailableHostsDialog extends JDialog {
     private void unexportAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unexportAllBtnActionPerformed
 
         if (stoppedHosts.size()>0) {
-            Object[] options = {"Un Export", "Next Host", "Cancel"};
             if (JOptionPane.showConfirmDialog(parent,
                     "Unexport all devices registered on " + stoppedHosts.size() + " hosts ?",
                     "Confirm Dialog",
@@ -207,12 +262,12 @@ public class UnAvailableHostsDialog extends JDialog {
                 //  OK Un export
                 AstorUtil.startSplash("Un export");
                 int ratio = 100 / stoppedHosts.size();
-                for (String hostName : stoppedHosts) {
-                    AstorUtil.increaseSplashProgress(ratio, "un export devices for " + hostName);
+                for (StoppedHost host : stoppedHosts) {
+                    AstorUtil.increaseSplashProgress(ratio, "un export devices for " + host.name);
                     try {
                         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                        OneHost host = new OneHost(hostName);
-                        host.unExportDevices();
+                        OneHost oneHost = new OneHost(host.name);
+                        oneHost.unExportDevices();
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     } catch (DevFailed e) {
                         AstorUtil.stopSplash();
@@ -226,7 +281,23 @@ public class UnAvailableHostsDialog extends JDialog {
     }//GEN-LAST:event_unexportAllBtnActionPerformed
 
     //===============================================================
+    //===============================================================
+    @SuppressWarnings("UnusedParameters")
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
 
+        setVisible(false);
+        dispose();
+        try {
+            new UnAvailableHostsDialog(parent).setVisible(true);
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+            doClose();
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    //===============================================================
+    //===============================================================
     /**
      * Closes the dialog
      */
@@ -234,7 +305,7 @@ public class UnAvailableHostsDialog extends JDialog {
     private void doClose() {
         setVisible(false);
         dispose();
-        if (parent.getWidth() == 0)
+        if (parent == null)
             System.exit(0);
     }
     //===============================================================
@@ -243,6 +314,7 @@ public class UnAvailableHostsDialog extends JDialog {
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
+    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 
@@ -256,12 +328,20 @@ public class UnAvailableHostsDialog extends JDialog {
     public static void main(String args[]) {
 
         try {
-            new UnAvailableHostsDialog(new JFrame()).setVisible(true);
+            new UnAvailableHostsDialog(null).setVisible(true);
         } catch (DevFailed e) {
             AstorUtil.stopSplash();
             ErrorPane.showErrorMessage(new Frame(), null, e);
         }
     }
+    //===============================================================
+    //===============================================================
+
+
+
+
+
+
 
 
     //===============================================================
@@ -293,7 +373,7 @@ public class UnAvailableHostsDialog extends JDialog {
 
         //===========================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer(name + ":\n");
+            StringBuilder sb = new StringBuilder(name + ":\n");
             for (OneServer server : this) {
                 sb.append(server).append("\n");
             }
@@ -330,7 +410,7 @@ public class UnAvailableHostsDialog extends JDialog {
 
         //===========================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer(name + ":\n");
+            StringBuilder sb = new StringBuilder(name + ":\n");
             for (DeviceProxy deviceProxy : this) {
                 sb.append("\t").append(deviceProxy.name()).append("\n");
             }
