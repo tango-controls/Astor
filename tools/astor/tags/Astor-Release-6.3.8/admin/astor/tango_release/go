@@ -1,0 +1,15 @@
+TANGO_HOME=/segfs/tango
+LIB=$TANGO_HOME/release/java/lib
+APPLI=$TANGO_HOME/release/java/appli
+
+TangORB=$TANGO_HOME/javaapi/build-tangorb/TangORB-8.1.0.jar
+ASTOR=$TANGO_HOME/tools/admin/astor/bin
+ATK=$LIB/ATKCore.jar:$LIB/ATKWidget.jar
+JIVE=$APPLI/Jive.jar
+
+CLASSPATH=.:$TangORB:$ASTOR:$ATK:$JIVE
+
+echo "CLASSPATH=$CLASSPATH"
+
+java -Dmax_receptor_threads=2000 \
+		admin.astor.tango_release.TangoReleaseDialog
