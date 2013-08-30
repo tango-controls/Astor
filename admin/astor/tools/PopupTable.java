@@ -40,7 +40,6 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.FileInputStream;
@@ -49,7 +48,6 @@ import java.util.*;
 
 
 //===============================================================
-
 /**
  * Class Description:
  * Dialog Class to display data in a JTable inside a JDialog.
@@ -73,12 +71,9 @@ public class PopupTable extends JDialog {
      */
     private String[][] data;
 
-
     private java.awt.Window parent;
     private boolean from_appli = true;
     private boolean sort_available = true;
-
-
     //===============================================================
     //===============================================================
     public PopupTable(JFrame parent, String filename)
@@ -90,11 +85,11 @@ public class PopupTable extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PopupTable
-      *
-      *	@param	parent		parent component.
-      *	@param	filename	File's name to read data
-      */
+     *	Creates new form PopupTable
+     *
+     *	@param	parent		parent component.
+     *	@param	filename	File's name to read data
+     */
     //===============================================================
     public PopupTable(JFrame parent, String filename, Dimension dim)
             throws SecurityException,
@@ -122,11 +117,11 @@ public class PopupTable extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form PopupTable
-      *
-      *	@param	parent		parent component.
-      *	@param	filename	File's name to read data
-      */
+     *	Creates new form PopupTable
+     *
+     *	@param	parent		parent component.
+     *	@param	filename	File's name to read data
+     */
     //===============================================================
     public PopupTable(JFrame parent, String title, String filename, Dimension dim)
             throws SecurityException,
@@ -149,7 +144,6 @@ public class PopupTable extends JDialog {
         this(parent, title, col, array, null);
     }
     //===============================================================
-
     /**
      * Creates new form PopupTable
      *
@@ -173,7 +167,6 @@ public class PopupTable extends JDialog {
         this(parent, title, col, array, null);
     }
     //===============================================================
-
     /**
      * Creates new form PopupTable
      *
@@ -255,7 +248,6 @@ public class PopupTable extends JDialog {
         pack();
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -409,7 +401,6 @@ public class PopupTable extends JDialog {
 
 
     //=========================================================================
-
     /**
      * A class to sort table data
      */
@@ -436,9 +427,8 @@ public class PopupTable extends JDialog {
 
         private int column;
         //======================================================
-
         /**
-         * MyCompare class to sort collection
+         * StringCompare class to sort collection
          */
         //======================================================
         class StringArrayComparator implements Comparator<String[]> {

@@ -58,12 +58,18 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     private DefaultTreeModel treeModel;
     private DefaultMutableTreeNode root;
     private JDialog parent;
-    private PoolThreadsInfo pool_info;
+    private PoolThreadsInfo threadsInfo;
     private TangoRenderer renderer;
 
     private TangoServer server;
     private static final Color background = admin.astor.AstorTree.background;
-
+    private static final             String[]    propertyNames = {
+            "polling_threads_pool_size",
+            "polling_threads_pool_conf",
+    };
+    private static final int NB_THREADS = 0;
+    private static final int THREADS_CONFIG = 1;
+    private static final int LINE_MAX_LENGTH = 256;
     //===============================================================
     //===============================================================
     public PoolThreadsTree(JDialog parent, TangoServer server) throws DevFailed {
@@ -72,7 +78,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         this.server = server;
         setBackground(background);
 
-        pool_info = new PoolThreadsInfo();
+        threadsInfo = new PoolThreadsInfo();
         buildTree();
         expandChildren(root);
         setSelectionPath(null);
@@ -152,8 +158,8 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private void createThreadsNodes() {
-        for (int i = 0; i < pool_info.size(); i++) {
-            PollThread thread = pool_info.threadAt(i);
+        for (int i = 0; i < threadsInfo.size(); i++) {
+            PollThread thread = threadsInfo.threadAt(i);
             //	Build node for class with all commansdds as leaf
             DefaultMutableTreeNode node =
                     new DefaultMutableTreeNode(thread);
@@ -254,7 +260,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
                     //	Remove selected one
                     treeModel.removeNodeFromParent(node);
                     PollThread pt = (PollThread) obj;
-                    pool_info.remove(pt);
+                    threadsInfo.remove(pt);
                     //	And select the found node
                     TreeNode[] tree_node = next_node.getPath();
                     TreePath path = new TreePath(tree_node);
@@ -291,32 +297,51 @@ public class PoolThreadsTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
+    private ArrayList<String> manageMaxLength(ArrayList<String> lines) {
+        ArrayList<String>   list = new ArrayList<String>();
+        for (String line : lines) {
+            while (line.length()>LINE_MAX_LENGTH) {
+                list.add(line.substring(0, LINE_MAX_LENGTH-1)+'\\');
+                line = line.substring(LINE_MAX_LENGTH-1);
+            }
+            list.add(line);
+        }
+        return list;
+    }
+    //===============================================================
+    //===============================================================
     void putPoolThreadInfo() {
-        //	Convert tree to device(admin) property.
-        int nb_thread = root.getChildCount();
-        ArrayList<String> v = new ArrayList<String>();
-        for (int i = 0; i < root.getChildCount(); i++) {
-            DefaultMutableTreeNode th_node =
+        //  ToDo
+        //	Get configuration from tree
+        int nbThreads = root.getChildCount();
+        ArrayList<String> lines = new ArrayList<String>();
+        for (int i=0 ; i<root.getChildCount() ; i++) {
+            DefaultMutableTreeNode threadNode =
                     (DefaultMutableTreeNode) root.getChildAt(i);
-            int nb_dev = th_node.getChildCount();
-            if (nb_dev > 0) {
+            int deviceNumber = threadNode.getChildCount();
+            if (deviceNumber > 0) {
                 String s = "";
-                for (int j = 0; j < nb_dev; j++) {
-                    s += th_node.getChildAt(j).toString();
-                    if (j < nb_dev - 1)
+                for (int j=0 ; j<deviceNumber ; j++) {
+                    s += threadNode.getChildAt(j).toString();
+                    if (j < deviceNumber-1)
                         s += ",";
                 }
-                v.add(s);
+                lines.add(s);
             }
         }
-        String[] conf = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            conf[i] = v.get(i);
+        //  Check for maximum length of lines
+        lines  = manageMaxLength(lines);
+
+        //	Convert tree to device(admin) property.
+        String[] config = new String[lines.size()];
+        for (int i=0 ; i<lines.size() ; i++)
+            config[i] = lines.get(i);
+
         //	And send it to database.
         try {
             DbDatum[] argin = new DbDatum[2];
-            argin[0] = new DbDatum("polling_threads_pool_size", nb_thread);
-            argin[1] = new DbDatum("polling_threads_pool_conf", conf);
+            argin[0] = new DbDatum(propertyNames[NB_THREADS], nbThreads);
+            argin[1] = new DbDatum(propertyNames[THREADS_CONFIG], config);
             server.put_property(argin);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
@@ -437,47 +462,65 @@ public class PoolThreadsTree extends JTree implements TangoConst {
       */
     //===============================================================
     private class PoolThreadsInfo extends ArrayList<PollThread> {
-        int size = 1;
 
         //===========================================================
         private PoolThreadsInfo() throws DevFailed {
-            DbDatum[] argin = new DbDatum[2];
-            argin[0] = new DbDatum("polling_threads_pool_size");
-            argin[1] = new DbDatum("polling_threads_pool_conf");
-            DbDatum[] argout = server.get_property(argin);
-            String[] conf = new String[0];
-            if (argout[0].is_empty() && argout[1].is_empty()) {
+            DbDatum[] data = server.get_property(propertyNames);
+            String[] config = new String[0];
+            int threadsNumber = 1;
+            if (data[NB_THREADS].is_empty() && data[THREADS_CONFIG].is_empty()) {
                 //	If no property --> get device list from db
                 String[] s = server.queryDeviceFromDb();
                 //	and set all for on thread
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < s.length; i++) {
                     sb.append(s[i]);
                     if (i < s.length - 1)
                         sb.append(',');
                 }
-                conf = new String[1];
-                conf[0] = sb.toString();
+                config = new String[]{ sb.toString() };
             }
-            {
-                if (!argout[0].is_empty())
-                    size = argout[0].extractLong();
-                if (!argout[1].is_empty())
-                    conf = argout[1].extractStringArray();
-            }
-            buidConfig(conf);
+            if (!data[NB_THREADS].is_empty())
+                threadsNumber = data[NB_THREADS].extractLong();
+            if (!data[THREADS_CONFIG].is_empty())
+                config = data[THREADS_CONFIG].extractStringArray();
+            buildConfig(config, threadsNumber);
         }
 
         //===========================================================
-        private void buidConfig(String[] conf) {
-            for (int i = 0; i < conf.length; i++) {
-                StringTokenizer stk = new StringTokenizer(conf[i], ",");
-                PollThread thread = new PollThread(i);
+        private ArrayList<String> rebuildLines(String[] config) {
+
+            ArrayList<String>   lines = new ArrayList<String>();
+            String line = config[0];
+            for (int i=1 ; i<config.length ; i++) {
+                if (line.endsWith("\\")) {
+                    //  Append before '\'
+                    line = line.substring(0, line.indexOf('\\')) + config[i];
+                }
+                else {
+                    lines.add(line);
+                    line = config[i];
+                }
+            }
+            lines.add(line);
+            return lines;
+        }
+        //===========================================================
+        private void buildConfig(String[] config, int threadsNumber) {
+            if (config.length==0) //  Do nothing
+                return;
+            //  first time rebuild lines (ended by '\'
+            ArrayList<String>   lines = rebuildLines(config);
+
+            int threadCounter = 0;
+            for (String line : lines) {
+                StringTokenizer stk = new StringTokenizer(line, ",");
+                PollThread thread = new PollThread(threadCounter++);
                 while (stk.hasMoreTokens())
                     thread.add(stk.nextToken());
                 add(thread);
             }
-            for (int i = conf.length; i < size; i++)
+            for (int i=threadCounter ; i<threadsNumber ; i++)
                 add(new PollThread(i));
         }
 
