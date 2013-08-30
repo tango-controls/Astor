@@ -545,7 +545,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     private JDialog stateDialog;
-    private tool_panels.servstate.ServStatePanel statePanel;
+    private ServerStatePanel statePanel;
 
     public void checkStates(JDialog parent) {
         //	Try to implement state panel if found in classpath
@@ -558,7 +558,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             splash.setVisible(true);
             splash.progress(10);
 
-            statePanel = new tool_panels.servstate.ServStatePanel(name);
+            statePanel = new ServerStatePanel(name);
             splash.progress(30);
 
 

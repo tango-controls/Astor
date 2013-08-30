@@ -11,6 +11,14 @@
 #
 #-======================================================================
 
+Astor-6.3.9 -  30/08/13:
+	Fix problem in pool threads management using new syntax.
+	Improve sort methods.
+	ServerStatePanel is now an astor.tools class (not from tool_panels package)
+
+Astor-6.3.7 -  09/08/13:
+	Improve UnAvailableHostsDialog class.
+
 Astor-6.3.6 -  12/06/13:
 	Server list to be started can now be taken from another host.
 

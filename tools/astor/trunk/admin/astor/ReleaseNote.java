@@ -31,8 +31,16 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Jun 12 10:02:52 CEST 2013)" + 
+			"(Generated Fri Aug 30 16:31:48 CEST 2013)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.3.9 -  30/08/13:</li></b>" +
+			"	Fix problem in pool threads management using new syntax.<br>" +
+			"	Improve sort methods.<br>" +
+			"	ServerStatePanel is now an astor.tools class (not from tool_panels package)<br>" +
+
+		"<br><li><b>Astor-6.3.7 -  09/08/13:</li></b>" +
+			"	Improve UnAvailableHostsDialog class.<br>" +
 
 		"<br><li><b>Astor-6.3.6 -  12/06/13:</li></b>" +
 			"	Server list to be started can now be taken from another host.<br>" +

@@ -75,7 +75,7 @@ public class AstorUtil implements AstorDefs {
     private static String[] known_tango_hosts = null;
     private static Dimension preferred_size = new Dimension(400, 600);
     private static Dimension host_dlg_preferred_size = new Dimension(800, 500);
-    private static String[] last_collec = null;
+    private static String[] lastCollections = null;
     private static boolean jiveReadOnly = false;
     private static boolean starterStartup = true;
     private static boolean properties_read = false;
@@ -473,7 +473,7 @@ public class AstorUtil implements AstorDefs {
             if (!data[++i].is_empty())
                 debug = data[i].extractBoolean();
             if (!data[++i].is_empty())
-                last_collec = data[i].extractStringArray();
+                lastCollections = data[i].extractStringArray();
             if (!data[++i].is_empty())
                 rloginCmd = data[i].extractString();
             if (!data[++i].is_empty())
@@ -528,7 +528,7 @@ public class AstorUtil implements AstorDefs {
         data[i++].insert(debug);
 
         data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(last_collec);
+        data[i++].insert(lastCollections);
 
         data[i] = new DbDatum(astor_propnames[i]);
         data[i++].insert(rloginCmd);
@@ -602,16 +602,16 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    String[] getLastCollectionList() {
+    public String[] getLastCollectionList() {
         if (!properties_read)
             readAstorProperties();
-        return last_collec;
+        return lastCollections;
     }
 
     //===============================================================
     //===============================================================
-    void setLastCollectionList(String[] lcl) {
-        last_collec = lcl;
+    public void setLastCollectionList(String[] lcl) {
+        lastCollections = lcl;
     }
 
     //===============================================================
