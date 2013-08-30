@@ -213,9 +213,7 @@ public class GlobalStatisticsTable extends JTable {
         for (ServerStat serverStat : filteredServerStatistics) {
             System.out.println(serverStat.name);
         }
-        ServersComparator comparator = new ServersComparator();
-        comparator.setSelectedColumn(column);
-        Collections.sort(filteredServerStatistics, comparator);
+        Collections.sort(filteredServerStatistics, new ServersComparator(column));
         System.out.println("==============================================================================");
         for (ServerStat serverStat : filteredServerStatistics) {
             System.out.println(serverStat.name);
@@ -332,29 +330,31 @@ public class GlobalStatisticsTable extends JTable {
     class ServersComparator implements Comparator<ServerStat> {
         private int column;
 
-        private void setSelectedColumn(int column) {
+        private ServersComparator(int column) {
             this.column = column;
         }
 
         public int compare(ServerStat server1, ServerStat server2) {
             switch (column) {
                 case SERVER_NAME:
-                    return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : -1);
+                    return server1.name.compareToIgnoreCase(server2.name);
                 case HOST_NAME:
-                    return ((server1.starterStat.name.compareToIgnoreCase(server2.starterStat.name) > 0) ? 1 : -1);
+                    return server1.starterStat.name.compareToIgnoreCase(server2.starterStat.name);
                 case NB_FAILURES:
+                    if (server1.nbFailures == server2.nbFailures) return 0;
                     return ((server1.nbFailures < server2.nbFailures) ? 1 : -1);
                 case TIME_FAILURE:
+                    if (server1.failedDuration < server2.failedDuration) return 0;
                     return ((server1.failedDuration < server2.failedDuration) ? 1 : -1);
-                //case TIME_RUNNING:
-                //    return ((server1.runDuration < server2.runDuration)? 1 : -1);
                 case AVAILABILITY:
+                    if (server1.getAvailability() < server2.getAvailability()) return 0;
                     return ((server1.getAvailability() < server2.getAvailability()) ? 1 : -1);
                 case LAST_FAILURE:
+                    if (server1.getLastFailure() < server2.getLastFailure()) return 0;
                     return ((server1.getLastFailure() < server2.getLastFailure()) ? 1 : -1);
             }
             //	default case by name
-            return ((server1.name.compareToIgnoreCase(server2.name) > 0) ? 1 : -1);
+            return server1.name.compareToIgnoreCase(server2.name);
         }
     }
     //==============================================================================

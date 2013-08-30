@@ -70,7 +70,6 @@ public class StarterStat extends ArrayList<ServerStat> {
                     resetStr + "=\"RESET\">";
     private static final String tab = "\t\t";
     //===============================================================
-
     /**
      * Statistics for the specified starter
      *
@@ -82,7 +81,6 @@ public class StarterStat extends ArrayList<ServerStat> {
         readStatisticsFromStarter(name);
     }
     //===============================================================
-
     /**
      * Statistics for the specified starter
      *
@@ -95,7 +93,6 @@ public class StarterStat extends ArrayList<ServerStat> {
         parseXmlStatistics(lines);
     }
     //===============================================================
-
     /**
      * Statistics for the specified starter (host)
      *
@@ -222,7 +219,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     //===============================================================
     //===============================================================
     public String toString(String serverName) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(getServerStat(serverName).recordsToString());
         return sb.toString();
@@ -284,7 +281,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     //=======================================================
     //=======================================================
     public String toXml() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(tab).append(toXmlLine()).append("\n");
         for (ServerStat serverStat : this)
             sb.append(serverStat.toXml()).append("\n");
@@ -295,7 +292,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     //===============================================================
     //===============================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer(name);
+        StringBuilder sb = new StringBuilder(name);
 
         long duration = System.currentTimeMillis() - resetTime;
         sb.append("   Since ").append(Utils.formatDate(resetTime))
