@@ -50,7 +50,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 //=======================================================
-
 /**
  * JFrame Class to display info
  *
@@ -68,7 +67,6 @@ public class StatisticsPanel extends JFrame {
 
 
     //=======================================================
-
     /**
      * Creates new form StatisticsPanel
      *
@@ -89,7 +87,6 @@ public class StatisticsPanel extends JFrame {
         ATKGraphicsUtils.centerFrameOnScreen(this);
     }
     //=======================================================
-
     /**
      * Creates new form StatisticsPanel
      */
@@ -98,7 +95,6 @@ public class StatisticsPanel extends JFrame {
         this(null);
     }
     //=======================================================
-
     /**
      * Creates new form StatisticsPanel
      *
@@ -118,7 +114,6 @@ public class StatisticsPanel extends JFrame {
         AstorUtil.stopSplash();
     }
     //=======================================================
-
     /**
      * @param hostList host names to be checked, if empty, check all Astor controlled hosts.
      */
@@ -535,7 +530,6 @@ public class StatisticsPanel extends JFrame {
         return serverStats;
     }
     //=======================================================
-
     /**
      * @param args the command line arguments
      */
@@ -616,13 +610,14 @@ public class StatisticsPanel extends JFrame {
 
     //======================================================
     /**
-     * MyCompare class to sort collection
+     * Compare class to sort collection by reset time
      */
     //======================================================
     class CompareStarterResetTime implements Comparator<StarterStat> {
         public int compare(StarterStat stat1, StarterStat stat2) {
 
-            return (stat1.resetTime>stat2.resetTime)? 1 : 0;
+            if  (stat1.resetTime==stat2.resetTime)   return 0;
+            return (stat1.resetTime>stat2.resetTime)? 1 : -1;
         }
     }
 
