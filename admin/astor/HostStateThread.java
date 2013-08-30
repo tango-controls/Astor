@@ -51,6 +51,8 @@ import fr.esrf.TangoApi.events.TangoChange;
 import fr.esrf.TangoApi.events.TangoChangeEvent;
 import fr.esrf.TangoApi.events.TangoEventsAdapter;
 
+import java.util.Date;
+
 
 public class HostStateThread extends Thread implements AstorDefs {
     private AstorTree parent;
@@ -331,6 +333,7 @@ public class HostStateThread extends Thread implements AstorDefs {
                     hostState = attr.extractState();
 
             } catch (DevFailed e) {
+                System.err.println(new Date());
                 System.err.println(host.name() + "  has received a DevFailed :	" + e.errors[0].desc);
                 hostState = DevState.ALARM;
                 System.err.println("HostStateThread.StateEventListener" +
