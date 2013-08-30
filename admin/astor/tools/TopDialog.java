@@ -302,12 +302,8 @@ public class TopDialog extends JDialog {
     class StringListComparator implements Comparator<ArrayList<String>> {
         public int compare(ArrayList<String> list1, ArrayList<String> list2) {
 
-            if (list1.size() == list2.size())
-                return 0;
-            else if (list1.size() < list2.size())
-                return 1;
-            else
-                return -1;
+            if (list1.size() == list2.size())   return 0;
+            return  ((list1.size() < list2.size())? 1 : -1);
         }
     }
 

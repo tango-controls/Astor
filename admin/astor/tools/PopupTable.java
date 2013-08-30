@@ -441,11 +441,12 @@ public class PopupTable extends JDialog {
                 try {
                     double d1 = Double.parseDouble(s1);
                     double d2 = Double.parseDouble(s2);
-                    return ((d1 > d2) ? 1 : 0);
+                    if (d1==d2) return 0;
+                    return ((d1 > d2) ? 1 : -1);
                 } catch (NumberFormatException e) { /* */ }
 
                 //	Sort as String
-                return ((s1.compareToIgnoreCase(s2) > 0) ? 1 : 0);
+                return s1.compareToIgnoreCase(s2);
             }
         }
     }
