@@ -55,7 +55,6 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
     private Astor parent;
     private DeviceTreeDialog dialog;
     //========================================================
-
     /**
      * Creates new form DeviceTreeDialog
      *
@@ -225,7 +224,7 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
         public void run() {
             //	Build the tree (updates the monitor)
             tree = new DeviceTree(parent, monitor,
-                    infoLabel, "TANGO " + AstorUtil.getTangoHost());
+                    infoLabel, AstorUtil.getTangoHost());
             if (tree.canceled)
                 doClose();
             else {

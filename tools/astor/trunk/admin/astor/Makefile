@@ -13,8 +13,8 @@
 
 
 MAJOR_REV   = 6
-MIDDLE_REV  = 3
-MINOR_REV   = 9
+MIDDLE_REV  = 4
+MINOR_REV   = 1
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
@@ -32,7 +32,7 @@ JAR_DIR    = $(TANGO_HOME)/release/java/appli
 #
 #------------------------------------------------------------------
 
-BIN_DIR   = ../../bin
+BIN_DIR   = ../../../bin
 JAVAFLAGS = -Xlint:unchecked -deprecation -d $(BIN_DIR)
 JAVAC = javac $(JAVAFLAGS)
 
@@ -76,8 +76,8 @@ clean:
 	rm  -Rf $(BIN_DIR)/admin/astor/tools
 	rm  -Rf $(BIN_DIR)/admin/astor/access
 	rm  -Rf $(BIN_DIR)/admin/astor/statistics
-	rm  -Rf $(BIN_DIR)/admin/astor/tango_release
-	rm  -f    $(BIN_DIR)/admin/astor/*.class
+	rm  -f  $(BIN_DIR)/admin/astor/tango_release/*.class
+	rm  -f  $(BIN_DIR)/admin/astor/*.class
 
 JAVA=/segfs/tango/jdk/Linux/jdk1.6.0/bin/java
 MAIN_CLASS=		$(PACKAGE)

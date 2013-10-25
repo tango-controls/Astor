@@ -34,6 +34,7 @@
 
 package admin.astor;
 
+import admin.astor.tools.Utils;
 import fr.esrf.TangoApi.DbServInfo;
 
 import javax.swing.*;
@@ -137,6 +138,7 @@ public class ServersTree extends JScrollPane implements AstorDefs {
             return;
 
         TreePath path = tree.getPathForLocation(evt.getX(), evt.getY());
+        if (path==null) return;
         int mask = evt.getModifiers();
         //	Do something only if double click
         //-------------------------------------
@@ -166,7 +168,7 @@ public class ServersTree extends JScrollPane implements AstorDefs {
             for (DbServInfo[] serverInfoArray: serverInfoList) {
                 for (DbServInfo info : serverInfoArray) {
                     String sname = (String) servnames.get(i);
-                    if (info.name.indexOf(sname) >= 0) {
+                    if (info.name.contains(sname)) {
                         ServerInfo s = new ServerInfo(info);
                         DefaultMutableTreeNode instance =
                                 new DefaultMutableTreeNode(s);
@@ -197,11 +199,10 @@ public class ServersTree extends JScrollPane implements AstorDefs {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            //tangoIcon = new ImageIcon(getClass().getResource(img_path + "tango_icon.jpg"));
-            tangoIcon = new ImageIcon(getClass().getResource(img_path + "network5.gif"));
 
-            serv_icon = new ImageIcon(getClass().getResource(img_path + "server.gif"));
-            inst_icon = new ImageIcon(getClass().getResource(img_path + "device.gif"));
+            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.15);
+            serv_icon = Utils.getInstance().getIcon("server.gif");
+            inst_icon = Utils.getInstance().getIcon("device.gif");
 
             fonts = new Font[2];
             fonts[TITLE] = new Font("helvetica", Font.BOLD, 18);

@@ -42,23 +42,14 @@ package admin.astor;
  */
 
 
-import java.awt.*;
-
 
 public interface AstorDefs {
 
     public final String notifyd_prg = "notify_daemon";
 
     public final String starterDeviceHeader = "tango/admin/";
-    public final String img_path = "/admin/astor/images/";
     public final String collec_property = "HostCollection";
     public final String usage_property = "HostUsage";
-    public final String[] logging_properties = {
-            "logging_level",
-            "logging_target",
-            "logging_rft"
-    };
-
     public static final String  rcFileName = "astorrc";
 
     public static final int READ_WRITE   = 0;
@@ -66,16 +57,11 @@ public interface AstorDefs {
     public static final int READ_ONLY    = 2;
     public static final String[] strMode = { "Read/Write mode", "Database is read only", "Read Only mode"};
 
-    public final int do_not_close = 0;
-    public final int do_close = -1;
     static final int COLLECTION = 0;
     static final int LEAF = 1;
 
-    public final int ALL_SERVERS = 0;
-    public final int RUNNING_SERVERS = 1;
     public final int StartAllServers = 0;
     public final int StopAllServers = 1;
-    public final int StartNewServer = 2;
     public final String[] cmdStr = {
             "Starting ",
             "Stopping "
@@ -89,7 +75,6 @@ public interface AstorDefs {
     //======================================================================
     //	States colors definitions
     //======================================================================
-    public static final int unavailable = -1;
     public static final int unknown = 0;
     public static final int faulty = 1;
     public static final int alarm = 2;
@@ -97,23 +82,7 @@ public interface AstorDefs {
     public static final int moving = 4;
     public static final int failed = 5;
     public static final int NbStates = 6;
-    public static Color[] bg = {
-            Color.gray,
-            Color.red,
-            Color.orange,
-            Color.green,
-            Color.blue,
-            Color.white
-    };
 
-    public static Color[] fg = {
-            Color.white,
-            Color.white,
-            Color.black,
-            Color.black,
-            Color.white,
-            Color.black
-    };
     //======================================================================
     static final String HtmlHeader =
             "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" +

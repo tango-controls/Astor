@@ -11,6 +11,14 @@
 #
 #-======================================================================
 
+Astor-6.4.1 -  25/10/13:
+	Replace dancers by official Tango logo.
+	Cleanup part of code.
+
+Astor-6.4.0 -  24/09/13:
+	Fix a problem in Tango releases help.
+	fix a problem on resize with java-7
+
 Astor-6.3.9 -  30/08/13:
 	Fix problem in pool threads management using new syntax.
 	Improve sort methods.

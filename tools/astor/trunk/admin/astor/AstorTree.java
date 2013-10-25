@@ -93,19 +93,16 @@ public class AstorTree extends JTree implements AstorDefs {
     public static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
     // startup objects
-    private Splash splash;
     private ArrayList<String> subscribeError = new ArrayList<String>();
     private UpdateSplashThread updateSplashThread = null;
     PopupText subscribeErrWindow = null;
     private long startSubscribeTime;
-
+    private Splash splash;
     //===============================================================
     //===============================================================
     public AstorTree(JFrame parent, Splash splash) throws DevFailed {
         this.parent = parent;
         this.splash = splash;
-        splash.setMessage("Initializing from Database....");
-        splash.progress(10);
 
         //	Build panel and its tree
         initComponent();
@@ -160,8 +157,8 @@ public class AstorTree extends JTree implements AstorDefs {
         watchDogTimer.start();
     }
 
+    
     //===============================================================
-
     /**
      * A little thread to update splash screen
      * because it gets too much time in loop.
@@ -306,7 +303,7 @@ public class AstorTree extends JTree implements AstorDefs {
     private void initComponent() throws DevFailed {
 
         // Create the nodes.
-        root = new DefaultMutableTreeNode("TANGO Control System");
+        root = new DefaultMutableTreeNode("Control System");
         initTangoObjects();
         createNodes(root);
 
@@ -336,7 +333,7 @@ public class AstorTree extends JTree implements AstorDefs {
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
             public void treeCollapsed(TreeExpansionEvent e) {
-                collapsedPerfomed(e);
+                collapsedPerformed(e);
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
@@ -441,7 +438,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void collapsedPerfomed(TreeExpansionEvent e) {
+    public void collapsedPerformed(TreeExpansionEvent e) {
         //	Get path
         TreePath path = e.getPath();
         if (path.getPathCount() > 2)
@@ -463,16 +460,16 @@ public class AstorTree extends JTree implements AstorDefs {
             //	If root Display TANGO information
             if (path.getPathCount() == 1) {
                 String message = "TANGO Control System\n\n";
-                message += hosts.length + " hosts controled.\n";
+                message += hosts.length + " hosts controlled.\n";
                 int nb_on_events = 0;
                 for (TangoHost host : hosts)
                     if (host.onEvents)
                         nb_on_events++;
                 if (nb_on_events == hosts.length)
-                    message += "All are controled on events.";
+                    message += "All are controlled on events.";
                 else if (nb_on_events > 0)
-                    message += nb_on_events + " are controled on events.";
-                Utils.popupMessage(parent, message, img_path + "tango_icon.jpg");
+                    message += nb_on_events + " are controlled on events.";
+                Utils.popupMessage(parent, message, "tango_icon.jpg");
             }
         }
     }
@@ -990,25 +987,25 @@ public class AstorTree extends JTree implements AstorDefs {
     //======================================================
 
 
-//===============================================================
-
+    //===============================================================
     /**
      * Renderer Class
      */
-//===============================================================
+    //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
         private ImageIcon tangoIcon;
         private ImageIcon dbIcon;
         private Font[] fonts;
+        private Font rootFont;
 
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            dbIcon = new ImageIcon(getClass().getResource(img_path + "MySql.gif"));
-            //tangoIcon = new ImageIcon(getClass().getResource(img_path + "tango_icon.jpg"));
-            tangoIcon = new ImageIcon(getClass().getResource(img_path + "TangoSmall.gif"));
+            dbIcon = Utils.getInstance().getIcon("MySql.gif");
+            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.25);
 
             fonts = new Font[2];
+            rootFont = new Font("helvetica", Font.BOLD, 24);
             fonts[COLLECTION] = new Font("helvetica", Font.BOLD, 18);
             fonts[LEAF] = new Font("helvetica", Font.PLAIN, 12);
         }
@@ -1035,7 +1032,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 //	ROOT
                 setBackgroundSelectionColor(background);
                 setIcon(tangoIcon);
-                setFont(fonts[COLLECTION]);
+                setFont(rootFont);
             } else if (isDatabase(obj)) {
                 if (leaf) {
                     //	Database object
@@ -1234,7 +1231,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
             //	Build menu
             JLabel title = new JLabel("Datbase Server :");
-            title.setFont(new java.awt.Font("Dialog", 1, 16));
+            title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
             for (String menuLabel : menuLabels) {
@@ -1324,7 +1321,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
             //	Build menu
             JLabel title = new JLabel("Access Control Server :");
-            title.setFont(new java.awt.Font("Dialog", 1, 16));
+            title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
             for (String menuLabel : menuLabels) {
