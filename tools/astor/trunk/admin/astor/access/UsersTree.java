@@ -128,7 +128,7 @@ public class UsersTree extends JTree implements TangoConst {
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
             public void treeCollapsed(TreeExpansionEvent e) {
-                //collapsedPerfomed(e);
+                //collapsedPerformed(e);
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
