@@ -25,8 +25,8 @@ echo
 #----------------------------------------------
 API=$TANGO_HOME/javaapi/bin
 
-ASTOR=$TANGO_HOME/tools/admin/astor
-ASTOR_BIN=$ASTOR/bin
+ASTOR=$TANGO_HOME/tools/admin/astor/src
+ASTOR_BIN=$ASTOR/../bin
 
 LIB_HOME=$TANGO_HOME/release/java/lib
 APPLI_HOME=$TANGO_HOME/release/java/appli
