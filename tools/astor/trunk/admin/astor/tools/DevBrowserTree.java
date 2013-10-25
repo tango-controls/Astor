@@ -112,7 +112,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
             public void treeCollapsed(TreeExpansionEvent e) {
-                //collapsedPerfomed(e);
+                //collapsedPerformed(e);
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
@@ -992,12 +992,11 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            String img_path = Utils.img_path;
-            tangoIcon = new ImageIcon(getClass().getResource(img_path + "network5.gif"));
-            serv_icon = new ImageIcon(getClass().getResource(img_path + "server.gif"));
-            dev_icon = new ImageIcon(getClass().getResource(img_path + "device.gif"));
-            attr_icon = new ImageIcon(getClass().getResource(img_path + "leaf.gif"));
-            class_icon = new ImageIcon(getClass().getResource(img_path + "class.gif"));
+            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.15);
+            serv_icon = Utils.getInstance().getIcon("server.gif");
+            dev_icon = Utils.getInstance().getIcon("device.gif");
+            attr_icon = Utils.getInstance().getIcon("leaf.gif");
+            class_icon = Utils.getInstance().getIcon("class.gif");
 
             fonts = new Font[3];
             fonts[TITLE] = new Font("courrier", Font.BOLD, 18);

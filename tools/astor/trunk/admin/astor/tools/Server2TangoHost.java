@@ -390,7 +390,7 @@ public class Server2TangoHost extends JDialog {
             //	Listen for collapse tree
             addTreeExpansionListener(new TreeExpansionListener() {
                 public void treeCollapsed(TreeExpansionEvent e) {
-                    //collapsedPerfomed(e);
+                    //collapsedPerformed(e);
                 }
 
                 public void treeExpanded(TreeExpansionEvent e) {

@@ -67,16 +67,27 @@ public class Utils {
 
     //===============================================================
     //===============================================================
-    public ImageIcon getIcon(String filename) {
-        java.net.URL url =
-                getClass().getResource(img_path + filename);
+    public ImageIcon getIcon(String fileName) {
+        java.net.URL url = getImageUrl(fileName);
         if (url == null) {
-            System.err.println("WARNING:  " + img_path + filename + " : File not found");
+            System.err.println("WARNING:  " + img_path + fileName + " : File not found");
             return new ImageIcon();
         }
         return new ImageIcon(url);
     }
 
+    //===============================================================
+    //===============================================================
+    public Cursor getCursor(String fileName) {
+        java.net.URL url = getImageUrl(fileName);
+        Image image = Toolkit.getDefaultToolkit().getImage(url);
+        return Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), fileName);
+    }
+    //===============================================================
+    //===============================================================
+    public java.net.URL getImageUrl(String filename) {
+        return getClass().getResource(img_path + filename);
+    }
     //===============================================================
     //===============================================================
     public ImageIcon getIcon(String filename, double ratio) {
@@ -102,7 +113,7 @@ public class Utils {
     //===============================================================
     //===============================================================
     static public void popupMessage(Component c, String message, String filename) {
-        ImageIcon icon = new ImageIcon(c.getClass().getResource(filename));
+        ImageIcon icon = getInstance().getIcon(filename);
         JOptionPane.showMessageDialog(c, message, "Info Window", JOptionPane.INFORMATION_MESSAGE, icon);
     }
 

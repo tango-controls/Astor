@@ -224,6 +224,7 @@ public class PopupText extends javax.swing.JDialog {
         }
         textPane.setEditable(false);
         textPane.setSize(400, 300);
+		jScrollPane1.setPreferredSize(new Dimension(450, 350));
         pack();
         setVisible(true);
     }
@@ -248,7 +249,7 @@ public class PopupText extends javax.swing.JDialog {
     public void show(String text) {
         textPane.setText(text);
         textPane.setEditable(false);
-        textPane.setSize(400, 300);
+		jScrollPane1.setPreferredSize(new Dimension(450, 350));
         pack();
         setVisible(true);
     }
@@ -275,6 +276,7 @@ public class PopupText extends javax.swing.JDialog {
             showMsg(array[i] + "\n", attrs);
         textPane.setEditable(false);
         textPane.setPreferredSize(new Dimension(width, height));
+		jScrollPane1.setPreferredSize(new Dimension(width, height));
         pack();
         setVisible(true);
     }
@@ -296,6 +298,7 @@ public class PopupText extends javax.swing.JDialog {
         textPane.setText(text);
         textPane.setEditable(false);
         textPane.setPreferredSize(new java.awt.Dimension(sizeX, sizeY));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(sizeX, sizeY));
         pack();
         setVisible(true);
     }
@@ -303,6 +306,7 @@ public class PopupText extends javax.swing.JDialog {
     //============================================================
     public void setSize(int width, int height) {
         textPane.setPreferredSize(new Dimension(width, height));
+		jScrollPane1.setPreferredSize(new Dimension(width, height));
         pack();
     }
     //============================================================

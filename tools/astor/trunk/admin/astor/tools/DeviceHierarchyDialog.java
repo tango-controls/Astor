@@ -44,7 +44,6 @@ import javax.swing.*;
 import java.awt.*;
 
 //===============================================================
-
 /**
  * JDialog Class to display info
  *
@@ -53,6 +52,7 @@ import java.awt.*;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class DeviceHierarchyDialog extends JDialog {
     private Component parent;
     private DeviceHierarchy tree = null;
@@ -123,7 +123,6 @@ public class DeviceHierarchyDialog extends JDialog {
 
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
