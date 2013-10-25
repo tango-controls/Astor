@@ -189,7 +189,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
             public void treeCollapsed(TreeExpansionEvent e) {
-                //collapsedPerfomed(e);
+                //collapsedPerformed(e);
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
@@ -368,7 +368,6 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
 
 
     //===============================================================
-
     /**
      * Renderer Class
      */
@@ -391,17 +390,6 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
             fonts[COLLEC] = new Font("Dialog", Font.BOLD, 12);
             fonts[LEAF] = new Font("Dialog", Font.PLAIN, 12);
         }
-
-        //===============================================================
-        //===============================================================
-        @SuppressWarnings({"UnusedDeclaration"})
-        Cursor getNodeCursor(String filename) {
-            java.net.URL url =
-                    getClass().getResource(Utils.img_path + filename);
-            Image image = Toolkit.getDefaultToolkit().getImage(url);
-            return Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), filename);
-        }
-
         //===============================================================
         //===============================================================
         public Component getTreeCellRendererComponent(
@@ -479,7 +467,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         //=======================================================
         private void buildBtnPopupMenu() {
             title = new JLabel();
-            title.setFont(new java.awt.Font("Dialog", 1, 16));
+            title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
 

@@ -78,7 +78,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         this.server = server;
         setBackground(background);
 
-        threadsInfo = new PoolThreadsInfo();
+        threadsInfo = new PoolThreadsInfo(server);
         buildTree();
         expandChildren(root);
         setSelectionPath(null);
@@ -113,7 +113,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
             public void treeCollapsed(TreeExpansionEvent e) {
-                //collapsedPerfomed(e);
+                //collapsedPerformed(e);
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
@@ -432,6 +432,18 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     }
     //===============================================================
     //===============================================================
+    PoolThreadsTree(String serverName) throws DevFailed {
+        //  Just to be used for threads pool info without display
+        server = new TangoServer(serverName);
+        threadsInfo = new PoolThreadsInfo(new TangoServer(serverName));
+    }
+    //===============================================================
+    //===============================================================
+    public int getNbThreads() throws DevFailed {
+        return threadsInfo.size();
+    }
+    //===============================================================
+    //===============================================================
 
 
     //===============================================================
@@ -464,7 +476,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     private class PoolThreadsInfo extends ArrayList<PollThread> {
 
         //===========================================================
-        private PoolThreadsInfo() throws DevFailed {
+        private PoolThreadsInfo(TangoServer server) throws DevFailed {
             DbDatum[] data = server.get_property(propertyNames);
             String[] config = new String[0];
             int threadsNumber = 1;
@@ -554,7 +566,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
             tango_icon = utils.getIcon("network5.gif");
             class_icon = utils.getIcon("class.gif");
             cmd_icon = utils.getIcon("attleaf.gif");
-            dd_cursor = getNodeCursor("drg-drp.gif");
+            dd_cursor = utils.getCursor("drg-drp.gif");
 
             fonts = new Font[3];
             fonts[TITLE] = new Font("Dialog", Font.BOLD, 18);
@@ -570,15 +582,6 @@ public class PoolThreadsTree extends JTree implements TangoConst {
             if (o instanceof String)
                 return dd_cursor;
             return new Cursor(Cursor.DEFAULT_CURSOR);
-        }
-
-        //===============================================================
-        //===============================================================
-        Cursor getNodeCursor(String filename) {
-            java.net.URL url =
-                    getClass().getResource(Utils.img_path + filename);
-            Image image = Toolkit.getDefaultToolkit().getImage(url);
-            return Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), filename);
         }
 
         //===============================================================

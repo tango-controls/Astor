@@ -34,7 +34,6 @@
 
 package admin.astor.tools;
 
-import admin.astor.AstorDefs;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
@@ -57,6 +56,7 @@ import java.awt.event.MouseEvent;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class DbServerArchitecture extends JDialog {
     private Component parent;
     private Server server;
@@ -64,7 +64,6 @@ public class DbServerArchitecture extends JDialog {
 
     static final Dimension dimension = new Dimension(290, 400);
     //===============================================================
-
     /**
      * Creates new form DbServerArchitecture
      */
@@ -109,7 +108,6 @@ public class DbServerArchitecture extends JDialog {
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -161,28 +159,26 @@ public class DbServerArchitecture extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
         doClose();
     }//GEN-LAST:event_okBtnActionPerformed
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -191,8 +187,8 @@ public class DbServerArchitecture extends JDialog {
         setVisible(false);
         dispose();
 
-        //	Check if from shell or  from appli
-        if (parent.getWidth() == 0)
+        //	Exit if from shell
+        if (parent==null)
             System.exit(0);
     }
 
@@ -223,8 +219,7 @@ public class DbServerArchitecture extends JDialog {
             if (servname == null)
                 Except.throw_exception("ServerName_Unknown",
                         "No Server name ?????", "DbServerArchitecture()");
-            new DbServerArchitecture(
-                    new javax.swing.JFrame(), servname).setVisible(true);
+            new DbServerArchitecture((JFrame)null, servname).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), "DbServerArchitecture", e);
             System.exit(0);
@@ -253,8 +248,8 @@ public class DbServerArchitecture extends JDialog {
         //===============================================================
         public String toString() {
             String str = name + "\n";
-            for (int i = 0; i < classes.length; i++)
-                str += classes[i] + "\n";
+            for (TangoClass _class : classes)
+                str += _class + "\n";
             return str.trim();
         }
     }
@@ -449,6 +444,8 @@ public class DbServerArchitecture extends JDialog {
                 return;
 
             TreePath selectedPath = tree.getPathForLocation(evt.getX(), evt.getY());
+            if (selectedPath==null)
+                return;
             DefaultMutableTreeNode node =
                     (DefaultMutableTreeNode) selectedPath.getPathComponent(selectedPath.getPathCount() - 1);
             Object o = node.getUserObject();
@@ -512,13 +509,13 @@ public class DbServerArchitecture extends JDialog {
         //===============================================================
         //===============================================================
         public ServerRenderer() {
-            String img_path = AstorDefs.img_path;
-            root_icon = new ImageIcon(getClass().getResource(img_path + "server.gif"));
-            class_icon = new ImageIcon(getClass().getResource(img_path + "class.gif"));
-            device_icon = new ImageIcon(getClass().getResource(img_path + "device.gif"));
-            list_icon = new ImageIcon(getClass().getResource(img_path + "greenbal.gif"));
-            empty_icon = new ImageIcon(getClass().getResource(img_path + "greyball.gif"));
-            att_icon = new ImageIcon(getClass().getResource(img_path + "uleaf.gif"));
+            root_icon = Utils.getInstance().getIcon("server.gif");
+            server_icon = Utils.getInstance().getIcon("server.gif");
+            class_icon = Utils.getInstance().getIcon("class.gif");
+            device_icon = Utils.getInstance().getIcon("device.gif");
+            list_icon = Utils.getInstance().getIcon("greenbal.gif");
+            empty_icon = Utils.getInstance().getIcon("greyball.gif");
+            att_icon = Utils.getInstance().getIcon("uleaf.gif");
 
             fonts = new Font[4];
             fonts[0] = new Font("Dialog", Font.BOLD, 18);
