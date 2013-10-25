@@ -46,6 +46,7 @@ import fr.esrf.tangoatk.widget.util.Splash;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,13 +59,14 @@ import java.util.List;
  * @author verdier
  */
 
+@SuppressWarnings("MagicConstant")
 public class Astor extends JFrame implements AstorDefs {
 
     /**
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.3.9  -  Fri Aug 30 16:31:48 CEST 2013";
+            "6.4.1  -  Fri Oct 25 12:41:40 CEST 2013";
     /**
      * JTree object to display control system.
      */
@@ -111,8 +113,7 @@ public class Astor extends JFrame implements AstorDefs {
         setTitle("TANGO Manager - " + revNumber);
         setControlSystemTitle();
         buildTree();
-        ImageIcon icon = new ImageIcon(
-                getClass().getResource(img_path + "tango_icon.jpg"));
+        ImageIcon icon = Utils.getInstance().getIcon("tango_icon.jpg");
         setIconImage(icon.getImage());
 
         centerWindow();
@@ -167,8 +168,7 @@ public class Astor extends JFrame implements AstorDefs {
         myBar.setBackground(Color.lightGray);
         myBar.setProgressBarColors(Color.gray, Color.gray, Color.gray);
 
-        ImageIcon icon = new ImageIcon(
-                getClass().getResource(img_path + "CollaborationSplash.gif"));
+        ImageIcon icon = Utils.getInstance().getIcon("CollaborationSplash.gif");
         Splash splash = new Splash(icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");
@@ -219,10 +219,10 @@ public class Astor extends JFrame implements AstorDefs {
         //	File menu
         fileMenu.setMnemonic('F');
         exitBtn.setMnemonic('E');
-        exitBtn.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
+        exitBtn.setAccelerator(KeyStroke.getKeyStroke('Q', MouseEvent.CTRL_MASK));
 
         ctrlPreferenceBtn.setMnemonic('P');
-        ctrlPreferenceBtn.setAccelerator(KeyStroke.getKeyStroke('P', Event.CTRL_MASK));
+        ctrlPreferenceBtn.setAccelerator(KeyStroke.getKeyStroke('P', MouseEvent.CTRL_MASK));
         String s = System.getProperty("NO_PREF");
         if (s != null && s.toLowerCase().equals("true"))
             ctrlPreferenceBtn.setEnabled(false);
@@ -230,24 +230,24 @@ public class Astor extends JFrame implements AstorDefs {
         usePreferenceBtn.setEnabled(rwMode==READ_WRITE);
 
         changeTgHostBtn.setMnemonic('T');
-        changeTgHostBtn.setAccelerator(KeyStroke.getKeyStroke('T', Event.CTRL_MASK));
+        changeTgHostBtn.setAccelerator(KeyStroke.getKeyStroke('T', MouseEvent.CTRL_MASK));
 
         //	View menu
         viewMenu.setMnemonic('V');
         newBranchBtn.setMnemonic('N');
-        newBranchBtn.setAccelerator(KeyStroke.getKeyStroke('N', Event.CTRL_MASK));
+        newBranchBtn.setAccelerator(KeyStroke.getKeyStroke('N', MouseEvent.CTRL_MASK));
 
         deviceBrowserBtn.setMnemonic('B');
-        deviceBrowserBtn.setAccelerator(KeyStroke.getKeyStroke('B', Event.CTRL_MASK));
+        deviceBrowserBtn.setAccelerator(KeyStroke.getKeyStroke('B', MouseEvent.CTRL_MASK));
 
         expandBtn.setMnemonic('E');
-        expandBtn.setAccelerator(KeyStroke.getKeyStroke('E', Event.CTRL_MASK));
+        expandBtn.setAccelerator(KeyStroke.getKeyStroke('E', MouseEvent.CTRL_MASK));
 
         //	Search menu
         toolsMenu.setMnemonic('T');
-        multiServersCmdItem.setAccelerator(KeyStroke.getKeyStroke('M', Event.CTRL_MASK));
-        jiveMenuItem.setAccelerator(KeyStroke.getKeyStroke('J', Event.CTRL_MASK));
-        logviewerMenuItem.setAccelerator(KeyStroke.getKeyStroke('L', Event.CTRL_MASK));
+        multiServersCmdItem.setAccelerator(KeyStroke.getKeyStroke('M', MouseEvent.CTRL_MASK));
+        jiveMenuItem.setAccelerator(KeyStroke.getKeyStroke('J', MouseEvent.CTRL_MASK));
+        logviewerMenuItem.setAccelerator(KeyStroke.getKeyStroke('L', MouseEvent.CTRL_MASK));
         multiServersCmdItem.setEnabled(rwMode==READ_WRITE);
         jiveMenuItem.setEnabled(rwMode!=READ_ONLY);
         accessControlBtn.setEnabled(rwMode!=READ_ONLY);
@@ -256,7 +256,7 @@ public class Astor extends JFrame implements AstorDefs {
         cmdMenu.setMnemonic('C');
         cmdMenu.setEnabled(rwMode!=READ_ONLY);
 
-        newHostBtn.setAccelerator(KeyStroke.getKeyStroke('H', Event.CTRL_MASK));
+        newHostBtn.setAccelerator(KeyStroke.getKeyStroke('H', MouseEvent.CTRL_MASK));
 
         nb_def_tools = toolsMenu.getItemCount();
         buildToolsItems();
@@ -274,7 +274,7 @@ public class Astor extends JFrame implements AstorDefs {
     private void manageAccessControlMenu(boolean isAccessControlled) {
         if (isAccessControlled) {
             accessControlBtn.setMnemonic('A');
-            accessControlBtn.setAccelerator(KeyStroke.getKeyStroke('A', Event.CTRL_MASK));
+            accessControlBtn.setAccelerator(KeyStroke.getKeyStroke('A', MouseEvent.CTRL_MASK));
             accessControlBtn.setVisible(true);
             System.out.println("AccessControl is active");
         } else {   //  Service does not exist !
@@ -711,7 +711,7 @@ public class Astor extends JFrame implements AstorDefs {
         if (dlg.showDialog() == JOptionPane.OK_OPTION) {
             knownTangoHosts = dlg.getTextLines();
             try {
-                AstorUtil.saveUserKownTangoHost(knownTangoHosts);
+                AstorUtil.saveUserKnownTangoHost(knownTangoHosts);
             }
             catch(DevFailed e) {
                 ErrorPane.showErrorMessage(this, null, e);
@@ -1007,11 +1007,11 @@ public class Astor extends JFrame implements AstorDefs {
         String item = evt.getActionCommand();
 
         if (item.equals(principleBtn.getText()))
-            Utils.popupMessage(this, "", img_path + "principle.gif");
+            Utils.popupMessage(this, "", "principle.gif");
         else if (item.equals(distributionBtn.getText()))
             new HostsScanThread(this, tree.hosts).start();
         else if (item.equals(stateIconsBtn.getText()))
-            Utils.popupMessage(this, "", img_path + "astor_state_icons.jpg");
+            Utils.popupMessage(this, "", "astor_state_icons.jpg");
         else if (item.equals(releaseNoteBtn.getText()))
             new PopupHtml(this).show(ReleaseNote.str);
         else if (item.equals(tangorbBtn.getText()))
@@ -1053,7 +1053,7 @@ public class Astor extends JFrame implements AstorDefs {
                         revNumber +
                         "\n\n" +
                         "Pascal Verdier - Software Engineering Group - ESRF";
-        Utils.popupMessage(this, message, img_path + "tango_icon.jpg");
+        Utils.popupMessage(this, message, "tango_icon.jpg");
 	}
     //======================================================================
     //======================================================================

@@ -60,6 +60,7 @@ import java.util.StringTokenizer;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class ServArchitectureDialog extends JDialog {
 
     private String servname;
@@ -611,7 +612,6 @@ public class ServArchitectureDialog extends JDialog {
 
 
     //===============================================================
-
     /**
      * Class to define TANGO Server object
      */
@@ -627,12 +627,10 @@ public class ServArchitectureDialog extends JDialog {
             this.desc = "";
 
             try {
-                TangoServerRelease  serverRelease = new TangoServerRelease(name);
-
                 String admin = "dserver/" + name;
                 DeviceInfo info = new DbDevice(admin).get_info();
                 desc = info.toString();
-                textArea.setText(desc + "\n\n"+ serverRelease.toStringFull());
+                textArea.setText(desc + "\n\n"+ new TangoServerRelease(name).toStringFull());
             } catch (DevFailed e) { /** Nothing to do **/}
         }
 
@@ -858,7 +856,6 @@ public class ServArchitectureDialog extends JDialog {
 
 
     //===============================================================
-
     /**
      * Renderer Class
      */
@@ -879,11 +876,10 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            root_icon = new ImageIcon(getClass().getResource(AstorDefs.img_path + "network5.gif"));
-
-            class_icon = new ImageIcon(getClass().getResource(AstorDefs.img_path + "class.gif"));
-            prop_icon = new ImageIcon(getClass().getResource(AstorDefs.img_path + "attleaf.gif"));
-            leaf_icon = new ImageIcon(getClass().getResource(AstorDefs.img_path + "uleaf.gif"));
+            root_icon = Utils.getInstance().getIcon("TangoLogo.gif", 0.15);
+            class_icon = Utils.getInstance().getIcon("class.gif");
+            prop_icon = Utils.getInstance().getIcon("attleaf.gif");
+            leaf_icon = Utils.getInstance().getIcon("uleaf.gif");
 
             fonts = new Font[PROP_DESC + 1];
             fonts[TITLE] = new Font("helvetica", Font.BOLD, 18);

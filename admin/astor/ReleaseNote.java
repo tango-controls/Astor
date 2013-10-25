@@ -31,8 +31,16 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Fri Aug 30 16:31:48 CEST 2013)" + 
+			"(Generated Fri Oct 25 12:41:40 CEST 2013)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.4.1 -  25/10/13:</li></b>" +
+			"	Replace dancers by official Tango logo.<br>" +
+			"	Cleanup part of code.<br>" +
+
+		"<br><li><b>Astor-6.4.0 -  24/09/13:</li></b>" +
+			"	Fix a problem in Tango releases help.<br>" +
+			"	fix a problem on resize with java-7<br>" +
 
 		"<br><li><b>Astor-6.3.9 -  30/08/13:</li></b>" +
 			"	Fix problem in pool threads management using new syntax.<br>" +

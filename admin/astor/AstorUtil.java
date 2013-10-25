@@ -43,6 +43,7 @@ package admin.astor;
 
 
 import admin.astor.tools.MySqlUtil;
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.ErrSeverity;
 import fr.esrf.TangoApi.*;
@@ -136,14 +137,13 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     public void initIcons() {
-        state_icons[unknown] = new ImageIcon(getClass().getResource(img_path + "greyball.gif"));
-        state_icons[faulty] = new ImageIcon(getClass().getResource(img_path  + "redball.gif"));
-        state_icons[alarm] = new ImageIcon(getClass().getResource(img_path   + "orangebal.gif"));
-        state_icons[all_ok] = new ImageIcon(getClass().getResource(img_path  + "greenbal.gif"));
-        state_icons[moving] = new ImageIcon(getClass().getResource(img_path  + "blueball.gif"));
-        state_icons[failed] = new ImageIcon(getClass().getResource(img_path  + "failed.gif"));
+        state_icons[unknown] = Utils.getInstance().getIcon("greyball.gif");
+        state_icons[faulty]  = Utils.getInstance().getIcon("redball.gif");
+        state_icons[alarm]   = Utils.getInstance().getIcon("orangebal.gif");
+        state_icons[all_ok]  = Utils.getInstance().getIcon("greenbal.gif");
+        state_icons[moving]  = Utils.getInstance().getIcon("blueball.gif");
+        state_icons[failed]  = Utils.getInstance().getIcon("failed.gif");
     }
-
     //===============================================================
     //===============================================================
     public boolean isSuperTango() {
@@ -291,7 +291,7 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
-    public static void saveUserKownTangoHost(List<String> list) throws DevFailed {
+    public static void saveUserKnownTangoHost(List<String> list) throws DevFailed {
 
         //  Build the line
         final String tag = "KnownTangoHosts:";
@@ -1091,12 +1091,12 @@ public class AstorUtil implements AstorDefs {
         myBar.setProgressBarColors(Color.gray, Color.lightGray, Color.darkGray);
 
         if (tango_icon == null)
-            tango_icon = new ImageIcon(
-                    getInstance().getClass().getResource(img_path + "CollaborationSplash.gif"));
+            tango_icon =  Utils.getInstance().getIcon("CollaborationSplash.gif");
         splash = new Splash(tango_icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");
         splash_progress = 0;
+        splash.setAlwaysOnTop(true);
         splash.setVisible(true);
         splash.repaint();
     }

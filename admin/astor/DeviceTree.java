@@ -297,7 +297,7 @@ public class DeviceTree extends JTree implements AstorDefs {
         //	do not collapse if Root
         if (path.getPathCount() == 1) {
             setExpandedState(new TreePath(node.getPath()), true);
-            Utils.popupMessage(appli, cs.toString(), img_path + "tango_icon.jpg");
+            Utils.popupMessage(appli, cs.toString(), "tango_icon.jpg");
         }
     }
 
@@ -454,11 +454,9 @@ public class DeviceTree extends JTree implements AstorDefs {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            //tangoIcon = new ImageIcon(getClass().getResource(img_path + "tango_icon.jpg"));
-            tangoIcon = new ImageIcon(getClass().getResource(img_path + "network5.gif"));
-
-            serv_icon = new ImageIcon(getClass().getResource(img_path + "server.gif"));
-            dev_icon = new ImageIcon(getClass().getResource(img_path + "device.gif"));
+            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.15);
+            serv_icon = Utils.getInstance().getIcon("server.gif");
+            dev_icon = Utils.getInstance().getIcon("device.gif");
             fonts = new Font[2];
             fonts[TITLE] = new Font("helvetica", Font.BOLD, 18);
             fonts[LEAF] = new Font("helvetica", Font.PLAIN, 12);

@@ -460,8 +460,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         try {
             if (dbServer == null)
                 dbServer = new DbServer(name);
-            //	Prepeare text
-            //------------------------
+            //	Prepare text
             String[] classes = dbServer.get_class_list();
             StringBuilder sb = new StringBuilder(
                     "<FONT SIZE=+2>Tango Device Server " +
@@ -476,10 +475,6 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 //	append URL doc location
                 if (prop[2].equals(DocLocationUnknown))
                     sb.append(DocLocationUnknown + "<Br><Br>\n");
-                    //{
-                    //	sb.append("<a href=\"" + DefaultDocLocation + "\">\n	");
-                    //	sb.append(DefaultDocLocation + "</a>\n<Br><Br>\n");
-                    //}
                 else {
                     sb.append("<a href=\"").append(prop[2]).append("\">\n	");
                     sb.append(prop[2]).append("</a>\n<Br><Br>\n");
