@@ -119,7 +119,6 @@ public class TACobject extends DeviceProxy implements AstorDefs {
     }
 
     //======================================================
-
     /**
      * A thread class to control device.
      */
@@ -127,10 +126,17 @@ public class TACobject extends DeviceProxy implements AstorDefs {
     private class StateThread extends Thread {
         //===============================================================
         //===============================================================
+        private StateThread() {
+            setName("TAC State Thread");
+        }
+        //===============================================================
+        //===============================================================
         private synchronized void wait_next_loop() {
             try {
                 wait(AstorDefs.PollPeriod);
-            } catch (InterruptedException e) { /* */ }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         //===============================================================
@@ -150,14 +156,14 @@ public class TACobject extends DeviceProxy implements AstorDefs {
             int tmp_state;
             DevFailed tmp_except;
 
-            //	Try to ping database
+            //	Try to ping TAC
             try {
                 ping();
 
                 tmp_state = all_ok;
                 tmp_except = null;
             } catch (DevFailed e) {
-                //	If exception catched, save it
+                //	If exception caught, save it
                 tmp_state = faulty;
                 tmp_except = e;
             }

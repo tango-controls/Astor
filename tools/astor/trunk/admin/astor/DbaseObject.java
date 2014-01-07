@@ -164,6 +164,7 @@ public class DbaseObject implements AstorDefs {
         //===============================================================
         //===============================================================
         private DbaseState() {
+            setName("Database State Thread");
             int idx = tango_host.indexOf(":");
             host = tango_host.substring(0, idx);
             port = tango_host.substring(idx + 1);
