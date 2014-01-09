@@ -441,11 +441,11 @@ public class MultiServerCommand extends JDialog {
             command = "DevStop";
 
         //	Ask to confirm
-        long tmpDeleay = getDelayBetweenServers(
+        long tmpDelay = getDelayBetweenServers(
                 "Send " + command + "  on all selected servers:",
                 delayBetweenServers);
-        if (tmpDeleay > 0) {
-            delayBetweenServers = tmpDeleay;
+        if (tmpDelay > 0) {
+            delayBetweenServers = tmpDelay;
             new CommandThread(this, command, servNames, delayBetweenServers).start();
         }
     }
@@ -475,7 +475,7 @@ public class MultiServerCommand extends JDialog {
         //======================================================
         public void run() {
             component.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (String servName : servNames) {
 
                 try {

@@ -31,8 +31,18 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Fri Oct 25 12:41:40 CEST 2013)" + 
+			"(Generated Thu Jan 09 15:33:10 CET 2014)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.4.4 -  09/01/14:</li></b>" +
+			"	Fix a problem on starter properties (HostUsage and Family)<br>" +
+			"	Clean compilation warnings.<br>" +
+
+		"<br><li><b>Astor-6.4.3 -  07/01/14:</li></b>" +
+			"	Remove warning on tools launch.<br>" +
+
+		"<br><li><b>Astor-6.4.2 -  29/10/13:</li></b>" +
+			"	Try to fix infinite ping loop.<br>" +
 
 		"<br><li><b>Astor-6.4.1 -  25/10/13:</li></b>" +
 			"	Replace dancers by official Tango logo.<br>" +

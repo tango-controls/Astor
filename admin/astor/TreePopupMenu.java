@@ -42,6 +42,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -136,7 +137,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     //===============================================================
     private void buildBtnPopupMenu() {
         JLabel title = new JLabel("Host Control :");
-        title.setFont(new java.awt.Font("Dialog", 1, 16));
+        title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
         add(title);
         add(new JPopupMenu.Separator());
 

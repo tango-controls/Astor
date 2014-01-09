@@ -66,7 +66,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.4.1  -  Fri Oct 25 12:41:40 CEST 2013";
+            "6.4.4  -  Thu Jan 09 15:33:09 CET 2014";
     /**
      * JTree object to display control system.
      */
@@ -865,39 +865,47 @@ public class Astor extends JFrame implements AstorDefs {
      * @param evt mouse event
      */
     //======================================================================
-    @SuppressWarnings({"ConstantConditions"})
     private void toolsItemActionPerformed(java.awt.event.ActionEvent evt) {
-        String name = evt.getActionCommand();
-        for (OneTool app : app_tools) {
-            if (app.name.equals(name)) {
-                try {
-                    System.out.println("Starting " + app.classname);
+        String toolName = evt.getActionCommand();
+        try {
+            OneTool toolApplication = getToolApplication(toolName);
+            System.out.println("Starting " + toolApplication.classname);
 
-                    //	Check if tool is already instanced.
-                    if (app.jframe == null) {
-                        //	Retrieve class name
-                        Class clazz = Class.forName(app.classname);
-
-                        //	And build object
-                        Class[] params = new Class[] { JFrame.class };
-                        //noinspection unchecked
-                        Constructor constructor = clazz.getConstructor(params);
-                        if (constructor!=null) {
-                            // ----------------- Java 5 -----------------
-                            JFrame jf = (JFrame) constructor.newInstance(this);
-                            app.setJFrame(jf);
-                        }
-                        else
-                            throw new Exception("Cannot find constructor for " + app.classname);
-                    }
-                    app.jframe.setVisible(true);
-                } catch (Exception e) {
-                    ErrorPane.showErrorMessage(this, null, e);
-                }
+            //	Check if tool is already instanced.
+            if (toolApplication.jframe != null) {
+                toolApplication.jframe.setVisible(true);
             }
+            else {
+                //	Retrieve class name
+                Class	_class = Class.forName(toolApplication.classname);
+                boolean found = false;
+
+                //	And build object
+                Constructor[] constructors = _class.getDeclaredConstructors();
+                for (Constructor constructor : constructors) {
+                    Class[] parameterTypes = constructor.getParameterTypes();
+                    if (parameterTypes.length==1 && parameterTypes[0]==JFrame.class) {
+                        toolApplication.setJFrame((JFrame) constructor.newInstance(this));
+                        toolApplication.jframe.setVisible(true);
+                        found = true;
+                    }
+                }
+                if (!found)
+                    throw new Exception("Cannot find constructor for " + toolApplication.classname);
+            }
+        } catch (Exception e) {
+            ErrorPane.showErrorMessage(this, null, e);
         }
     }
 
+    //======================================================================
+    //======================================================================
+    private OneTool getToolApplication(String name) throws Exception {
+        for (OneTool oneTool : app_tools)
+            if (oneTool.name.equals(name))
+                return oneTool;
+        throw new Exception(name + " tool not found");
+    }
     //======================================================================
     //======================================================================
     void removeHost(String hostname) {
@@ -965,9 +973,9 @@ public class Astor extends JFrame implements AstorDefs {
 
     //======================================================================
     //======================================================================
-    void editHostProperties(TangoHost h) {
+    void editHostProperties(TangoHost host) {
         NewStarterDialog dialog
-                = new NewStarterDialog(this, h, tree.getCollectionList(), tree.hosts, false);
+                = new NewStarterDialog(this, host, tree.getCollectionList(), tree.hosts, false);
         dialog.setVisible(true);
     }
 
