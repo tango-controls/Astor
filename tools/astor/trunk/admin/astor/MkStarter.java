@@ -48,7 +48,6 @@ import fr.esrf.TangoDs.Except;
 
 
 public class MkStarter {
-    private final int polling_period = 1000;
     private final String[] polled_obj_names = {
             "HostState", "RunningServers", "StoppedServers"
     };
@@ -64,9 +63,9 @@ public class MkStarter {
     private String classname = "Starter";
     private String servname;
     private String devname;
-    private String admindev;
     private DeviceProxy dev;
 
+    private static final int polling_period = 1000;
     //===============================================================
     //===============================================================
     public MkStarter() throws DevFailed {
@@ -74,7 +73,6 @@ public class MkStarter {
 
         servname = classname + "/" + hostname;
         devname = "tango/admin/" + hostname;
-        admindev = "dserver/" + classname + "/" + hostname;
     }
 
     //===============================================================
@@ -87,7 +85,6 @@ public class MkStarter {
 
         servname = classname + "/" + hostname;
         devname = "tango/admin/" + hostname;
-        admindev = "dserver/" + classname + "/" + hostname;
     }
 
     //===============================================================
@@ -100,17 +97,12 @@ public class MkStarter {
             new DeviceProxy(devname);
             exists = true;
         } catch (DevFailed e) {
+            //  nothing
         }
         if (exists)
             Except.throw_exception("DeviceAlreadyExists",
                     servname + " is already exits in database.",
                     "MkStarter.MkStarter()");
-
-        //	create server info
-        System.out.println("Create server " + servname);
-        DbDevInfo[] devinfo = new DbDevInfo[2];
-        devinfo[0] = new DbDevInfo(admindev, classname, servname);
-        devinfo[1] = new DbDevInfo(devname, classname, servname);
 
         //	create the new Starter server
         Database db = ApiUtil.get_db_obj();
@@ -128,31 +120,18 @@ public class MkStarter {
         String[] valStr = new String[3];
         valStr[0] = "WARNING";
         valStr[1] = "file::/tmp/ds.log/starter_" + hostname + ".log";
-        valStr[2] = new Integer(500).toString();
+        valStr[2] = Integer.toString(500);
         DbDatum[] datum = new DbDatum[logging_properties.length];
         for (int i = 0; i < logging_properties.length; i++)
             datum[i] = new DbDatum(logging_properties[i], valStr[i]);
         dev.put_property(datum);
 
-
         //	Manage Attribute Polling
         setPollProperty();
 
-
         //	Manage use events if needed.
-        if (use_events) {
-            DbDatum data = new DbDatum("UseEvents", 1);
-            dev.put_property(data);
-
-            DbAttribute att = new DbAttribute("HostState");
-            att.add("abs_change", 1);
-            dev.put_attribute_property(att);
-
-            System.out.println("Starter will use events");
-        } else {
-            DbDatum data = new DbDatum("UseEvents", 0);
-            dev.put_property(data);
-        }
+        DbDatum data = new DbDatum("UseEvents", (use_events)?1:0);
+        dev.put_property(data);
     }
 
     //===============================================================
@@ -172,16 +151,14 @@ public class MkStarter {
 
     //===============================================================
     //===============================================================
-    public void setAdditionalProperties(String usage, String family) throws DevFailed {
-        //	Set usage property
-        if (usage.length() > 0)
-            dev.put_property(new DbDatum(AstorDefs.usage_property, usage));
-
-        //	add host family property
-        if (family.length() > 0)
-            dev.put_property(new DbDatum(AstorDefs.collec_property, family));
+    public void setAdditionalProperties(String propertyName, String propertyValue, boolean create) throws DevFailed {
+        //	Set  property
+        if (propertyValue.length() > 0)
+            dev.put_property(new DbDatum(propertyName, propertyValue));
+        else
+        if (!create)
+            dev.delete_property(propertyName);
     }
-
     //===============================================================
     //===============================================================
     private void getEnvironment() throws DevFailed {

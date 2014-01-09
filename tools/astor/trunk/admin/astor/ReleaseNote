@@ -11,6 +11,16 @@
 #
 #-======================================================================
 
+Astor-6.4.4 -  09/01/14:
+	Fix a problem on starter properties (HostUsage and Family)
+	Clean compilation warnings.
+
+Astor-6.4.3 -  07/01/14:
+	Remove warning on tools launch.
+
+Astor-6.4.2 -  29/10/13:
+	Try to fix infinite ping loop.
+
 Astor-6.4.1 -  25/10/13:
 	Replace dancers by official Tango logo.
 	Cleanup part of code.

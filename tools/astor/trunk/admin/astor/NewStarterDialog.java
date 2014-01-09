@@ -50,11 +50,12 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.util.ArrayList;
 
+@SuppressWarnings("MagicConstant")
 public class NewStarterDialog extends JDialog implements AstorDefs {
 
     private Astor parent;
     private TangoHost[] hosts;
-    private TangoHost h;
+    private TangoHost host;
     private ArrayList<String> collec;
     private int retVal = JOptionPane.CANCEL_OPTION;
     private boolean creating;
@@ -64,10 +65,10 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     private boolean getUseEvents() {
         //	Check if use events
         //	Do not use host field because it could
-        //	have been reseted if notifd is stopped !!!!!
+        //	have been reset if notifd is stopped !!!!!
         boolean ue = false;
         try {
-            DbDatum data = h.get_property("UseEvents");
+            DbDatum data = host.get_property("UseEvents");
             if (!data.is_empty())
                 ue = data.extractBoolean();
         } catch (Exception e) { /* */ }
@@ -79,34 +80,34 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
 	 *	Creates new NewStarterDialog for editing properties
 	 */
     //======================================================================
-    public NewStarterDialog(Astor parent, TangoHost h,
-                            ArrayList<String> collec, TangoHost[] hosts, boolean creating) {
+    public NewStarterDialog(Astor parent, TangoHost host,
+                            ArrayList<String> collectionList, TangoHost[] hosts, boolean creating) {
         super(parent, true);
         this.parent = parent;
         this.hosts = hosts;
         this.creating = creating;
         //	Take Off Database (first one)
         this.collec = new ArrayList<String>();
-        for (int i = 1; i < collec.size(); i++)
-            this.collec.add(collec.get(i));
+        for (int i = 1; i < collectionList.size(); i++)
+            this.collec.add(collectionList.get(i));
 
         initComponents();
 
-        //	Init text fields with h object fields
-        this.h = h;
-        if (h != null) {
-            String hostname = h.getName();
-            String[] ds_path = h.getPath();
+        //	Init text fields with host object fields
+        this.host = host;
+        if (host != null) {
+            String hostname = host.getName();
+            String[] ds_path = host.getPath();
             for (String path : ds_path)
                 pathText.append(path + "\n");
 
-            usageText.setText(h.usage);
-            familyText.setText(h.getFamily());
+            usageText.setText(host.usage);
+            familyText.setText(host.getFamily());
             hostText.setText(hostname);
 
             useEventsBtn.setSelected(getUseEvents());
             if (creating) {
-                familyText.setText(h.getFamily());
+                familyText.setText(host.getFamily());
                 hostText.setText(hostname);
                 hostText.select(0, hostname.length());
             } else {
@@ -374,16 +375,17 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
                 starter.create();
             starter.setProperties();
 
-            //	Set usage and family propertes
-            starter.setAdditionalProperties(usage, family);
+            //	Set usage and family properties
+            starter.setAdditionalProperties(AstorDefs.usage_property, usage, creating);
+            starter.setAdditionalProperties(AstorDefs.collec_property, family,creating);
 
             //	And if not creating set usage to Host object
-            if (h != null && !creating)
-                if (!usage.equals(h.usage)) {
-                    h.usage = usage;
+            if (host != null && !creating)
+                if (!usage.equals(host.usage)) {
+                    host.usage = usage;
                     //	Re-create node to resize.
                     Astor astor = parent;
-                    astor.tree.changeHostNode(h);
+                    astor.tree.changeHostNode(host);
                 }
 
             String message;

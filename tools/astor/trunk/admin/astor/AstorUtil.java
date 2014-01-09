@@ -80,16 +80,14 @@ public class AstorUtil implements AstorDefs {
     private static boolean jiveReadOnly = false;
     private static boolean starterStartup = true;
     private static boolean properties_read = false;
-    private static boolean debug = false;
     private static String[] helps;
 
     private static final String starterStartupPropName = "StartServersAtStartup";
-    private static final String[] astor_propnames = {
-            "Debug",
-            "LastCollections",
+    private static final String[] astorPropertyNames = {
             "RloginCmd",
             "RloginUser",
             "JiveReadOnly",
+            "LastCollections",
             "KnownTangoHosts",
             "PreferredSize",
             "HostDialogPreferredSize",
@@ -175,12 +173,13 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
+    /*
     static boolean getDebug() {
         if (!properties_read)
             readAstorProperties();
         return debug;
     }
-
+    */
     //===============================================================
     //===============================================================
     public static String getRloginCmd() {
@@ -460,49 +459,53 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"NestedTryStatement"})
+    private static String getStringProperty(DbDatum datum) {
+        if (datum.is_empty())
+            return null;
+        else
+            return datum.extractString();
+    }
+    //===============================================================
+    //===============================================================
+    private static String[] getStringArrayProperty(DbDatum datum) {
+        if (datum.is_empty())
+            return null;
+        else
+            return datum.extractStringArray();
+    }
+    //===============================================================
+    //===============================================================
     static public void readAstorProperties() {
         try {
-            //	Get database instance
-            //----------------------------------
-            Database dbase = ApiUtil.get_db_obj();
             //	get Astor Property
-            //----------------------------------
-            DbDatum[] data = dbase.get_property("Astor", astor_propnames);
-            int i = -1;
-            if (!data[++i].is_empty())
-                debug = data[i].extractBoolean();
-            if (!data[++i].is_empty())
-                lastCollections = data[i].extractStringArray();
-            if (!data[++i].is_empty())
-                rloginCmd = data[i].extractString();
-            if (!data[++i].is_empty())
-                rloginUser = data[i].extractString();
-            if (!data[++i].is_empty())
-                jiveReadOnly = data[i].extractBoolean();
-            if (!data[++i].is_empty())
-                known_tango_hosts = data[i].extractStringArray();
-            if (!data[++i].is_empty()) {
-                String[] s = data[i].extractStringArray();
-                try {
-                    int width = Integer.parseInt(s[0]);
-                    int height = Integer.parseInt(s[1]);
-                    preferred_size = new Dimension(width, height);
-                } catch (NumberFormatException e) { /* */ }
-            }
-            if (!data[++i].is_empty()) {
-                String[] s = data[i].extractStringArray();
-                try {
-                    int width = Integer.parseInt(s[0]);
-                    int height = Integer.parseInt(s[1]);
-                    host_dlg_preferred_size = new Dimension(width, height);
-                } catch (NumberFormatException e) { /* */ }
-            }
-            if (!data[++i].is_empty())
-                tools = data[i].extractStringArray();
-            if (!data[++i].is_empty())
-                helps = data[i].extractStringArray();
+            DbDatum[] data = ApiUtil.get_db_obj().get_property("Astor", astorPropertyNames);
+            String   s;
+            String[] array;
+            int i = 0;
+            rloginCmd = getStringProperty(data[i++]);
+            rloginUser = getStringProperty(data[i++]);
+            s = getStringProperty(data[i++]);
+            if (s!=null)
+                jiveReadOnly = (s.equals("true")||s.equals("1"));
 
+            lastCollections = getStringArrayProperty(data[i++]);
+            known_tango_hosts = getStringArrayProperty(data[i++]);
+            array = getStringArrayProperty(data[i++]);
+            try {
+                int width = Integer.parseInt(array[0]);
+                int height = Integer.parseInt(array[1]);
+                preferred_size = new Dimension(width, height);
+            } catch (NumberFormatException e) { /* */ }
+
+            array = getStringArrayProperty(data[i++]);
+            try {
+                int width = Integer.parseInt(array[0]);
+                int height = Integer.parseInt(array[1]);
+                host_dlg_preferred_size = new Dimension(width, height);
+            } catch (NumberFormatException e) { /* */ }
+
+            tools = getStringArrayProperty(data[i++]);
+            helps = getStringArrayProperty(data[i]);
 
             //  Get Starter startup mode property
             DbClass dbClass = new DbClass("Starter");
@@ -517,55 +520,29 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     static void putAstorProperties() throws DevFailed {
-        //	Get database instance
-        //----------------------------------
-        Database dbase = ApiUtil.get_db_obj();
         //	get Astor Property
-        //----------------------------------
-        DbDatum[] data = new DbDatum[astor_propnames.length];
+        DbDatum[] data = new DbDatum[astorPropertyNames.length];
         int i = 0;
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(debug);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(lastCollections);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(rloginCmd);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(rloginUser);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(jiveReadOnly);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(known_tango_hosts);
-
-        data[i] = new DbDatum(astor_propnames[i]);
-        String[] size_str = {
+        data[i++] = new DbDatum(astorPropertyNames[i], rloginCmd);
+        data[i++] = new DbDatum(astorPropertyNames[i], rloginUser);
+        data[i++] = new DbDatum(astorPropertyNames[i], jiveReadOnly);
+        data[i++] = new DbDatum(astorPropertyNames[i], lastCollections);
+        data[i++] = new DbDatum(astorPropertyNames[i], known_tango_hosts);
+        data[i++] = new DbDatum(astorPropertyNames[i], new String[]  {
                 Integer.toString(preferred_size.width),
                 Integer.toString(preferred_size.height),
-        };
-        data[i++].insert(size_str);
+        });
 
-        data[i] = new DbDatum(astor_propnames[i]);
-        String[] host_dlg_size_str = {
+        data[i++] = new DbDatum(astorPropertyNames[i], new String[] {
                 Integer.toString(host_dlg_preferred_size.width),
                 Integer.toString(host_dlg_preferred_size.height),
-        };
-        data[i++].insert(host_dlg_size_str);
+        });
+        data[i++] = new DbDatum(astorPropertyNames[i], tools);
+        data[i]   = new DbDatum(astorPropertyNames[i], helps);
 
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i++].insert(tools);
+        ApiUtil.get_db_obj().put_property("Astor", data);
 
-        data[i] = new DbDatum(astor_propnames[i]);
-        data[i].insert(helps);
-
-        dbase.put_property("Astor", data);
-
-
-        //  Add Starter startup mode property
+        //  Add Starter startup mode class property
         DbDatum datum = new DbDatum(starterStartupPropName);
         datum.insert(starterStartup);
         DbClass dbClass = new DbClass("Starter");
@@ -803,10 +780,6 @@ public class AstorUtil implements AstorDefs {
             readInfoPeriod *= 1000;    //	sec -> ms
         } catch (DevFailed e) {
             Except.print_exception(e);
-        }
-        if (getDebug()) {
-            System.out.println("NbStartupLevels:  " + nbStartupLevels);
-            System.out.println("ReadInfoDbPeriod: " + readInfoPeriod);
         }
     }
 
