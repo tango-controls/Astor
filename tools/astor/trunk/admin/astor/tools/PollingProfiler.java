@@ -445,57 +445,81 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         manageDataViews(nb);
 
         //  Update curves
-        double xmin = now;
-        double x;
+        double xMin = now;
         double y;
 
-        double y_min = 0;
-        double y_max = 0;
-        for (int i = 0; i < nb; i++) {
-            PolledElement pe = poll_status.get(i);
+        double[] yMinMax =  new double[] { 0, 0 };
+        int i = 0;
+        for (PolledElement polledElement : poll_status) {
             switch (display_mode) {
                 case HISTORY:
-                    x = now - pe.last_update;
-                    y = 1 + 0.1 * i;
-                    data[i].add(x, 0);
-                    data[i].add(x, y);
-                    data[i].add(x - pe.reading_time, y);
-                    data[i].add(x - pe.reading_time, 0);
-
-                    if (x < xmin) xmin = x;
-                    for (int real_period : pe.realPeriods) {
-                        x -= real_period;
-                        data[i].add(x, 0);
-                        data[i].add(x, y);
-                        data[i].add(x - pe.reading_time, y);
-                        data[i].add(x - pe.reading_time, 0);
-                        if (x < xmin) xmin = x;
-                    }
+                    xMin = updateHistory(polledElement, i, xMin);
                     break;
                 case POLL_DRIFT:
-                    if (pe.polled)
-                        if (pe.realPeriods.length == 0) {
-                            System.out.println("pe.realPeriods.length=0");
-                            y = 0.0;
-                        } else {
-                            y = pe.realPeriods[0] - pe.period;
-                        }
-                    else
-                        y = 0.0;    //	External triggered
-                    data[i].add((double) i, y);
-                    if (y > y_max) y_max = y;
-                    if (y < y_min) y_min = y;
-
+                    yMinMax = updateDrift(polledElement, i, yMinMax);
                     break;
                 case DURATION:
-                    if (pe.polled)
-                        y = pe.reading_time;
+                    if (polledElement.polled)
+                        y = polledElement.reading_time;
                     else
                         y = 0.0;    //	External triggered
                     data[i].add((double) i, y);
                     break;
             }
+            i++;
         }
+        manageMinMax(yMinMax);
+        poll_info.display();
+        doRepaint();
+    }
+
+    //===============================================================
+    //===============================================================
+    private double[] updateDrift(PolledElement polledElement, int i, double[] yMinMax) {
+        double y;
+        if (polledElement.polled)
+            if (polledElement.realPeriods.length == 0) {
+                System.out.println("pe.realPeriods.length=0");
+                y = 0.0;
+            } else {
+                y = polledElement.realPeriods[0] - polledElement.period;
+            }
+        else
+            y = 0.0;    //	External triggered
+        data[i].add((double) i, y);
+        if (y < yMinMax[0]) yMinMax[0] = y;
+        if (y > yMinMax[1]) yMinMax[1] = y;
+
+        return yMinMax;
+    }
+
+    //===============================================================
+    //===============================================================
+    private double updateHistory(PolledElement polledElement, int i, double xMin) {
+
+        double x = now - polledElement.last_update;
+        double y = 1 + 0.1 * i;
+        data[i].add(x, 0);
+        data[i].add(x, y);
+        data[i].add(x - polledElement.reading_time, y);
+        data[i].add(x - polledElement.reading_time, 0);
+
+        if (x < xMin) xMin = x;
+        for (int real_period : polledElement.realPeriods) {
+            x -= real_period;
+            data[i].add(x, 0);
+            data[i].add(x, y);
+            data[i].add(x - polledElement.reading_time, y);
+            data[i].add(x - polledElement.reading_time, 0);
+            if (x < xMin) xMin = x;
+        }
+        return xMin;
+    }
+    //===============================================================
+    //===============================================================
+    private void manageMinMax(double[] yMinMax) {
+        int nb = poll_status.size();
+        double xmin = now;
         switch (display_mode) {
             case HISTORY:
                 xmin -= 1000.0;
@@ -507,7 +531,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             case POLL_DRIFT:
                 x_axis.setMinimum(-.05);
                 x_axis.setMaximum((double) nb - 0.5);
-                if (y_max < 10.0 && y_min > -10.0) {
+                if (yMinMax[0] > -10.0 &&  yMinMax[1] < 10.0) {
                     y_axis.setAutoScale(false);
                     y_axis.setMinimum(-10);
                     y_axis.setMaximum(10);
@@ -520,10 +544,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
                 x_axis.setMaximum((double) nb - 0.5);
                 break;
         }
-        poll_info.display();
-        doRepaint();
     }
-
     //===============================================================
     //===============================================================
     private void doRepaint() {
@@ -832,7 +853,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             int nb_triggered = poll_status.triggeredCount();
 
             StringBuilder sb = new StringBuilder("  ");
-
             if (nb_triggered == 0)
                 sb.append(nb_polled).append(" polled attributes.\n\n");
             else if (nb_polled == 0)
@@ -841,86 +861,109 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
                 sb.append(nb_polled).append(" polled attributes  and  ");
                 sb.append(nb_triggered).append(" triggered attributes.\n\n");
             }
+            sb.append(getDriftStatus());
+            sb.append(getDurationStatus());
+            sb.append(getLastUpdate());
 
-            boolean drift_available = false;
-            int late_drift = 0;
-            int early_drift = 0;
-            String late_drift_name = null;
-            String early_drift_name = null;
-
-            double sum_duration = 0;
-            double max_duration = 0;
-            String max_duration_name = null;
-
-            int last_update_max = 0;
-            String last_update_max_str = "";    //	formated time
-            String last_update_max_name = null;
-
-            for (PolledElement pe : poll_status) {
-                if (pe.realPeriods.length > 0) {
-                    if (pe.polled) {
-                        //	Check drifts
-
-                        int drift = pe.realPeriods[0] - pe.period;
-                        if (drift > 0) {
-                            if (drift > late_drift) {
-                                late_drift = drift;
-                                late_drift_name = pe.name;
-                            }
-                        } else if (drift < early_drift) {
-                            early_drift = drift;
-                            early_drift_name = pe.name;
+            //	Display results
+            textArea.setText(sb.toString());
+        }
+        //==========================================================
+        private String getDurationStatus() {
+            double sum = 0;
+            double max = 0;
+            String maxName = null;
+            for (PolledElement polledElement : poll_status) {
+                if (polledElement.realPeriods.length > 0) {
+                    if (polledElement.polled) {
+                        //	Check duration
+                        if (polledElement.reading_time > max) {
+                            max = polledElement.reading_time;
+                            maxName = polledElement.name;
                         }
-                        drift_available = true;
+                        sum += polledElement.reading_time;
                     }
+                }
+            }
+            //	Build Duration
+            StringBuilder   sb = new StringBuilder();
+            sb.append("\n");
+            sb.append("Duration :\n");
+            sb.append("    Maxi : ").append(formatValue(max, 2)).append(" ms");
+            if (maxName != null)
+                sb.append("	on ").append(maxName);
+            sb.append("\n");
+            sb.append("    Total: ").append(formatValue(sum, 2)).append(" ms \n");
+            return sb.toString();
+        }
+        //==========================================================
+        private String getDriftStatus() {
+            boolean available = false;
+            int late  = 0;
+            int early = 0;
+            String lateName = null;
+            String earlyName = null;
 
-                    //	Check duration
-                    if (pe.reading_time > max_duration) {
-                        max_duration = pe.reading_time;
-                        max_duration_name = pe.name;
-                    }
-                    sum_duration += pe.reading_time;
-
-                    //	Check last update
-                    if (pe.last_update > last_update_max) {
-                        last_update_max = pe.last_update;
-                        last_update_max_str = pe.last_update_str;
-                        last_update_max_name = pe.name;
+            for (PolledElement polledElement : poll_status) {
+                if (polledElement.realPeriods.length > 0) {
+                    if (polledElement.polled) {
+                        //	Check drifts
+                        int drift = polledElement.realPeriods[0] - polledElement.period;
+                        if (drift > 0) {
+                            if (drift > late) {
+                                late = drift;
+                                lateName = polledElement.name;
+                            }
+                        } else if (drift < early) {
+                            early = drift;
+                            earlyName = polledElement.name;
+                        }
+                        available = true;
                     }
                 }
             }
 
             //	Build Drift result
-            if (drift_available) {
+            StringBuilder   sb = new StringBuilder();
+            if (available) {
                 sb.append("Drift maxi :\n");
-                sb.append("    - Late : ").append(late_drift).append(" ms ");
-                if (late_drift_name != null)
-                    sb.append("	on ").append(late_drift_name);
+                sb.append("    - Late : ").append(late).append(" ms ");
+                if (lateName != null)
+                    sb.append("	on ").append(lateName);
                 sb.append("\n");
-                sb.append("    - Early: ").append(early_drift).append(" ms ");
-                if (early_drift_name != null)
-                    sb.append("	on ").append(early_drift_name);
+                sb.append("    - Early: ").append(early).append(" ms ");
+                if (earlyName != null)
+                    sb.append("	on ").append(earlyName);
                 sb.append("\n");
             }
+            return sb.toString();
+        }
+        //==========================================================
+        private String getLastUpdate() {
 
-            //	Build Duration
-            sb.append("\n");
-            sb.append("Duration :\n");
-            sb.append("    Maxi : ").append(formatValue(max_duration, 2)).append(" ms");
-            if (max_duration_name != null)
-                sb.append("	on ").append(max_duration_name);
-            sb.append("\n");
-            sb.append("    Total: ").append(formatValue(sum_duration, 2)).append(" ms \n");
+            int max = 0;
+            String time = "";    //	formatted time
+            String maxName = null;
+
+            for (PolledElement polledElement : poll_status) {
+                if (polledElement.realPeriods.length > 0) {
+                    //	Check last update
+                    if (polledElement.last_update > max) {
+                        max = polledElement.last_update;
+                        time = polledElement.last_update_str;
+                        maxName = polledElement.name;
+                    }
+                }
+            }
 
             //	Build last update
-            if (last_update_max_name != null) {
+            StringBuilder   sb = new StringBuilder();
+            if (maxName != null) {
                 sb.append("\n");
-                sb.append("Last update max	on ").append(last_update_max_name);
-                sb.append("\n    since ").append(last_update_max_str);
+                sb.append("Last update max	on ").append(maxName);
+                sb.append("\n    since ").append(time);
             }
-
-            //	Display results
-            textArea.setText(sb.toString());
+            return sb.toString();
         }
         //==========================================================
     }
