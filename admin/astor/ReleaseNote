@@ -11,7 +11,7 @@
 #
 #-======================================================================
 
-Astor-6.4.4 -  09/01/14:
+Astor-6.4.5 -  10/01/14:
 	Fix a problem on starter properties (HostUsage and Family)
 	Clean compilation warnings.
 
