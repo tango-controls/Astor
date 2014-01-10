@@ -495,14 +495,14 @@ public class AstorUtil implements AstorDefs {
                 int width = Integer.parseInt(array[0]);
                 int height = Integer.parseInt(array[1]);
                 preferred_size = new Dimension(width, height);
-            } catch (NumberFormatException e) { /* */ }
+            } catch (Exception e) { /* */ }
 
             array = getStringArrayProperty(data[i++]);
             try {
                 int width = Integer.parseInt(array[0]);
                 int height = Integer.parseInt(array[1]);
                 host_dlg_preferred_size = new Dimension(width, height);
-            } catch (NumberFormatException e) { /* */ }
+            } catch (Exception e) { /* */ }
 
             tools = getStringArrayProperty(data[i++]);
             helps = getStringArrayProperty(data[i]);
@@ -523,22 +523,22 @@ public class AstorUtil implements AstorDefs {
         //	get Astor Property
         DbDatum[] data = new DbDatum[astorPropertyNames.length];
         int i = 0;
-        data[i++] = new DbDatum(astorPropertyNames[i], rloginCmd);
-        data[i++] = new DbDatum(astorPropertyNames[i], rloginUser);
-        data[i++] = new DbDatum(astorPropertyNames[i], jiveReadOnly);
-        data[i++] = new DbDatum(astorPropertyNames[i], lastCollections);
-        data[i++] = new DbDatum(astorPropertyNames[i], known_tango_hosts);
-        data[i++] = new DbDatum(astorPropertyNames[i], new String[]  {
+        data[i] = new DbDatum(astorPropertyNames[i], rloginCmd); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], rloginUser); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], jiveReadOnly); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], lastCollections); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], known_tango_hosts); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], new String[]  {
                 Integer.toString(preferred_size.width),
                 Integer.toString(preferred_size.height),
-        });
+        }); i++;
 
-        data[i++] = new DbDatum(astorPropertyNames[i], new String[] {
+        data[i] = new DbDatum(astorPropertyNames[i], new String[] {
                 Integer.toString(host_dlg_preferred_size.width),
                 Integer.toString(host_dlg_preferred_size.height),
-        });
-        data[i++] = new DbDatum(astorPropertyNames[i], tools);
-        data[i]   = new DbDatum(astorPropertyNames[i], helps);
+        }); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], tools); i++;
+        data[i] = new DbDatum(astorPropertyNames[i], helps);
 
         ApiUtil.get_db_obj().put_property("Astor", data);
 

@@ -31,10 +31,10 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Thu Jan 09 15:33:10 CET 2014)" + 
+			"(Generated Fri Jan 10 13:55:45 CET 2014)" + 
 		"</Center><br>" + 
 
-		"<br><li><b>Astor-6.4.4 -  09/01/14:</li></b>" +
+		"<br><li><b>Astor-6.4.5 -  10/01/14:</li></b>" +
 			"	Fix a problem on starter properties (HostUsage and Family)<br>" +
 			"	Clean compilation warnings.<br>" +
 
