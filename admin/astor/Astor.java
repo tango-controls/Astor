@@ -66,7 +66,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.4.5  -  Fri Jan 10 13:55:44 CET 2014";
+            "6.4.6  -  Fri Jan 31 13:57:31 CET 2014";
     /**
      * JTree object to display control system.
      */
@@ -846,10 +846,11 @@ public class Astor extends JFrame implements AstorDefs {
             new DeviceTreeDialog(this);
 
             // ToDo
-            /*
-             * Really too slow And too much threads
+                 /*
+                  * Really too slow And too much threads
             try {
-                new TangoReleaseDialog(this).setVisible(true);
+                 new TangoReleaseDialog(this).setVisible(true);
+                 new CtrlSystemInfo(this);
             }
             catch (DevFailed e) {
                 ErrorPane.showErrorMessage(this, null, e);

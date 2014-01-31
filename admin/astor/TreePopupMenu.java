@@ -61,7 +61,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             "Remote Login",
             "Starter info",
             "Starter test",
-            "Unexport Starter device",
+            "Host info",
 
             //  Collection
             "Branch  info",
@@ -89,7 +89,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     static private final int REM_LOGIN = 1;
     static private final int STARTER_INFO = 2;
     static private final int STARTER_TEST = 3;
-    static private final int UNEXPORT_STARTER = 4;
+    static private final int HOST_INFO = 4;
 
     //	Collection menu specific
     static private final int COLLEC_INFO = 5;
@@ -235,8 +235,9 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + UPDATE).setEnabled(can_test);
             getComponent(OFFSET + BLACK_BOX).setVisible(host.state != faulty);
 
-            boolean can_unexport = (host.state == unknown);
-            getComponent(OFFSET + UNEXPORT_STARTER).setVisible(can_unexport);
+            //  Available only for ESRF :-)
+            getComponent(OFFSET + HOST_INFO).setVisible(host.hostName().startsWith("l-") &&
+                    !AstorUtil.getHostStatus().isEmpty());
 
             //  Manage for READ_ONLY mode
             if (Astor.rwMode==AstorDefs.READ_ONLY) {
@@ -271,7 +272,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 getComponent(OFFSET + EDIT_PROP).setEnabled(false);
                 getComponent(OFFSET + REMOVE_HOST).setEnabled(false);
                 getComponent(OFFSET + BLACK_BOX).setVisible(false);
-                getComponent(OFFSET + UNEXPORT_STARTER).setVisible(false);
+                getComponent(OFFSET + HOST_INFO).setVisible(false);
 
                 getComponent(OFFSET + RESET_STAT).setVisible(AstorUtil.getInstance().isSuperTango());
 
@@ -307,8 +308,10 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             case OPEN_PANEL:
                 parent.displayHostInfo();
                 break;
-            case UNEXPORT_STARTER:
-                host.unexportStarter(astor);
+            case HOST_INFO:
+                //  ToDo
+                //host.unexportStarter(astor);
+                startHostStatus(host);
                 break;
             case STARTER_TEST:
                 host.testStarter(astor);
@@ -371,6 +374,18 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             case CHANGE_NAME:
                 parent.changeNodeName();
                 break;
+        }
+    }
+    //===============================================================
+    //===============================================================
+    private void startHostStatus(TangoHost host) {
+        String className = AstorUtil.getHostStatus();
+        System.out.println(className + "  for " + host.hostName());
+        try {
+            AstorUtil.getInstance().startExternalDialogApplication(className, host.hostName());
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(new JFrame(), null, e);
         }
     }
     //===============================================================

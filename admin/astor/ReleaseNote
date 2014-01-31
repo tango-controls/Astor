@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.4.6 -  29/01/14:
+	Package ctrl_system_info added to the jar file.
+
 Astor-6.4.5 -  10/01/14:
 	Fix a problem on starter properties (HostUsage and Family)
 	Clean compilation warnings.
