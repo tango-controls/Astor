@@ -56,6 +56,8 @@ import fr.esrf.tangoatk.widget.util.Splash;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
@@ -362,6 +364,21 @@ public class AstorUtil implements AstorDefs {
         return list;
     }
     //===============================================================
+    //===============================================================
+    private static String hostStatus = null;
+    public static String getHostStatus() {
+        if (hostStatus==null) {
+            hostStatus = "";
+            try {
+                DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "_HostStatus");
+                if (!datum.is_empty())
+                    hostStatus = datum.extractString();
+            }
+            catch (DevFailed e) {/* */}
+        }
+        return hostStatus;
+    }
+    //===============================================================
     /**
      * Open a file and return text read.
      *
@@ -593,7 +610,7 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    ArrayList<String> getCollectionList(TangoHost[] hosts) {
+    public ArrayList<String> getCollectionList(TangoHost[] hosts) {
         ArrayList<String> list = new ArrayList<String>();
         for (TangoHost host : hosts) {
             //  Check if collection property is defined.
@@ -705,23 +722,7 @@ public class AstorUtil implements AstorDefs {
      */
     //===============================================================
     public String[] getHostControlledList() throws DevFailed {
-        //	Get database instance and read host list
-        String  debugHosts = System.getenv("DebugHosts");
-        if (debugHosts==null) {
-            Database dbase = ApiUtil.get_db_obj();
-            return dbase.get_device_member("tango/admin/*");
-        }
-        else {
-            StringTokenizer stk = new StringTokenizer(debugHosts, ",");
-            ArrayList<String>   list = new ArrayList<String>();
-            while (stk.hasMoreElements())
-                list.add(stk.nextToken());
-            String[]    array = new String[list.size()];
-            for (int i=0 ; i<list.size() ; i++) {
-                array[i] = list.get(i);
-            }
-            return array;
-        }
+        return ApiUtil.get_db_obj().get_device_member("tango/admin/*");
     }
 
     //===============================================================
@@ -1230,6 +1231,39 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
+    public void startExternalDialogApplication(String className, String stringParameter) throws DevFailed {
+        try {
+            //	Retrieve class name
+            Class	_class = Class.forName(className);
+            boolean found = false;
+
+            //	And build object
+            Constructor[] constructors = _class.getDeclaredConstructors();
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length==2 &&
+                    parameterTypes[0]==JFrame.class && parameterTypes[1]==String.class) {
+                    JDialog jDialog = (JDialog) constructor.newInstance(new JFrame(), stringParameter);
+                    jDialog.setVisible(true);
+                    found = true;
+                }
+            }
+            if (!found)
+                throw new Exception("Cannot find constructor for " + className);
+        }
+        catch (Exception e) {
+            if (e instanceof InvocationTargetException) {
+                InvocationTargetException   ite = (InvocationTargetException) e;
+                Throwable   throwable = ite.getTargetException();
+                System.out.println(throwable);
+                if (throwable instanceof DevFailed)
+                    throw (DevFailed) throwable;
+            }
+            Except.throw_exception(e.toString(), e.toString(), "AstorUtil.startExternalDialogApplication()");
+        }
+    }
+    //===============================================================
+    //===============================================================
 
 
 
@@ -1237,7 +1271,13 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     public static void main(String[] args) {
-        AstorUtil.getAllKnownTangoHosts();
+        //AstorUtil.getAllKnownTangoHosts();
+        try {
+            AstorUtil.getInstance().startExternalDialogApplication("host_info.HostStatus", "l-c01-1");
+        }
+        catch (DevFailed e) {
+            Except.print_exception(e);
+        }
     }
     //===============================================================
     //===============================================================

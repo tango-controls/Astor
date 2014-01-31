@@ -31,8 +31,11 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Fri Jan 10 13:55:45 CET 2014)" + 
+			"(Generated Fri Jan 31 13:57:31 CET 2014)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.4.6 -  29/01/14:</li></b>" +
+			"	Package ctrl_system_info added to the jar file.<br>" +
 
 		"<br><li><b>Astor-6.4.5 -  10/01/14:</li></b>" +
 			"	Fix a problem on starter properties (HostUsage and Family)<br>" +

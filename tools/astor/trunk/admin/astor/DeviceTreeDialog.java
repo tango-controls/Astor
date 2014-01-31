@@ -58,7 +58,7 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
     /**
      * Creates new form DeviceTreeDialog
      *
-     * @param parent the Astor parent instace
+     * @param parent the Astor parent instance
      */
     //========================================================
     public DeviceTreeDialog(Astor parent) {
@@ -76,7 +76,6 @@ public class DeviceTreeDialog extends javax.swing.JDialog {
     }
 
     //========================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
