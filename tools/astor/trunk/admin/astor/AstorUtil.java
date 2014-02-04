@@ -365,18 +365,18 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
-    private static String hostStatus = null;
-    public static String getHostStatus() {
-        if (hostStatus==null) {
-            hostStatus = "";
+    private static String hostInfoClassName = null;
+    public static String getHostInfoClassName() {
+        if (hostInfoClassName ==null) {
+            hostInfoClassName = "";
             try {
-                DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "_HostStatus");
+                DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "_HostInfo");
                 if (!datum.is_empty())
-                    hostStatus = datum.extractString();
+                    hostInfoClassName = datum.extractString();
             }
             catch (DevFailed e) {/* */}
         }
-        return hostStatus;
+        return hostInfoClassName;
     }
     //===============================================================
     /**
@@ -931,7 +931,6 @@ public class AstorUtil implements AstorDefs {
         return result;
     }
     //===============================================================
-
     /**
      * Execute a shell command and throw exception if command failed.
      *
@@ -942,13 +941,12 @@ public class AstorUtil implements AstorDefs {
     public static void executeShellCmdAndReturn(String cmd)
             throws IOException {
         System.out.println(cmd);
-        Process proc = Runtime.getRuntime().exec(cmd);
+        Process process = Runtime.getRuntime().exec(cmd);
 
-        // get command's output stream and
+        // get command output stream and
         // put a buffered reader input stream on it.
-        //-------------------------------------------
-        InputStream istr = proc.getInputStream();
-        new BufferedReader(new InputStreamReader(istr));
+        InputStream inputStream = process.getInputStream();
+        new BufferedReader(new InputStreamReader(inputStream));
 
         // do not read output lines from command
         // Do not check its exit value
@@ -960,22 +958,8 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    static private boolean _osIsUnix = true;
-    static private boolean _osIsUnixTested = false;
-
     static public boolean osIsUnix() {
-        if (!_osIsUnixTested) {
-            try {
-                String os = System.getProperty("os.name");
-                //System.out.println("Running under " + os);
-                _osIsUnix = !os.toLowerCase().startsWith("windows");
-                _osIsUnixTested = true;
-            } catch (Exception e) {
-                //System.out.println(e);
-                _osIsUnix = false;
-            }
-        }
-        return _osIsUnix;
+        return !System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
 
     //===============================================================
@@ -1231,7 +1215,7 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
-    public void startExternalDialogApplication(String className, String stringParameter) throws DevFailed {
+    public void startExternalApplication(String className, String stringParameter) throws DevFailed {
         try {
             //	Retrieve class name
             Class	_class = Class.forName(className);
@@ -1242,9 +1226,8 @@ public class AstorUtil implements AstorDefs {
             for (Constructor constructor : constructors) {
                 Class[] parameterTypes = constructor.getParameterTypes();
                 if (parameterTypes.length==2 &&
-                    parameterTypes[0]==JFrame.class && parameterTypes[1]==String.class) {
-                    JDialog jDialog = (JDialog) constructor.newInstance(new JFrame(), stringParameter);
-                    jDialog.setVisible(true);
+                        parameterTypes[0]==JFrame.class && parameterTypes[1]==String.class) {
+                    ((Component) constructor.newInstance(new JFrame(), stringParameter)).setVisible(true);
                     found = true;
                 }
             }
@@ -1259,7 +1242,7 @@ public class AstorUtil implements AstorDefs {
                 if (throwable instanceof DevFailed)
                     throw (DevFailed) throwable;
             }
-            Except.throw_exception(e.toString(), e.toString(), "AstorUtil.startExternalDialogApplication()");
+            Except.throw_exception(e.toString(), e.toString(), "AstorUtil.startExternalApplication()");
         }
     }
     //===============================================================
@@ -1273,7 +1256,7 @@ public class AstorUtil implements AstorDefs {
     public static void main(String[] args) {
         //AstorUtil.getAllKnownTangoHosts();
         try {
-            AstorUtil.getInstance().startExternalDialogApplication("host_info.HostStatus", "l-c01-1");
+            AstorUtil.getInstance().startExternalApplication("host_info.HostStatus", "l-c01-1");
         }
         catch (DevFailed e) {
             Except.print_exception(e);
