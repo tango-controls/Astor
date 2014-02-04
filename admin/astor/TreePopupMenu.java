@@ -237,7 +237,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
 
             //  Available only for ESRF :-)
             getComponent(OFFSET + HOST_INFO).setVisible(host.hostName().startsWith("l-") &&
-                    !AstorUtil.getHostStatus().isEmpty());
+                    !AstorUtil.getHostInfoClassName().isEmpty());
 
             //  Manage for READ_ONLY mode
             if (Astor.rwMode==AstorDefs.READ_ONLY) {
@@ -379,10 +379,10 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     //===============================================================
     //===============================================================
     private void startHostStatus(TangoHost host) {
-        String className = AstorUtil.getHostStatus();
+        String className = AstorUtil.getHostInfoClassName();
         System.out.println(className + "  for " + host.hostName());
         try {
-            AstorUtil.getInstance().startExternalDialogApplication(className, host.hostName());
+            AstorUtil.getInstance().startExternalApplication(className, host.hostName());
         }
         catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);
