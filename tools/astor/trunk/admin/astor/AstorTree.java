@@ -319,8 +319,8 @@ public class AstorTree extends JTree implements AstorDefs {
         ToolTipManager.sharedInstance().registerComponent(this);
 
         /*
-           * Create a Renderer to set the icon for leaf nodes.
-           */
+         * Create a Renderer to set the icon for leaf nodes.
+         */
         setCellRenderer(new TangoRenderer());
 
         //	Listen for when the selection changes.
@@ -509,6 +509,41 @@ public class AstorTree extends JTree implements AstorDefs {
         return node.getUserObject();
     }
 
+    //===============================================================
+    //===============================================================
+    void startHostInfo() {
+        Object  object = getSelectedObject();
+        if (object instanceof TangoHost) {
+            TangoHost   host = (TangoHost) object;
+            String className = AstorUtil.getHostInfoClassName();
+            System.out.println(className + "  for " + host.hostName());
+            try {
+                AstorUtil.getInstance().startExternalApplication(className, host.hostName());
+            }
+            catch (DevFailed e) {
+                ErrorPane.showErrorMessage(new JFrame(), null, e);
+            }
+        }
+        if (object instanceof String) { //  A branch
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                    getLastSelectedPathComponent();
+
+            //	Get collection children
+            int nbHosts = node.getChildCount();
+            String[]   hostNames = new String[nbHosts];
+            for (int i=0 ; i<nbHosts ; i++) {
+                node = node.getNextNode();
+                hostNames[i] = ((TangoHost) node.getUserObject()).hostName();
+            }
+            String className = AstorUtil.getHostInfoClassName();
+            try {
+                AstorUtil.getInstance().startExternalApplication(className, hostNames);
+            }
+            catch (DevFailed e) {
+                ErrorPane.showErrorMessage(new JFrame(), null, e);
+            }
+        }
+    }
     //===============================================================
     //===============================================================
     void changeNodeName() {
