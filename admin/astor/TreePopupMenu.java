@@ -273,6 +273,9 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 getComponent(OFFSET + REMOVE_HOST).setEnabled(false);
                 getComponent(OFFSET + BLACK_BOX).setVisible(false);
                 getComponent(OFFSET + HOST_INFO).setVisible(false);
+                //  Available only for ESRF :-)
+                getComponent(OFFSET + HOST_INFO).setVisible(!AstorUtil.getHostInfoClassName().isEmpty());
+
 
                 getComponent(OFFSET + RESET_STAT).setVisible(AstorUtil.getInstance().isSuperTango());
 
@@ -299,19 +302,18 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     private void hostActionPerformed(ActionEvent evt) {
         //	Check component source
         Object obj = evt.getSource();
-        int cmdidx = 0;
+        int commandIndex = 0;
         for (int i = 0; i < menuLabels.length; i++)
             if (getComponent(OFFSET + i) == obj)
-                cmdidx = i;
+                commandIndex = i;
 
-        switch (cmdidx) {
+        switch (commandIndex) {
             case OPEN_PANEL:
                 parent.displayHostInfo();
                 break;
             case HOST_INFO:
                 //  ToDo
-                //host.unexportStarter(astor);
-                startHostStatus(host);
+                parent.startHostInfo();
                 break;
             case STARTER_TEST:
                 host.testStarter(astor);
@@ -374,18 +376,6 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             case CHANGE_NAME:
                 parent.changeNodeName();
                 break;
-        }
-    }
-    //===============================================================
-    //===============================================================
-    private void startHostStatus(TangoHost host) {
-        String className = AstorUtil.getHostInfoClassName();
-        System.out.println(className + "  for " + host.hostName());
-        try {
-            AstorUtil.getInstance().startExternalApplication(className, host.hostName());
-        }
-        catch (DevFailed e) {
-            ErrorPane.showErrorMessage(new JFrame(), null, e);
         }
     }
     //===============================================================

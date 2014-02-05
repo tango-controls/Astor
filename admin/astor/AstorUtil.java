@@ -1247,6 +1247,38 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
+    public void startExternalApplication(String className, String[] stringParameters) throws DevFailed {
+        try {
+            //	Retrieve class name
+            Class	_class = Class.forName(className);
+            boolean found = false;
+
+            //	And build object
+            Constructor[] constructors = _class.getDeclaredConstructors();
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length==2 &&
+                        parameterTypes[0]==JFrame.class && parameterTypes[1]==String[].class) {
+                    ((Component) constructor.newInstance(new JFrame(), stringParameters)).setVisible(true);
+                    found = true;
+                }
+            }
+            if (!found)
+                throw new Exception("Cannot find constructor for " + className);
+        }
+        catch (Exception e) {
+            if (e instanceof InvocationTargetException) {
+                InvocationTargetException   ite = (InvocationTargetException) e;
+                Throwable   throwable = ite.getTargetException();
+                System.out.println(throwable);
+                if (throwable instanceof DevFailed)
+                    throw (DevFailed) throwable;
+            }
+            Except.throw_exception(e.toString(), e.toString(), "AstorUtil.startExternalApplication()");
+        }
+    }
+    //===============================================================
+    //===============================================================
 
 
 
