@@ -56,6 +56,18 @@ public class Monitor extends JDialog implements ActionListener {
     //======================================================================
     /**
      * Update the ratio value..
+     * @param text  text to display
+     */
+    //======================================================================
+    public void increaseProgressValue(String text) {
+        cnt++;
+        if (cnt >= 95) cnt = 5;
+        actionStr = text;
+        SwingUtilities.invokeLater(new Update());
+    }
+    //======================================================================
+    /**
+     * Update the ratio value..
      * @param ratio value between 0 and 1
      */
     //======================================================================
