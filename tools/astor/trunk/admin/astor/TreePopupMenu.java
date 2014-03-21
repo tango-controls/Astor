@@ -204,7 +204,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
         if (!getSelectedObject())
             return;
 
-        //	Set all item viesible
+        //	Set all item visible
         for (int i = OFFSET ; i < getComponentCount(); i++)
             getComponent(i).setVisible(true);
 
@@ -225,7 +225,9 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + CLONE_HOST).setEnabled(true);
 
             boolean can_test = (host.state == all_ok ||
-                    host.state == alarm || host.state == moving);
+                    host.state == all_off ||
+                    host.state == alarm   ||
+                    host.state == moving);
             getComponent(OFFSET + STARTER_TEST).setEnabled(can_test);
             getComponent(OFFSET + STARTER_LOGS).setEnabled(can_test);
             getComponent(OFFSET + STARTER_STAT).setEnabled(can_test);

@@ -272,7 +272,7 @@ public class EditPropertyDialog extends JDialog {
     //===============================================================
     //===============================================================
     private void manageOkBtn() {
-        //	Set OK btn enabled only if value has changed.
+        //	Set OK radioButton enabled only if value has changed.
         String db_val = dbValTxt.getText();
         boolean b = !db_val.equals(initial_value);
         okBtn.setEnabled(b);

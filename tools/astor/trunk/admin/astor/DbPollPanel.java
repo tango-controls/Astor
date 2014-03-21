@@ -46,6 +46,7 @@ import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DbServer;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
@@ -64,11 +65,12 @@ import java.util.Arrays;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class DbPollPanel extends JDialog {
     private Component parent;
     private DeviceProxy selected_dev;
     private DeviceProxy[] devices;
-    private PolledAttr[] attlist;
+    private PolledAttribute[] attlist;
     private static final String PollAttProp = "polled_attr";
 
     //===============================================================
@@ -76,55 +78,54 @@ public class DbPollPanel extends JDialog {
      * Creates new form PollPanel with a button for each polled attribute
      */
     //===============================================================
-    public DbPollPanel(JFrame parent, String servname) throws DevFailed {
+    public DbPollPanel(JFrame parent, String serverName) throws DevFailed {
         super(parent, true);
         this.parent = parent;
-        initialize(servname);
-    }
-
-    //===============================================================
-    public DbPollPanel(JDialog parent, String servname) throws DevFailed {
-        super(parent, true);
-        this.parent = parent;
-        initialize(servname);
+        initialize(serverName);
     }
 
     //===============================================================
     //===============================================================
-    private void initialize(String servname) throws DevFailed {
+    public DbPollPanel(JDialog parent, String serverName) throws DevFailed {
+        super(parent, true);
         this.parent = parent;
+        initialize(serverName);
+    }
+
+    //===============================================================
+    //===============================================================
+    private void initialize(String serverName) throws DevFailed {
         initComponents();
         titleLabel.setText("Polled Attributes For ");
-        devices = getDeviceList(servname);
+        devices = getDeviceList(serverName);
 
         if (devices.length == 0)
             Except.throw_exception("NO_DEVICES",
-                    "No device found for " + servname,
-                    "DbPollPanel.initialize(" + servname + ")");
+                    "No device found for " + serverName,
+                    "DbPollPanel.initialize(" + serverName + ")");
         buildPanel(devices.length - 1);
 
-        okBtn.setText("Apply");
-        cancelBtn.setText("Dismiss");
+        ATKGraphicsUtils.centerDialog(this);
     }
 
     //===============================================================
     //===============================================================
-    private DeviceProxy[] getDeviceList(String servname) {
+    private DeviceProxy[] getDeviceList(String serverName) {
         try {
-            ArrayList<String> v = new ArrayList<String>();
-            DbServer serv = new DbServer(servname);
-            String[] classes = serv.get_class_list();
-            for (String classname : classes) {
-                String[] devnames = serv.get_device_name(classname);
-                v.addAll(Arrays.asList(devnames));
+            ArrayList<String> deviceList = new ArrayList<String>();
+            DbServer dbServer = new DbServer(serverName);
+            String[] classes = dbServer.get_class_list();
+            for (String className : classes) {
+                String[] deviceNames = dbServer.get_device_name(className);
+                deviceList.addAll(Arrays.asList(deviceNames));
             }
             //	Create device proxy in reverse order
-            DeviceProxy[] dp = new DeviceProxy[v.size()];
-            for (int i = 0; i < v.size(); i++) {
-                devComboBox.addItem(v.get(i));
-                dp[i] = new DeviceProxy(v.get(i));
+            DeviceProxy[] dp = new DeviceProxy[deviceList.size()];
+            for (int i = 0; i < deviceList.size(); i++) {
+                devComboBox.addItem(deviceList.get(i));
+                dp[i] = new DeviceProxy(deviceList.get(i));
             }
-            devComboBox.setSelectedIndex(v.size() - 1);
+            devComboBox.setSelectedIndex(deviceList.size() - 1);
             return dp;
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
@@ -142,82 +143,82 @@ public class DbPollPanel extends JDialog {
             getContentPane().remove(panel);
 
         try {
-
             GridBagConstraints gbc = new GridBagConstraints();
             JPanel panel = new JPanel();
             panel.setLayout(new GridBagLayout());
             int y = 0;
 
             attlist = getPolledAttributes(selected_dev);
-            for (PolledAttr att : attlist) {
+            for (PolledAttribute att : attlist) {
                 gbc.gridx = 0;
                 gbc.gridy = y;
                 gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                panel.add(att.btn, gbc);
+                panel.add(att.radioButton, gbc);
 
                 gbc.gridx = 1;
                 gbc.gridy = y;
                 gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                panel.add(att.txt, gbc);
+                panel.add(att.textField, gbc);
 
                 gbc.gridx = 2;
                 gbc.gridy = y++;
                 gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 panel.add(new JLabel("ms"), gbc);
             }
-            getContentPane().add(panel, BorderLayout.CENTER);
+            scrollPane.setViewportView(panel);
+            getContentPane().add(scrollPane, BorderLayout.CENTER);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
         pack();
+        if (scrollPane.getHeight()>800)
+            scrollPane.setPreferredSize(new Dimension(scrollPane.getWidth(), 800));
     }
     //===============================================================
     /**
-     * Retreive polled attribute list
+     * Retrieve polled attribute list
      */
     //===============================================================
-    public PolledAttr[] getPolledAttributes(DeviceProxy dev) throws DevFailed {
+    public PolledAttribute[] getPolledAttributes(DeviceProxy dev) throws DevFailed {
         DbDatum argout = dev.get_property(PollAttProp);
         String[] data = argout.extractStringArray();
-        if (data == null)
-            return new PolledAttr[0];
+        if (data==null || data.length<2)
+            return new PolledAttribute[0];
 
-        ArrayList<PolledAttr> v = new ArrayList<PolledAttr>();
-        for (int i = 0; i < data.length; i += 2)
-            v.add(new PolledAttr(data[i], data[i + 1]));
+        ArrayList<PolledAttribute> polledAttributeList = new ArrayList<PolledAttribute>();
+        for (int i=0 ; i<data.length ; i+=2)
+            polledAttributeList.add(new PolledAttribute(data[i], data[i + 1]));
 
-        PolledAttr[] pa = new PolledAttr[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            pa[i] = v.get(i);
-        return pa;
+        PolledAttribute[] polledAttributes = new PolledAttribute[polledAttributeList.size()];
+        for (int i=0 ; i<polledAttributeList.size() ; i++)
+            polledAttributes[i] = polledAttributeList.get(i);
+        return polledAttributes;
     }
     //===============================================================
-
     /**
      * Object defining polled attribute
      */
     //===============================================================
-    class PolledAttr {
+    class PolledAttribute {
         String name;
         int period;
-        JRadioButton btn;
-        JTextField txt;
+        JRadioButton radioButton;
+        JTextField textField;
 
-        public PolledAttr(String name, String strperiod) {
+        public PolledAttribute(String name, String strperiod) {
             this.name = name;
             try {
                 this.period = Integer.parseInt(strperiod);
             } catch (NumberFormatException e) {
                 this.period = -1;
             }
-            btn = new JRadioButton(name);
-            btn.setSelected(true);
-            txt = new JTextField("" + period);
-            txt.setColumns(6);
+            radioButton = new JRadioButton(name);
+            radioButton.setSelected(true);
+            textField = new JTextField(Integer.toString(period));
+            textField.setColumns(6);
         }
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * buildPanel the form.
@@ -225,14 +226,16 @@ public class DbPollPanel extends JDialog {
      * always regenerated by the Form Editor.
      */
     //===============================================================
-    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        okBtn = new javax.swing.JButton();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+
+        javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         devComboBox = new javax.swing.JComboBox();
+        javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
+        javax.swing.JButton okBtn = new javax.swing.JButton();
+        javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        scrollPane = new javax.swing.JScrollPane();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -240,45 +243,44 @@ public class DbPollPanel extends JDialog {
             }
         });
 
-        okBtn.setText("OK");
-        okBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okBtnActionPerformed(evt);
-            }
-        });
-
-        jPanel1.add(okBtn);
-
-        cancelBtn.setText("Cancel");
-        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelBtnActionPerformed(evt);
-            }
-        });
-
-        jPanel1.add(cancelBtn);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Dialog Title");
-        jPanel2.add(titleLabel);
+        topPanel.add(titleLabel);
 
         devComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 devComboBoxActionPerformed(evt);
             }
         });
+        topPanel.add(devComboBox);
 
-        jPanel2.add(devComboBox);
+        getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
+        okBtn.setText("Apply");
+        okBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okBtnActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(okBtn);
+
+        cancelBtn.setText("Dismiss");
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(cancelBtn);
+
+        getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void devComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_devComboBoxActionPerformed
 
         if (isVisible())
@@ -287,20 +289,21 @@ public class DbPollPanel extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
         //	Check selected attributes
         String message = "Remove polling for :\n";
-        ArrayList<String> v = new ArrayList<String>();
-        for (PolledAttr att : attlist)
-            if (att.btn.getSelectedObjects() == null)
+        ArrayList<String> attributeList = new ArrayList<String>();
+        for (PolledAttribute att : attlist)
+            if (att.radioButton.getSelectedObjects() == null)
                 message += att.name + "\n";
             else {
-                v.add(att.name);
+                attributeList.add(att.name);
                 try {
                     //	Check if period is coherent
-                    att.period = Integer.parseInt(att.txt.getText());
-                    v.add(att.txt.getText());
+                    att.period = Integer.parseInt(att.textField.getText());
+                    attributeList.add(att.textField.getText());
                 } catch (NumberFormatException e) {
                     ErrorPane.showErrorMessage(this,
                             "NumberFormatException on  attribute " + att.name, e);
@@ -309,23 +312,23 @@ public class DbPollPanel extends JDialog {
             }
 
         //	if some are not, ask to confirm to remove polling on them
-        System.out.println(v.size());
-        if (v.size() < attlist.length * 2)
+        System.out.println(attributeList.size());
+        if (attributeList.size() < attlist.length * 2)
             if (JOptionPane.showConfirmDialog(this,
                     message,
                     "Question",
                     JOptionPane.YES_NO_OPTION) != JOptionPane.OK_OPTION)
                 return;
 
-        //	OK prepeare String array
-        String[] str = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            str[i] = v.get(i);
+        //	OK prepare String array
+        String[] AttributeNames = new String[attributeList.size()];
+        for (int i = 0; i < attributeList.size(); i++)
+            AttributeNames[i] = attributeList.get(i);
 
         //	And update database
         try {
             DbDatum data = new DbDatum(PollAttProp);
-            data.insert(str);
+            data.insert(AttributeNames);
             selected_dev.put_property(data);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
@@ -340,6 +343,7 @@ public class DbPollPanel extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
@@ -350,6 +354,7 @@ public class DbPollPanel extends JDialog {
      * Closes the dialog
      */
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
@@ -361,7 +366,7 @@ public class DbPollPanel extends JDialog {
      */
     //===============================================================
     private void doClose() {
-        if (parent.getWidth() == 0)
+        if (parent==null)
             System.exit(0);
 
         setVisible(false);
@@ -370,11 +375,8 @@ public class DbPollPanel extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelBtn;
     private javax.swing.JComboBox devComboBox;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JButton okBtn;
+    private javax.swing.JScrollPane scrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
@@ -388,34 +390,19 @@ public class DbPollPanel extends JDialog {
     //===============================================================
     public static void main(String args[]) {
 
-        String servname = null;
+        String serverName = null;
         if (args.length > 0)
-            servname = args[0];
+            serverName = args[0];
 
         try {
-            if (servname == null)
+            if (serverName == null)
                 Except.throw_exception("NO_SERVER_NAME",
-                        "Serrver's name ????",
+                        "Server's name ????",
                         "PollPanel.main()");
-            new DbPollPanel(new JFrame(), servname).setVisible(true);
+            new DbPollPanel((JFrame)null, serverName).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);
             System.exit(0);
-        } catch (java.lang.InternalError ie) {
-            String x11_pb = "Can't connect to X11 window server";
-            if (ie.toString().indexOf(x11_pb) > 0) {
-                System.out.println(x11_pb);
-                int action = AstorCmdLine.REMOVE_POLLING;
-                if (args.length > 1 && args[1].equals("-f"))
-                    action = AstorCmdLine.REMOVE_POLLING_FORCED;
-                new AstorCmdLine(action, servname);
-
-                System.exit(0);
-            } else {
-                System.exit(0);
-            }
         }
-
     }
-
 }

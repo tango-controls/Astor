@@ -75,13 +75,14 @@ public interface AstorDefs {
     //======================================================================
     //	States colors definitions
     //======================================================================
-    public static final int unknown = 0;
-    public static final int faulty = 1;
-    public static final int alarm = 2;
-    public static final int all_ok = 3;
-    public static final int moving = 4;
-    public static final int failed = 5;
-    public static final int NbStates = 6;
+    public static final int unknown  = 0;
+    public static final int faulty   = 1;
+    public static final int alarm    = 2;
+    public static final int all_off  = 3;
+    public static final int all_ok   = 4;
+    public static final int moving   = 5;
+    public static final int failed   = 6;
+    public static final int NbStates = 7;
 
     //======================================================================
     static final String HtmlHeader =

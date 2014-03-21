@@ -54,7 +54,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -695,7 +695,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
 //======================================================
 //
-//	Mouse event managment.
+//	Mouse event management.
 //
 //======================================================
     //======================================================
@@ -719,11 +719,11 @@ public class AstorTree extends JTree implements AstorDefs {
             return;
         setSelectionPath(selectedPath);
 
-        //	Do something only if double click
         int mask = evt.getModifiers();
+        //	Do something only if double or right click
         if (evt.getClickCount() == 2) {
             //	Check if btn1
-            if ((mask & InputEvent.BUTTON1_MASK) != 0) {
+            if ((mask & MouseEvent.BUTTON1_MASK) != 0) {
                 if (selectedHost != null) {
                     //	Display dialog
                     displayHostInfo();
@@ -741,7 +741,7 @@ public class AstorTree extends JTree implements AstorDefs {
                     (DefaultMutableTreeNode) getLastSelectedPathComponent();
             Object obj = node.getUserObject();
             //	Check if btn3
-            if ((mask & InputEvent.BUTTON3_MASK) != 0) {
+            if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
                 if (obj instanceof DbaseObject)
                     dbMenu.showMenu(evt);
                 else if (obj instanceof TACobject)
@@ -1125,36 +1125,46 @@ public class AstorTree extends JTree implements AstorDefs {
 
             //	Get collection children
             int nb = node.getChildCount();
-            TangoHost[] th = new TangoHost[nb];
+            TangoHost[] tangoHosts = new TangoHost[nb];
             for (int i = 0; i < nb; i++) {
                 node = node.getNextNode();
-                th[i] = (TangoHost) node.getUserObject();
+                tangoHosts[i] = (TangoHost) node.getUserObject();
             }
 
             //	Calculate how many faulty and/or alarm
             boolean is_faulty = false;
             boolean is_alarm = false;
             boolean is_moving = false;
+            int nb_off = 0;
+            int nb_ok = 0;
             for (int i = 0; i < nb; i++) {
                 //	At least one unknown -> branch is unknown
-                if (th[i].state == unknown)
+                if (tangoHosts[i].state == unknown)
                     return unknown;
-                else if (th[i].state == faulty)
+                else if (tangoHosts[i].state == faulty)
                     is_faulty = true;
-                else if (th[i].state == alarm)
+                else if (tangoHosts[i].state == alarm)
                     is_alarm = true;
-                else if (th[i].state == moving)
+                else if (tangoHosts[i].state == moving)
                     is_moving = true;
+                else if (tangoHosts[i].state == all_off)
+                    nb_off++;
+                else if (tangoHosts[i].state == all_ok)
+                    nb_ok++;
             }
             //	Calculate branch state
-             if (is_faulty)
+            if (is_faulty)
                 state = faulty;
             else if (is_moving)
                 state = moving;
             else if (is_alarm)
                 state = alarm;
-            else
+            else if (nb_off==nb)
+                state = all_off;
+            else if (nb_ok==nb)
                 state = all_ok;
+            else
+                state = alarm;
             return state;
         }
 
