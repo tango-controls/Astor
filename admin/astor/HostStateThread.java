@@ -174,6 +174,8 @@ public class HostStateThread extends Thread implements AstorDefs {
             host.state = moving;
         else if (state == DevState.ALARM)
             host.state = alarm;
+        else if (state == DevState.OFF)
+            host.state = all_off;
         else if (state == DevState.FAULT)
             host.state = faulty;
         else

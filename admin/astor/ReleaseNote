@@ -11,6 +11,10 @@
 #
 #-======================================================================
 
+Astor-6.5.0 -  19/04/14:
+	Manage OFF state for Starter devices.
+	Improve DbPollPanel class.
+
 Astor-6.4.6 -  29/01/14:
 	Package ctrl_system_info added to the jar file.
 
