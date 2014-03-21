@@ -66,8 +66,9 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class BlackBoxTable extends JDialog {
-    private String devname;
+    private String deviceName;
     private Component parent;
     private DataTableModel model;
     private BlackBox blackbox = null;
@@ -76,7 +77,7 @@ public class BlackBoxTable extends JDialog {
     private FilterDialog filter_dlg = null;
     private TopDialog top_dialog = null;
     private boolean auto_update = false;
-    private boolean clear_blackbox = false;
+    private boolean clearBlackBox = false;
     private int upd_period = 1000;
     private TablePopupMenu menu;
 
@@ -113,30 +114,30 @@ public class BlackBoxTable extends JDialog {
     private static final int height = 400;
 
     //===============================================================
-    /*
+    /**
      * Creates new form BlackBoxTable
      */
     //===============================================================
-    public BlackBoxTable(JFrame parent, String devname) throws DevFailed {
+    public BlackBoxTable(JFrame parent, String deviceName) throws DevFailed {
         super(parent, false);
         this.parent = parent;
-        initDialog(devname);
+        initDialog(deviceName);
     }
     //===============================================================
-    /*
+    /**
      * Creates new form BlackBoxTable
      */
     //===============================================================
-    public BlackBoxTable(JDialog parent, String devname) throws DevFailed {
+    public BlackBoxTable(JDialog parent, String deviceName) throws DevFailed {
         super(parent, false);
         this.parent = parent;
-        initDialog(devname);
+        initDialog(deviceName);
     }
 
     //===============================================================
     //===============================================================
     private void initDialog(String devname) throws DevFailed {
-        this.devname = devname;
+        this.deviceName = devname;
         table_dialog = this;
         blackbox = new BlackBox();
 
@@ -176,8 +177,6 @@ public class BlackBoxTable extends JDialog {
                 }
             });
             menu = new TablePopupMenu(table);
-            /*
-               */
 
             //	Put it in a scrolled pane
             JScrollPane scrollPane = new JScrollPane(table);
@@ -229,7 +228,6 @@ public class BlackBoxTable extends JDialog {
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -466,7 +464,7 @@ public class BlackBoxTable extends JDialog {
     @SuppressWarnings({"UnusedParameters"})
     private void topBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topBtnActionPerformed
         if (top_dialog == null)
-            top_dialog = new TopDialog(this, devname, blackbox);
+            top_dialog = new TopDialog(this, deviceName, blackbox);
         top_dialog.showDialog();
     }//GEN-LAST:event_topBtnActionPerformed
 
@@ -474,7 +472,7 @@ public class BlackBoxTable extends JDialog {
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
-        clear_blackbox = true;
+        clearBlackBox = true;
         thread.wakeUp();
     }//GEN-LAST:event_clearBtnActionPerformed
 
@@ -485,7 +483,7 @@ public class BlackBoxTable extends JDialog {
     //===============================================================
     private void doClose() {
         thread.stopThread();
-        if (parent.getWidth() == 0) {
+        if (parent==null) {
             System.exit(0);
         } else {
             auto_update = false;
@@ -514,12 +512,11 @@ public class BlackBoxTable extends JDialog {
     //===============================================================
     public static void main(String args[]) {
 
-        //String devname = "pv/encoded/1";
-        String devname = "tango/admin/esrflinux1-2";
+        String deviceName = "sys/database/3";
         if (args.length > 0)
-            devname = args[0];
+            deviceName = args[0];
         try {
-            new BlackBoxTable(new JFrame(), devname).setVisible(true);
+            new BlackBoxTable((JFrame)null, deviceName).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), "", e);
         }
@@ -567,7 +564,7 @@ public class BlackBoxTable extends JDialog {
             for (int i = 0; i < size(); i++) {
                 ArrayList<String> line = get(i);
                 String topic = line.get(filter.col_idx);
-                if (topic.indexOf(filter.str) >= 0) {
+                if (topic.contains(filter.str)) {
                     filtered.add(line);
                     filtered_code.add(code.get(i));
                 }
@@ -591,9 +588,9 @@ public class BlackBoxTable extends JDialog {
         }
 
         //===========================================================
-        private String getDeltaTimeStr() {
+        String getDeltaTimeStr() {
             int dt = (int) delta_time; //	integer part
-            StringBuffer sb = new StringBuffer("");
+            StringBuilder sb = new StringBuilder("");
             int h = 0;
             int mn = 0;
             int sec;
@@ -621,14 +618,7 @@ public class BlackBoxTable extends JDialog {
             } else
                 sb.append("00.");
 
-            String mill_str = Integer.toString(millis);
-            if (mill_str.length() > 2)
-                mill_str = mill_str.substring(0, 2);
-            while (mill_str.length() < 2)
-                mill_str += "0";
-
-            sb.append(mill_str);
-
+            sb.append(Integer.toString(millis));
             if (h == 0 && mn == 0)
                 sb.append(" sec.");
 
@@ -636,7 +626,7 @@ public class BlackBoxTable extends JDialog {
         }
 
         //===========================================================
-        private double getDeltaTime() {
+        double getDeltaTime() {
             String[] dates = getDates();
             double start = parseTime(dates[0]);
             double stop = parseTime(dates[1]);
@@ -901,7 +891,7 @@ public class BlackBoxTable extends JDialog {
 
         //===========================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (ArrayList<String> line : this) {
                 for (String word : line)
                     sb.append(word).append('\t');
@@ -985,9 +975,9 @@ public class BlackBoxTable extends JDialog {
 
 
     //===============================================================
-    /*
-      *	A Thread class to update black box content
-      */
+    /**
+     *	A Thread class to update black box content
+     */
     //===============================================================
     private class UpdateThread extends Thread {
         private boolean stop = false;
@@ -1019,12 +1009,12 @@ public class BlackBoxTable extends JDialog {
                     try {
                         //	Read black box
                         if (dev == null)
-                            dev = DeviceProxyFactory.get(devname);
+                            dev = DeviceProxyFactory.get(deviceName);
                         String[] array = dev.black_box(100);
                         //	And update black box and table
                         blackbox.update(array);
                         model.fireTableDataChanged();
-                        titleLabel.setText(devname + " - " + blackbox.getDeltaTimeStr());
+                        titleLabel.setText(deviceName + " - " + blackbox.getDeltaTimeStr());
                     } catch (DevFailed e) {
                         if (!e.errors[0].reason.equals("API_BlackBoxEmpty"))
                             ErrorPane.showErrorMessage(table_dialog, "", e);
@@ -1032,12 +1022,12 @@ public class BlackBoxTable extends JDialog {
                 }
                 waitNextLoop(upd_period);
                 if (isVisible()) {
-                    if (clear_blackbox) {
+                    if (clearBlackBox) {
                         blackbox.clear();
-                        clear_blackbox = false;
+                        clearBlackBox = false;
                         blackbox.update(new String[0]);
                         model.fireTableDataChanged();
-                        titleLabel.setText("Black box on  " + devname);
+                        titleLabel.setText("Black box on  " + deviceName);
                     }
                 }
             }
@@ -1071,7 +1061,7 @@ public class BlackBoxTable extends JDialog {
             this.table = table;
             //	Build menu
             JLabel title = new JLabel("Datbase Server :");
-            title.setFont(new java.awt.Font("Dialog", 1, 16));
+            title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
             for (String menuLabel : menuLabels) {
@@ -1224,7 +1214,7 @@ public class BlackBoxTable extends JDialog {
             jPanel1.add(cancelBtn);
             getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-            titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+            titleLabel.setFont(new java.awt.Font("Dialog", Font.BOLD, 18));
             titleLabel.setText("Dialog Title");
             jPanel2.add(titleLabel);
             getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);

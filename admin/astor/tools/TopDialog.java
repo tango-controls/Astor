@@ -52,19 +52,20 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class TopDialog extends JDialog {
-    private BlackBoxTable.BlackBox  black_box;
+    private BlackBoxTable.BlackBox blackBox;
     private ArrayList<JTextArea>    textAreas;
-    //private String					devname;
+    private String  deviceName;
     //===============================================================
-    /*
+    /**
      * Creates new form TopDialog
      */
     //===============================================================
-    public TopDialog(JDialog parent, String devname, BlackBoxTable.BlackBox black_box) {
+    public TopDialog(JDialog parent, String deviceName, BlackBoxTable.BlackBox blackBox) {
         super(parent, false);
-        //this.devname   = devname;
-        this.black_box = black_box;
+        this.blackBox = blackBox;
+        this.deviceName = deviceName;
         initComponents();
         textAreas = new ArrayList<JTextArea>();
         textAreas.add(null);    //	DATE is not used
@@ -78,8 +79,7 @@ public class TopDialog extends JDialog {
             textAreas.get(i).getParent().setPreferredSize(new Dimension(500, 350));
             textAreas.get(i).setFont(new Font("dialog", Font.BOLD, 12));
         }
-        titleLabel.setText("Top on  " + devname);
-        tabbedPane.setSelectedIndex(BlackBoxTable.HOST - 1);    //	-1 for DATES not used
+        tabbedPane.setSelectedIndex(BlackBoxTable.PROCESS - 1);    //	-1 for DATES not used
 
         pack();
         ATKGraphicsUtils.centerDialog(this);
@@ -88,42 +88,49 @@ public class TopDialog extends JDialog {
     //===============================================================
     //===============================================================
     void displayTop() {
-        if (black_box == null)
+        if (blackBox== null)
             return;
 
         for (int i = BlackBoxTable.OPERATION; i <= BlackBoxTable.PROCESS; i++)
             textAreas.get(i).setText(computeTop(i).toString());
+        titleLabel.setText("Top on  " + deviceName + " during " + blackBox.getDeltaTimeStr());
     }
 
     //===============================================================
     //===============================================================
     private TopObject computeTop(int index) {
-        TopObject retVect = new TopObject();
+        TopObject topObject = new TopObject();
 
-        for (int i = 0; i < black_box.nbRecords(); i++) {
-            ArrayList<String> line = black_box.getLine(i);
+        for (int i = 0; i < blackBox.nbRecords(); i++) {
+            ArrayList<String> line = blackBox.getLine(i);
             String item = line.get(index);
+            if (index==BlackBoxTable.PROCESS) {
+                if (item.isEmpty())
+                    item = "? ?";
+                item += "  (" + line.get(BlackBoxTable.HOST) + ")";
+            }
+            //  Check if already in list
             boolean found = false;
-            for (ArrayList<String> vh : retVect) {
-                if (vh.get(0).equals(item)) {
-                    vh.add(item);
+            for (ArrayList<String> lineItems : topObject) {
+                if (lineItems.get(0).equals(item)) {
+                    lineItems.add(item);
                     found = true;
                 }
             }
+            //  If not -> add it in object
             if (!found) {
-                ArrayList<String> vh = new ArrayList<String>();
-                vh.add(item);
-                retVect.add(vh);
+                ArrayList<String> lineItems = new ArrayList<String>();
+                lineItems.add(item);
+                topObject.add(lineItems);
             }
         }
 
         //	Sort for size order
-        Collections.sort(retVect, new StringListComparator());
+        Collections.sort(topObject, new StringListComparator());
 
-        return retVect;
+        return topObject;
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -241,7 +248,6 @@ public class TopDialog extends JDialog {
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-        //System.out.println(jScrollPane1.getPreferredSize());
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
@@ -286,17 +292,39 @@ public class TopDialog extends JDialog {
     //======================================================
     private class TopObject extends ArrayList<ArrayList<String>> {
         //======================================================
+        private double[] computeRatios() {
+            int sum = 0;
+            double [] ratios = new double[size()];
+            for (ArrayList<String> line : this) {
+                sum += line.size();
+            }
+            int i = 0;
+            for (ArrayList<String> line : this) {
+                ratios[i++] = 100.0*line.size()/sum;
+            }
+            return ratios;
+        }
+        //======================================================
         public String toString() {
+            double [] ratios = computeRatios();
+            int i=0;
             StringBuilder sb = new StringBuilder();
-            for (ArrayList<String> vs : this)
-                sb.append(vs.size()).append(" calls:\t")
-                        .append(vs.get(0)).append('\n');
+            for (ArrayList<String> line : this)
+                sb.append(String.format("%3d", line.size()))
+                        .append(" calls(").append(String.format("%5.1f", ratios[i++]))
+                        .append(" %):\t").append(line.get(0)).append('\n');
             return sb.toString();
         }
     }
     //======================================================
+    //======================================================
+
+
+
+
+    //======================================================
     /**
-     * MyCompare class to sort by size
+     * StringListComparator class to sort by size
      */
     //======================================================
     class StringListComparator implements Comparator<ArrayList<String>> {
@@ -306,6 +334,4 @@ public class TopDialog extends JDialog {
             return  ((list1.size() < list2.size())? 1 : -1);
         }
     }
-
-
 }
