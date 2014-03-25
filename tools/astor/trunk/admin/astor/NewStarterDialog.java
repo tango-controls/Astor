@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -163,8 +163,9 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
                 closeDialog(evt);
             }
         });
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
-        titleLbl.setFont(new java.awt.Font("Dialog", 1, 14));
+        titleLbl.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         titleLbl.setText("Create a Starter in Database For a New Host");
         topPanel.add(titleLbl);
 
@@ -262,7 +263,7 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         centerPanel.add(usageText, gridBagConstraints);
 
-        useEventsBtn.setText("Use Events");
+        useEventsBtn.setText("Manage notifd");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
