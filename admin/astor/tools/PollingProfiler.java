@@ -86,18 +86,17 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private static final int DURATION = 2;
     private static final int NB_CHECK_BOX = 3;
     //===============================================================
-
     /**
      * Creates new form PollingProfiler
      *
      * @param parent  The parent dislog
-     * @param devname the device name to display polling
+     * @param deviceNames the device name to display polling
      */
     //===============================================================
-    public PollingProfiler(JDialog parent, String devname) {
+    public PollingProfiler(JDialog parent, String deviceNames) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(new String[]{devname});
+        realConstructor(new String[]{deviceNames});
     }
     //===============================================================
 
@@ -105,13 +104,13 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
      * Creates new form PollingProfiler
      *
      * @param parent  The parent frame
-     * @param devname the device name to display polling
+     * @param deviceNames the device name to display polling
      */
     //===============================================================
-    public PollingProfiler(JFrame parent, String devname) {
+    public PollingProfiler(JFrame parent, String deviceNames) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(new String[]{devname});
+        realConstructor(new String[]{deviceNames});
     }
     //===============================================================
 
@@ -119,13 +118,13 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
      * Creates new form PollingProfiler
      *
      * @param parent   The parent dislog
-     * @param devnames the device names to display polling
+     * @param deviceNames the device names to display polling
      */
     //===============================================================
-    public PollingProfiler(JDialog parent, String[] devnames) {
+    public PollingProfiler(JDialog parent, String[] deviceNames) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(devnames);
+        realConstructor(deviceNames);
     }
     //===============================================================
 
@@ -133,13 +132,13 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
      * Creates new form PollingProfiler
      *
      * @param parent   The parent frame
-     * @param devnames the device names to display polling
+     * @param deviceNames the device names to display polling
      */
     //===============================================================
-    public PollingProfiler(JFrame parent, String[] devnames) {
+    public PollingProfiler(JFrame parent, String[] deviceNames) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(devnames);
+        realConstructor(deviceNames);
     }
     //===============================================================
 
@@ -157,7 +156,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         customizeAxis();
         updateData();
 
-        titleLabel.setVisible(false);
+        //titleLabel.setVisible(false);
         pack();
 
         ATKGraphicsUtils.centerDialog(this);
@@ -236,8 +235,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private void customizeAxis() {
         x_axis.setPosition(JLAxis.HORIZONTAL_ORG2);
         if (display_mode == HISTORY) {
-            //	Cannot use BAR chart, to be able to display duration
-            chart.setHeader(title + " (History)");
+            titleLabel.setText(title + " (History)");
             x_axis.setAutoScale(false);
             x_axis.setName("Time");
             x_axis.setAnnotation(JLAxis.TIME_ANNO);
@@ -252,12 +250,12 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             x_axis.setAnnotation(JLAxis.VALUE_ANNO);
             x_axis.setLabelFormat(JLAxis.DECINT_FORMAT);
             if (display_mode == POLL_DRIFT) {
-                chart.setHeader(title + " (Drift)");
+                titleLabel.setText(title + " (Drift)");
                 y_axis.setName("Polling Drift (ms)");
                 late_label.setVisible(true);
                 early_label.setVisible(true);
             } else if (display_mode == DURATION) {
-                chart.setHeader(title + " (Duration)");
+                titleLabel.setText(title + " (Duration)");
                 y_axis.setName("Duration (ms)");
                 late_label.setVisible(false);
                 early_label.setVisible(false);
@@ -299,7 +297,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         //	Add a JLChart to display Loads
         chart.setBackground(Color.white);
         chart.setChartBackground(Color.lightGray);
-        chart.setHeaderFont(new Font("Dialog", Font.BOLD, 18));
         chart.setLabelVisible(true);
         chart.setLabelFont(new Font("Dialog", Font.BOLD, 12));
 
@@ -329,8 +326,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
                 ErrorPane.showErrorMessage(this, null, e);
             }
         }
-        chart.setHeader(title);
-
+        titleLabel.setText(title);
 
         //	Add two labels to show direction for late and early (drift)
         late_label = new JLabel("Polling Late");
@@ -552,7 +548,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             chart.repaint();
     }
     //===============================================================
-
     /**
      * Received on a click in graph
      */
@@ -799,8 +794,8 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
                     new PollingProfiler(new JDialog(), args[0]).setVisible(true);
                     break;
                 case 2:    //	Server name
-                    String[] devnames = getDeviceNames(args[0]);
-                    new PollingProfiler(new JDialog(), devnames).setVisible(true);
+                    String[] deviceNames = getDeviceNames(args[0]);
+                    new PollingProfiler(new JDialog(), deviceNames).setVisible(true);
                     break;
                 default:
                     Except.throw_exception("BAD_ARGUMENT",
