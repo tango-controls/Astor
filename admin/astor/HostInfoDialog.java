@@ -72,6 +72,7 @@ import java.util.StringTokenizer;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     public TangoHost host;
     public String name;
@@ -186,7 +187,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             if (host.manageNotifd) {
                 notifdPanel = new JPanel();
                 notifdLabel = new JLabel("Event Notify Daemon");
-                notifdLabel.setFont(new Font("Dialog", 1, 12));
+                notifdLabel.setFont(new Font("Dialog", Font.BOLD, 12));
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
@@ -425,7 +426,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     }// </editor-fold>//GEN-END:initComponents
 
     //======================================================
-
     /**
      * Manage event on clicked mouse on PogoTree object.
      *
@@ -461,10 +461,15 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         ArrayList<Integer> used = new ArrayList<Integer>();
         for (int i = trees.length - 1; i >= 0; i--) {
             int level = trees[i].getLevelRow();
-            if (level != LEVEL_NOT_CTRL &&    //	is controlled
-                    trees[i].getNbServers() > 0 &&
-                    trees[i].hasRunningServer())
-                used.add(level);
+            if (level != LEVEL_NOT_CTRL) {    //	is controlled
+                if (trees[i].getNbServers()>0 && trees[i].hasRunningServer())
+                    used.add(level);
+                else {
+                    //  Send DevStopAll it to stop a DevStartAll if running
+                    try { host.stopServers(level); }
+                    catch (DevFailed e) { /* */ }
+                }
+            }
         }
         //	And stop them
         new ServerCmdThread(this, host, StopAllServers, used).start();
@@ -480,10 +485,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         ArrayList<Integer> used = new ArrayList<Integer>();
         for (LevelTree tree : trees) {
             int level = tree.getLevelRow();
-            if (level != LEVEL_NOT_CTRL &&    //	is controlled
-                    tree.getNbServers() > 0 &&
-                    tree.getState() != DevState.ON)
-                used.add(level);
+            if (level != LEVEL_NOT_CTRL) { //	is controlled
+                if(tree.getNbServers() > 0 && tree.getState() != DevState.ON)
+                    used.add(level);
+            }
         }
         //	And start them
         new ServerCmdThread(this, host, StartAllServers, used).start();
@@ -495,7 +500,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     @SuppressWarnings({"UnusedDeclaration"})
     private void startNewBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startNewBtnActionPerformed
 
-        //	Get Servername
+        //	Get Server name
         ListDialog jlist = new ListDialog(this);
         //	Search Btn position to set dialog location
         Point p = getLocationOnScreen();
@@ -509,12 +514,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             if (serverName != null) {
                 try {
                     //	OK to start, do it.
-                    //------------------------------------------------------------
                     host.registerServer(serverName);
                     host.startOneServer(serverName);
 
                     //	OK to start get the Startup control params.
-                    //--------------------------------------------------
                     TangoServer ts = new TangoServer(serverName, DevState.OFF);
                     ts.startupLevel(this, host.getName(), p);
                 } catch (DevFailed e) {
@@ -587,7 +590,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     void startLevel(int level) {
         ArrayList<Integer> levels = new ArrayList<Integer>();
         levels.add(level);
-        new ServerCmdThread(this, host, StartAllServers, levels).start();
+        new ServerCmdThread(this, host, StartAllServers, levels, false).start();
     }
 
     //=============================================================
@@ -619,9 +622,9 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     }
 
     //=============================================================
-    /*
-      *	Update TangoHost objects and check what has changed.
-      */
+    /**
+     *	Update TangoHost objects and check what has changed.
+     */
     //=============================================================
     public int updateHost(ArrayList<Server> new_servers) {
         boolean state_changed = false;

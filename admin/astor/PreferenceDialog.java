@@ -34,6 +34,7 @@
 
 package admin.astor;
 
+import admin.astor.tools.LastBranchesListDialog;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
@@ -52,6 +53,7 @@ import java.awt.*;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class PreferenceDialog extends JDialog {
     private JFrame  parent;
     private String  csName = "";
@@ -91,7 +93,7 @@ public class PreferenceDialog extends JDialog {
         if (rl_user == null) rl_user = "";
         if (rl_cmd == null) rl_cmd = "";
         if (tools == null) tools = new String[0];
-        if (last_collection == null) last_collection = new String[0];
+        if (lastCollections== null) lastCollections = new String[0];
         if (known_tango_hosts == null) known_tango_hosts = new String[0];
         if (pages == null) pages = new String[0];
 
@@ -101,7 +103,7 @@ public class PreferenceDialog extends JDialog {
         util.setStarterStartup(starterStart);
         AstorUtil.setRloginUser(rl_user);
         AstorUtil.setRloginCmd(rl_cmd);
-        util.setLastCollectionList(last_collection);
+        util.setLastCollectionList(lastCollections);
         AstorUtil.setKnownTangoHosts(known_tango_hosts);
         AstorUtil.setTools(tools);
         AstorUtil.setHtmlHelps(pages);
@@ -147,7 +149,7 @@ public class PreferenceDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    private String[] last_collection = new String[0];
+    private String[] lastCollections = new String[0];
     private String[] known_tango_hosts = new String[0];
     private String[] tools = new String[0];
     private String[] pages = {
@@ -161,7 +163,7 @@ public class PreferenceDialog extends JDialog {
         AstorUtil util = AstorUtil.getInstance();
 
         //	Get last collections
-        last_collection = util.getLastCollectionList();
+        lastCollections = util.getLastCollectionList();
 
         //	Get known TANGO_HOST
         known_tango_hosts = AstorUtil.getDbaseKnownTangoHosts();
@@ -579,13 +581,17 @@ public class PreferenceDialog extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings({"UnusedDeclaration"})
     private void lastCollectionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastCollectionBtnActionPerformed
-
-        JButton btn = (JButton) evt.getSource();
-        GetTextDialog dlg = new GetTextDialog(this,
-                btn.getText(), btn.getToolTipText(), last_collection);
-        if (dlg.showDialog() == JOptionPane.OK_OPTION)
-            last_collection = dlg.getTextLinesAsArray();
+        try {
+            LastBranchesListDialog dialog = new LastBranchesListDialog(parent,
+                AstorUtil.getInstance().getCollectionList(), lastCollections);
+            if (dialog.showDialog() == JOptionPane.OK_OPTION)
+                lastCollections = dialog.getLastBranches();
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+        }
     }//GEN-LAST:event_lastCollectionBtnActionPerformed
 
     //===============================================================
@@ -670,7 +676,7 @@ public class PreferenceDialog extends JDialog {
      */
     //===============================================================
     public static void main(String args[]) {
-        new PreferenceDialog(new javax.swing.JFrame()).setVisible(true);
+        new PreferenceDialog(new JFrame()).setVisible(true);
     }
 
 }

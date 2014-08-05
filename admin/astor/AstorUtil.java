@@ -368,7 +368,7 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     private static String hostInfoClassName = null;
     public static String getHostInfoClassName() {
-        if (hostInfoClassName ==null) {
+        if (hostInfoClassName==null) {
             hostInfoClassName = "";
             try {
                 DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "_HostInfo");
@@ -400,8 +400,7 @@ public class AstorUtil implements AstorDefs {
             if (nb > 0)
                 str = new String(inStr);
         } catch (Exception e) {
-            Except.throw_exception("READ_FAILED",
-                    e.toString(), "AstorUtil.readFile()");
+            Except.throw_exception("READ_FAILED", e.toString());
         }
         return str;
     }
@@ -423,8 +422,7 @@ public class AstorUtil implements AstorDefs {
             while (stk.hasMoreTokens())
                 lines.add(stk.nextToken());
         } catch (Exception e) {
-            Except.throw_exception("READ_FAILED",
-                    e.toString(), "AstorUtil.readFile()");
+            Except.throw_exception("READ_FAILED", e.toString());
         }
         return lines;
     }
@@ -436,8 +434,7 @@ public class AstorUtil implements AstorDefs {
             fid.write(code.getBytes());
             fid.close();
         } catch (Exception e) {
-            Except.throw_exception("WRITE_FAILED",
-                    e.toString(), "AstorUtil.readFile()");
+            Except.throw_exception("WRITE_FAILED", e.toString());
         }
     }
 
@@ -609,6 +606,11 @@ public class AstorUtil implements AstorDefs {
         lastCollections = lcl;
     }
 
+    //===============================================================
+    //===============================================================
+    public ArrayList<String> getCollectionList() throws DevFailed {
+        return getCollectionList(getTangoHostList());
+    }
     //===============================================================
     //===============================================================
     public ArrayList<String> getCollectionList(TangoHost[] hosts) {

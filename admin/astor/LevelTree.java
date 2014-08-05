@@ -138,7 +138,6 @@ public class LevelTree extends JTree implements AstorDefs {
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         //	Create Tree and Tree model
-        //------------------------------------
         treeModel = new DefaultTreeModel(root);
         setModel(treeModel);
 
@@ -207,7 +206,7 @@ public class LevelTree extends JTree implements AstorDefs {
             }
         }
 
-        //	check if some have desapeared
+        //	check if some have disappeared
         DefaultMutableTreeNode node;
         for (int i = 0; i < root.getChildCount(); i++) {
             node = (DefaultMutableTreeNode) root.getChildAt(i);
@@ -246,19 +245,17 @@ public class LevelTree extends JTree implements AstorDefs {
                 //	Apply
                 info = dialog.getSelection();
                 info.host = hostname;
-                if (info != null) {
-                    for (int i = 0; i < root.getChildCount(); i++) {
-                        node = (DefaultMutableTreeNode) root.getChildAt(i);
-                        server = (TangoServer) node.getUserObject();
+                for (int i = 0; i < root.getChildCount(); i++) {
+                    node = (DefaultMutableTreeNode) root.getChildAt(i);
+                    server = (TangoServer) node.getUserObject();
 
-                        info.name = server.getName();
-                        server.putStartupInfo(info);
-                        try {
-                            Thread.sleep(20);
-                        } catch (Exception e) { /** */}
-                    }
-                    parent.updateData();
+                    info.name = server.getName();
+                    server.putStartupInfo(info);
+                    try {
+                        Thread.sleep(20);
+                    } catch (Exception e) { /** */}
                 }
+                parent.updateData();
             }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
@@ -371,8 +368,10 @@ public class LevelTree extends JTree implements AstorDefs {
             return;
 
         TreePath selectedPath = getPathForLocation(evt.getX(), evt.getY());
+        if (selectedPath==null)
+            return;
         DefaultMutableTreeNode node =
-                (DefaultMutableTreeNode) selectedPath.getPathComponent(selectedPath.getPathCount() - 1);
+                (DefaultMutableTreeNode) selectedPath.getPathComponent(selectedPath.getPathCount()-1);
         Object uo = node.getUserObject();
         int mask = evt.getModifiers();
         parent.fireNewTreeSelection(this);
