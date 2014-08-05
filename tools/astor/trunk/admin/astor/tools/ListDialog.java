@@ -46,15 +46,15 @@ import java.awt.*;
 
 
 //===============================================================
-
 /**
- * JDialog Class to display info
+ * JDialog Class with a list to select sever to display usage.
  *
  * @author Pascal Verdier
  */
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class ListDialog extends JDialog {
 
     private String selection = null;
@@ -92,7 +92,6 @@ public class ListDialog extends JDialog {
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
