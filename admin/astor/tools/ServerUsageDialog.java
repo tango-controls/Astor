@@ -55,6 +55,7 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class ServerUsageDialog extends JDialog {
 
     private JFrame parent;
@@ -288,7 +289,7 @@ public class ServerUsageDialog extends JDialog {
     //===============================================================
     public String toString() {
         int nbDevices = 0;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(wildcard).append("\n");
         sb.append("\n=====================================\n");
         for (TangoClass tangoClass : tangoClasses) {
@@ -346,7 +347,7 @@ public class ServerUsageDialog extends JDialog {
 
         //===========================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer("Domain " + name + ":\t");
+            StringBuilder sb = new StringBuilder("Domain " + name + ":\t");
             sb.append(size()).append(" devices\n");
             return sb.toString();
         }
@@ -365,7 +366,7 @@ public class ServerUsageDialog extends JDialog {
 
         //===========================================================
         public String toString() {
-            StringBuffer sb = new StringBuffer("Class " + name + ":\t");
+            StringBuilder sb = new StringBuilder("Class " + name + ":\t");
             sb.append(size()).append(" devices\n");
             /*
             for (String deviceName : this) {
