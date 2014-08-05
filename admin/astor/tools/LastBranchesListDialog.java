@@ -264,13 +264,15 @@ public class LastBranchesListDialog extends JDialog {
         //  And subtract them to branch list
         ArrayList<String>  availableBranches = new ArrayList<String>();
         for (String branch : branches) {
-            boolean found = false;
-            for (String lastBranch : lastBranches) {
-                if (branch.equals(lastBranch))
-                    found = true;
+            if (!branch.equals("Tango Database")) {
+                boolean found = false;
+                for (String lastBranch : lastBranches) {
+                    if (branch.equals(lastBranch))
+                        found = true;
+                }
+                if (!found)
+                    availableBranches.add(branch);
             }
-            if (!found)
-                availableBranches.add(branch);
         }
         if (availableBranches.size()==0) {
             Utils.popupError(parent, "No branch available !");
