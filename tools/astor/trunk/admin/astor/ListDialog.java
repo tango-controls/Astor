@@ -35,7 +35,7 @@
 package admin.astor;
 
 /**
- *
+ *  A dialog with list used to select servers to be started
  * @author verdier
  */
 

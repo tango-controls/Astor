@@ -80,7 +80,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             "Start server",
             "Restart server",
             "Set startup level",
-            "Uptime",
+            "Up time",
             "Polling Manager",
             "Polling Profiler",
             "Pool Threads Manager",
@@ -102,7 +102,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             "Stop  servers",
             "Change level number",
             "Set startup level for each server",
-            "Uptime",
+            "Up time",
             "Expand Tree",
     };
     static private String[] notifdMenuLabels = {
@@ -328,12 +328,12 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     //======================================================
     private void notifdCmdActionPerformed(ActionEvent evt) {
         Object obj = evt.getSource();
-        int cmdidx = -1;
+        int itemIndex = -1;
         for (int i = 0; i < notifdMenuLabels.length; i++)
             if (getComponent(OFFSET + i) == obj)
-                cmdidx = i;
+                itemIndex = i;
 
-        switch (cmdidx) {
+        switch (itemIndex) {
             case START:
                 host.startServer(parent, notifyd_prg + "/" + host.getName());
                 break;
@@ -344,12 +344,12 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     //======================================================
     private void levelCmdActionPerformed(ActionEvent evt) {
         Object obj = evt.getSource();
-        int cmdidx = -1;
+        int itemIndex = -1;
         for (int i = 0; i < levelMenuLabels.length; i++)
             if (getComponent(OFFSET + i) == obj)
-                cmdidx = i;
+                itemIndex = i;
 
-        switch (cmdidx) {
+        switch (itemIndex) {
             case START:
                 parent.startLevel(tree.getLevelRow());
                 break;

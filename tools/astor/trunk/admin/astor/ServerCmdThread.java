@@ -57,7 +57,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     private boolean[] levelUsed;
     private short nbStartupLevels;
     private String monitor_title;
-
+    private boolean confirm = true;
     private boolean from_array = true;
     private ArrayList<Integer> levels;
 
@@ -65,9 +65,9 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     /**
      * Thread Constructor for many hosts.
      *
-     * @param    parent    The application parent used as parent
-     * for ProgressMinitor.
-     * @param    hosts    The controlled hosts.
+     * @param    parent The application parent used as parent
+     *                          for ProgressMonitor.
+     * @param    hosts  The controlled hosts.
      * @param    cmd    command to be executed on all hosts.
      */
     //=======================================================
@@ -86,10 +86,10 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     /**
      * Thread Constructor for one host.
      *
-     * @param    parent    The application parent used as parent
-     * for ProgressMonitor.
-     * @param    host    The controlled host.
-     * @param    cmd        command to be executed on all hosts.
+     * @param    parent The application parent used as parent
+     *                          for ProgressMonitor.
+     * @param    host   The controlled host.
+     * @param    cmd    command to be executed on all hosts.
      * @param    levelUsed    true if level is used by server on this host.
      */
     //=======================================================
@@ -108,30 +108,45 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     /**
      * Thread Constructor for one host.
      *
-     * @param    parent    The application parent used as parent
-     * for ProgressMonitor.
-     * @param    host    The controlled host.
+     * @param    parent The application parent used as parent
+     *                          for ProgressMonitor.
+     * @param    host   The controlled host.
      * @param    cmd        command to be executed on all hosts.
-     * @param    levels    list of levels
+     * @param    levels list of levels
      */
     //=======================================================
     public ServerCmdThread(Component parent, TangoHost host, int cmd, ArrayList<Integer> levels) {
+        this(parent, host, cmd, levels, true);
+    }
+    //=======================================================
+    /**
+     * Thread Constructor for one host.
+     *
+     * @param    parent The application parent used as parent
+     *                          for ProgressMonitor.
+     * @param    host   The controlled host.
+     * @param    cmd        command to be executed on all hosts.
+     * @param    levels list of levels
+     */
+    //=======================================================
+    public ServerCmdThread(Component parent, TangoHost host, int cmd, ArrayList<Integer> levels, boolean confirm) {
         this.parent = parent;
 
         this.hosts = new TangoHost[1];
         this.hosts[0] = host;
         this.cmd = cmd;
         this.levels = levels;
+        this.confirm = confirm;
         monitor_title = " on " + host + "   ";
         nbStartupLevels = AstorUtil.getStarterNbStartupLevels();
         from_array = false;
     }
     //=======================================================
     /*
-     * Update the PrograessMonitor
+     * Update the ProgressMonitor
      */
     //=======================================================
-    private void updateProgressMonitor(int level, int hostnum, double ratio) {
+    private void updateProgressMonitor(int level, int hostIndex, double ratio) {
         String message;
         if (monitor == null) {
             message = cmdStr[cmd] + monitor_title;
@@ -141,10 +156,10 @@ public class ServerCmdThread extends Thread implements AstorDefs {
                 monitor = new Monitor((JFrame) parent, message, cmdStr[cmd]);
         }
 
-        message = cmdStr[cmd] + "Servers on " + hosts[hostnum].getName() +
-                " for level " + level;
+        message = cmdStr[cmd] + "Servers on " +
+                hosts[hostIndex].getName() + " for level " + level;
 
-        //System.out.println(hostnum + " -> " + ratio);
+        //System.out.println(hostIndex + " -> " + ratio);
         monitor.setProgressValue(ratio, message);
     }
 
@@ -155,40 +170,39 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     //=======================================================
     public void run() {
         //	Initialize from properties
-        //--------------------------------
         AstorUtil.getStarterNbStartupLevels();
 
         //	Start progress monitor
-        //-----------------------------
         updateProgressMonitor(0, 0, 0.05);
 
         //	For each startup level
         //	(Increase for start or decrease for stop)
-        //---------------------------------------------------
         if (from_array) {
             switch (cmd) {
                 case StartAllServers:
-                    for (int level = 1; !monitor.isCanceled() &&
-                             level <= nbStartupLevels; level++) {
+                    for (int level=1 ; !monitor.isCanceled() && level<=nbStartupLevels; level++) {
                         if (levelUsed[level - 1]) {
-                            int option = JOptionPane.showConfirmDialog(parent,
-                                    cmdStr[cmd] + " for level " + level,
-                                    "",
-                                    JOptionPane.YES_NO_CANCEL_OPTION);
+                            if (confirm) {
+                                int option = JOptionPane.showConfirmDialog(parent,
+                                        cmdStr[cmd] + " for level " + level,
+                                        "",
+                                        JOptionPane.YES_NO_CANCEL_OPTION);
 
-                            if (option == JOptionPane.CANCEL_OPTION)
-                                level = nbStartupLevels;
-                            else {
-                                boolean do_it = (option == JOptionPane.OK_OPTION);
-                                executeCommand(hosts, level, do_it);
+                                if (option == JOptionPane.CANCEL_OPTION)
+                                    level = nbStartupLevels;
+                                else {
+                                    if (option == JOptionPane.OK_OPTION)
+                                        executeCommand(hosts, level);
+                                }
                             }
+                            else
+                                executeCommand(hosts, level);
                         }
                     }
                     break;
 
                 case StopAllServers:
-                    for (int level = nbStartupLevels; !monitor.isCanceled() &&
-                            level > 0; level--) {
+                    for (int level = nbStartupLevels; !monitor.isCanceled() && level>0 ; level--) {
                         if (levelUsed[level - 1]) {
                             int option = JOptionPane.showConfirmDialog(parent,
                                     cmdStr[cmd] + " for level " + level,
@@ -197,16 +211,17 @@ public class ServerCmdThread extends Thread implements AstorDefs {
                             if (option == JOptionPane.CANCEL_OPTION)
                                 level = 0;
                             else {
-                                boolean do_it = (option == JOptionPane.OK_OPTION);
-                                executeCommand(hosts, level, do_it);
+                                if (option == JOptionPane.OK_OPTION)
+                                    executeCommand(hosts, level);
                             }
                         }
                     }
                     break;
             }
-        } else    //	New version from a vector
-        {
-            for (int l = 0; l < levels.size(); l++) {
+        }
+        else {   //	New version from a vector
+
+            for (int l=0 ; l<levels.size() ; l++) {
                 int level = levels.get(l);
                 int option = JOptionPane.showConfirmDialog(parent,
                         cmdStr[cmd] + " for level " + level,
@@ -218,7 +233,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
                         l = levels.size();
                         break;
                     case JOptionPane.OK_OPTION:
-                        executeCommand(hosts, level, true);
+                        executeCommand(hosts, level);
                         break;
                     case JOptionPane.NO_OPTION:
                         break;
@@ -231,15 +246,13 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     //============================================================
     //============================================================
     @SuppressWarnings({"NestedTryStatement"})
-    private void executeCommand(TangoHost[] hosts, int level, boolean doThisLevel) {
+    private void executeCommand(TangoHost[] hosts, int level) {
         //	For each host
-        //-------------------
-        for (int i = 0; doThisLevel &&
-                !monitor.isCanceled() && i < hosts.length; i++) {
+        for (int i=0 ; !monitor.isCanceled() && i<hosts.length ; i++) {
             TangoHost host = hosts[i];
             double ratio;
 
-            //-------------------------------------
+            //----------------------------
             //	And Execute the command
             //----------------------------
             try {
@@ -252,7 +265,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
 
                         //	Do command
                         host.startServers(level);
-                        //	wait a bit just to display bargraph
+                        //	wait a bit just to display bar graph
                         try { sleep(500); } catch (Exception e) { /* */ }
                         break;
 
@@ -264,7 +277,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
 
                         //	Do command
                         host.stopServers(level);
-                        //	wait a bit just to display bargraph
+                        //	wait a bit just to display bar graph
                         try { sleep(50); } catch (Exception e) { /* */ }
                         break;
                 }

@@ -99,7 +99,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
 
     //	Edit options
     static private final int CLONE_HOST = 9;
-    static private final int CHANGE_BRANCHE = 10;
+    static private final int CHANGE_BRANCH = 10;
     static private final int EDIT_PROP = 11;
     static private final int REMOVE_HOST = 12;
     static private final int BLACK_BOX = 13;
@@ -220,7 +220,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + RESET_STAT).setVisible(false);
             getComponent(OFFSET + CHANGE_NAME).setVisible(false);
 
-            getComponent(OFFSET + CHANGE_BRANCHE).setEnabled(true);
+            getComponent(OFFSET + CHANGE_BRANCH).setEnabled(true);
             getComponent(OFFSET + EDIT_PROP).setEnabled(true);
             getComponent(OFFSET + CLONE_HOST).setEnabled(true);
 
@@ -247,7 +247,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             }
             if (Astor.rwMode!=AstorDefs.READ_WRITE) {
                 getComponent(OFFSET + CLONE_HOST).setVisible(false);
-                getComponent(OFFSET + CHANGE_BRANCHE).setVisible(false);
+                getComponent(OFFSET + CHANGE_BRANCH).setVisible(false);
                 getComponent(OFFSET + REMOVE_HOST).setVisible(false);
                 getComponent(OFFSET + EDIT_PROP).setVisible(false);
             }
@@ -270,7 +270,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 getComponent(OFFSET + UPDATE).setVisible(false);
 
                 getComponent(OFFSET + CLONE_HOST).setEnabled(false);
-                getComponent(OFFSET + CHANGE_BRANCHE).setEnabled(false);
+                getComponent(OFFSET + CHANGE_BRANCH).setEnabled(false);
                 getComponent(OFFSET + EDIT_PROP).setEnabled(false);
                 getComponent(OFFSET + REMOVE_HOST).setEnabled(false);
                 getComponent(OFFSET + BLACK_BOX).setVisible(false);
@@ -351,7 +351,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             case EDIT_PROP:
                 astor.editHostProperties(host);
                 break;
-            case CHANGE_BRANCHE:
+            case CHANGE_BRANCH:
                 parent.moveNode();
                 break;
             case REMOVE_HOST:

@@ -605,13 +605,11 @@ public class AstorTree extends JTree implements AstorDefs {
         targetNames[idx] = "New Branch";
 
         //	And choose new collection
-        String targetName =
-                (String) JOptionPane.showInputDialog(this,
+        String targetName = (String) JOptionPane.showInputDialog(this,
                         "Move " + hostNode + "  to :", "",
                         JOptionPane.INFORMATION_MESSAGE, null,
                         targetNames, targetNames[0]);
         if (targetName != null) {
-
             //	Is it a new one ?
             if (targetName.equals(targetNames[idx])) {    //	"New Branch"
 
