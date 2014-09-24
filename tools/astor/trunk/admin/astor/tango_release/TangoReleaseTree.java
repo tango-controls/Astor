@@ -65,8 +65,9 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private TangoServerReleaseList  serverReleaseList;
     private static JFileChooser fileChooser = null;
 
-    private static final double[]   tangoReleases = { 1.0, 2.0, 5.0, 5.2, 7.0, 8.0, 8.1 };
-    private static final int[]      idlReleases   = { 1, 2, 3, 4 };
+    //  ToDo add here new release to be checked.
+    private static final double[]   tangoReleases = { 1.0, 2.0, 5.0, 5.2, 7.0, 8.0, 8.1, 9.0 };
+    private static final int[]      idlReleases   = { 1, 2, 3, 4, 5 };
 
     private static ImageIcon networkIcon;
     private static ImageIcon tangoIcon;
