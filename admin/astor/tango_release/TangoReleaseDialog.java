@@ -172,7 +172,7 @@ public class TangoReleaseDialog extends JDialog {
         rootName += "  (" + serverReleaseList.size() + " servers - " +
                         serverReleaseList.nbClasses() +  " classes)";
 
-        //	Build users_tree to display info
+        //	Build tree to display info
         AstorUtil.increaseSplashProgress(5, "Build trees....");
         TangoReleaseTree    tangoTree = new TangoReleaseTree(parent,
                 rootName, serverReleaseList, byTango);
@@ -322,16 +322,16 @@ public class TangoReleaseDialog extends JDialog {
                 if (args[0].equals("-test")) {
                     //  Do it for a list
                     ArrayList<String>   list = new ArrayList<String>();
-                    list.add("VacGaugeServer/sr_c1-pen");
-                    list.add("VacGaugeServer/sr_c1-ip");
-                    list.add("PLCvacuumValve/sr_c01");
-                    list.add("Starter/l-c01-1");
-                    list.add("TacoStarter/l-srrf-1");
-                    new TangoReleaseDialog(null, "My Test", list).setVisible(true);
+                    //list.add("PowerSupply/pv");
+                    //list.add("Dummy/pv");
+                    list.add("FirstPipe/pv");
+                     list.add("Starter/debian7-devel");
+                   new TangoReleaseDialog(null, "My Test", list).setVisible(true);
                 }
                 else {
                     //  Do it for a host
-                    new TangoReleaseDialog(null, args[0]).setVisible(true);
+                    TangoReleaseDialog dialog = new TangoReleaseDialog(null, args[0]);
+                    dialog.setVisible(true);
                 }
             }
             else {

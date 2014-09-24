@@ -56,6 +56,7 @@ public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
             String[]  classNames = getClasses(dbServer);
             if (release>=100)
                 releaseNumber = 0.01 * release;
+            //System.out.println(name + ":    " + releaseNumber);
             if (classNames.length>0) {
                 //add(new TangoClassRelease(dbServer, dserverClassName));
                 for (String className : classNames) {
