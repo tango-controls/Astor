@@ -1045,6 +1045,9 @@ public class AstorUtil implements AstorDefs {
     private static ImageIcon tango_icon = null;
 
     public static void startSplash(String title) {
+        String s = System.getenv("UseSplash");
+        if (s!=null && s.equals("false")) return;
+
         //	Create a splash window.
         JSmoothProgressBar myBar = new JSmoothProgressBar();
         myBar.setStringPainted(true);
@@ -1097,7 +1100,8 @@ public class AstorUtil implements AstorDefs {
         //===============================================================
         //===============================================================
     public static void setSplashMessage(String message) {
-        splash.setMessage(message);
+        if (splash!=null)
+            splash.setMessage(message);
     }
     //===============================================================
     //===============================================================
