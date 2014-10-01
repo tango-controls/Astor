@@ -31,12 +31,18 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Mar 05 09:22:52 CET 2014)" + 
+			"(Generated Wed Oct 01 15:50:49 CEST 2014)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.6.0 -  01/10/14:</li></b>" +
+			"	Server Tango release manage Tango-9 and IDL5<br>" +
+
+		"<br><li><b>Astor-6.5.1 -  05/08/14:</li></b>" +
+			"	Improve Last Branches management.<br>" +
 
 		"<br><li><b>Astor-6.5.0 -  19/04/14:</li></b>" +
 			"	Manage OFF state for Starter devices.<br>" +
-			"	Imporve DbPollPanel class.<br>" +
+			"	Improve DbPollPanel class.<br>" +
 
 		"<br><li><b>Astor-6.4.6 -  29/01/14:</li></b>" +
 			"	Package ctrl_system_info added to the jar file.<br>" +
