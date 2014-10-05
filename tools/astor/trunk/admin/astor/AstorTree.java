@@ -469,7 +469,7 @@ public class AstorTree extends JTree implements AstorDefs {
                     message += "All are controlled on events.";
                 else if (nb_on_events > 0)
                     message += nb_on_events + " are controlled on events.";
-                Utils.popupMessage(parent, message, "tango_icon.jpg");
+                Utils.popupMessage(parent, message, "TangoClass.gif");
             }
         }
     }
