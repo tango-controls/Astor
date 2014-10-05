@@ -62,7 +62,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     private TangoRenderer renderer;
 
     private TangoServer server;
-    private static final Color background = admin.astor.AstorTree.background;
+    private static final Color background = Color.WHITE;
     private static final             String[]    propertyNames = {
             "polling_threads_pool_size",
             "polling_threads_pool_conf",
@@ -563,7 +563,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            tango_icon = utils.getIcon("network5.gif");
+            tango_icon = utils.getIcon("TangoClass.gif", 0.33);
             class_icon = utils.getIcon("class.gif");
             cmd_icon = utils.getIcon("attleaf.gif");
             dd_cursor = utils.getCursor("drg-drp.gif");
