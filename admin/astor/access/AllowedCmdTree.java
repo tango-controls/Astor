@@ -60,7 +60,7 @@ public class AllowedCmdTree extends JTree implements TangoConst {
     private JFrame parent;
 
     private AccessProxy access_dev;
-    private static final Color background = admin.astor.AstorTree.background;
+    private static final Color background = Color.WHITE;
 
     //===============================================================
     //===============================================================
@@ -322,12 +322,11 @@ public class AllowedCmdTree extends JTree implements TangoConst {
     //===============================================================
 
 
-//===============================================================
-
+    //===============================================================
     /**
      * Renderer Class
      */
-//===============================================================
+    //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
         private Font[] fonts;
 
@@ -339,8 +338,8 @@ public class AllowedCmdTree extends JTree implements TangoConst {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            tango_icon = utils.getIcon("network5.gif");
-            class_icon = utils.getIcon("class.gif");
+            tango_icon = utils.getIcon("TangoClass.gif", 0.33);
+            class_icon = utils.getIcon("TangoClass.gif", 0.125);
             cmd_icon = utils.getIcon("attleaf.gif");
 
             fonts = new Font[3];

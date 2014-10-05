@@ -82,7 +82,7 @@ public class UsersTree extends JTree implements TangoConst {
     private AccessProxy accessProxy;
     CopiedAddresses copied_addresses = new CopiedAddresses();
     CopiedDevices copied_devices = new CopiedDevices();
-    private static final Color background = admin.astor.AstorTree.background;
+    private static final Color background = Color.WHITE;
 
 
 
@@ -1179,7 +1179,7 @@ public class UsersTree extends JTree implements TangoConst {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            tango_icon = utils.getIcon("network5.gif");
+            tango_icon = utils.getIcon("TangoClass.gif", 0.33);
             all_users_icon = utils.getIcon("user.gif", 1.0);
             group_icon = utils.getIcon("user.gif", 0.8);
             user_icon = utils.getIcon("user.gif", 0.6);
