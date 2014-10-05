@@ -81,8 +81,8 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         this.mode   = mode;
         this.serverReleaseList = serverReleaseList;
 
-        networkIcon = Utils.getInstance().getIcon("network5.gif");
-        tangoIcon = Utils.getInstance().getIcon("TangoSmall.gif", 0.25);
+        networkIcon = Utils.getInstance().getIcon("TangoClass.gif", 0.33);
+        tangoIcon = Utils.getInstance().getIcon("TangoClass.gif", 0.125);
         serverIcon = Utils.getInstance().getIcon("server.gif");
         classIcon = Utils.getInstance().getIcon("class.gif");
         buildTree(rootName);
