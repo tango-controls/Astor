@@ -297,7 +297,7 @@ public class DeviceTree extends JTree implements AstorDefs {
         //	do not collapse if Root
         if (path.getPathCount() == 1) {
             setExpandedState(new TreePath(node.getPath()), true);
-            Utils.popupMessage(appli, cs.toString(), "tango_icon.jpg");
+            Utils.popupMessage(appli, cs.toString(), "TangoClass.gif");
         }
     }
 

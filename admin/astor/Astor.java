@@ -66,7 +66,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.6.0  -  Wed Oct 01 15:50:49 CEST 2014";
+            "6.6.0  -  Wed Oct 01 16:48:33 CEST 2014";
     /**
      * JTree object to display control system.
      */
@@ -113,7 +113,7 @@ public class Astor extends JFrame implements AstorDefs {
         setTitle("TANGO Manager - " + revNumber);
         setControlSystemTitle();
         buildTree();
-        ImageIcon icon = Utils.getInstance().getIcon("tango_icon.jpg");
+        ImageIcon icon = Utils.getInstance().getIcon("TangoClass.gif");
         setIconImage(icon.getImage());
 
         centerWindow();
@@ -1062,7 +1062,7 @@ public class Astor extends JFrame implements AstorDefs {
                         revNumber +
                         "\n\n" +
                         "Pascal Verdier - Software Engineering Group - ESRF";
-        Utils.popupMessage(this, message, "tango_icon.jpg");
+        Utils.popupMessage(this, message, "TangoClass.gif");
 	}
     //======================================================================
     //======================================================================
