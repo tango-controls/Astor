@@ -22,7 +22,7 @@ TANGO_HOME     = /segfs/tango
 #
 #------------------------------------------------------------------
 
-BIN_DIR   = ../../../bin
+BIN_DIR   = ../../../../bin
 JAVAFLAGS = -deprecation -d $(BIN_DIR)
 JAVAC = javac $(JAVAFLAGS)
 

@@ -60,7 +60,7 @@ public class ResetStatistics {
     public ResetStatistics(JFrame parent) {
         this.parent = parent;
 
-        ArrayList<String> hosts = Utils.getHostControlledList(false);
+        ArrayList<String> hosts = Utils.getHostControlledList(true, false);
         StringBuffer failed = new StringBuffer();
         if (getConfirm(hosts)) {
             nbHosts = hosts.size();
@@ -68,9 +68,7 @@ public class ResetStatistics {
             if (parent != null)
                 AstorUtil.startSplash("Statistics ");
             for (String host : hosts) {
-                if (parent == null)
-                    System.out.println("Resetting " + host);
-                else {
+                if (parent != null) {
                     int ratio = 100 / nbHosts;
                     if (ratio < 1)
                         ratio = 1;
