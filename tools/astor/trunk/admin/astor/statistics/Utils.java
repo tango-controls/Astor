@@ -143,7 +143,7 @@ public class Utils {
     public static ArrayList<StarterStat> readHostStatistics(ArrayList<String> ctrlHosts) {
         //  If host list is empty, get controlled host list
         if (ctrlHosts == null || ctrlHosts.size() == 0) {
-            ctrlHosts = getHostControlledList(true);
+            ctrlHosts = getHostControlledList(false, true);
         }
 
         int increment = 80 / ctrlHosts.size();
@@ -159,44 +159,44 @@ public class Utils {
 
     //=======================================================
     //=======================================================
-    public static ArrayList<String> getHostControlledList(boolean display) {
+    public static ArrayList<String> getHostControlledList(boolean keepLastCollections, boolean display) {
         if (display)
             AstorUtil.increaseSplashProgress(5, "Get Controlled host list....");
         ArrayList<String> ctrlHosts = new ArrayList<String>();
-        String dbg = System.getProperty("ebugStat");
-        if (dbg != null && dbg.equals("true")) {
-            ctrlHosts.add("coral");
-            ctrlHosts.add("esrflinux1-2");
-            ctrlHosts.add("esrflinux1-1");
-            return ctrlHosts;
-        }
 
         try {
             //  get host list
             String[] hosts = AstorUtil.getInstance().getHostControlledList();
 
-            //	get ExcludedCollectionsForStatistics Astor Property
-            Database dbase = ApiUtil.get_db_obj();
-            String[] excludedCollections = new String[0];
-            DbDatum data = dbase.get_property("Astor", "ExcludedCollectionsForStatistics");
-            if (!data.is_empty())
-                excludedCollections = data.extractStringArray();
+			if (keepLastCollections)
+			    Collections.addAll(ctrlHosts, hosts);
+			else {
+            	//	get ExcludedCollectionsForStatistics Astor Property
+            	Database dbase = ApiUtil.get_db_obj();
+            	String[] excludedCollections = new String[0];
+            	DbDatum data = dbase.get_property("Astor", "ExcludedCollectionsForStatistics");
+            	if (!data.is_empty())
+                	excludedCollections = data.extractStringArray();
+                for (String s : excludedCollections) {
+					System.out.println("Exclude " + s);
+				}
 
-            for (String host : hosts) {
-                //  Get host collection from Starter property
-                DbDatum datum = new DeviceProxy("tango/admin/" + host).get_property("HostCollection");
-                if (!datum.is_empty()) {
-                    String collec = datum.extractString().toLowerCase();
+            	for (String host : hosts) {
+                	//  Get host collection from Starter property
+                	DbDatum datum = new DeviceProxy("tango/admin/" + host).get_property("HostCollection");
+                	if (!datum.is_empty()) {
+                    	String collec = datum.extractString().toLowerCase();
 
-                    //  Check if collection is excluded.
-                    boolean found = false;
-                    for (String s : excludedCollections) {
-                        if (s.toLowerCase().equals(collec))
-                            found = true;
-                    }
-                    if (!found)
-                        ctrlHosts.add(host);
-                }
+                    	//  Check if collection is excluded.
+                    	boolean found = false;
+                    	for (String s : excludedCollections) {
+                        	if (s.toLowerCase().equals(collec))
+                            	found = true;
+                    	}
+                    	if (!found)
+                        	ctrlHosts.add(host);
+                	}
+				}
             }
         } catch (DevFailed e) {
             if (display)
