@@ -402,6 +402,20 @@ public class SubscribedSignal implements TangoConst {
                 }
             }
             break;
+            case Tango_DEV_ULONG: {
+                long [] tmp = attr.extractULongArray();
+                values = new double[tmp.length];
+                for (int i = 0; i < tmp.length; i++) {
+                    if (format == null)
+                        value += "" + tmp[i];
+                    else {
+                        value += String.format(format, tmp[i]);
+                    }
+                    if (i < tmp.length - 1) value += "\n";
+                    values[i] = (double) tmp[i];
+                }
+            }
+            break;
             case Tango_DEV_FLOAT: {
                 float[] tmp = attr.extractFloatArray();
                 values = new double[tmp.length];

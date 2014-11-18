@@ -172,7 +172,7 @@ public class TreePopupMenu extends JPopupMenu {
             getComponent(OFFSET + DEV_GOTO_SERVER).setVisible(collec.equals("Devices") ||
                     collec.equals("Aliases"));
             if (!running) {
-                getComponent(OFFSET + DEV_TEST).setEnabled(false);
+                getComponent(OFFSET).setEnabled(false);
                 getComponent(OFFSET + DEV_MONITOR).setEnabled(false);
                 getComponent(OFFSET + DEV_POLLING).setEnabled(false);
                 getComponent(OFFSET + DEV_PROFILER).setEnabled(false);
@@ -183,7 +183,7 @@ public class TreePopupMenu extends JPopupMenu {
             if (!running) {
                 getComponent(OFFSET + SERV_PROFILER).setEnabled(false);
                 getComponent(OFFSET + SERV_ARCHI).setEnabled(false);
-                getComponent(OFFSET + SERV_TEST).setEnabled(false);
+                getComponent(SERV_TEST).setEnabled(false);
             }
         }
 
