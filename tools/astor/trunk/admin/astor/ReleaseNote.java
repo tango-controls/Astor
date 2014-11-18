@@ -31,8 +31,11 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Oct 01 16:48:33 CEST 2014)" + 
+			"(Generated Tue Nov 18 16:22:06 CET 2014)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.6.1 -  04/11/14:</li></b>" +
+			"	Faulty host list added to help menu.<br>" +
 
 		"<br><li><b>Astor-6.6.0 -  01/10/14:</li></b>" +
 			"	Server Tango release manage Tango-9 and IDL5<br>" +

@@ -11,6 +11,12 @@
 #
 #-======================================================================
 
+Astor-6.6.2 -  18/11/14:
+	ULong management added to event tester.
+
+Astor-6.6.1 -  04/11/14:
+	Faulty host list added to help menu.
+
 Astor-6.6.0 -  01/10/14:
 	Server Tango release manage Tango-9 and IDL5
 
