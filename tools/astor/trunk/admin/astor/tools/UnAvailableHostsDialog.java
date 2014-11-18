@@ -55,6 +55,7 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class UnAvailableHostsDialog extends JDialog {
     private JFrame parent;
     private ArrayList<StoppedHost> stoppedHosts;
@@ -97,7 +98,9 @@ public class UnAvailableHostsDialog extends JDialog {
         super(parent, true);
         this.parent = parent;
         initComponents();
-
+        notCriticalBtn.setBackground(Color.orange);
+        criticalBtn.setBackground(Color.red);
+        criticalBtn.setForeground(Color.white);
         AstorUtil.startSplash("Pinging crates.....");
         AstorUtil.increaseSplashProgress(0.3, "Get host list from database");
         String[] ctrlHosts = AstorUtil.getInstance().getHostControlledList();
@@ -164,25 +167,26 @@ public class UnAvailableHostsDialog extends JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.JPanel topPanel = new javax.swing.JPanel();
-        titleLabel = new javax.swing.JLabel();
         centerPanel = new javax.swing.JPanel();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton updateBtn = new javax.swing.JButton();
         javax.swing.JButton unexportAllBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        javax.swing.JPanel topPanel = new javax.swing.JPanel();
+        javax.swing.JPanel topTopPanel = new javax.swing.JPanel();
+        criticalBtn = new javax.swing.JButton();
+        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+        notCriticalBtn = new javax.swing.JButton();
+        javax.swing.JSeparator jSeparator1 = new javax.swing.JSeparator();
+        javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
         });
-
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        titleLabel.setText("Unreachable Hosts");
-        topPanel.add(titleLabel);
-
-        getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
         centerPanel.setLayout(new java.awt.GridBagLayout());
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
@@ -214,6 +218,35 @@ public class UnAvailableHostsDialog extends JDialog {
         bottomPanel.add(cancelBtn);
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
+
+        topPanel.setLayout(new java.awt.BorderLayout());
+
+        criticalBtn.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        criticalBtn.setText("   Critical   ");
+        topTopPanel.add(criticalBtn);
+
+        jLabel2.setText("           ");
+        topTopPanel.add(jLabel2);
+
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        titleLabel.setText("Unreachable Hosts");
+        topTopPanel.add(titleLabel);
+
+        jLabel1.setText("           ");
+        topTopPanel.add(jLabel1);
+
+        notCriticalBtn.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        notCriticalBtn.setText(" Not Critical ");
+        topTopPanel.add(notCriticalBtn);
+
+        topPanel.add(topTopPanel, java.awt.BorderLayout.NORTH);
+        topPanel.add(jSeparator1, java.awt.BorderLayout.CENTER);
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel3.setText("           ");
+        topPanel.add(jLabel3, java.awt.BorderLayout.PAGE_END);
+
+        getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -314,13 +347,14 @@ public class UnAvailableHostsDialog extends JDialog {
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
+    private javax.swing.JButton criticalBtn;
+    private javax.swing.JButton notCriticalBtn;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 
 
     //===============================================================
-
     /**
      * @param args the command line arguments
      */
