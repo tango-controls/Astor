@@ -56,6 +56,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 
@@ -248,7 +249,8 @@ public class AstorTree extends JTree implements AstorDefs {
                     if (i < subscribeError.size() - 1)
                         sb.append("\n\n");
                 }
-                String title = "Subscribe events on " + subscribeError.size() + "/" +
+                String title = new Date().toString() +
+                        " - Subscribe events on " + subscribeError.size() + "/" +
                         hostSubscribed;
                 if (subscribeError.size() == 1)
                     title += " host has failed";
@@ -262,11 +264,6 @@ public class AstorTree extends JTree implements AstorDefs {
                 subscribeErrWindow.setTitle(title);
                 subscribeErrWindow.addText(sb.toString());
                 subscribeErrWindow.setSize(900, height);
-                /*
-                subscribeErrWindow.show(title,
-                        new String[]{sb.toString()},
-                        900, height);
-                */
             }
         }
     }

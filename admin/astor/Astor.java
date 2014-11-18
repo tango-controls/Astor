@@ -66,7 +66,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.6.0  -  Wed Oct 01 16:48:33 CEST 2014";
+            "6.6.2  -  Tue Nov 18 16:22:06 CET 2014";
     /**
      * JTree object to display control system.
      */
@@ -408,6 +408,7 @@ public class Astor extends JFrame implements AstorDefs {
         tangorbBtn = new javax.swing.JMenuItem();
         starterEventsItem = new javax.swing.JMenuItem();
         starterNoEventsItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem faultyListItem = new javax.swing.JMenuItem();
         releaseNoteBtn = new javax.swing.JMenuItem();
         aboutBtn = new javax.swing.JMenuItem();
 
@@ -667,6 +668,14 @@ public class Astor extends JFrame implements AstorDefs {
             }
         });
         helpMenu.add(starterNoEventsItem);
+
+        faultyListItem.setText("Faulty Host List");
+        faultyListItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                faultyListItemhelpActionPerformed(evt);
+            }
+        });
+        helpMenu.add(faultyListItem);
 
         releaseNoteBtn.setText("Release Note");
         releaseNoteBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -1199,6 +1208,25 @@ public class Astor extends JFrame implements AstorDefs {
 
     //======================================================================
     //======================================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void faultyListItemhelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_faultyListItemhelpActionPerformed
+        // TODO add your handling code here:
+        StringBuilder   sb = new StringBuilder();
+        for (TangoHost host : tree.hosts) {
+            if (host.state==faulty)
+                sb.append(host.getName()).append('\n');
+        }
+
+        PopupText   popupText = new PopupText(this, true);
+        popupText.setTitle("Faulty host list");
+        popupText.addText(sb.toString());
+        popupText.setSize(360, 400);
+        popupText.setVisible(true);
+
+    }//GEN-LAST:event_faultyListItemhelpActionPerformed
+
+    //======================================================================
+    //======================================================================
     @SuppressWarnings({"ConstantConditions"})
     private void stopThreads() {
         System.out.println("Astor exiting....");
@@ -1300,29 +1328,32 @@ public class Astor extends JFrame implements AstorDefs {
         }
         //	Else start application
 
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                long t0 = System.currentTimeMillis();
+                //	First time, Open a simple Tango window
+                //noinspection ErrorNotRethrown
+                try {
+                    Astor astor = new Astor();
+                    astor.setVisible(true);
+                    Astor.displayed = true;
+                } catch (DevFailed e) {
+                    System.out.println(e);
+                    if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
+                        e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
+                                "Astor cannot be configured from database !";
 
-        long t0 = System.currentTimeMillis();
-        //	First time, Open a simple Tango window
-        //noinspection ErrorNotRethrown
-        try {
-            Astor astor = new Astor();
-            astor.setVisible(true);
-            Astor.displayed = true;
-        } catch (DevFailed e) {
-            System.out.println(e);
-            if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
-                e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
-                        "Astor cannot be configured from database !";
-
-            ErrorPane.showErrorMessage(new JFrame(), null, e);
-            System.exit(-1);
-        } catch (java.lang.InternalError e) {
-            System.out.println(e);
-        } catch (java.awt.HeadlessException e) {
-            System.out.println(e);
-        }
-        long t1 = System.currentTimeMillis();
-        System.out.println("Build  GUI :" + (t1 - t0) + " ms");
+                    ErrorPane.showErrorMessage(new JFrame(), null, e);
+                    System.exit(-1);
+                } catch (java.lang.InternalError e) {
+                    System.out.println(e);
+                } catch (java.awt.HeadlessException e) {
+                    System.out.println(e);
+                }
+                long t1 = System.currentTimeMillis();
+                System.out.println("Build  GUI :" + (t1 - t0) + " ms");
+            }
+        });
     }
     //===============================================================
     //===============================================================
