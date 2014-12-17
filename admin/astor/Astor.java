@@ -66,7 +66,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.6.2  -  Tue Nov 18 16:22:06 CET 2014";
+            "6.6.3  -  Wed Dec 17 09:52:11 CET 2014";
     /**
      * JTree object to display control system.
      */
@@ -1230,7 +1230,7 @@ public class Astor extends JFrame implements AstorDefs {
     @SuppressWarnings({"ConstantConditions"})
     private void stopThreads() {
         System.out.println("Astor exiting....");
-        //	Stop all host controled
+        //	Stop all host controlled
         if (tree != null && tree.hosts != null) {
             for (TangoHost host : tree.hosts) {
                 //	Display a little timer during unsubscribe

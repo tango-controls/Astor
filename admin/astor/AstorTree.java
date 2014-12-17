@@ -1043,13 +1043,13 @@ public class AstorTree extends JTree implements AstorDefs {
         //===============================================================
         //===============================================================
         public Component getTreeCellRendererComponent(
-                JTree tree,
-                Object obj,
-                boolean sel,
-                boolean expanded,
-                boolean leaf,
-                int row,
-                boolean hasFocus) {
+                final JTree tree,
+                final Object obj,
+                final boolean sel,
+                final boolean expanded,
+                final boolean leaf,
+                final int row,
+                final boolean hasFocus) {
 
             super.getTreeCellRendererComponent(
                     tree, obj, sel,
