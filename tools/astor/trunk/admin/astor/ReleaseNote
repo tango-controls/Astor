@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.6.3 -  17/12/14:
+	Several invokeLater() methods added.
+
 Astor-6.6.2 -  18/11/14:
 	ULong management added to event tester.
 

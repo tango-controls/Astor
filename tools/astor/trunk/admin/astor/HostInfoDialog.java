@@ -220,9 +220,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             nb += trees[i].getNbServers();
         titleLabel.setText("" + nb + " Controlled Servers on " + name);
 
-        checkActiveLevels();
-        updateHostState();
-        packTheDialog();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                checkActiveLevels();
+                updateHostState();
+                packTheDialog();
+            }
+        });
     }
     //===============================================================
     /**
@@ -836,20 +840,23 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             if (host.onEvents)
                 subscribeChangeEvent();
 
-
             //	Manage polling on synchronous calls
             while (!stopIt) {
                 long t0 = System.currentTimeMillis();
 
                 wait_next_loop(t0);
                 if (!stopIt) {
-                    if (!host.onEvents) {
-                        manageSynchronous();
-                    }
-                    if (!(jFrame instanceof Astor)) {
-                        manageNotifd();
-                        updateHostState();
-                    }
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (!host.onEvents) {
+                                manageSynchronous();
+                            }
+                            if (!(jFrame instanceof Astor)) {
+                                manageNotifd();
+                                updateHostState();
+                            }
+                        }
+                    });
                 }
             }
         }

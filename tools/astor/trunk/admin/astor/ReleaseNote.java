@@ -31,8 +31,14 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Tue Nov 18 16:22:06 CET 2014)" + 
+			"(Generated Wed Dec 17 09:52:11 CET 2014)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.6.3 -  17/12/14:</li></b>" +
+			"	Several invokeLater() methods added.<br>" +
+
+		"<br><li><b>Astor-6.6.2 -  18/11/14:</li></b>" +
+			"	ULong management added to event tester.<br>" +
 
 		"<br><li><b>Astor-6.6.1 -  04/11/14:</li></b>" +
 			"	Faulty host list added to help menu.<br>" +

@@ -238,7 +238,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + BLACK_BOX).setVisible(host.state != faulty);
 
             //  Available only for ESRF :-)
-            getComponent(OFFSET + HOST_INFO).setVisible(host.hostName().startsWith("l-") &&
+            getComponent(OFFSET + HOST_INFO).setVisible(!host.hostName().startsWith("w-") &&
                     !AstorUtil.getHostInfoClassName().isEmpty());
 
             //  Manage for READ_ONLY mode
@@ -254,7 +254,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
         } else
             //	if selection is collection
             if (collec_name != null) {
-                //	Add collec name in menu label title
+                //	Add collection name in menu label title
                 JLabel lbl = (JLabel) getComponent(0);
                 lbl.setText("  " + collec_name + "  :");
 
@@ -274,10 +274,10 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 getComponent(OFFSET + EDIT_PROP).setEnabled(false);
                 getComponent(OFFSET + REMOVE_HOST).setEnabled(false);
                 getComponent(OFFSET + BLACK_BOX).setVisible(false);
-                getComponent(OFFSET + HOST_INFO).setVisible(false);
-                //  Available only for ESRF :-)
-                getComponent(OFFSET + HOST_INFO).setVisible(!AstorUtil.getHostInfoClassName().isEmpty());
 
+                //  Available only for ESRF :-)
+                getComponent(OFFSET + HOST_INFO).setVisible(
+                        !AstorUtil.getHostInfoClassName().isEmpty());
 
                 getComponent(OFFSET + RESET_STAT).setVisible(AstorUtil.getInstance().isSuperTango());
 

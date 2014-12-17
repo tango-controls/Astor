@@ -51,6 +51,7 @@ import fr.esrf.TangoApi.events.TangoChange;
 import fr.esrf.TangoApi.events.TangoChangeEvent;
 import fr.esrf.TangoApi.events.TangoEventsAdapter;
 
+import javax.swing.*;
 import java.util.Date;
 
 
@@ -160,55 +161,62 @@ public class HostStateThread extends Thread implements AstorDefs {
     //======================================================================
     private DevState previous_state = DevState.UNKNOWN;
 
-    //public synchronized void updateHost(DevState state)
-    public void updateHost(DevState state) {
+    public void updateHost(final DevState state) {
         if (state == previous_state)
             return;
         previous_state = state;
 
-        //	If state has changed, then update host object
-        //--------------------------------------------------
-        if (state == DevState.ON)
-            host.state = all_ok;
-        else if (state == DevState.MOVING)
-            host.state = moving;
-        else if (state == DevState.ALARM)
-            host.state = alarm;
-        else if (state == DevState.OFF)
-            host.state = all_off;
-        else if (state == DevState.FAULT)
-            host.state = faulty;
-        else
-            host.state = unknown;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
 
-        if (parent != null)
-            parent.updateState();
+               //	If state has changed, then update host object
+               if (state==DevState.ON)
+                   host.state = all_ok;
+               else if (state==DevState.MOVING)
+                   host.state = moving;
+               else if (state==DevState.ALARM)
+                   host.state = alarm;
+               else if (state==DevState.OFF)
+                   host.state = all_off;
+               else if (state==DevState.FAULT)
+                   host.state = faulty;
+               else
+                   host.state = unknown;
 
-        //System.out.println(host.get_name() + " is " + ApiUtil.stateName(state));
+               if (parent!=null)
+                   parent.updateState();
 
-        if (host.info_dialog != null)
-            host.info_dialog.updateHostState();
+               //System.out.println(host.get_name() + " is " + ApiUtil.stateName(state));
+
+               if (host.info_dialog!=null)
+                   host.info_dialog.updateHostState();
+           }
+       });
     }
 
     //======================================================================
     //======================================================================
-    public void updateNotifdHost(DevState notifd_state) {
+    public void updateNotifdHost(final DevState notifd_state) {
         //	Convert to int
-        int notifyd_state = unknown;
-        if (notifd_state == DevState.ON) notifyd_state = all_ok;
-        else if (notifd_state == DevState.FAULT) notifyd_state = faulty;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                int notifyd_state = unknown;
+                if (notifd_state == DevState.ON) notifyd_state = all_ok;
+                else if (notifd_state == DevState.FAULT) notifyd_state = faulty;
 
-        if (host.notifydState == notifyd_state)
-            return;
+                if (host.notifydState == notifyd_state)
+                    return;
 
-        host.notifydState = notifyd_state;
-        if (parent != null)
-            parent.updateState();
-        else {
-            host.notifydState = notifyd_state;
-        }
-        if (host.info_dialog != null)
-            host.info_dialog.updateHostState();
+                host.notifydState = notifyd_state;
+                if (parent != null)
+                    parent.updateState();
+                else {
+                    host.notifydState = notifyd_state;
+                }
+                if (host.info_dialog != null)
+                    host.info_dialog.updateHostState();
+            }
+        });
     }
 
     //======================================================================
