@@ -605,8 +605,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         try {
             if (!att.hasFailed()) {
                 String[] lines = att.extractStringArray();
-                for (String line : lines)
-                    servers.add(new Server(line));
+                for (String line : lines) {
+                    Server server = new Server(line);
+                    servers.add(server);
+                }
             }
         } catch (DevFailed e) {
             System.err.println(name);
@@ -615,6 +617,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
         //	Check if something has changed
         switch (updateHost(servers)) {
+            case STATE_CHANGED:
             case LIST_CHANGED:
                 updatePanel();
                 break;
@@ -630,17 +633,17 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
      *	Update TangoHost objects and check what has changed.
      */
     //=============================================================
-    public int updateHost(ArrayList<Server> new_servers) {
+    public int updateHost(ArrayList<Server> newServers) {
         boolean state_changed = false;
         boolean list_changed = false;
 
         //	check if new one
-        for (Server new_serv : new_servers) {
-            TangoServer server = host.getServer(new_serv.name);
+        for (Server newServer : newServers) {
+            TangoServer server = host.getServer(newServer.name);
             if (server == null) {
                 //	create it
                 try {
-                    server = new TangoServer(new_serv.name, new_serv.state);
+                    server = new TangoServer(newServer.name, newServer.state);
                 } catch (DevFailed e) {
                     System.err.println(name);
                     Except.print_exception(e);
@@ -651,29 +654,30 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
             if (server != null) {
                 //	Check state
-                if (new_serv.state != server.getState()) {
-                    server.setState(new_serv.state);
+                if (newServer.state != server.getState()) {
+                    server.setState(newServer.state);
                     state_changed = true;
                 }
                 //	Check control
-                if (new_serv.controlled != server.controlled |
-                        new_serv.level != server.startup_level) {
-                    server.controlled = new_serv.controlled;
-                    server.startup_level = new_serv.level;
+                if (newServer.controlled != server.controlled |
+                        newServer.level != server.startup_level) {
+                    server.controlled = newServer.controlled;
+                    server.startup_level = newServer.level;
                     list_changed = true;
                 }
             }
         }
 
         //	Check if some have been removed
-        for (int i = 0; i < host.nbServers(); i++) {
+        for (int i=0 ; i<host.nbServers() ; i++) {
             TangoServer server = host.getServer(i);
             boolean found = false;
-            for (int j = 0; !found && j < new_servers.size(); j++) {
-                Server new_serv = new_servers.get(j);
-                found = (new_serv.name.equals(server.getName()));
+            for (int j=0 ; !found && j<newServers.size() ; j++) {
+                Server newServer = newServers.get(j);
+                found = (newServer.name.equals(server.getName()));
             }
             if (!found) {
+                //System.out.println(host + " removing " + server.getName());
                 host.removeServer(server.getName());
                 list_changed = true;
             }
@@ -776,24 +780,26 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         public Server(String line) {
             //	Parse line
             StringTokenizer stk = new StringTokenizer(line);
-            ArrayList<String> v = new ArrayList<String>();
+            ArrayList<String> items = new ArrayList<String>();
             while (stk.hasMoreTokens())
-                v.add(stk.nextToken());
-            if (v.size() > 0)
-                this.name = v.get(0);
+                items.add(stk.nextToken());
 
-            if (v.size() > 1)
-                this.state = string2state(v.get(1));
+            if (items.size() > 0)
+                this.name = items.get(0);
 
-            if (v.size() > 2)
-                this.controlled = ((v.get(2)).equals("1"));
+            if (items.size() > 1)
+                this.state = string2state(items.get(1));
 
-            if (v.size() > 3) {
-                String s = v.get(3);
+            if (items.size() > 2)
+                this.controlled = ((items.get(2)).equals("1"));
+
+            if (items.size() > 3) {
+                String s = items.get(3);
                 try {
                     this.level = Integer.parseInt(s);
                 } catch (NumberFormatException e) { /* */}
             }
+            //System.out.println(this);
         }
 
         //=========================================================
@@ -829,7 +835,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         //===========================================================
         public UpdateThread() {
         }
-
         //===========================================================
         private synchronized void stopThread() {
             stopIt = true;
@@ -936,10 +941,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         try {
             //	add listener for double_event and server_event
             ServerEventListener serverListener = new ServerEventListener();
+            host.supplier.addTangoChangeListener(serverListener, attribute, false);
 
-            host.supplier.addTangoChangeListener(
-                    serverListener, attribute, new String[0]);
-            //if (AstorUtil.getDebug())
             System.out.println("subscribeChangeServerEvent() for " +
                     host.get_name() + "/" + attribute + " OK!");
         } catch (DevFailed e) {
@@ -985,7 +988,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 DeviceAttribute att = event.getValue();
                 manageServersAttribute(att);
                 //if (AstorUtil.getDebug())
-                //	System.out.println(devname + "/" + att.getName() + " changed " + " : ");
+                // 	System.out.println(host + "/" + att.getName() + " changed " + " : ");
             } catch (DevFailed e) {
                 System.out.println(name);
                 if (e.errors[0].reason.equals("API_EventTimeout")) {

@@ -34,6 +34,7 @@
 package admin.astor;
 
 import admin.astor.statistics.StatisticsPanel;
+import admin.astor.tango_release.JTangoVersion;
 import admin.astor.tools.*;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
@@ -66,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.6.3  -  Wed Dec 17 09:52:11 CET 2014";
+            "6.6.6  -  Mon May 11 16:10:29 CEST 2015";
     /**
      * JTree object to display control system.
      */
@@ -86,9 +87,10 @@ public class Astor extends JFrame implements AstorDefs {
     static boolean displayed = false;
 
     public static DevBrowser dev_browser = null;
+    static long t0;
     private String tango_host = "";
     private MultiServerCommand multiServerCommand = null;
-    static long t0;
+    private static int jarUsed;
     public static int rwMode = READ_WRITE;
     //======================================================================
     /**
@@ -99,13 +101,6 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     public Astor() throws DevFailed {
         t0 = System.currentTimeMillis();
-		/*
-		double	zmqVersion = ApiUtil.getZmqVersion();
-		if (zmqVersion>0)
-	        System.out.println("ZMQ release is  "+ zmqVersion);
-		else
-	        System.out.println("ZMQ is not available !");
-		*/
         initComponents();
         AstorUtil.getInstance().initIcons();
         customizeMenu();
@@ -115,6 +110,9 @@ public class Astor extends JFrame implements AstorDefs {
         buildTree();
         ImageIcon icon = Utils.getInstance().getIcon("TangoClass.gif");
         setIconImage(icon.getImage());
+
+        jarUsed = JTangoVersion.getInstance().getJarFileType();
+        tangorbBtn.setText(JTangoVersion.JarUsed[jarUsed] + " Version");
 
         centerWindow();
 
@@ -168,7 +166,7 @@ public class Astor extends JFrame implements AstorDefs {
         myBar.setBackground(Color.lightGray);
         myBar.setProgressBarColors(Color.gray, Color.gray, Color.gray);
 
-        ImageIcon icon = Utils.getInstance().getIcon("CollaborationSplash.gif");
+        ImageIcon icon = Utils.getInstance().getIcon("TangoLogo.gif");
         Splash splash = new Splash(icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");
@@ -1022,23 +1020,23 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-        String item = evt.getActionCommand();
+        JMenuItem   item = (JMenuItem) evt.getSource();
 
-        if (item.equals(principleBtn.getText()))
+        if (item == principleBtn)
             Utils.popupMessage(this, "", "principle.gif");
-        else if (item.equals(distributionBtn.getText()))
+        else if (item == distributionBtn)
             new HostsScanThread(this, tree.hosts).start();
-        else if (item.equals(stateIconsBtn.getText()))
+        else if (item == stateIconsBtn)
             Utils.popupMessage(this, "", "astor_state_icons.gif");
-        else if (item.equals(releaseNoteBtn.getText()))
+        else if (item == releaseNoteBtn)
             new PopupHtml(this).show(ReleaseNote.str);
-        else if (item.equals(tangorbBtn.getText()))
+        else if (item == tangorbBtn)
 			displayTangORBversion();
-        else if (item.equals(aboutBtn.getText()))
+        else if (item == aboutBtn)
 			displayAboutAstor();
-        else if (item.equals(starterEventsItem.getText()))
+        else if (item == starterEventsItem)
             displaySubscribedHostList(true);
-        else if (item.equals(starterNoEventsItem.getText()))
+        else if (item == starterNoEventsItem)
             displaySubscribedHostList(false);
         else
             Utils.popupMessage(this, "Not implemented yet !");
@@ -1047,19 +1045,32 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     //======================================================================
 	private void displayTangORBversion() {
-       TangORBversion tangorb;
-        try {
-            tangorb = new TangORBversion();
-        } catch (Exception e) {
-            ErrorPane.showErrorMessage(this,
-                    "Cannot check TangORB revision", e);
-            return;
+
+        String message;
+        int width  = 400;
+        int height = 200;
+        if (jarUsed==JTangoVersion.JTANGO) {
+             message = JTangoVersion.getInstance().toString();
+            String jarName = JTangoVersion.getInstance().getJarFileName();
+            int size = jarName.length()*9;
+            if (size>width)
+                width = size;
         }
-        String message = tangorb.jarfile + ":\n\n" + tangorb;
+        else {
+            TangORBversion tangorb;
+            try {
+                tangorb = new TangORBversion();
+            } catch (Exception e) {
+                ErrorPane.showErrorMessage(this,
+                        "Cannot check TangORB revision", e);
+                return;
+            }
+            message = tangorb.jarfile + ":\n\n" + tangorb;
+        }
         PopupText txt = new PopupText(this, true);
         txt.setFont(new java.awt.Font("Courier", 1, 14));
+        txt.show(message, width, height);
         AstorUtil.centerDialog(txt, this);
-        txt.show(message);
 	}
     //======================================================================
     //======================================================================
@@ -1320,7 +1331,7 @@ public class Astor extends JFrame implements AstorDefs {
                 } catch (DevFailed e) {
                     Except.print_exception(e);
                 } catch (Exception e) {
-                    System.out.println(e);
+                    System.out.println(e.getMessage());
                     e.printStackTrace();
                 }
                 System.exit(0);
@@ -1332,13 +1343,12 @@ public class Astor extends JFrame implements AstorDefs {
             public void run() {
                 long t0 = System.currentTimeMillis();
                 //	First time, Open a simple Tango window
-                //noinspection ErrorNotRethrown
                 try {
                     Astor astor = new Astor();
                     astor.setVisible(true);
                     Astor.displayed = true;
                 } catch (DevFailed e) {
-                    System.out.println(e);
+                    System.err.println(e.errors[0].desc);
                     if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
                         e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
                                 "Astor cannot be configured from database !";
@@ -1346,9 +1356,9 @@ public class Astor extends JFrame implements AstorDefs {
                     ErrorPane.showErrorMessage(new JFrame(), null, e);
                     System.exit(-1);
                 } catch (java.lang.InternalError e) {
-                    System.out.println(e);
+                    System.err.println(e.getMessage());
                 } catch (java.awt.HeadlessException e) {
-                    System.out.println(e);
+                    System.err.println(e.getMessage());
                 }
                 long t1 = System.currentTimeMillis();
                 System.out.println("Build  GUI :" + (t1 - t0) + " ms");

@@ -235,13 +235,13 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                     info.host = hostname;
                     putStartupInfo(info);
                 } else {
-                    //	Check if dbServer is stopped (it must be)
+                    //	Check if Server is stopped (it must be)
                     if (state == DevState.ON) {
                         Utils.popupMessage(parent,
-                                "Stop " + name + "  dbServer before !");
+                                "Stop " + name + "  Server before !");
                         return modif;
                     }
-                    //	Remove dbServer info in database
+                    //	Remove Server info in database
                     putStartupInfo(new DbServInfo(name, hostname, false, 0));
 
                     //	Register devices on empty host and unexport.

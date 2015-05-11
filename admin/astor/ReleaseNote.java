@@ -31,8 +31,17 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Dec 17 09:52:11 CET 2014)" + 
+			"(Generated Mon May 11 16:10:29 CEST 2015)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.6.6 -  11/05/15:</li></b>" +
+			"	Add a compatibility to read JTango release.<br>" +
+
+		"<br><li><b>Astor-6.6.5 -  08/01/15:</li></b>" +
+			"	Improve Server Usage utility<br>" +
+
+		"<br><li><b>Astor-6.6.4 -  08/01/15:</li></b>" +
+			"	Improve the statup level change.<br>" +
 
 		"<br><li><b>Astor-6.6.3 -  17/12/14:</li></b>" +
 			"	Several invokeLater() methods added.<br>" +
@@ -314,29 +323,70 @@ public interface ReleaseNote {
 
 		"<br><li><b>Astor-4.3.2:</li></b>" +
 			"	Bug fixed in miscellaneous host collection.<br>" +
-			"Astor-4.3.1:  Moving state added for collectionx.<br>" +
-			"              In StartAll command a sleep(500) has been added between two hosts.<br>" +
-			"Astor-4.3.0:  Moving state added for startup phase.<br>" +
-			"Astor-4.2.3:  Host info panel modified to use icons.<br>" +
-			"Astor-4.2.2:  Backward compatibilty for jive fixed.<br>" +
-			"Astor-4.2.1:  Icons have been changed.<br>" +
-			"              Some minor changes.<br>" +
-			"Astor-4.2.0:  Polling profiler added.<br>" +
-			"Astor-4.1.4:  Open/Save menu added on event tester window.<br>" +
-			"Astor-4.1.3:  History added on event management.<br>" +
-			"              The maximum servers displayed in horizontal on HostInfoDialog<br>" +
-			"              window has been set to 5.<br>" +
-			"Astor-4.1.2:  Bug fixed in Device browser in member device name.<br>" +
-			"Astor-4.1.1:  Change TANGO_HOST added (needs TangORB-4.7.7 or later).<br>" +
-			"Astor-4.1.0:  DevBrowser and MkStarter utilities added.<br>" +
-			"Astor-4.0.9:  Minor changes for EventTester compatibility<br>" +
-			"Astor-4.0.8:  Screen position modified for dialogs.<br>" +
-			"Astor-4.0.7:  Search if host already exist before creation.<br>" +
-			"Astor-4.0.6:  Search by host name added.<br>" +
-			"Astor-4.0.5:  Can change memorized attribute value.<br>" +
-			"Astor-4.0.4:  Bug in server architecture fixed.<br>" +
-			"Astor-4.0.3:  Minor changes, RemoteCmd property added.<br>" +
-			"Astor-4.0.2:  Server architecture display addded.<br>" +
-			"Astor-4.0.1:  DevWizard calls addded.<br>" +
-			"Astor-4.0.0:  Possibility to controle two database servers added.<br>" 	;
+
+		"<br><li><b>Astor-4.3.1:</li></b>" +
+			"	Moving state added for collection.<br>" +
+			"    In StartAll command a sleep(500) has been added between two hosts.<br>" +
+
+		"<br><li><b>Astor-4.3.0:</li></b>" +
+			"	Moving state added for startup phase.<br>" +
+
+		"<br><li><b>Astor-4.2.3:</li></b>" +
+			"	Host info panel modified to use icons.<br>" +
+
+		"<br><li><b>Astor-4.2.2:</li></b>" +
+			"	Backward compatibilty for jive fixed.<br>" +
+
+		"<br><li><b>Astor-4.2.1:</li></b>" +
+			"	Icons have been changed.<br>" +
+			"	Some minor changes.<br>" +
+
+		"<br><li><b>Astor-4.2.0:</li></b>" +
+			"	Polling profiler added.<br>" +
+
+		"<br><li><b>Astor-4.1.4:</li></b>" +
+			"	Open/Save menu added on event tester window.<br>" +
+
+		"<br><li><b>Astor-4.1.3:</li></b>" +
+			"	History added on event management.<br>" +
+			"    The maximum servers displayed in horizontal on HostInfoDialog window has been set to 5.<br>" +
+
+		"<br><li><b>Astor-4.1.2:</li></b>" +
+			"	Bug fixed in Device browser in member device name.<br>" +
+
+		"<br><li><b>Astor-4.1.1:</li></b>" +
+			"	Change TANGO_HOST added (needs TangORB-4.7.7 or later).<br>" +
+
+		"<br><li><b>Astor-4.1.0:</li></b>" +
+			"	DevBrowser and MkStarter utilities added.<br>" +
+
+		"<br><li><b>Astor-4.0.9:</li></b>" +
+			"	Minor changes for EventTester compatibility<br>" +
+
+		"<br><li><b>Astor-4.0.8:</li></b>" +
+			"	Screen position modified for dialogs.<br>" +
+
+		"<br><li><b>Astor-4.0.7:</li></b>" +
+			"	Search if host already exist before creation.<br>" +
+
+		"<br><li><b>Astor-4.0.6:</li></b>" +
+			"	Search by host name added.<br>" +
+
+		"<br><li><b>Astor-4.0.5:</li></b>" +
+			"	Can change memorized attribute value.<br>" +
+
+		"<br><li><b>Astor-4.0.4:</li></b>" +
+			"	Bug in server architecture fixed.<br>" +
+
+		"<br><li><b>Astor-4.0.3:</li></b>" +
+			"	Minor changes, RemoteCmd property added.<br>" +
+
+		"<br><li><b>Astor-4.0.2:</li></b>" +
+			"	Server architecture display addded.<br>" +
+
+		"<br><li><b>Astor-4.0.1:</li></b>" +
+			"	DevWizard calls addded.<br>" +
+
+		"<br><li><b>Astor-4.0.0:</li></b>" +
+			"	Possibility to controle two database servers added.<br>" 	;
 }

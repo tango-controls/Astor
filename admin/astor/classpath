@@ -32,6 +32,7 @@ LIB_HOME=$TANGO_HOME/release/java/lib
 APPLI_HOME=$TANGO_HOME/release/java/appli
 
 TANGO=$LIB_HOME/TangORB.jar
+TANGO=$LIB_HOME/JTango.jar
 
 ATK=$LIB_HOME/ATKWidget.jar:$LIB_HOME/ATKCore.jar:$APPLI_HOME/atkpanel.jar
 JIVE=$APPLI_HOME/Jive.jar
