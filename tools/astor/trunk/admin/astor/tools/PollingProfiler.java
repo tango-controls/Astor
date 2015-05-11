@@ -89,7 +89,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     /**
      * Creates new form PollingProfiler
      *
-     * @param parent  The parent dislog
+     * @param parent  The parent dialog
      * @param deviceNames the device name to display polling
      */
     //===============================================================
@@ -99,7 +99,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         realConstructor(new String[]{deviceNames});
     }
     //===============================================================
-
     /**
      * Creates new form PollingProfiler
      *
@@ -113,7 +112,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         realConstructor(new String[]{deviceNames});
     }
     //===============================================================
-
     /**
      * Creates new form PollingProfiler
      *
@@ -127,7 +125,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         realConstructor(deviceNames);
     }
     //===============================================================
-
     /**
      * Creates new form PollingProfiler
      *
@@ -141,7 +138,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         realConstructor(deviceNames);
     }
     //===============================================================
-
     /**
      * The real constructor
      *
@@ -571,7 +567,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         String[] s1 = pe.getInfo();
         int nblines = s1.length;
         String[] retVal;
-
         if (display_mode == HISTORY) {
             retVal = new String[nblines + 2];
             System.arraycopy(s1, 0, retVal, 0, nblines);

@@ -36,6 +36,7 @@ package admin.astor.tools;
 
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -51,6 +52,7 @@ import java.io.FileOutputStream;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
@@ -63,9 +65,10 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class EventsTable extends JDialog {
     /**
-     * Subscrib mode definitions
+     * Subscribe mode definitions
      */
     public static final int SUBSCRIBE_CHANGE = 0;
     public static final int SUBSCRIBE_PERIODIC = 1;
@@ -114,35 +117,47 @@ public class EventsTable extends JDialog {
 
     //===============================================================
     /*
-      *	Creates new form EventsTable
-      */
+     *	Creates new form EventsTable
+     */
     //===============================================================
     public EventsTable(JFrame parent) throws DevFailed {
-        super(parent, false);
+        this(parent, false);
+    }
+    //===============================================================
+    /*
+     *	Creates new form EventsTable
+     */
+    //===============================================================
+    public EventsTable(JFrame parent, boolean center) throws DevFailed {
+        super(parent, center);
         this.parent = parent;
-        initializeForm();
+        initializeForm(center);
     }
 
     //===============================================================
     /*
-      *	Creates new form EventsTable
-      */
+     *	Creates new form EventsTable
+     */
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     public EventsTable(JDialog parent) throws DevFailed {
         super(parent, false);
         this.parent = parent;
-        initializeForm();
+        initializeForm(false);
     }
 
     //===============================================================
     //===============================================================
-    private void initializeForm() throws DevFailed {
+    private void initializeForm(boolean center) throws DevFailed {
         initComponents();
         initMyComponents();
         titleLabel.setText("TANGO  Event Tester");
 
         //	Set screen position
+        if (center) {
+            ATKGraphicsUtils.centerDialog(this);
+        }
+        else
         if (parent != null && parent.isVisible()) {
 
             //  Set it at bottom
@@ -160,15 +175,14 @@ public class EventsTable extends JDialog {
         //	File menu
         fileMenu.setMnemonic('F');
         openFile.setMnemonic('O');
-        openFile.setAccelerator(KeyStroke.getKeyStroke('O', Event.CTRL_MASK));
+        openFile.setAccelerator(KeyStroke.getKeyStroke('O', MouseEvent.CTRL_MASK));
 
         saveFile.setMnemonic('S');
-        saveFile.setAccelerator(KeyStroke.getKeyStroke('S', Event.CTRL_MASK));
+        saveFile.setAccelerator(KeyStroke.getKeyStroke('S', MouseEvent.CTRL_MASK));
         pack();
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -447,9 +461,9 @@ public class EventsTable extends JDialog {
         setVisible(true);
         updateTable();
 
-        Dimension tbsize = table.getSize();
-        tbsize.height += 40;    //  Column heigth
-        scrollPane.setPreferredSize(new Dimension(tbsize));
+        Dimension tableSize = table.getSize();
+        tableSize.height += 40;    //  Header height
+        scrollPane.setPreferredSize(new Dimension(tableSize));
         pack();
     }
 
@@ -476,6 +490,7 @@ public class EventsTable extends JDialog {
             model = new DataTableModel();
 
             // Create the table
+            //noinspection NullableProblems
             table = new JTable(model) {
                 //Implement table cell tool tips.
                 public String getToolTipText(MouseEvent e) {
@@ -644,6 +659,17 @@ public class EventsTable extends JDialog {
         }
         return width;
     }
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings("UnusedDeclaration")
+    public List<String> getSubscribedNames() {
+        ArrayList<String>   list = new ArrayList<String>();
+        for (SubscribedSignal signal : signals)
+            list.add(signal.name);
+        return list;
+    }
+    //===============================================================
+    //===============================================================
 
 
     //===============================================================

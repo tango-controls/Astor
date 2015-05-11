@@ -100,7 +100,6 @@ public class PopupHtml extends JDialog implements TangoConst {
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -362,9 +361,6 @@ public class PopupHtml extends JDialog implements TangoConst {
                 ex.printStackTrace(System.err);
                 return;
             }
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-            return;
         }
         setVisible(true);
     }
