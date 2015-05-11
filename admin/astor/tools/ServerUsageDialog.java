@@ -35,13 +35,20 @@
 
 package admin.astor.tools;
 
+import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.DbServer;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -61,16 +68,23 @@ public class ServerUsageDialog extends JDialog {
     private JFrame parent;
 
     private ArrayList<TangoClass> tangoClasses = new ArrayList<TangoClass>();
-    private ArrayList<Domain> deviceDomains = new ArrayList<Domain>();
-    private ArrayList<Domain> serverDomains = new ArrayList<Domain>();
+    private ArrayList<Domain> domains = new ArrayList<Domain>();
     private int nbServers;
     private String wildcard;
+    private String urlFile;
 
-    private static final int ByDevice = 0;
-    private static final int ByServer = 1;
-
+    private static final String header =
+            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" +
+                    "<HTML>\n" +
+                    "<HEAD>\n" +
+                    "<Title> title </Title>\n" +
+                    "</HEAD>\n" +
+                    "<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#7F00FF\" ALINK=\"#FF0000\">\n" +
+                    "<P><!-------TITLE------></P>\n";
+    private static final String footer =
+            "</Body>\n" +
+                    "</Html>\n";
     //===============================================================
-
     /**
      * Creates new form ServerUsageDialog
      *
@@ -82,39 +96,60 @@ public class ServerUsageDialog extends JDialog {
         super(parent, true);
         this.parent = parent;
         initComponents();
-        displayServerUsage();
+        displayServerUsage(null);
 
-        pack();
+        //pack();
+        ATKGraphicsUtils.centerDialog(this);
+    }
+    //===============================================================
+    /**
+     * Creates new form ServerUsageDialog
+     *
+     * @param parent the parent instance
+     * @throws DevFailed if Database commands fail
+     */
+    //===============================================================
+    public ServerUsageDialog(JFrame parent, String server) throws DevFailed {
+        super(parent, true);
+        this.parent = parent;
+        initComponents();
+        displayServerUsage(server);
+
+        //pack();
         ATKGraphicsUtils.centerDialog(this);
     }
 
     //===============================================================
     //===============================================================
-    private void displayServerUsage() throws DevFailed {
+    private void displayServerUsage(String server) throws DevFailed {
 
-        //  Get a server list from database for selection
-        String[] servers = ApiUtil.get_db_obj().get_server_name_list();
-        ListDialog dialog = new ListDialog(parent,
-                "Servers in " + ApiUtil.getTangoHost(), servers);
-        wildcard = dialog.showDialog();
-        if (wildcard == null) {
-            doClose();
-            return;
+        if (server==null) {
+            //  Get a server list from database for selection
+            String[] servers = ApiUtil.get_db_obj().get_server_name_list();
+            ListDialog dialog = new ListDialog(parent,
+                    "Servers in " + ApiUtil.getTangoHost(), servers);
+            server = dialog.showDialog();
+            if (server == null) {
+                doClose();
+                return;
+            }
         }
+        wildcard = server;
 
         //  Convert to a wildcard and clear previous computation results
         wildcard += "/*";
         titleLabel.setText(wildcard);
         tangoClasses.clear();
-        deviceDomains.clear();
-        serverDomains.clear();
+        domains.clear();
 
         //  Get existing server/instances list
         String[] serverNames = ApiUtil.get_db_obj().get_server_list(wildcard);
         nbServers = serverNames.length;
 
-        //  And foe each one, distribute by class
+        //  And for each one, distribute by class
+        AstorUtil.startSplash(wildcard);
         for (String serverName : serverNames) {
+            AstorUtil.increaseSplashProgress(1, serverName);
             fillTangoClasses(serverName);
 
             //  Sleep a bit to do not overload database
@@ -122,10 +157,38 @@ public class ServerUsageDialog extends JDialog {
                 Thread.sleep(20);
             } catch (InterruptedException e) { /* */ }
         }
-        textArea.setText(toString());
+        AstorUtil.stopSplash();
+
+        try {
+            URL url = new URL(buildTmpFile(toHtml()));
+            editorPane.setPage(url);
+            editorScrollPane.setPreferredSize(new Dimension(480, 440));
+        }
+        catch (IOException e) {
+            Except.throw_exception("URL failed", e.getMessage());
+        }
+        //new PopupHtml(parent, false).show(toHtml());
+    }
+    //======================================================
+    //======================================================
+    private String buildTmpFile(String code) {
+        String urlStr = null;
+        try {
+            int random_value = new java.util.Random().nextInt(30000);
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            urlFile = tmpDir + "/html." + random_value;
+            FileOutputStream outputStream = new FileOutputStream(urlFile);
+            outputStream.write((header + code + footer).getBytes());
+            outputStream.close();
+
+            urlStr = "file:" + urlFile;
+        } catch (Exception e) {
+            ErrorPane.showErrorMessage(parent, null, e);
+            e.printStackTrace();
+        }
+        return urlStr;
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -142,8 +205,8 @@ public class ServerUsageDialog extends JDialog {
         javax.swing.JButton anotherBtn = new javax.swing.JButton();
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
-        javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
+        editorScrollPane = new javax.swing.JScrollPane();
+        editorPane = new javax.swing.JEditorPane();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -151,7 +214,7 @@ public class ServerUsageDialog extends JDialog {
             }
         });
 
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Dialog Title");
         topPanel.add(titleLabel);
 
@@ -178,13 +241,10 @@ public class ServerUsageDialog extends JDialog {
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 500));
+        editorPane.setEditable(false);
+        editorScrollPane.setViewportView(editorPane);
 
-        textArea.setColumns(20);
-        textArea.setRows(5);
-        jScrollPane1.setViewportView(textArea);
-
-        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(editorScrollPane, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -208,19 +268,27 @@ public class ServerUsageDialog extends JDialog {
     @SuppressWarnings({"UnusedParameters"})
     private void anotherBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anotherBtnActionPerformed
         try {
-            displayServerUsage();
+            displayServerUsage(null);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }//GEN-LAST:event_anotherBtnActionPerformed
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
     //===============================================================
     private void doClose() {
+
+        //  Remove url file if exists
+        try {
+            if (urlFile!=null)
+                if (!new File(urlFile).delete())
+                    System.err.println("Cannot delete " + urlFile);
+        } catch (Exception e) {
+            ErrorPane.showErrorMessage(parent, null, e);
+        }
 
         if (parent == null)
             System.exit(0);
@@ -244,23 +312,30 @@ public class ServerUsageDialog extends JDialog {
         DbServer server = new DbServer(serverName);
         String[] class_dev = server.get_device_class_list();
         boolean doneForServer = false;
-        for (int i = 0; i < class_dev.length; i += 2) {
+
+
+        for (int i=0 ; i<class_dev.length ; i += 2) {
             String deviceName = class_dev[i];
-            String className = class_dev[i + 1];
+            String className  = class_dev[i + 1];
             if (!className.equals("DServer")) {
+                //  Check if class already created
                 TangoClass _class = null;
-                for (TangoClass tc : tangoClasses)
-                    if (tc.name.toLowerCase().equals(className.toLowerCase()))
-                        _class = tc;
+                for (TangoClass tangoClass : tangoClasses) {
+                    if (tangoClass.name.toLowerCase().equals(className.toLowerCase()))
+                        _class = tangoClass;
+                }
+                //  If not found, create it
                 if (_class == null) {
                     _class = new TangoClass(className);
                     tangoClasses.add(_class);
                 }
+                //  and add device
                 _class.add(deviceName);
-                fillDomains(deviceName, ByDevice);
+                Domain domain = getDomain(deviceName);
+                domain.add(deviceName);
 
                 if (!doneForServer) {
-                    fillDomains(deviceName, ByServer);
+                    domain.addServer();
                     doneForServer = true;
                 }
             }
@@ -269,22 +344,63 @@ public class ServerUsageDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    private void fillDomains(String deviceName, int target) throws DevFailed {
+    private Domain getDomain(String deviceName) throws DevFailed {
         Domain domain = null;
-        String domainName = deviceName.substring(0, deviceName.indexOf("/"));
+        String domainName = deviceName.substring(0, deviceName.indexOf("/")).toLowerCase();
 
-        ArrayList<Domain> list = (target == ByDevice) ? deviceDomains : serverDomains;
-
-        for (Domain d : list)
-            if (d.name.toLowerCase().equals(domainName.toLowerCase()))
+        //  Check if domain already created
+        for (Domain d : domains) {
+            if (d.name.equalsIgnoreCase(domainName))
                 domain = d;
+        }
         if (domain == null) {
             domain = new Domain(domainName);
-            list.add(domain);
+            domains.add(domain);
         }
-        domain.add(deviceName);
+        return domain;
     }
+    //===============================================================
+    //===============================================================
+    public String toHtml() {
+        int nbDevices = 0;
+        for (TangoClass tangoClass : tangoClasses) {
+            nbDevices += tangoClass.size();
+        }
 
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<font size+=1><b>").append(nbDevices).append(" devices for ").
+                append(nbServers).append(" server instances </u></b></font>\n");
+        sb.append("<br><br>\n");
+
+        //  On table containing 2 tables
+        sb.append("<table border=0> <td>\n");
+
+        //  One table by domain with instances
+        sb.append("<font size+=1><b><u>By Domain:</u></b></font>\n");
+        sb.append("<table border=1 cellSpacing=0>\n");
+        sb.append("<td><b>Domain</b></td> <td><b>Instances</b></td> <td><b>Devices</b></td>\n");
+        for (Domain domain : domains) {
+            sb.append("<tr> <td> ").append(domain.name).append(" </td> <td>")
+                    .append(domain.nbServers).append(" </td> <td>")
+                    .append(domain.size()).append(" </td> </tr>\n");
+        }
+        sb.append("</table>\n");
+        sb.append("</td> <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> <td>\n");
+
+        //  One table devices / class
+        sb.append("<font size+=1><b><u>Devices by Class:</u></b></font>\n");
+        sb.append("<table border=1 cellSpacing=0>\n");
+        sb.append("<td><b>Class name</b></td> <td><b>Devices</b></td>\n");
+        for (TangoClass tangoClass : tangoClasses) {
+            sb.append("<tr> <td> ").append(tangoClass.name).append(" </td> <td>")
+                    .append(tangoClass.size()).append(" </td> </tr>\n");
+        }
+        sb.append("</table>\n");
+        sb.append("</td></table>\n");
+
+        return sb.toString();
+    }
     //===============================================================
     //===============================================================
     public String toString() {
@@ -297,10 +413,10 @@ public class ServerUsageDialog extends JDialog {
             nbDevices += tangoClass.size();
         }
         sb.append("\n=====================================\n");
-        for (int i = 0; i < deviceDomains.size() && i < serverDomains.size(); i++) {
-            sb.append("Domain ").append(deviceDomains.get(i).name).append(":\t");
-            sb.append(deviceDomains.get(i).size()).append(" devices\t");
-            sb.append(serverDomains.get(i).size()).append(" servers\n");
+        for (Domain domain : domains) {
+            sb.append("Domain ").append(domain.name).append(":\t");
+            sb.append(domain.size()).append(" devices\t");
+            sb.append(domain.nbServers).append(" servers\n");
         }
         sb.append("\n=====================================\n");
         sb.append(nbServers).append("\tservers\n");
@@ -312,7 +428,8 @@ public class ServerUsageDialog extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea textArea;
+    private javax.swing.JEditorPane editorPane;
+    private javax.swing.JScrollPane editorScrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
@@ -326,7 +443,8 @@ public class ServerUsageDialog extends JDialog {
     //===============================================================
     public static void main(String args[]) {
         try {
-            new ServerUsageDialog(null).setVisible(true);
+            String serverName = "VacGaugeServer";
+            new ServerUsageDialog(null, serverName).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);
         }
@@ -339,12 +457,17 @@ public class ServerUsageDialog extends JDialog {
     //===============================================================
     class Domain extends ArrayList<String> {
         String name;
+        int nbServers = 0;
 
         //===========================================================
         Domain(String name) {
             this.name = name;
         }
 
+        //===========================================================
+        void addServer() {
+            nbServers++;
+        }
         //===========================================================
         public String toString() {
             StringBuilder sb = new StringBuilder("Domain " + name + ":\t");

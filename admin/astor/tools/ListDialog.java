@@ -156,7 +156,9 @@ public class ListDialog extends JDialog {
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-        selection = jList.getSelectedValue().toString();
+        Object  object = jList.getSelectedValue();
+        if (object!=null)
+            selection = object.toString();
         doClose();
     }//GEN-LAST:event_okBtnActionPerformed
 

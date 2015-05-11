@@ -36,7 +36,9 @@ package admin.astor.tools;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 public class TreePopupMenu extends JPopupMenu {
@@ -121,7 +123,7 @@ public class TreePopupMenu extends JPopupMenu {
     //===============================================================
     private void buildBtnPopupMenu() {
         title = new JLabel("Attribute :");
-        title.setFont(new java.awt.Font("Dialog", 1, 16));
+        title.setFont(new Font("Dialog", Font.BOLD, 16));
         add(title);
         add(new JPopupMenu.Separator());
         String[] menuLabels;
@@ -132,12 +134,12 @@ public class TreePopupMenu extends JPopupMenu {
         else
             menuLabels = servLabels;
 
-        for (int i = 0; i < menuLabels.length; i++) {
-            if (menuLabels[i] == null)
-                add(new JPopupMenu.Separator());
+        for (String menuLabel : menuLabels) {
+            if (menuLabel==null)
+                add(new Separator());
             else {
-                JMenuItem btn = new JMenuItem(menuLabels[i]);
-                btn.addActionListener(new java.awt.event.ActionListener() {
+                JMenuItem btn = new JMenuItem(menuLabel);
+                btn.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         hostActionPerformed(evt);
                     }
@@ -167,10 +169,10 @@ public class TreePopupMenu extends JPopupMenu {
             title.setText("Attribute: " + parent.getSelectedName());
         else if (mode == MODE_DEVICE) {
             title.setText("Device: " + parent.getSelectedName());
-            String collec = parent.getCollection();
+            String collection = parent.getCollection();
             getComponent(OFFSET + DEV_PROFILER).setEnabled(obj_has_polling);
-            getComponent(OFFSET + DEV_GOTO_SERVER).setVisible(collec.equals("Devices") ||
-                    collec.equals("Aliases"));
+            getComponent(OFFSET + DEV_GOTO_SERVER).setVisible(collection.equals("Devices") ||
+                    collection.equals("Aliases"));
             if (!running) {
                 getComponent(OFFSET).setEnabled(false);
                 getComponent(OFFSET + DEV_MONITOR).setEnabled(false);
@@ -209,7 +211,8 @@ public class TreePopupMenu extends JPopupMenu {
                 parent.editProperties(PERIODIC);
             else if (cmd.equals(attLabels[ATT_ED_ARCHIVE]))
                 parent.editProperties(ARCHIVE);
-        } else if (mode == MODE_DEVICE) {
+        } else
+        if (mode == MODE_DEVICE) {
             if (cmd.equals(devLabels[DEV_TEST]))
                 parent.deviceTest();
             else if (cmd.equals(devLabels[DEV_MONITOR]))
@@ -222,7 +225,8 @@ public class TreePopupMenu extends JPopupMenu {
                 parent.showProfiler();
             else if (cmd.startsWith(devLabels[DEV_GOTO_SERVER]))
                 parent.gotoServer();
-        } else if (mode == MODE_SERVER) {
+        } else
+        if (mode == MODE_SERVER) {
             if (cmd.equals(servLabels[SERV_TEST]))
                 parent.deviceTest();
             else if (cmd.equals(servLabels[SERV_HOST_PANEL]))

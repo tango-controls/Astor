@@ -42,11 +42,10 @@ import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.MouseEvent;
 
 
 //=======================================================
-
 /**
  * Class Description: JFrame extention Class to display
  * browsing and  accessing devices
@@ -54,11 +53,12 @@ import java.awt.*;
  * @author Pascal Verdier
  */
 //=======================================================
+@SuppressWarnings("MagicConstant")
 public class DevBrowser extends JFrame {
     private JFrame parent;
     private DevBrowserTree tree;
 
-    private static EventsTable ev_table;
+    private static EventsTable eventsTable;
     //=======================================================
     /**
      * Creates new form DevBrowser
@@ -90,10 +90,10 @@ public class DevBrowser extends JFrame {
         //	File menu
         fileMenu.setMnemonic('F');
         exitBtn.setMnemonic('E');
-        exitBtn.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
+        exitBtn.setAccelerator(KeyStroke.getKeyStroke('Q', MouseEvent.CTRL_MASK));
         viewMenu.setMnemonic('V');
         eventsDlgBtn.setMnemonic('E');
-        eventsDlgBtn.setAccelerator(KeyStroke.getKeyStroke('E', Event.CTRL_MASK));
+        eventsDlgBtn.setAccelerator(KeyStroke.getKeyStroke('E', MouseEvent.CTRL_MASK));
     }
 
     //===============================================================
@@ -201,9 +201,9 @@ public class DevBrowser extends JFrame {
     private void eventsDlgBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eventsDlgBtnActionPerformed
 
         try {
-            if (ev_table == null)
-                ev_table = new EventsTable(this);
-            ev_table.setVisible(true);
+            if (eventsTable== null)
+                eventsTable = new EventsTable(this);
+            eventsTable.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
         }
@@ -245,26 +245,26 @@ public class DevBrowser extends JFrame {
 
     //===============================================================
     //===============================================================
-    void add(String signame, int mode) {
+    public void add(String signalName, int mode) {
         //  Build dialog if not already done.
-        if (ev_table == null) {
+        if (eventsTable== null) {
             try {
-                ev_table = new EventsTable(this);
+                eventsTable = new EventsTable(this);
             } catch (DevFailed e) {
                 ErrorPane.showErrorMessage(this, null, e);
                 return;
             }
-            //ATKGraphicsUtils.centerDialog(ev_table);
+            //ATKGraphicsUtils.centerDialog(eventsTable);
         }
-        ev_table.add(signame, mode);
+        eventsTable.add(signalName, mode);
     }
 
     //======================================================
     //======================================================
-    void displayHostPanel(String devname) {
+    void displayHostPanel(String deviceName) {
         if (parent instanceof Astor) {
             Astor astor = (Astor) parent;
-            astor.tree.displayHostInfo(devname);
+            astor.tree.displayHostInfo(deviceName);
         }
     }
 

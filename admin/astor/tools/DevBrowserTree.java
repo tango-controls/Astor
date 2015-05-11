@@ -62,9 +62,9 @@ public class DevBrowserTree extends JTree implements TangoConst {
     private DefaultTreeModel treeModel;
 
     private DevBrowser browser;
-    private TreePopupMenu att_menu = null;
-    private TreePopupMenu dev_menu = null;
-    private TreePopupMenu serv_menu = null;
+    private TreePopupMenu attributeMenu = null;
+    private TreePopupMenu deviceMenu = null;
+    private TreePopupMenu serverMenu = null;
     private DefaultMutableTreeNode root;
 
     //===============================================================
@@ -76,9 +76,9 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //	Get TANGO HOST as title
         String tango_host = ApiUtil.get_db_obj().get_tango_host();
         initComponent(tango_host);
-        att_menu = new TreePopupMenu(this, TreePopupMenu.MODE_ATTR);
-        dev_menu = new TreePopupMenu(this, TreePopupMenu.MODE_DEVICE);
-        serv_menu = new TreePopupMenu(this, TreePopupMenu.MODE_SERVER);
+        attributeMenu = new TreePopupMenu(this, TreePopupMenu.MODE_ATTR);
+        deviceMenu = new TreePopupMenu(this, TreePopupMenu.MODE_DEVICE);
+        serverMenu = new TreePopupMenu(this, TreePopupMenu.MODE_SERVER);
     }
 
     //===============================================================
@@ -104,9 +104,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //Enable tool tips.
         ToolTipManager.sharedInstance().registerComponent(this);
 
-        /*
-           * Set the icon for leaf nodes.
-           */
+        // Set the icon for leaf nodes.
         setCellRenderer(new TangoRenderer());
 
         //	Listen for collapse tree
@@ -116,7 +114,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
             }
 
             public void treeExpanded(TreeExpansionEvent e) {
-                expandedPerfomed(e);
+                expandedPerformed(e);
             }
         });
         //	Add Action listener
@@ -186,21 +184,21 @@ public class DevBrowserTree extends JTree implements TangoConst {
     private void createInstanceNodes(DefaultMutableTreeNode node) {
         try {
             DefaultMutableTreeNode s_node;
-            String binfile = (String) node.getUserObject();
-            String[] instancies =
-                    ApiUtil.get_db_obj().get_instance_name_list(binfile);
+            String binaryFile = (String) node.getUserObject();
+            String[] instances =
+                    ApiUtil.get_db_obj().get_instance_name_list(binaryFile);
 
             //  Check if something has changed.
-            if (!createChildNodes(node, instancies))
+            if (!createChildNodes(node, instances))
                 return;
 
-            for (int i = 0; i < instancies.length; i++) {
+            for (int i = 0; i < instances.length; i++) {
                 //	Create a node for family
-                s_node = new DefaultMutableTreeNode(new BrowserServer(binfile, instancies[i]));
+                s_node = new DefaultMutableTreeNode(new BrowserServer(binaryFile, instances[i]));
                 s_node.add(new DefaultMutableTreeNode("Dummy"));
                 treeModel.insertNodeInto(s_node, node, i);
             }
-            removePreviousNode(node, instancies.length);
+            removePreviousNode(node, instances.length);
         } catch (DevFailed e) {
             displayException(e);
         }
@@ -238,10 +236,10 @@ public class DevBrowserTree extends JTree implements TangoConst {
             DefaultMutableTreeNode s_node = (DefaultMutableTreeNode) node.getParent();
 
             BrowserServer server = (BrowserServer) s_node.getUserObject();
-            String servname = server.name;
-            String classname = (String) node.getUserObject();
+            String serverName = server.name;
+            String className = (String) node.getUserObject();
             String[] devices =
-                    ApiUtil.get_db_obj().get_device_name(servname, classname);
+                    ApiUtil.get_db_obj().get_device_name(serverName, className);
 
             //  Check if something has changed.
             if (!createChildNodes(node, devices))
@@ -381,7 +379,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    public void expandedPerfomed(TreeExpansionEvent evt) {
+    public void expandedPerformed(TreeExpansionEvent evt) {
         //	Get path
         TreePath tp = evt.getPath();
         Object[] path = tp.getPath();
@@ -465,17 +463,17 @@ public class DevBrowserTree extends JTree implements TangoConst {
         } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             //	Check if selection is an attribute
             if (o instanceof BrowserAttribute) {
-                att_menu.showMenu(evt);
+                attributeMenu.showMenu(evt);
 
                 //	Check if selection is an attribute
                 BrowserAttribute attr = (BrowserAttribute) o;
                 displayEventProperties(attr);
             } else if (o instanceof BrowserDevice) {
                 boolean running = displayDeviceInfo((BrowserDevice) o);
-                dev_menu.showMenu(evt, obj_has_polling, running);
+                deviceMenu.showMenu(evt, obj_has_polling, running);
             } else if (o instanceof BrowserServer) {
                 boolean running = displayDeviceInfo(((BrowserServer) o).dev);
-                serv_menu.showMenu(evt, obj_has_polling, running);
+                serverMenu.showMenu(evt, obj_has_polling, running);
             }
         } else if ((mask & MouseEvent.BUTTON1_MASK) != 0) {
             if (o instanceof BrowserServer)
@@ -558,17 +556,17 @@ public class DevBrowserTree extends JTree implements TangoConst {
             if (o instanceof BrowserDevice)
                 new PollingProfiler(browser, ((BrowserDevice) o).name).setVisible(true);
             else if (o instanceof BrowserServer) {
-                DeviceData argout = ((BrowserServer) o).dev.command_inout("QueryDevice");
-                String[] devnames = argout.extractStringArray();
+                DeviceData argOut = ((BrowserServer) o).dev.command_inout("QueryDevice");
+                String[] deviceNames = argOut.extractStringArray();
                 //  Take off class names.
                 String s = "::";
-                for (int i = 0; i < devnames.length; i++) {
-                    int idx = devnames[i].indexOf(s);
+                for (int i = 0; i < deviceNames.length; i++) {
+                    int idx = deviceNames[i].indexOf(s);
                     if (idx > 0)
-                        devnames[i] = devnames[i].substring(idx + s.length());
+                        deviceNames[i] = deviceNames[i].substring(idx + s.length());
                 }
 
-                new PollingProfiler(browser, devnames).setVisible(true);
+                new PollingProfiler(browser, deviceNames).setVisible(true);
             }
         } catch (DevFailed e) {
             Utils.popupError(browser, null, e);
@@ -674,17 +672,17 @@ public class DevBrowserTree extends JTree implements TangoConst {
     //======================================================
     void deviceTest() {
         Object o = getSelectedNode().getUserObject();
-        String devname = null;
+        String deviceName = null;
         if (o instanceof BrowserDevice)
-            devname = ((BrowserDevice) o).name;
+            deviceName = ((BrowserDevice) o).name;
         else if (o instanceof BrowserServer)
-            devname = "dserver/" + ((BrowserServer) o).name;
+            deviceName = "dserver/" + ((BrowserServer) o).name;
 
-        if (devname != null) {
+        if (deviceName != null) {
             try {
                 JDialog d = new JDialog(browser, false);
-                d.setTitle(devname + " Device Panel");
-                d.setContentPane(new jive.ExecDev(devname));
+                d.setTitle(deviceName + " Device Panel");
+                d.setContentPane(new jive.ExecDev(deviceName));
                 ATKGraphicsUtils.centerDialog(d);
                 d.setVisible(true);
             } catch (DevFailed e) {
@@ -697,17 +695,17 @@ public class DevBrowserTree extends JTree implements TangoConst {
     //======================================================
     void serverArchitecture() {
         Object o = getSelectedNode().getUserObject();
-        String servname = null;
+        String serverName = null;
         try {
             if (o instanceof BrowserDevice) {
                 BrowserDevice dev = (BrowserDevice) o;
                 DeviceInfo info = dev.get_info();
-                servname = info.server;
+                serverName = info.server;
             } else if (o instanceof BrowserServer)
-                servname = ((BrowserServer) o).name;
+                serverName = ((BrowserServer) o).name;
 
-            if (servname != null) {
-                ServArchitectureDialog sad = new ServArchitectureDialog(browser, servname);
+            if (serverName != null) {
+                ServArchitectureDialog sad = new ServArchitectureDialog(browser, serverName);
                 ATKGraphicsUtils.centerDialog(sad);
                 sad.setVisible(true);
             }
@@ -791,14 +789,14 @@ public class DevBrowserTree extends JTree implements TangoConst {
     //======================================================
     void displayHostPanel() {
         Object o = getSelectedNode().getUserObject();
-        String devname = null;
+        String deviceName = null;
         if (o instanceof BrowserDevice)
-            devname = ((BrowserDevice) o).name;
+            deviceName = ((BrowserDevice) o).name;
         else if (o instanceof BrowserServer)
-            devname = "dserver/" + ((BrowserServer) o).name;
+            deviceName = "dserver/" + ((BrowserServer) o).name;
 
-        if (devname != null)
-            browser.displayHostPanel(devname);
+        if (deviceName != null)
+            browser.displayHostPanel(deviceName);
     }
 
     //======================================================
@@ -809,9 +807,9 @@ public class DevBrowserTree extends JTree implements TangoConst {
             BrowserDevice dev = ((BrowserDevice) o);
             try {
                 DeviceInfo info = dev.get_info();
-                String servname = info.server;
-                String binfile = servname.substring(0, servname.indexOf('/'));
-                String instance = servname.substring(servname.indexOf('/') + 1);
+                String serverName = info.server;
+                String binaryFile = serverName.substring(0, serverName.indexOf('/'));
+                String instance = serverName.substring(serverName.indexOf('/') + 1);
 
                 DefaultMutableTreeNode[] path = new DefaultMutableTreeNode[4];
                 int idx = 0;
@@ -827,11 +825,11 @@ public class DevBrowserTree extends JTree implements TangoConst {
                 found = false;
                 for (int i = 0; !found && i < path[idx].getChildCount(); i++) {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) path[idx].getChildAt(i);
-                    if (found = node.toString().equals(binfile))
+                    if (found = node.toString().equals(binaryFile))
                         path[++idx] = node;
                 }
                 if (!found) {
-                    browser.setText(binfile + " Not Found !");
+                    browser.setText(binaryFile + " Not Found !");
                     return;
                 }
 
@@ -882,7 +880,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
 
 
     //==========================================================
-//==========================================================
+    //==========================================================
     private class BrowserServer {
         String name;
         String instance;
@@ -906,7 +904,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
     }
 
     //==========================================================
-//==========================================================
+    //==========================================================
     private class BrowserDevice extends DeviceProxy {
         String name;
         String member;
@@ -936,7 +934,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
     }
 
     //==========================================================
-//==========================================================
+    //==========================================================
     private class BrowserDevice_2 extends BrowserDevice {
         //==========================================================
         BrowserDevice_2(String name) throws DevFailed {
@@ -949,9 +947,8 @@ public class DevBrowserTree extends JTree implements TangoConst {
         }
     }
 
-
     //==========================================================
-//==========================================================
+    //==========================================================
     private class BrowserAttribute {
         BrowserDevice dev;
         String name;
@@ -971,12 +968,11 @@ public class DevBrowserTree extends JTree implements TangoConst {
     }
 
 
-//===============================================================
-
+    //===============================================================
     /**
      * Renderer Class
      */
-//===============================================================
+    //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
         private ImageIcon tangoIcon;
         private ImageIcon serv_icon;
@@ -992,7 +988,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.15);
+            tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
             serv_icon = Utils.getInstance().getIcon("server.gif");
             dev_icon = Utils.getInstance().getIcon("device.gif");
             attr_icon = Utils.getInstance().getIcon("leaf.gif");
