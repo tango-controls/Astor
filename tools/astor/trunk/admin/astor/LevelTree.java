@@ -244,18 +244,20 @@ public class LevelTree extends JTree implements AstorDefs {
                 System.out.println("Do it !");
                 //	Apply
                 info = dialog.getSelection();
-                info.host = hostname;
-                for (int i = 0; i < root.getChildCount(); i++) {
-                    node = (DefaultMutableTreeNode) root.getChildAt(i);
-                    server = (TangoServer) node.getUserObject();
+                if (info!=null) {
+                    info.host = hostname;
+                    for (int i = 0; i < root.getChildCount(); i++) {
+                        node = (DefaultMutableTreeNode) root.getChildAt(i);
+                        server = (TangoServer) node.getUserObject();
 
-                    info.name = server.getName();
-                    server.putStartupInfo(info);
-                    try {
-                        Thread.sleep(20);
-                    } catch (Exception e) { /** */}
+                        info.name = server.getName();
+                        server.putStartupInfo(info);
+                        try {
+                            Thread.sleep(20);
+                        } catch (Exception e) { /** */}
+                    }
+                    parent.updateData();
                 }
-                parent.updateData();
             }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);

@@ -67,8 +67,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
         this.parent = parent;
         initComponents();
 
-        //	Initialize ComboBoxe
-        //-------------------------------------
+        //	Initialize ComboBox
         jComboBox1.addItem("None");
         int nb = AstorUtil.getStarterNbStartupLevels();
         for (int i = 1; i <= nb; i++) {
@@ -284,17 +283,27 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     //============================================================
-
     /**
      * Closes the dialog
      */
     //============================================================
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        doClose(RET_OK);
+        boolean ctrl = (yesButton.getSelectedObjects() != null);
+        int level = jComboBox1.getSelectedIndex();
+        if (!ctrl || level == 0) {
+            level = 0;
+        }
+
+        //  Check if has changed
+        if (ctrl!=server_info.controlled ||
+            level!=server_info.startup_level) {
+            doClose(RET_OK);
+        }
+        else
+            doClose(RET_CANCEL);
     }//GEN-LAST:event_okButtonActionPerformed
 
     //============================================================
-
     /**
      * Closes the dialog
      */
@@ -356,7 +365,6 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
      */
     //============================================================
     private boolean manage_unregister = true;
-
     public int showDialog(DbServInfo info, int level) {
         server_info = info;
         manage_unregister = false;
@@ -378,17 +386,14 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
     public DbServInfo getSelection() {
         if (unregister)
             return null;
-        server_info.controlled = (yesButton.getSelectedObjects() != null);
-        int level = jComboBox1.getSelectedIndex();
 
-        if (server_info.controlled == false || level == 0) {
-            //	force both
-            server_info.controlled = false;
+        boolean ctrl = (yesButton.getSelectedObjects() != null);
+        int level = jComboBox1.getSelectedIndex();
+        if (!ctrl || level == 0) {
             level = 0;
         }
 
-        return new DbServInfo(server_info.name, server_info.host,
-                server_info.controlled, level);
+        return new DbServInfo(server_info.name, server_info.host, ctrl, level);
     }
     //============================================================
     //============================================================

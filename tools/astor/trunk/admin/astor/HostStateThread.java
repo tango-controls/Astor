@@ -264,7 +264,6 @@ public class HostStateThread extends Thread implements AstorDefs {
     private static String[] filters = new String[0];
     private StateEventListener state_listener = null;
     //======================================================================
-
     /**
      * Subscribe on State events
      */

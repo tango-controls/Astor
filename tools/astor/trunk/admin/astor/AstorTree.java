@@ -1032,7 +1032,7 @@ public class AstorTree extends JTree implements AstorDefs {
         //===============================================================
         public TangoRenderer() {
             dbIcon = Utils.getInstance().getIcon("MySql.gif");
-            tangoIcon = Utils.getInstance().getIcon("TangoLogo.gif", 0.25);
+            tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.25);
 
             fonts = new Font[2];
             rootFont = new Font("helvetica", Font.BOLD, 24);
