@@ -75,9 +75,9 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private static ImageIcon classIcon;
     //===============================================================
     //===============================================================
-    public TangoReleaseTree(JFrame appli, String rootName,
+    public TangoReleaseTree(JFrame frame, String rootName,
                             TangoServerReleaseList serverReleaseList, int mode) {
-        this.appli = appli;
+        this.appli = frame;
         this.mode   = mode;
         this.serverReleaseList = serverReleaseList;
 
@@ -149,8 +149,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         int mask = evt.getModifiers();
 
         //  Check button clicked
-        if (evt.getClickCount() == 2 && (mask & MouseEvent.BUTTON1_MASK) != 0) {
-        } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
+        if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             /*
             if (node == root)
                 menu.showMenu(evt, (String) userObject);
@@ -263,7 +262,10 @@ public class TangoReleaseTree extends JTree implements TangoConst {
                             new DefaultMutableTreeNode(idlCollectionClass);
                     root.add(idlNode);
                     for (TangoClassRelease classRelease : idlCollectionClass.classes) {
-                        idlNode.add(new DefaultMutableTreeNode(classRelease));
+                        DefaultMutableTreeNode classNode =
+                                new DefaultMutableTreeNode(classRelease);
+                        idlNode.add(classNode);
+                        classNode.add(new DefaultMutableTreeNode(classRelease.serverName));
                     }
                 }
                 break;
@@ -601,7 +603,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         //=======================================================
         private void buildBtnPopupMenu() {
             title = new JLabel();
-            title.setFont(new java.awt.Font("Dialog", 1, 16));
+            title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
 

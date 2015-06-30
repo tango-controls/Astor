@@ -53,7 +53,7 @@ public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
             int release = new DeviceProxy("dserver/"+serverName).getTangoVersion();
 
             //  Get class list
-            String[]  classNames = getClasses(dbServer);
+            String[] classNames = getClasses(dbServer);
             if (release>=100)
                 releaseNumber = 0.01 * release;
             //System.out.println(name + ":    " + releaseNumber);
