@@ -11,8 +11,12 @@
 #
 #-======================================================================
 
-Astor-6.6.6 -  11/05/15:
+Astor-6.6.6 -  30/06/15:
+	Java-7 compatibility.
+	Manage polling for Tango-9 feature.
+	Improve Tango release for servers.
 	Add a compatibility to read JTango release.
+	Update file headers.
 
 Astor-6.6.5 -  08/01/15:
 	Improve Server Usage utility

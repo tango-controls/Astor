@@ -107,7 +107,7 @@ install_doc:
 	cp $(DOC_ORIG)/movies/*  $(DOC_HOME)/movies
 	tango2www astor
 
-FTP_TARGET	=	webserv02:/ftp/pub/cs/tango/Astor
+FTP_TARGET	=	ftpserv:/ftp/anonymous/pub/cs/tango/Astor
 JAR_FILE	=	Astor-$(APPLI_VERS).jar
 install_ftp:
 	@echo "rcp $(JAR_FILE) $(FTP_TARGET)"

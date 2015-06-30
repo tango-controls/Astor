@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -175,7 +175,7 @@ public class PropListDialog extends javax.swing.JDialog {
         addBtn = new javax.swing.JButton();
         dismissBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList();
+        jList = new javax.swing.JList<String>();
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -294,7 +294,7 @@ public class PropListDialog extends javax.swing.JDialog {
     private javax.swing.JButton addBtn;
     private javax.swing.JButton dismissBtn;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList jList;
+    private javax.swing.JList<String> jList;
     // End of variables declaration//GEN-END:variables
 
     //======================================================

@@ -115,7 +115,7 @@ public class HostList extends JDialog {
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        hostList = new javax.swing.JList();
+        hostList = new javax.swing.JList<String>();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -243,7 +243,7 @@ public class HostList extends JDialog {
 
 	//===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList hostList;
+    private javax.swing.JList<String> hostList;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

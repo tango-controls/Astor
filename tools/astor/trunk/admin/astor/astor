@@ -3,7 +3,7 @@
 #	
 #---------------------------------------------------------
 
-PATH=/sware/pub/java-1.7.0_21/linux_x64/bin/:$PATH
+PATH=/sware/pub/java-1.7.0_67/linux_x64/bin/:$PATH
 
 
 ASTOR=../../bin

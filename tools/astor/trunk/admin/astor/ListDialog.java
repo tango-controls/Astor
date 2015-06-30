@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -55,12 +55,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
+@SuppressWarnings("MagicConstant")
 public class ListDialog extends javax.swing.JDialog {
     private static String str_filter = "*";
-    private static String previous_item = null;
+    private static String previousItem = null;
     private HostInfoDialog hostInfoDialog;
     private ArrayList<String> selectedItems = null;
 
@@ -98,7 +100,7 @@ public class ListDialog extends javax.swing.JDialog {
         //	Search if previous selection exists
         //----------------------------------------
         for (int i = 0; i < servlist.length; i++)
-            if (servlist[i].equals(previous_item))
+            if (servlist[i].equals(previousItem))
                 jList.setSelectedIndex(i);
     }
 
@@ -115,7 +117,7 @@ public class ListDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList();
+        jList = new javax.swing.JList<String>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton fromAnotherCrateBtn = new javax.swing.JButton();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
@@ -266,11 +268,9 @@ public class ListDialog extends javax.swing.JDialog {
     //======================================================
     private void listSelectionPerformed(MouseEvent evt) {
         //	save selected item to set selection  later.
-        //----------------------------------------------------
-        previous_item = (String) jList.getSelectedValue();
+        previousItem = jList.getSelectedValue();
 
         //	Check if double click
-        //-----------------------------
         if (evt.getClickCount() == 2)
             startSelectedItems();
     }
@@ -281,10 +281,12 @@ public class ListDialog extends javax.swing.JDialog {
         selectedItems = new ArrayList<String>();
 
         //	At first try if already running
-        Object[] selections = jList.getSelectedValues();
-        if (selections.length>0) {
-            for (Object selection : selections) {
-                String serverName = (String) selection;
+        List<String> selections = jList.getSelectedValuesList();
+        if (selections.isEmpty()) {
+            ErrorPane.showErrorMessage(this, null, new Exception("No server selected !"));
+        }
+        else {
+            for (String serverName : selections) {
                 try {
                     String deviceName = "dserver/" + serverName;
                     DeviceProxy dev = new DeviceProxy(deviceName);
@@ -307,8 +309,6 @@ public class ListDialog extends javax.swing.JDialog {
             setVisible(false);
             dispose();
         }
-        else
-            ErrorPane.showErrorMessage(this, null, new Exception("No server selected !"));
     }
 
     //======================================================
@@ -362,7 +362,7 @@ public class ListDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel filterPanel;
     private javax.swing.JTextField filterTxt;
-    private javax.swing.JList jList;
+    private javax.swing.JList<String> jList;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 

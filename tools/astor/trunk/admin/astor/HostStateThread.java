@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -345,8 +345,7 @@ public class HostStateThread extends Thread implements AstorDefs {
                 System.err.println(new Date());
                 System.err.println(host.name() + "  has received a DevFailed :	" + e.errors[0].desc);
                 hostState = DevState.ALARM;
-                System.err.println("HostStateThread.StateEventListener" +
-                        deviceName + " : API_EventTimeout");
+                System.err.println("HostStateThread.StateEventListener on " + deviceName);
                 try {
                     timeout = host.get_timeout_millis();
                     host.set_timeout_millis(500);
@@ -374,7 +373,6 @@ public class HostStateThread extends Thread implements AstorDefs {
                     notifdState = DevState.UNKNOWN;
                 else
                     notifdState = att_synch.extractState();
-                //System.out.println("notifdState=" + ApiUtil.stateName(notifdState));
             } catch (Exception e) {
                 notifdState = DevState.UNKNOWN;
             }
