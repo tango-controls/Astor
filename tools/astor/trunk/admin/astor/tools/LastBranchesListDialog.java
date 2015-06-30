@@ -100,7 +100,7 @@ public class LastBranchesListDialog extends JDialog {
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        branchList = new javax.swing.JList();
+        branchList = new javax.swing.JList<String>();
         javax.swing.JPanel eastPanel = new javax.swing.JPanel();
         removeBtn = new javax.swing.JButton();
         javax.swing.JButton addBtn = new javax.swing.JButton();
@@ -138,11 +138,6 @@ public class LastBranchesListDialog extends JDialog {
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
-        branchList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         branchList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 branchListValueChanged(evt);
@@ -236,7 +231,7 @@ public class LastBranchesListDialog extends JDialog {
     //===============================================================
     @SuppressWarnings("UnusedParameters")
     private void removeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBtnActionPerformed
-        String  selection = (String) branchList.getSelectedValue();
+        String  selection = branchList.getSelectedValue();
         ListModel    model = branchList.getModel();
         Vector<String>  stringVector = new Vector<String>();
         for (int i=0 ; i<model.getSize() ; i++) {
@@ -307,7 +302,7 @@ public class LastBranchesListDialog extends JDialog {
     //===============================================================
     @SuppressWarnings("UnusedParameters")
     private void upBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upBtnActionPerformed
-        String  selection = (String) branchList.getSelectedValue();
+        String  selection = branchList.getSelectedValue();
         //  Get the last branches
         Vector<String>   lastBranches = new Vector<String>();
         ListModel    model = branchList.getModel();
@@ -329,7 +324,7 @@ public class LastBranchesListDialog extends JDialog {
     //===============================================================
     @SuppressWarnings("UnusedParameters")
     private void downBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downBtnActionPerformed
-        String  selection = (String) branchList.getSelectedValue();
+        String  selection = branchList.getSelectedValue();
         //  Get the last branches
         Vector<String>   lastBranches = new Vector<String>();
         ListModel    model = branchList.getModel();
@@ -384,7 +379,7 @@ public class LastBranchesListDialog extends JDialog {
 
 	//===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList branchList;
+    private javax.swing.JList<String> branchList;
     private javax.swing.JButton downBtn;
     private javax.swing.JButton removeBtn;
     private javax.swing.JButton upBtn;

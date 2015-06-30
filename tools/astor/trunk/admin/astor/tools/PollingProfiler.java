@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -36,6 +36,7 @@ package admin.astor.tools;
 
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.Except;
@@ -90,26 +91,26 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
      * Creates new form PollingProfiler
      *
      * @param parent  The parent dialog
-     * @param deviceNames the device name to display polling
+     * @param deviceName the device name to display polling
      */
     //===============================================================
-    public PollingProfiler(JDialog parent, String deviceNames) {
+    public PollingProfiler(JDialog parent, String deviceName) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(new String[]{deviceNames});
+        realConstructor(new String[]{deviceName});
     }
     //===============================================================
     /**
      * Creates new form PollingProfiler
      *
      * @param parent  The parent frame
-     * @param deviceNames the device name to display polling
+     * @param deviceName the device name to display polling
      */
     //===============================================================
-    public PollingProfiler(JFrame parent, String deviceNames) {
+    public PollingProfiler(JFrame parent, String deviceName) {
         super(parent, false);
         this.parent = parent;
-        realConstructor(new String[]{deviceNames});
+        realConstructor(new String[]{deviceName});
     }
     //===============================================================
     /**
@@ -151,13 +152,48 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         buildPopupMenu();
         customizeAxis();
         updateData();
+        checkTangoRelease();
 
-        //titleLabel.setVisible(false);
         pack();
-
         ATKGraphicsUtils.centerDialog(this);
     }
 
+    //===============================================================
+    //===============================================================
+    private void checkTangoRelease() {
+        try {
+            if (deviceNames.length==0)
+                return;
+            //  Check device proxy release.
+            DeviceProxy proxy = new DeviceProxy(deviceNames[0]);
+            DeviceProxy adminDevice = proxy.get_adm_dev();
+            int tangoRelease = adminDevice.getTangoVersion();
+
+            //  Check if property set the polling model
+            DbDatum datum = adminDevice.get_property("polling_before_9");
+            boolean beforeNine;
+            beforeNine = !datum.is_empty() && datum.extractBoolean();
+            System.out.println("beforeNine=" + beforeNine);
+            System.out.println("Tango release=" + tangoRelease);
+
+            //  If Tango 9 or more and not old model --> add warning
+            if (tangoRelease<910 || beforeNine) {
+                warningBtn.setVisible(false);
+            } else {
+                //  Check if several attributes are polled at same time
+                if (poll_status.isPollingSeveralAttributes()) {
+                    warningBtn.setIcon(Utils.getInstance().getIcon("clock.png"));
+                    warningBtn.setText("");
+                }
+                else
+                    warningBtn.setVisible(false);
+            }
+        }
+        catch (DevFailed e) {
+            System.err.println("Cannot check Tango release: " + e.errors[0].desc);
+        }
+
+    }
     //===============================================================
     //===============================================================
     private void buildPopupMenu() {
@@ -371,6 +407,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private void updateData() {
         now = System.currentTimeMillis();
         try {
+            //ToDo
             poll_status = new DevPollStatus(deviceNames);
             if (!titleDisplayed)
                 displayTitle(poll_status.size());
@@ -577,7 +614,6 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         return retVal;
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -589,6 +625,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private void initComponents() {
 
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
+        warningBtn = new javax.swing.JButton();
         autoBtn = new javax.swing.JRadioButton();
         updateBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -600,6 +637,15 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
                 closeDialog(evt);
             }
         });
+
+        warningBtn.setText("...");
+        warningBtn.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        warningBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                warningBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(warningBtn);
 
         autoBtn.setText("Auto Update");
         autoBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -641,20 +687,20 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     @SuppressWarnings({"UnusedParameters"})
     private void autoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoBtnActionPerformed
         if (autoBtn.getSelectedObjects() != null) {
-            String strval = "" + timer_period;
+            String strValue = "" + timer_period;
             //	Get polling period as string
-            strval = (String) JOptionPane.showInputDialog(this,
+            strValue = (String) JOptionPane.showInputDialog(this,
                     "Reading period (seconds)  ?",
                     "Reading period",
                     JOptionPane.INFORMATION_MESSAGE,
-                    null, null, strval);
-            if (strval == null) {
+                    null, null, strValue);
+            if (strValue == null) {
                 autoBtn.setSelected(false);
                 return;
             }
             //	Convert to int
             try {
-                timer_period = Integer.parseInt(strval);
+                timer_period = Integer.parseInt(strValue);
             } catch (NumberFormatException e) {
                 ErrorPane.showErrorMessage(new JFrame(), null, e);
                 ErrorPane.showErrorMessage(this, null, e);
@@ -679,27 +725,32 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             updateBtn.setEnabled(true);
         }
     }//GEN-LAST:event_autoBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         updateData();
     }//GEN-LAST:event_updateBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedParameters"})
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedParameters"})
+    private void warningBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warningBtnActionPerformed
+        JOptionPane.showMessageDialog(this, "WARNING:\n"+
+                "  Since Tango-9, the polling duration\n"+
+                "  could be a sum of several attribute polling durations.");
+    }//GEN-LAST:event_warningBtnActionPerformed
 
     //===============================================================
     /**
@@ -744,6 +795,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private javax.swing.JRadioButton autoBtn;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JButton updateBtn;
+    private javax.swing.JButton warningBtn;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 
@@ -762,17 +814,19 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     }
 
     //===============================================================
-    static String[] getDeviceNames(String servname) throws DevFailed {
-        DeviceData argout =
-                new DeviceProxy("dserver/" + servname).command_inout("QueryDevice");
-        String[] devnames = argout.extractStringArray();
-        for (int i = 0; i < devnames.length; i++) {
+    //===============================================================
+    private static String[] getDeviceNames(String serverName) throws DevFailed {
+        DeviceProxy adminDevice = new DeviceProxy("dserver/" + serverName);
+        DeviceData argOut = adminDevice.command_inout("QueryDevice");
+        String[] deviceNames = argOut.extractStringArray();
+        for (int i = 0; i < deviceNames.length; i++) {
             //	Remove Class name
-            devnames[i] = devnames[i].substring(devnames[i].indexOf("::") + 2);
-            System.out.println(devnames[i]);
+            deviceNames[i] = deviceNames[i].substring(deviceNames[i].indexOf("::") + 2);
+            System.out.println(deviceNames[i]);
         }
-        return devnames;
+        return deviceNames;
     }
+    //===============================================================
     //===============================================================
 
 
