@@ -38,9 +38,7 @@ package admin.astor.tango_release;
 import admin.astor.AstorUtil;
 import admin.astor.tools.PopupHtml;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.ApiUtil;
-import fr.esrf.TangoApi.DeviceAttribute;
-import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoApi.*;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -48,7 +46,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Collections;
+import java.util.List;
 
 
 //===============================================================
@@ -61,6 +60,7 @@ import java.util.StringTokenizer;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class TangoReleaseDialog extends JDialog {
 
 	private JFrame	parent;
@@ -88,7 +88,7 @@ public class TangoReleaseDialog extends JDialog {
         for (String  hostName : hostList) {
             System.out.println("Reading "+ hostName);
             //  Get server list
-            ArrayList<String>   serverNames = getControlledServers(hostName);
+            List<String>   serverNames = getControlledServers(hostName);
             for (String server : serverNames)
                 serverList.add(server);
         }
@@ -118,7 +118,7 @@ public class TangoReleaseDialog extends JDialog {
      *  @param serverNames  list of server to be analyzed
 	 */
 	//===============================================================
-	public TangoReleaseDialog(JFrame parent, String rootName,  ArrayList<String> serverNames) {
+	public TangoReleaseDialog(JFrame parent, String rootName,  List<String> serverNames) {
 		super(parent, false);
 		this.parent = parent;
         buildDialog(rootName, serverNames);
@@ -126,7 +126,7 @@ public class TangoReleaseDialog extends JDialog {
 
 	//===============================================================
 	//===============================================================
-    private void buildDialog(String rootName, ArrayList<String> serverNames) {
+    private void buildDialog(String rootName, List<String> serverNames) {
 
         AstorUtil.startSplash("Server Tango Releases");
         AstorUtil.increaseSplashProgress(5, "Initializing....");
@@ -140,29 +140,28 @@ public class TangoReleaseDialog extends JDialog {
     }
     //===============================================================
     //===============================================================
-    private ArrayList<String>  getControlledServers(String hostName) {
+    private List<String>  getControlledServers(String hostName) {
 
-        ArrayList<String>  controlledServers = new ArrayList<String>();
+        ArrayList<String>  serverList = new ArrayList<String>();
         try {
-            DeviceAttribute attribute = new DeviceProxy("tango/admin/"+hostName).read_attribute("Servers");
-            String[]  lines = attribute.extractStringArray();
-            for (String line : lines) {
-                StringTokenizer stringTokenizer = new StringTokenizer(line);
-                String serverName = stringTokenizer.nextToken();
-                controlledServers.add(serverName);
-            }
+            Database database = ApiUtil.get_db_obj();
+            DeviceData argIn = new DeviceData();
+            argIn.insert(hostName);
+            DeviceData argOut = database.command_inout("DbGetHostServerList", argIn);
+            String[] serverNames = argOut.extractStringArray();
+            Collections.addAll(serverList, serverNames);
 
             //  Add the Starter itself
-            controlledServers.add("Starter/"+hostName);
+            serverList.add("Starter/" + hostName);
         }
         catch (DevFailed e) {
             //  Do nothing
         }
-        return controlledServers;
+        return serverList;
     }
 	//===============================================================
 	//===============================================================
-    private void initOwnComponents(String rootName, ArrayList<String> serverNames) {
+    private void initOwnComponents(String rootName, List<String> serverNames) {
 
         //  Get the server release list
         AstorUtil.increaseSplashProgress(1, "Check servers....");
@@ -275,7 +274,7 @@ public class TangoReleaseDialog extends JDialog {
         URL url = getClass().getResource("TangoRelease.html");
         PopupHtml   dialog = new PopupHtml(null);
         dialog.setLocation(getLocation());
-        dialog.show(url, 850, 600);
+        dialog.show(url, 900, 600);
     }//GEN-LAST:event_helpBtnActionPerformed
 
 	//===============================================================

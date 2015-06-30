@@ -26,6 +26,7 @@ package admin.astor.tango_release;
 import admin.astor.AstorUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -38,7 +39,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     private static final int idlMax = 10;
 	//===============================================================
 	//===============================================================
-	public TangoServerReleaseList(ArrayList<String> serverNames) {
+	public TangoServerReleaseList(List<String> serverNames) {
 
         Collections.sort(serverNames, new StringComparator());
         int counter = 0;

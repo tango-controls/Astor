@@ -33,12 +33,14 @@ import fr.esrf.TangoDs.Except;
 public class  TangoClassRelease {
 
     String  className;
+    String  serverName;
     int     idl = 0;
     String  error = "";
     //===============================================================
     //===============================================================
     public TangoClassRelease(DbServer dbServer, String className) {
         this.className = className;
+        this.serverName = dbServer.name();
         try {
             String[]  deviceNames = getDevices(dbServer, className);
             if (deviceNames.length>0)
