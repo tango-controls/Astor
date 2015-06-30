@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -180,7 +180,7 @@ public class ListSelectionDialog extends JDialog {
         jPanel2 = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        cmdList = new javax.swing.JList();
+        cmdList = new javax.swing.JList<String>();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -206,7 +206,7 @@ public class ListSelectionDialog extends JDialog {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Dialog Title");
         jPanel2.add(titleLabel);
 
@@ -291,7 +291,7 @@ public class ListSelectionDialog extends JDialog {
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;
-    private javax.swing.JList cmdList;
+    private javax.swing.JList<String> cmdList;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
