@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -54,6 +54,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 //===============================================================
 public class MultiServerCommand extends JDialog {
@@ -66,7 +67,6 @@ public class MultiServerCommand extends JDialog {
             "Uptime",
     };
     //======================================================
-
     /**
      * Creates new form MultiServerCommand
      *
@@ -100,8 +100,8 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     private void setList() throws DevFailed {
         str_filter = filterTxt.getText();
-        String[] servlist = ApiUtil.get_db_obj().get_server_list(str_filter);
-        jList.setListData(servlist);
+        String[] serverList = ApiUtil.get_db_obj().get_server_list(str_filter);
+        jList.setListData(serverList);
 
     }
 
@@ -123,11 +123,11 @@ public class MultiServerCommand extends JDialog {
         javax.swing.JLabel filterLabel = new javax.swing.JLabel();
         filterTxt = new javax.swing.JTextField();
         javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList();
+        jList = new javax.swing.JList<String>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        comboBox = new javax.swing.JComboBox();
+        comboBox = new javax.swing.JComboBox<String>();
         javax.swing.JButton sendCmdBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
 
@@ -151,6 +151,7 @@ public class MultiServerCommand extends JDialog {
         getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
         scrollPane.setPreferredSize(new java.awt.Dimension(200, 300));
+
         scrollPane.setViewportView(jList);
 
         getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
@@ -230,7 +231,7 @@ public class MultiServerCommand extends JDialog {
     private void sendCmdBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCmdBtnActionPerformed
 
         //	Get and check selection
-        ArrayList<String> selections = getSelectedItems();
+        List<String> selections = jList.getSelectedValuesList();
         if (selections.size() == 0) {
             displayError(this, "No server selected !",
                     "MultiServerCommand.sendCmdBtnActionPerformed()");
@@ -255,17 +256,6 @@ public class MultiServerCommand extends JDialog {
         }
 
     }//GEN-LAST:event_sendCmdBtnActionPerformed
-
-    //======================================================
-    //======================================================
-    private ArrayList<String> getSelectedItems() {
-        Object[] selections = jList.getSelectedValues();
-        ArrayList<String> selectedItems = new ArrayList<String>();
-        for (Object obj : selections)
-            selectedItems.add(obj.toString());
-        return selectedItems;
-    }
-
     //======================================================
     //======================================================
     public static void displayError(Component component, String desc, String orig) {
@@ -276,7 +266,6 @@ public class MultiServerCommand extends JDialog {
         }
     }
     //======================================================
-
     /**
      * @param args the command line arguments
      */
@@ -294,9 +283,9 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     //======================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox comboBox;
+    private javax.swing.JComboBox<String> comboBox;
     private javax.swing.JTextField filterTxt;
-    private javax.swing.JList jList;
+    private javax.swing.JList<String> jList;
     // End of variables declaration//GEN-END:variables
     //======================================================
     //======================================================
@@ -351,7 +340,7 @@ public class MultiServerCommand extends JDialog {
 
     //======================================================
     //======================================================
-    private void displayServerUptimes(ArrayList<String> servNames) {
+    private void displayServerUptimes(List<String> servNames) {
         ArrayList<String[]> v = new ArrayList<String[]>();
         try {
             for (String servName : servNames) {
@@ -389,35 +378,35 @@ public class MultiServerCommand extends JDialog {
 
     //======================================================
     //======================================================
-    private void displayServerStatus(ArrayList<String> servNames) {
-        ArrayList<String[]> v = new ArrayList<String[]>();
+    private void displayServerStatus(List<String> serverNames) {
+        ArrayList<String[]> statusList = new ArrayList<String[]>();
 
-        for (String servName : servNames) {
+        for (String serverName : serverNames) {
 
             try {
-                DeviceProxy starter = getStarterInstanceForServer(servName);
+                DeviceProxy starter = getStarterInstanceForServer(serverName);
                 DeviceAttribute argout = starter.read_attribute("Servers");
                 String[] serverStates = argout.extractStringArray();
                 for (String line : serverStates) {
                     StringTokenizer stk = new StringTokenizer(line);
                     String server = stk.nextToken();
                     String status = convertStatus(stk.nextToken());
-                    if (server.toLowerCase().equals(servName.toLowerCase()))
-                        v.add(new String[]{server, status});
+                    if (server.toLowerCase().equals(serverName.toLowerCase()))
+                        statusList.add(new String[]{server, status});
                 }
             } catch (DevFailed e) {
-                v.add(new String[]{servName, e.errors[0].desc});
+                statusList.add(new String[]{serverName, e.errors[0].desc});
             }
         }
-        if (v.size() == 0) {
+        if (statusList.size() == 0) {
             System.err.println("No data found !");
             return;
         }
 
         String[] columns = new String[]{"Servers", "Status"};
-        String[][] table = new String[v.size()][];
-        for (int i = 0; i < v.size(); i++) {
-            table[i] = v.get(i);
+        String[][] table = new String[statusList.size()][];
+        for (int i = 0; i < statusList.size(); i++) {
+            table[i] = statusList.get(i);
         }
 
         try {
@@ -433,7 +422,7 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     private long delayBetweenServers = 1000;
 
-    private void starterCommandForServers(String command, ArrayList<String> servNames) {
+    private void starterCommandForServers(String command, List<String> servNames) {
         //  Check for command.
         if (command.equals("Start"))
             command = "DevStart";
@@ -458,13 +447,13 @@ public class MultiServerCommand extends JDialog {
     private class CommandThread extends Thread {
         private Component component;
         private String command;
-        private ArrayList<String> servNames;
+        private List<String> servNames;
         private long delay;
 
         //======================================================
         private CommandThread(Component component,
                               String command,
-                              ArrayList<String> servNames,
+                              List<String> servNames,
                               long delay) {
             this.component = component;
             this.command = command;

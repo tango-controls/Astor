@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -49,6 +49,7 @@ import java.awt.*;
 
 //-======================================================================
 //-======================================================================
+@SuppressWarnings("MagicConstant")
 public class PutServerInfoDialog extends javax.swing.JDialog {
 
     public static final int RET_CANCEL = JOptionPane.CANCEL_OPTION;
@@ -87,18 +88,18 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
      */
 //-======================================================================
     private void initComponents() {//GEN-BEGIN:initComponents
-        buttonPanel = new javax.swing.JPanel();
-        okButton = new javax.swing.JButton();
-        cancelButton = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton();
+        JButton cancelButton = new JButton();
+        JPanel jPanel1 = new JPanel();
+        JLabel jLabel1 = new JLabel();
         yesButton = new javax.swing.JRadioButton();
         noButton = new javax.swing.JRadioButton();
-        jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        JLabel jLabel2 = new JLabel();
+        jComboBox1 = new JComboBox<String>();
+        JLabel jLabel3 = new JLabel();
+        JLabel jLabel5 = new JLabel();
+        JLabel jLabel6 = new JLabel();
         title = new javax.swing.JLabel();
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -111,20 +112,20 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
 
         okButton.setText("  OK  ");
         okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        }
+                                       public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                           okButtonActionPerformed(evt);
+                                       }
+                                   }
         );
 
         buttonPanel.add(okButton);
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        }
+                                           public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                               cancelButtonActionPerformed(evt);
+                                           }
+                                       }
         );
 
         buttonPanel.add(cancelButton);
@@ -255,7 +256,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
 
     //============================================================
     //============================================================
-    private void unregisterBtnActionPerformed(java.awt.event.ActionEvent evt) {
+    private void unregisterBtnActionPerformed(@SuppressWarnings("UnusedParameters") java.awt.event.ActionEvent evt) {
         //	Ask to confirm
         if (unregister = (JOptionPane.showConfirmDialog(parent,
                 "Are you sure to want to remove " +
@@ -278,7 +279,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
 
     //============================================================
     //============================================================
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+    private void cancelButtonActionPerformed(@SuppressWarnings("UnusedParameters") java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         doClose(RET_CANCEL);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
@@ -287,7 +288,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
      * Closes the dialog
      */
     //============================================================
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+    private void okButtonActionPerformed(@SuppressWarnings("UnusedParameters") java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         boolean ctrl = (yesButton.getSelectedObjects() != null);
         int level = jComboBox1.getSelectedIndex();
         if (!ctrl || level == 0) {
@@ -308,7 +309,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
      * Closes the dialog
      */
     //============================================================
-    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+    private void closeDialog(@SuppressWarnings("UnusedParameters") java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose(RET_CANCEL);
     }//GEN-LAST:event_closeDialog
 
@@ -399,20 +400,9 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
     //============================================================
 
 
-    //============================================================
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel buttonPanel;
-    private javax.swing.JButton okButton;
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JRadioButton yesButton;
     private javax.swing.JRadioButton noButton;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
     //============================================================

@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -231,7 +231,7 @@ public class DbPollPanel extends JDialog {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
-        devComboBox = new javax.swing.JComboBox();
+        devComboBox = new javax.swing.JComboBox<String>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -375,7 +375,7 @@ public class DbPollPanel extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox devComboBox;
+    private javax.swing.JComboBox<String> devComboBox;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

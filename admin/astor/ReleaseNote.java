@@ -31,7 +31,7 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Mon May 11 16:10:29 CEST 2015)" + 
+			"(Generated Wed May 13 08:00:14 CEST 2015)" + 
 		"</Center><br>" + 
 
 		"<br><li><b>Astor-6.6.6 -  11/05/15:</li></b>" +

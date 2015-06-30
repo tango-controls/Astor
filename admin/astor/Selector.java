@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -112,7 +112,7 @@ public class Selector extends JDialog {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
-        comboBox = new javax.swing.JComboBox();
+        comboBox = new javax.swing.JComboBox<String>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -220,7 +220,7 @@ public class Selector extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox comboBox;
+    private javax.swing.JComboBox<String> comboBox;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================
