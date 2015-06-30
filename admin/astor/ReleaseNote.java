@@ -31,11 +31,15 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed May 13 08:00:14 CEST 2015)" + 
+			"(Generated Tue Jun 30 15:55:02 CEST 2015)" + 
 		"</Center><br>" + 
 
-		"<br><li><b>Astor-6.6.6 -  11/05/15:</li></b>" +
+		"<br><li><b>Astor-6.6.6 -  30/06/15:</li></b>" +
+			"	Java-7 compatibility.<br>" +
+			"	Manage polling for Tango-9 feature.<br>" +
+			"	Improve Tango release for servers.<br>" +
 			"	Add a compatibility to read JTango release.<br>" +
+			"	Update file headers.<br>" +
 
 		"<br><li><b>Astor-6.6.5 -  08/01/15:</li></b>" +
 			"	Improve Server Usage utility<br>" +
