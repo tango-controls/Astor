@@ -108,7 +108,7 @@ public class ListDialog extends JDialog {
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList();
+        jList = new javax.swing.JList<String>();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -116,7 +116,7 @@ public class ListDialog extends JDialog {
             }
         });
 
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("List Selection");
         topPanel.add(titleLabel);
 
@@ -207,7 +207,7 @@ public class ListDialog extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList jList;
+    private javax.swing.JList<String> jList;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

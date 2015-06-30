@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -50,30 +50,36 @@ import java.util.ArrayList;
 
 
 public class DevPollStatus extends ArrayList<PolledElement> {
-    private DeviceProxy dev;
+    private DeviceProxy deviceProxy;
+    private boolean pollSeveralAttributes = false;
+
     private static final boolean FULL_NAME = true;
     private static final boolean ATTR_NAME = false;
-
     //===============================================================
     //===============================================================
-    public DevPollStatus(String devname) throws DevFailed {
-        dev = new DeviceProxy(devname).get_adm_dev();
-        readData(devname, ATTR_NAME);
+    public DevPollStatus(String deviceName) throws DevFailed {
+        deviceProxy = new DeviceProxy(deviceName).get_adm_dev();
+        readData(deviceName, ATTR_NAME);
     }
 
     //===============================================================
     //===============================================================
-    public DevPollStatus(String[] devnames) throws DevFailed {
+    public DevPollStatus(String[] deviceNames) throws DevFailed {
         //  full name (device and attribute) if more than one device
         boolean full_name = FULL_NAME;
-        if (devnames.length < 2)
+        if (deviceNames.length < 2)
             full_name = ATTR_NAME;
-        for (String devname : devnames) {
-            dev = new DeviceProxy(devname).get_adm_dev();
-            readData(removeTangoHostIfAny(devname), full_name);
+        for (String deviceName : deviceNames) {
+            deviceProxy = new DeviceProxy(deviceName).get_adm_dev();
+            readData(removeTangoHostIfAny(deviceName), full_name);
         }
     }
 
+    //===============================================================
+    //===============================================================
+    public boolean isPollingSeveralAttributes() {
+        return pollSeveralAttributes;
+    }
     //===============================================================
     //===============================================================
 	private String removeTangoHostIfAny(String deviceName) {
@@ -86,26 +92,33 @@ public class DevPollStatus extends ArrayList<PolledElement> {
 	}
     //===============================================================
     //===============================================================
-   private void readData(String devname, boolean full_name) throws DevFailed {
+   private void readData(String deviceName, boolean full_name) throws DevFailed {
         //long	t0 = System.currentTimeMillis();
         DeviceData argin = new DeviceData();
-        argin.insert(devname);
-        DeviceData argout = dev.command_inout("DevPollStatus", argin);
-        String[] str = argout.extractStringArray();
-        for (String s : str) {
-            PolledElement pe = new PolledElement(devname, s);
+        argin.insert(deviceName);
+        DeviceData argOut = deviceProxy.command_inout("DevPollStatus", argin);
+        String[] lines = argOut.extractStringArray();
+        for (String line : lines) {
+            //  ToDo
+            if (line.contains("Time needed for the last attribute"))
+                if (line.contains("Time needed for the last attributes")) {
+                    pollSeveralAttributes = true;
+                    System.out.println("--> YES <--");
+                }
+
+            PolledElement polledElement = new PolledElement(deviceName, line);
             //  Check if already exists (special case for state and status att/cmd)
             boolean found = false;
-            for (int j = 0; !found && j < size(); j++) {
+            for (int j=0 ; !found && j<size() ; j++) {
                 if (full_name)
-                    found = (get(j).name.toLowerCase().equals(devname + "/" + pe.name.toLowerCase()));
+                    found = (get(j).name.toLowerCase().equals(deviceName + "/" + polledElement.name.toLowerCase()));
                 else
-                    found = (get(j).name.toLowerCase().equals(pe.name.toLowerCase()));
+                    found = (get(j).name.toLowerCase().equals(polledElement.name.toLowerCase()));
             }
             if (!found) {
                 if (full_name)
-                    pe.name = devname + "/" + pe.name;
-                add(pe);
+                    polledElement.name = deviceName + "/" + polledElement.name;
+                add(polledElement);
             }
         }
 
@@ -144,16 +157,16 @@ public class DevPollStatus extends ArrayList<PolledElement> {
     //===============================================================
     //===============================================================
     public static void main(String[] args) {
-        String devname = null;
+        String deviceName = null;
         DevPollStatus clients;
 
         if (args.length > 0)
-            devname = args[0];
+            deviceName = args[0];
         else
             displaySyntax();
 
         try {
-            clients = new DevPollStatus(devname);
+            clients = new DevPollStatus(deviceName);
             for (PolledElement client : clients) {
                 String[] infoArray = client.getInfo();
                 for (String info : infoArray)
