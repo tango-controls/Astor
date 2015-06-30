@@ -7,7 +7,7 @@
 //
 // $Author$
 //
-// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+// Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
 //						European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
@@ -73,7 +73,7 @@ public class EditDialog extends JDialog {
     private JTextField[] textFields;
     private JLabel checkResultLabel;
     private JLabel[] labels;
-    private JComboBox   groupBox;
+    private JComboBox<UserGroup>   groupBox;
     //===============================================================
     /**
      * Creates new form EditDialog
@@ -96,7 +96,7 @@ public class EditDialog extends JDialog {
         //  Add a JComboBox for groups
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        groupBox = new JComboBox();
+        groupBox = new JComboBox<UserGroup>();
         for (UserGroup group : groups) {
             groupBox.addItem(group);
         }
@@ -249,67 +249,69 @@ public class EditDialog extends JDialog {
         }
 
         if (mode!=CLONE_USER) {
-            String add = textFields[ADDRESS].getText().trim();
-            String dev = textFields[DEVICE].getText().trim().toLowerCase();
-            if (add.length()==0 || (mode==CHECK_ACCESS && dev.length()==0) ) {
+            String address = textFields[ADDRESS].getText().trim();
+            String device  = textFields[DEVICE].getText().trim().toLowerCase();
+            if (address.length()==0 || (mode==CHECK_ACCESS && device.length()==0) ) {
                 admin.astor.tools.Utils.popupError(this, "Please fill all fields !");
                 return false;
             }
             //  set after trim
-            textFields[DEVICE].setText(dev);
-            textFields[ADDRESS].setText(add);
+            textFields[DEVICE].setText(device);
+            textFields[ADDRESS].setText(address);
             //	Check if host name as address
             try {
                 java.net.InetAddress iadd =
-                        java.net.InetAddress.getByName(add);
+                        java.net.InetAddress.getByName(address);
 
                 //	If found replace by address
-                add = iadd.getHostAddress();
-                textFields[ADDRESS].setText(add);
+                address = iadd.getHostAddress();
+                textFields[ADDRESS].setText(address);
             } catch (Exception e) { /* */ }
 
             //  Check dev name
-            ArrayList<String> v = new ArrayList<String>();
+            ArrayList<String> tokens = new ArrayList<String>();
             if (mode == CHECK_ACCESS) {
                 //	Try to split with '.' separator
-                StringTokenizer stk = new StringTokenizer(dev, "/");
+                StringTokenizer stk = new StringTokenizer(device, "/");
                 while (stk.hasMoreTokens())
-                    v.add(stk.nextToken());
-                if (v.size() > 3) {
+                    tokens.add(stk.nextToken());
+                if (tokens.size() > 3) {
                     admin.astor.tools.Utils.popupError(this, "Incorrect device name  (too many members)");
                     return false;
                 }
-                if (v.size() < 3) {
+                if (tokens.size() < 3) {
                     admin.astor.tools.Utils.popupError(this, "Incorrect device name  (not enough members)");
                     return false;
                 }
             }
             //  check IP add name
-            StringTokenizer stk1 = new StringTokenizer(add, ".");
-            v.clear();
+            StringTokenizer stk1 = new StringTokenizer(address, ".");
+            tokens.clear();
             while (stk1.hasMoreTokens())
-                v.add(stk1.nextToken());
-            if (v.size() > 4) {
+                tokens.add(stk1.nextToken());
+            if (tokens.size() > 4) {
                 admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (Too many members)");
                 return false;
-            } else if (v.size() < 4) {
+            } else if (tokens.size() < 4) {
                 admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (not enougth members)");
                 return false;
             }
             //	rebuild add string to be sure that there is no too much '.'
             //		like xxx.xxx....xx....xx
-            add = v.get(0) + "." + v.get(1) + "." + v.get(2) + "." + v.get(3);
-            textFields[ADDRESS].setText(add);
+            address = tokens.get(0) + "." + tokens.get(1) + "." + tokens.get(2) + "." + tokens.get(3);
+            textFields[ADDRESS].setText(address);
 
-            for (int i = 0; i < v.size(); i++) {
+            for (int i = 0; i < tokens.size(); i++) {
                 //  Check if numbers
                 try {
-                    Short.parseShort(v.get(i));
+                    //noinspection ResultOfMethodCallIgnored
+                    Short.parseShort(tokens.get(i));
                 } catch (NumberFormatException e) {
                     //  Or if wildcard
-                    if (!v.get(i).equals("*")) {
-                        admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (member #" +
-                                (i + 1) + " (" + v.get(i) + ") is not a number)");
+                    if (!tokens.get(i).equals("*")) {
+                        admin.astor.tools.Utils.popupError(this,
+                                "Incorrect IP address  (member #" + (i + 1) +
+                                " (" + tokens.get(i) + ") is not a number)");
                         return false;
                     }
                 }

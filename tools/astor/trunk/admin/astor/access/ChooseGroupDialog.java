@@ -35,17 +35,10 @@
 
 package admin.astor.access;
 
-import fr.esrf.Tango.*;
-import fr.esrf.TangoDs.*;
-import fr.esrf.TangoApi.*;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
-import fr.esrf.tangoatk.widget.util.ErrorPane;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
 import javax.swing.*;
+import java.util.ArrayList;
 
 
 //===============================================================
@@ -57,6 +50,7 @@ import javax.swing.*;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class ChooseGroupDialog extends JDialog {
 
 	private int		retVal = JOptionPane.OK_OPTION;
@@ -94,8 +88,8 @@ public class ChooseGroupDialog extends JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        centerPanel = new javax.swing.JPanel();
-        groupComboBox = new javax.swing.JComboBox();
+        javax.swing.JPanel centerPanel = new javax.swing.JPanel();
+        groupComboBox = new javax.swing.JComboBox<UserGroup>();
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         javax.swing.JLabel dummyLbl = new javax.swing.JLabel();
@@ -162,13 +156,15 @@ public class ChooseGroupDialog extends JDialog {
 
 	//===============================================================
 	//===============================================================
-	private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
+	@SuppressWarnings("UnusedParameters")
+    private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 		retVal = JOptionPane.OK_OPTION;
 		doClose();
 	}//GEN-LAST:event_okBtnActionPerformed
 
 	//===============================================================
 	//===============================================================
+    @SuppressWarnings("UnusedParameters")
 	private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
 		retVal = JOptionPane.CANCEL_OPTION;
 		doClose();
@@ -176,6 +172,7 @@ public class ChooseGroupDialog extends JDialog {
 
 	//===============================================================
 	//===============================================================
+    @SuppressWarnings("UnusedParameters")
 	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
 		retVal = JOptionPane.CANCEL_OPTION;
 		doClose();
@@ -183,6 +180,7 @@ public class ChooseGroupDialog extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void groupComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_groupComboBoxActionPerformed
         retVal = JOptionPane.OK_OPTION;
         doClose();
@@ -221,8 +219,7 @@ public class ChooseGroupDialog extends JDialog {
 
 	//===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel centerPanel;
-    private javax.swing.JComboBox groupComboBox;
+    private javax.swing.JComboBox<UserGroup> groupComboBox;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 	//===============================================================
