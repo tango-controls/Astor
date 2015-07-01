@@ -103,7 +103,6 @@ public class DevPollStatus extends ArrayList<PolledElement> {
             if (line.contains("Time needed for the last attribute"))
                 if (line.contains("Time needed for the last attributes")) {
                     pollSeveralAttributes = true;
-                    System.out.println("--> YES <--");
                 }
 
             PolledElement polledElement = new PolledElement(deviceName, line);

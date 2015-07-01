@@ -173,8 +173,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             DbDatum datum = adminDevice.get_property("polling_before_9");
             boolean beforeNine;
             beforeNine = !datum.is_empty() && datum.extractBoolean();
-            System.out.println("beforeNine=" + beforeNine);
-            System.out.println("Tango release=" + tangoRelease);
+            //System.out.println("beforeNine=" + beforeNine + "   Tango release=" + tangoRelease);
 
             //  If Tango 9 or more and not old model --> add warning
             if (tangoRelease<910 || beforeNine) {
@@ -822,7 +821,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
         for (int i = 0; i < deviceNames.length; i++) {
             //	Remove Class name
             deviceNames[i] = deviceNames[i].substring(deviceNames[i].indexOf("::") + 2);
-            System.out.println(deviceNames[i]);
+            //System.out.println(deviceNames[i]);
         }
         return deviceNames;
     }
