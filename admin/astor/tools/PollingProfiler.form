@@ -48,6 +48,15 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="warningBtnActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JLabel" name="separatorLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="                 "/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+          </AuxValues>
+        </Component>
         <Component class="javax.swing.JRadioButton" name="autoBtn">
           <Properties>
             <Property name="text" type="java.lang.String" value="Auto Update"/>
