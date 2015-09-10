@@ -86,6 +86,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private static final int POLL_DRIFT = 1;
     private static final int DURATION = 2;
     private static final int NB_CHECK_BOX = 3;
+    private static final Dimension preferredDimension = new Dimension(1024, 500);
     //===============================================================
     /**
      * Creates new form PollingProfiler
@@ -181,7 +182,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             } else {
                 //  Check if several attributes are polled at same time
                 if (poll_status.isPollingSeveralAttributes()) {
-                    warningBtn.setIcon(Utils.getInstance().getIcon("clock.png"));
+                    warningBtn.setIcon(Utils.getInstance().getIcon("clock.gif"));
                     warningBtn.setText("");
                 }
                 else
@@ -333,7 +334,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
 
         x_axis.setGridVisible(true);
 
-        chart.setPreferredSize(new Dimension(850, 400));
+        chart.setPreferredSize(preferredDimension);
         chart.setJLChartListener(this);
         chart.setLabelPlacement(JLChart.LABEL_RIGHT);
         getContentPane().add(chart, java.awt.BorderLayout.CENTER);
@@ -625,6 +626,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
 
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
         warningBtn = new javax.swing.JButton();
+        javax.swing.JLabel separatorLabel = new javax.swing.JLabel();
         autoBtn = new javax.swing.JRadioButton();
         updateBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -645,6 +647,9 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
             }
         });
         jPanel1.add(warningBtn);
+
+        separatorLabel.setText("                 ");
+        jPanel1.add(separatorLabel);
 
         autoBtn.setText("Auto Update");
         autoBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -748,7 +753,9 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     private void warningBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warningBtnActionPerformed
         JOptionPane.showMessageDialog(this, "WARNING:\n"+
                 "  Since Tango-9, the polling duration\n"+
-                "  could be a sum of several attribute polling durations.");
+                "  could be a sum of several attribute polling durations.\n\n"+
+                "  To have previous behaviour, add an admin device property:\n"+
+                "       polling_before_9:  true");
     }//GEN-LAST:event_warningBtnActionPerformed
 
     //===============================================================
