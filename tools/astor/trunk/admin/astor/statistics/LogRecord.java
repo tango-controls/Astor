@@ -59,6 +59,12 @@ public class LogRecord {
     //===============================================================
     public LogRecord(String line) {
         StringTokenizer stk = new StringTokenizer(line, "\t");
+        if (stk.countTokens()<3) {
+            if (stk.hasMoreTokens())
+                System.err.println(stk.nextElement() + ": ");
+            System.err.println("Log cannot be parsed ! ");
+            return;
+        }
         name = stk.nextToken();
         newState = getState(stk.nextToken());
         startedTime = getValue(stk.nextToken()) * 1000;
