@@ -183,7 +183,8 @@ public class Utils {
 
             	for (String host : hosts) {
                 	//  Get host collection from Starter property
-                	DbDatum datum = new DeviceProxy("tango/admin/" + host).get_property("HostCollection");
+                	DbDatum datum = new DeviceProxy(
+                            AstorUtil.getStarterDeviceHeader() + host).get_property("HostCollection");
                 	if (!datum.is_empty()) {
                     	String collec = datum.extractString().toLowerCase();
 
@@ -207,7 +208,6 @@ public class Utils {
         return ctrlHosts;
     }
     //===============================================================
-
     /**
      * Open a file and return text read.
      *

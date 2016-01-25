@@ -36,7 +36,7 @@ package admin.astor.statistics;
 
 
 /**
- *	This class is able to
+ *	This class is able to manage a stater log
  *
  * @author verdier
  */
@@ -98,7 +98,7 @@ public class LogRecord {
         try {
             val = Long.parseLong(str);
         } catch (NumberFormatException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
         }
         return val;
     }
@@ -115,7 +115,7 @@ public class LogRecord {
     //===============================================================
     //===============================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(name).append(":\t");
         if (newState == DevState.FAULT) {
             sb.append("Failed at   ").append(Utils.formatDate(failedTime));
