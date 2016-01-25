@@ -78,7 +78,7 @@ public class ResetStatistics {
                     //  Check if host or starter name
                     String devName = host;
                     if (host.indexOf('/') < 0)
-                        devName = "tango/admin/" + host;
+                        devName = AstorUtil.getStarterDeviceHeader() + host;
                     System.out.println("Resetting " + host);
                     DeviceProxy dev = new DeviceProxy(devName);
                     dev.command_inout("ResetStatistics");
@@ -136,7 +136,7 @@ public class ResetStatistics {
                     if (b[0] == 'y')
                         return true;
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println(e.getMessage());
             }
         }
         return false;

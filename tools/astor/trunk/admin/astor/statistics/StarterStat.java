@@ -42,6 +42,7 @@ package admin.astor.statistics;
  * @author verdier
  */
 
+import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceAttribute;
 import fr.esrf.TangoApi.DeviceData;
@@ -100,8 +101,7 @@ public class StarterStat extends ArrayList<ServerStat> {
      */
     //===============================================================
     private void readStatisticsFromStarter(String name) {
-
-        String devName = "Tango/admin/" + name;
+        String devName = AstorUtil.getStarterDeviceHeader() + name;
         DeviceProxy dev;
         try {
             dev = new DeviceProxy(devName);
@@ -122,7 +122,6 @@ public class StarterStat extends ArrayList<ServerStat> {
             resetTime = System.currentTimeMillis();
         }
     }
-
     //===============================================================
     //===============================================================
     private void buildControlledServerList(DeviceProxy dev) throws DevFailed {
@@ -141,7 +140,6 @@ public class StarterStat extends ArrayList<ServerStat> {
             }
         }
     }
-
     //===============================================================
     //===============================================================
     public void readStatisticsFileFromStarter(DeviceProxy dev) throws DevFailed {
@@ -168,7 +166,6 @@ public class StarterStat extends ArrayList<ServerStat> {
             }
         }
     }
-
     //===============================================================
     //===============================================================
     private void buildServerStatistics(ArrayList<LogRecord> records) {
@@ -180,7 +177,6 @@ public class StarterStat extends ArrayList<ServerStat> {
             server.addLog(rec);
         }
     }
-
     //===============================================================
     //===============================================================
     public ServerStat getServerStat(String name) {
@@ -215,16 +211,11 @@ public class StarterStat extends ArrayList<ServerStat> {
         }
         return array;
     }
-
     //===============================================================
     //===============================================================
     public String toString(String serverName) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(getServerStat(serverName).recordsToString());
-        return sb.toString();
+        return getServerStat(serverName).recordsToString();
     }
-
     //===============================================================
     //===============================================================
     private String toXmlLine() {
@@ -234,7 +225,6 @@ public class StarterStat extends ArrayList<ServerStat> {
         str = Utils.strReplace(str, "RESET", Long.toString(resetTime));
         return str;
     }
-
     //=======================================================
     //=======================================================
     private void parseXmlStatistics(ArrayList<String> lines) throws DevFailed {
@@ -265,7 +255,6 @@ public class StarterStat extends ArrayList<ServerStat> {
 
         }
     }
-
     //=======================================================
     //=======================================================
     private void parseXmlProperties(String line) throws DevFailed {
@@ -277,7 +266,6 @@ public class StarterStat extends ArrayList<ServerStat> {
             Except.throw_exception("SYNTAX_ERROR", e.toString(), "StarterStat.parseLine()");
         }
     }
-
     //=======================================================
     //=======================================================
     public String toXml() {
@@ -288,7 +276,6 @@ public class StarterStat extends ArrayList<ServerStat> {
         sb.append(tab).append("</").append(className).append(">");
         return sb.toString();
     }
-
     //===============================================================
     //===============================================================
     public String toString() {
