@@ -71,7 +71,8 @@ public class UnAvailableHostsDialog extends JDialog {
         private StoppedHost(String name) {
             this.name = name;
             try {
-                DbDatum datum = new DeviceProxy("tango/admin/"+name).get_property("HostCollection");
+                DbDatum datum = new DeviceProxy(
+                        AstorUtil.getStarterDeviceHeader()+name).get_property("HostCollection");
                 if (!datum.is_empty()) {
                     collection = datum.extractString();
                     boolean found = false;

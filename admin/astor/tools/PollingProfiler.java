@@ -117,7 +117,7 @@ public class PollingProfiler extends JDialog implements IJLChartListener, Compon
     /**
      * Creates new form PollingProfiler
      *
-     * @param parent   The parent dislog
+     * @param parent   The parent dialog
      * @param deviceNames the device names to display polling
      */
     //===============================================================

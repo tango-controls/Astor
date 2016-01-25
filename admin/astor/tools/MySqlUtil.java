@@ -42,6 +42,7 @@ package admin.astor.tools;
  */
 
 
+import admin.astor.AstorUtil;
 import admin.astor.TangoHost;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevVarLongStringArray;
@@ -87,9 +88,9 @@ public class MySqlUtil {
     public MySqlData executeMySqlSelect(String cmd) throws DevFailed {
         //long	t0 = System.currentTimeMillis();
 
-        DeviceData argin = new DeviceData();
-        argin.insert(cmd);
-        DeviceData argout = ApiUtil.get_db_obj().command_inout("DbMySqlSelect", argin);
+        DeviceData argIn = new DeviceData();
+        argIn.insert(cmd);
+        DeviceData argout = ApiUtil.get_db_obj().command_inout("DbMySqlSelect", argIn);
         //long	t1 = System.currentTimeMillis();
         //System.out.println("elapsed time : " + (t1-t0) + " ms");
 
@@ -224,7 +225,7 @@ public class MySqlUtil {
     //===============================================================
     public void manageTangoHostProperties(TangoHost[] hosts) {
         try {
-            String starters = "tango/admin/%";
+            String starters = AstorUtil.getStarterDeviceHeader()+"%";
             MySqlUtil mysql = MySqlUtil.getInstance();
             ArrayList<String[]> collections = mysql.getHostProperty(starters, "HostCollection");
             ArrayList<String[]> host_usage = mysql.getHostProperty(starters, "HostUsage");

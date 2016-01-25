@@ -505,7 +505,6 @@ public class SubscribedSignal implements TangoConst {
 
 
     //=========================================================================
-
     /**
      * Subscribing Thread : loop until subscribe done.
      */
@@ -540,7 +539,7 @@ public class SubscribedSignal implements TangoConst {
                                 periodic_listener, attname, new String[0]);
                     } else
                         Except.throw_exception("",
-                                "Unknown event subscribtion mode (" + mode + ")",
+                                "Unknown event subscription mode (" + mode + ")",
                                 "SubscribedSignal.SubscribeThread.run()");
 
                     subscribed = true;
@@ -563,7 +562,6 @@ public class SubscribedSignal implements TangoConst {
 
 
     //=========================================================================
-
     /**
      * Change event listener
      */
@@ -603,7 +601,6 @@ public class SubscribedSignal implements TangoConst {
 
 
     //=========================================================================
-
     /**
      * Archive event listener
      */
@@ -641,7 +638,6 @@ public class SubscribedSignal implements TangoConst {
         }
     }
     //=========================================================================
-
     /**
      * Periodic event listener
      */
