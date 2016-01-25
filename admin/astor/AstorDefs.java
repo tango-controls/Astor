@@ -45,47 +45,45 @@ package admin.astor;
 
 public interface AstorDefs {
 
-    public final String notifyd_prg = "notify_daemon";
+    String notifyd_prg = "notify_daemon";
+    String collec_property = "HostCollection";
+    String usage_property = "HostUsage";
+    String  rcFileName = "astorrc";
 
-    public final String starterDeviceHeader = "tango/admin/";
-    public final String collec_property = "HostCollection";
-    public final String usage_property = "HostUsage";
-    public static final String  rcFileName = "astorrc";
+    int READ_WRITE   = 0;
+    int DB_READ_ONLY = 1;
+    int READ_ONLY    = 2;
+    String[] strMode = { "Read/Write mode", "Database is read only", "Read Only mode"};
 
-    public static final int READ_WRITE   = 0;
-    public static final int DB_READ_ONLY = 1;
-    public static final int READ_ONLY    = 2;
-    public static final String[] strMode = { "Read/Write mode", "Database is read only", "Read Only mode"};
+    int COLLECTION = 0;
+    int LEAF = 1;
 
-    static final int COLLECTION = 0;
-    static final int LEAF = 1;
-
-    public final int StartAllServers = 0;
-    public final int StopAllServers = 1;
-    public final String[] cmdStr = {
+    int StartAllServers = 0;
+    int StopAllServers = 1;
+    String[] cmdStr = {
             "Starting ",
             "Stopping "
     };
 
-    public final int LEVEL_NOT_CTRL = 0;
+    int LEVEL_NOT_CTRL = 0;
 
-    public final String DocLocationUnknown = "Doc location unknown....";
+    String DocLocationUnknown = "Doc location unknown....";
 
-    public final int PollPeriod = 2000;
+    int PollPeriod = 2000;
     //======================================================================
     //	States colors definitions
     //======================================================================
-    public static final int unknown  = 0;
-    public static final int faulty   = 1;
-    public static final int alarm    = 2;
-    public static final int all_off  = 3;
-    public static final int all_ok   = 4;
-    public static final int moving   = 5;
-    public static final int failed   = 6;
-    public static final int NbStates = 7;
+    int unknown  = 0;
+    int faulty   = 1;
+    int alarm    = 2;
+    int all_off  = 3;
+    int all_ok   = 4;
+    int moving   = 5;
+    int failed   = 6;
+    int NbStates = 7;
 
     //======================================================================
-    static final String HtmlHeader =
+    String HtmlHeader =
             "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" +
                     "<HTML>\n" +
                     "<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\" LINK=\"#0000FF\" VLINK=\"#FF0000\" ALINK=\"#FF0000\">\n" +
@@ -101,5 +99,5 @@ public interface AstorDefs {
                     "</td></tr></table>\n" +
                     "<P><Br>\n";
 
-    static final String HtmlFooter = "\n</Body>\n</Html>\n";
+    String HtmlFooter = "\n</Body>\n</Html>\n";
 }

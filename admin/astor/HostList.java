@@ -57,8 +57,8 @@ import java.util.ArrayList;
 //===============================================================
 
 
+@SuppressWarnings("MagicConstant")
 public class HostList extends JDialog {
-
 	private JDialog	parent;
     private TangoHost[] hosts;
     private String      selectedHostName;
@@ -156,8 +156,9 @@ public class HostList extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("unused")
     private TangoHost getHost(String name) {
-        String  deviceName = "tango/admin/"+name.toLowerCase();
+        String  deviceName = AstorUtil.getStarterDeviceHeader()+name.toLowerCase();
         for (TangoHost host : hosts)
             if (host.name().toLowerCase().equals(deviceName))
                 return host;
@@ -190,7 +191,7 @@ public class HostList extends JDialog {
         System.out.println("In listSelectionPerformed() " + evt.getClickCount());
         //	Check if double click
         if (evt.getClickCount() == 2) {
-            selectedHostName = (String) hostList.getSelectedValue();
+            selectedHostName = hostList.getSelectedValue();
             retVal = JOptionPane.OK_OPTION;
             doClose();
         }
@@ -199,7 +200,7 @@ public class HostList extends JDialog {
 	//===============================================================
 	@SuppressWarnings("UnusedParameters")
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-        selectedHostName = (String) hostList.getSelectedValue();
+        selectedHostName = hostList.getSelectedValue();
         retVal = JOptionPane.OK_OPTION;
         doClose();
 	}//GEN-LAST:event_okBtnActionPerformed

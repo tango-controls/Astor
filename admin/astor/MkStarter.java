@@ -61,8 +61,8 @@ public class MkStarter {
     private boolean use_events = false;
 
     private String classname = "Starter";
-    private String servname;
-    private String devname;
+    private String serverName;
+    private String deviceName;
     private DeviceProxy dev;
 
     private static final int polling_period = 1000;
@@ -71,8 +71,8 @@ public class MkStarter {
     public MkStarter() throws DevFailed {
         getEnvironment();
 
-        servname = classname + "/" + hostname;
-        devname = "tango/admin/" + hostname;
+        serverName = classname + "/" + hostname;
+        deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
     }
 
     //===============================================================
@@ -83,8 +83,8 @@ public class MkStarter {
         this.ds_path = ds_path;
         this.use_events = use_events;
 
-        servname = classname + "/" + hostname;
-        devname = "tango/admin/" + hostname;
+        serverName = classname + "/" + hostname;
+        deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
     }
 
     //===============================================================
@@ -94,33 +94,33 @@ public class MkStarter {
         //	Check if does not already exist
         boolean exists = false;
         try {
-            new DeviceProxy(devname);
+            new DeviceProxy(deviceName);
             exists = true;
         } catch (DevFailed e) {
             //  nothing
         }
         if (exists)
             Except.throw_exception("DeviceAlreadyExists",
-                    servname + " is already exits in database.",
+                    serverName + " is already exits in database.",
                     "MkStarter.MkStarter()");
 
         //	create the new Starter server
         Database db = ApiUtil.get_db_obj();
-        db.add_device(devname, classname, servname);
+        db.add_device(deviceName, classname, serverName);
     }
 
     //===============================================================
     //===============================================================
     public void setProperties() throws DevFailed {
         //	Set PATH property as String array
-        dev = new DeviceProxy(devname);
+        dev = new DeviceProxy(deviceName);
         dev.put_property(new DbDatum("StartDsPath", ds_path));
 
         //	Set logging properties (will be done at creation only later)
-        String[] valStr = new String[3];
-        valStr[0] = "WARNING";
-        valStr[1] = "file::/tmp/ds.log/starter_" + hostname + ".log";
-        valStr[2] = Integer.toString(500);
+        String[] valStr = new String[] {
+                "WARNING",
+                "file::/tmp/ds.log/starter_" + hostname + ".log",
+                Integer.toString(500) };
         DbDatum[] datum = new DbDatum[logging_properties.length];
         for (int i = 0; i < logging_properties.length; i++)
             datum[i] = new DbDatum(logging_properties[i], valStr[i]);

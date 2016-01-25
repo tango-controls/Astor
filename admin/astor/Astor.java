@@ -67,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.6.6  -  Tue Jun 30 15:55:02 CEST 2015";
+            "6.7.0  -  Mon Jan 25 16:27:50 CET 2016";
     /**
      * JTree object to display control system.
      */
@@ -923,24 +923,24 @@ public class Astor extends JFrame implements AstorDefs {
                 JOptionPane.YES_NO_OPTION) != JOptionPane.OK_OPTION)
             return;
 
-        String servname = "Starter/" + hostname;
-        String devadmin = "dserver/" + servname;
-        String devname = starterDeviceHeader + hostname;
+        String serverName  = "Starter/" + hostname;
+        String adminDevice = "dserver/" + serverName;
+        String deviceName  = AstorUtil.getStarterDeviceHeader() + hostname;
 
         //	Ask to confirm
         try {
             //	Remove properties
-            DeviceProxy dev = new DeviceProxy(devname);
-            dev.delete_property("StarteDsPath");
+            DeviceProxy dev = new DeviceProxy(deviceName);
+            dev.delete_property("StartDsPath");
             dev.delete_property(collec_property);
             dev.delete_property(usage_property);
             dev.delete_property("UseEvents");
 
             //	Remove devices and server
             Database db = ApiUtil.get_db_obj(AstorUtil.getTangoHost());
-            db.delete_server(servname);
-            db.delete_device(devname);
-            db.delete_device(devadmin);
+            db.delete_server(serverName);
+            db.delete_device(deviceName);
+            db.delete_device(adminDevice);
 
             JOptionPane.showMessageDialog(this,
                     hostname + " has been removed !",

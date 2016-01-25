@@ -68,7 +68,7 @@ public class AstorUtil implements AstorDefs {
     private static AstorUtil instance = null;
 
     //	Variables will be set by properties
-    //---------------------------------------------
+    private static String starterDeviceHeader = "tango/admin/";
     private static boolean superTango = false;
     private static short readInfoPeriod = 5;
     private static short nbStartupLevels = 5;
@@ -109,6 +109,15 @@ public class AstorUtil implements AstorDefs {
             if (str != null)
                 superTango = str.equals("true");
         }
+        try {
+            DbDatum datum = ApiUtil.get_db_obj().get_class_property("Starter", "Domain");
+            if (!datum.is_empty())
+                starterDeviceHeader = datum.extractString()+"/admin/";
+        }
+        catch (DevFailed e) {
+            //  Just print error, Astor will not start
+            System.err.println(e.errors[0].desc);
+        }
     }
 
     //===============================================================
@@ -118,7 +127,11 @@ public class AstorUtil implements AstorDefs {
             instance = new AstorUtil();
         return instance;
     }
-
+    //===============================================================
+    //===============================================================
+    public static String getStarterDeviceHeader() {
+        return starterDeviceHeader;
+    }
     //===============================================================
     //===============================================================
     public static String getControlSystemName() throws DevFailed {
@@ -507,16 +520,21 @@ public class AstorUtil implements AstorDefs {
             known_tango_hosts = getStringArrayProperty(data[i++]);
             array = getStringArrayProperty(data[i++]);
             try {
-                int width = Integer.parseInt(array[0]);
-                int height = Integer.parseInt(array[1]);
-                preferred_size = new Dimension(width, height);
+                if (array!=null && array.length>=2) {
+                    int width = Integer.parseInt(array[0]);
+                    int height = Integer.parseInt(array[1]);
+                    preferred_size = new Dimension(width, height);
+                }
             } catch (Exception e) { /* */ }
 
             array = getStringArrayProperty(data[i++]);
+
             try {
-                int width = Integer.parseInt(array[0]);
-                int height = Integer.parseInt(array[1]);
-                host_dlg_preferred_size = new Dimension(width, height);
+                if (array!=null && array.length>=2) {
+                    int width = Integer.parseInt(array[0]);
+                    int height = Integer.parseInt(array[1]);
+                    host_dlg_preferred_size = new Dimension(width, height);
+                }
             } catch (Exception e) { /* */ }
 
             tools = getStringArrayProperty(data[i++]);
@@ -667,7 +685,7 @@ public class AstorUtil implements AstorDefs {
         DbDevImportInfo[] adminfo = null;
         if (db_server_idl_4) {
             MySqlUtil mysql = MySqlUtil.getInstance();
-            devinfo = mysql.getHostDevImportInfo("tango/admin/%");
+            devinfo = mysql.getHostDevImportInfo(starterDeviceHeader+"%");
             adminfo = mysql.getHostDevImportInfo("dserver/starter/%");
         }
 
@@ -679,16 +697,18 @@ public class AstorUtil implements AstorDefs {
                 //	Check to be sure the admin correspond to the device
                 DbDevImportInfo deviceInfo = getDevImportInfo(hostName, devinfo);
                 DbDevImportInfo adminInfo  = getDevImportInfo(hostName, adminfo);
-                if (!deviceInfo.exported || adminInfo == null)
-                    hosts[idx++] = new TangoHost(hostName, !db_server_idl_4);
-                else {
-                     //	Create the device proxies with 2 info
-                    //  Because event info is unused in case ZMQ events.
-                  hosts[idx++] = new TangoHost(deviceInfo, adminInfo);
+                if (deviceInfo!=null) {
+                    if (!deviceInfo.exported || adminInfo==null)
+                        hosts[idx++] = new TangoHost(hostName, false);
+                    else {
+                        //	Create the device proxies with 2 info
+                        //  Because event info is unused in case ZMQ events.
+                        hosts[idx++] = new TangoHost(deviceInfo, adminInfo);
+                    }
                 }
             }
             else
-                hosts[idx++] = new TangoHost(hostName, !db_server_idl_4);
+                hosts[idx++] = new TangoHost(hostName, true);
         }
         if (db_server_idl_4)
             MySqlUtil.getInstance().manageTangoHostProperties(hosts);
@@ -725,7 +745,7 @@ public class AstorUtil implements AstorDefs {
      */
     //===============================================================
     public String[] getHostControlledList() throws DevFailed {
-        return ApiUtil.get_db_obj().get_device_member("tango/admin/*");
+        return ApiUtil.get_db_obj().get_device_member(starterDeviceHeader+"*");
     }
 
     //===============================================================
@@ -768,13 +788,13 @@ public class AstorUtil implements AstorDefs {
         try {
             _class = new DbClass("Starter");
 
-            String[] propnames = {
+            String[] propNames = {
                     "NbStartupLevels",
                     "ReadInfoDbPeriod",
                     "doc_url",
                     "appli_doc_url"
             };
-            DbDatum[] properties = _class.get_property(propnames);
+            DbDatum[] properties = _class.get_property(propNames);
             int i = 0;
             if (!properties[i].is_empty())
                 nbStartupLevels = properties[i].extractShort();
@@ -793,11 +813,11 @@ public class AstorUtil implements AstorDefs {
         String[] result = new String[3];
         try {
             DbClass dbclass = new DbClass(classname);
-            String[] propnames = {"ProjectTitle",
+            String[] propNames = {"ProjectTitle",
                     "Description",
                     "doc_url"};
             String[] desc;
-            DbDatum[] prop = dbclass.get_property(propnames);
+            DbDatum[] prop = dbclass.get_property(propNames);
             if (!prop[0].is_empty())
                 result[0] = prop[0].extractString();
             if (!prop[1].is_empty()) {
@@ -1245,7 +1265,7 @@ public class AstorUtil implements AstorDefs {
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException   ite = (InvocationTargetException) e;
                 Throwable   throwable = ite.getTargetException();
-                System.out.println(throwable);
+                System.out.println(throwable.getMessage());
                 if (throwable instanceof DevFailed)
                     throw (DevFailed) throwable;
             }
@@ -1277,7 +1297,7 @@ public class AstorUtil implements AstorDefs {
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException   ite = (InvocationTargetException) e;
                 Throwable   throwable = ite.getTargetException();
-                System.out.println(throwable);
+                System.out.println(throwable.getMessage());
                 if (throwable instanceof DevFailed)
                     throw (DevFailed) throwable;
             }

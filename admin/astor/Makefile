@@ -13,8 +13,8 @@
 
 
 MAJOR_REV   = 6
-MIDDLE_REV  = 6
-MINOR_REV   = 6
+MIDDLE_REV  = 7
+MINOR_REV   = 0
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
@@ -79,7 +79,6 @@ clean:
 	rm  -f  $(BIN_DIR)/admin/astor/tango_release/*.class
 	rm  -f  $(BIN_DIR)/admin/astor/*.class
 
-JAVA=/segfs/tango/jdk/Linux/jdk1.6.0/bin/java
 MAIN_CLASS=		$(PACKAGE)
 version:
 	echo "Updating date and revision number..."
@@ -98,7 +97,7 @@ jar:
 	@make_jar $(PACKAGE) $(APPLI_VERS) $(JAR_DIR)
 
 install_doc:
-	$(JAVA) -classpath /segfs/tango/release/java/appli/org.tango.pogo.jar  \
+	java -classpath /segfs/tango/release/java/appli/org.tango.pogo.jar  \
 					pogo.make_util.ReleaseNote2html -html  "Astor Release Note"
 	mv ReleaseNote.html $(DOC_ORIG)
 	cp $(DOC_ORIG)/*.html    $(DOC_HOME)/

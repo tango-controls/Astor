@@ -586,7 +586,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             stateDialog.getContentPane().add(panel2, BorderLayout.SOUTH);
             splash.progress(50);
 
-            //	Add state panel in disalog and set it visible.
+            //	Add state panel in dialog and set it visible.
             stateDialog.getContentPane().add(statePanel, BorderLayout.CENTER);
             stateDialog.pack();
             AstorUtil.cascadeDialog(stateDialog, parent);

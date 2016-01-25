@@ -87,7 +87,7 @@ public class TangoHost extends DeviceProxy {
     //==============================================================
     public TangoHost(String name, boolean get_prop) throws DevFailed {
         //	Initialize device proxy class objects.
-        super("tango/admin/" + name);
+        super(AstorUtil.getStarterDeviceHeader() + name);
         adm_name = "dserver/starter/" + name;
         set_transparency_reconnection(true);
 
@@ -529,7 +529,8 @@ public class TangoHost extends DeviceProxy {
 
     //==============================================================
     //==============================================================
-    public void unexportStarter(java.awt.Component parent) {
+    @SuppressWarnings("unused")
+    public void unExportStarter(java.awt.Component parent) {
         try {
             //	Check if exported
             DbDevImportInfo info = import_device();

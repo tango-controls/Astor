@@ -62,7 +62,7 @@ public class CheckServer {
     //===============================================================
     //===============================================================
     public CheckServer(String[] args) throws DevFailed {
-        if (checkSyntax(args) == false)
+        if (!checkSyntax(args))
             System.exit(0);
         starter = new DeviceProxy(starter_name);
     }
@@ -101,7 +101,7 @@ public class CheckServer {
             execute("DevStop");
             System.out.println(servname + " stopped");
         } catch (DevFailed e) {
-            if (e.errors[0].reason.indexOf("NOT running !") < 0)
+            if (!e.errors[0].reason.contains("NOT running !"))
                 throw e;
         }
 
@@ -113,8 +113,8 @@ public class CheckServer {
             argin.insert(true);
             DeviceData argout = starter.command_inout("DevGetStopServers", argin);
             String[] servers = argout.extractStringArray();
-            for (int j = 0; j < servers.length; j++) {
-                if (servers[j].equals(servname))
+            for (String server : servers) {
+                if (server.equals(servname))
                     i = nb_retries;
             }
         }
@@ -129,6 +129,7 @@ public class CheckServer {
         try {
             wait(ms);
         } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
         }
     }
 
@@ -160,12 +161,12 @@ public class CheckServer {
             displaySyntax(args[0]);
             return false;
         }
-        starter_name = "tango/admin/" + args[1];
+        starter_name = AstorUtil.getStarterDeviceHeader() + args[1];
         servname = args[2];
         action = args[3].toLowerCase();
 
         //	Check server name
-        if (servname.indexOf("/") < 0) {
+        if (!servname.contains("/")) {
             System.out.println("Server name syntax error !");
             displaySyntax(args[0]);
             return false;
@@ -186,9 +187,8 @@ public class CheckServer {
     //===============================================================
     //===============================================================
     public static void main(String[] args) {
-        CheckServer client = null;
         try {
-            client = new CheckServer(args);
+            CheckServer client = new CheckServer(args);
             client.doAction();
         } catch (DevFailed e) {
             Except.print_exception(e);
