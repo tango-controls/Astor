@@ -41,7 +41,6 @@ package admin.astor;
  */
 
 
-import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -61,7 +60,7 @@ public class PropListDialog extends javax.swing.JDialog {
     private JTextArea pathText = null;
 
     private String[] props;
-
+    private JList<String> jList;
     //======================================================
     //======================================================
     private void setList() {
@@ -129,8 +128,8 @@ public class PropListDialog extends javax.swing.JDialog {
         try {
             ArrayList<String> pathList = new ArrayList<String>();
             for (TangoHost host : hosts) {
-                String devname = AstorDefs.starterDeviceHeader + host.getName();
-                DeviceProxy dev = new DeviceProxy(devname);
+                String deviceName = AstorUtil.getStarterDeviceHeader() + host.getName();
+                DeviceProxy dev = new DeviceProxy(deviceName);
                 DbDatum data = dev.get_property("StartDsPath");
                 if (!data.is_empty()) {
                     String[] path = data.extractStringArray();
@@ -171,10 +170,10 @@ public class PropListDialog extends javax.swing.JDialog {
      */
     //======================================================
     private void initComponents() {//GEN-BEGIN:initComponents
-        jPanel1 = new javax.swing.JPanel();
-        addBtn = new javax.swing.JButton();
-        dismissBtn = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        JPanel jPanel1 = new JPanel();
+        JButton addBtn = new JButton();
+        JButton dismissBtn = new JButton();
+        JScrollPane jScrollPane1 = new JScrollPane();
         jList = new javax.swing.JList<String>();
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -208,7 +207,7 @@ public class PropListDialog extends javax.swing.JDialog {
         jPanel1.add(dismissBtn);
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        jList.setFont(new java.awt.Font("Courier", 1, 12));
+        jList.setFont(new java.awt.Font("Courier", Font.BOLD, 12));
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(450, 300));
         jScrollPane1.setMinimumSize(new java.awt.Dimension(450, 300));
@@ -236,11 +235,9 @@ public class PropListDialog extends javax.swing.JDialog {
     //======================================================
     private void listSelectionPerformed(MouseEvent evt) {
         //	save selected item to set selection  later.
-        //----------------------------------------------------
         //selectedItem = new String((String) jList.getSelectedValue());
 
         //	Check if double click
-        //-----------------------------
         if (evt.getClickCount() == 2)
             retrieveSelectedItem();
     }
@@ -249,8 +246,7 @@ public class PropListDialog extends javax.swing.JDialog {
     //======================================================
     private void retrieveSelectedItem() {
         //	At first try if already running
-        //------------------------------------
-        selectedItem = (String) jList.getSelectedValue();
+        selectedItem = jList.getSelectedValue();
         if (pathText != null)
             pathText.append(selectedItem + "\n");
         else {
@@ -286,17 +282,6 @@ public class PropListDialog extends javax.swing.JDialog {
     public String getSelectedItem() {
         return selectedItem;
     }
-
-    //======================================================
-    //======================================================
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JButton addBtn;
-    private javax.swing.JButton dismissBtn;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> jList;
-    // End of variables declaration//GEN-END:variables
-
     //======================================================
     //======================================================
 }

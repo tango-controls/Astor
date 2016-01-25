@@ -397,8 +397,8 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
             else {
                 message = "The property has been modified in database";
                 try {
-                    String devname = starterDeviceHeader + hostname;
-                    new DeviceProxy(devname).command_inout("Init");
+                    String deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
+                    new DeviceProxy(deviceName).command_inout("Init");
                     message += "\nand the device has been re-initialized.";
                 } catch (DevFailed e) {
                     //	may be it is stopped

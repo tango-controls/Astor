@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.7.0 -  25/01/16:
+	Starter domain name could be set with a class property.
+
 Astor-6.6.6 -  30/06/15:
 	Java-7 compatibility.
 	Manage polling for Tango-9 feature.

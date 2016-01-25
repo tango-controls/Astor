@@ -31,8 +31,11 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Tue Jun 30 15:55:02 CEST 2015)" + 
+			"(Generated Mon Jan 25 16:27:50 CET 2016)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.7.0 -  25/01/16:</li></b>" +
+			"	Starter domain name could be set with a class property.<br>" +
 
 		"<br><li><b>Astor-6.6.6 -  30/06/15:</li></b>" +
 			"	Java-7 compatibility.<br>" +

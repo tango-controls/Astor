@@ -63,8 +63,8 @@ rm $MANIF_FILE
 #--------------------------------------------------------
 JAR_LINK=$PACKAGE.jar
 
-#rm -f $JAR_DIR/$JAR_LINK
+rm -f $JAR_DIR/$JAR_LINK
 
-#cd $JAR_DIR; ln -s $JAR_FILE	$JAR_LINK
-#cd $JAR_DIR; ls -l $PACKAGE* 
+cd $JAR_DIR; ln -s $JAR_FILE	$JAR_LINK
+cd $JAR_DIR; ls -l $PACKAGE* 
 

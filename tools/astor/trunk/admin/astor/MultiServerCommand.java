@@ -79,7 +79,6 @@ public class MultiServerCommand extends JDialog {
         initComponents();
 
         //	fix str filter and add a mouse listener on list
-        //---------------------------------------------------
         filterTxt.setText(str_filter);
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -107,7 +106,6 @@ public class MultiServerCommand extends JDialog {
 
 
     //======================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -309,7 +307,7 @@ public class MultiServerCommand extends JDialog {
         DeviceInfo info = dev.get_info();
         String hostname = getHostnameWithoutFQDN(info.hostname);
 
-        String starterDeviceName = "tango/admin/" + hostname;
+        String starterDeviceName = AstorUtil.getStarterDeviceHeader() + hostname;
         return new DeviceProxy(starterDeviceName);
     }
 
@@ -319,8 +317,7 @@ public class MultiServerCommand extends JDialog {
         long t = -1;
         while (t < 0) {
             String strVal = (String) JOptionPane.showInputDialog(this,
-                    message +
-                            "\nDelay between servers (ms) ?",
+                    message + "\nDelay between servers (ms) ?",
                     "Input Dialog",
                     JOptionPane.INFORMATION_MESSAGE,
                     null, null, defaultValue);
