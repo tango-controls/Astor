@@ -35,6 +35,7 @@
 
 package admin.astor.ctrl_system_info;
 
+import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -112,7 +113,8 @@ public class CtrlSystemInfo extends JDialog {
         String[]    hostNames = Utils.getHostControlledList();
         ArrayList<HostCollection>   list = new ArrayList<HostCollection>();
         for (String hostName : hostNames) {
-            DbDatum datum = new DeviceProxy("tango/admin/"+hostName).get_property("HostCollection");
+            DbDatum datum = new DeviceProxy(
+                    AstorUtil.getStarterDeviceHeader()+hostName).get_property("HostCollection");
             String name;
             if (datum.is_empty())
                 name = "Miscellaneous";
@@ -345,7 +347,7 @@ public class CtrlSystemInfo extends JDialog {
 
             //  Close dialog and wait for end of thread job
             setVisible(false);
-            try { scanningThread.join(); } catch (InterruptedException e) { System.err.println(e); }
+            try { scanningThread.join(); } catch (InterruptedException e) { System.err.println(e.getMessage()); }
 
             if (!monitor.isCanceled()) {
                 //  Close collection part

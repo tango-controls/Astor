@@ -36,6 +36,7 @@
 package admin.astor.ctrl_system_info;
 
 
+import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.DbDatum;
@@ -92,7 +93,7 @@ public class  Utils {
      */
     //===============================================================
     public static String[] getHostControlledList() throws DevFailed {
-        return ApiUtil.get_db_obj().get_device_member("tango/admin/*");
+        return ApiUtil.get_db_obj().get_device_member(AstorUtil.getStarterDeviceHeader()+"*");
     }
 
 }
