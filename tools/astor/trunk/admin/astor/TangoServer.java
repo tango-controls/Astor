@@ -678,8 +678,8 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     
     //===============================================================
     /*
-      *	A thread class to stop, Wait a bit and restatt dbServer.
-      */
+     *	A thread class to stop, Wait a bit and restart dbServer.
+     */
     //===============================================================
     private class restartThread extends Thread {
         private TangoHost host;
