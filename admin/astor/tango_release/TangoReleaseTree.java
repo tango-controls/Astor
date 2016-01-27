@@ -53,6 +53,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 
@@ -66,7 +67,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private static JFileChooser fileChooser = null;
 
     //  ToDo add here new release to be checked.
-    private static final double[]   tangoReleases = { 1.0, 2.0, 5.0, 5.2, 7.0, 8.0, 8.1, 9.0, 9.1 };
+    private static final double[]   tangoReleases = { 1.0, 2.0, 5.0, 5.2, 7.0, 8.0, 8.1 };
     private static final int[]      idlReleases   = { 1, 2, 3, 4, 5 };
 
     private static ImageIcon networkIcon;
@@ -181,6 +182,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private ArrayList<ServerCollectionClass> initCollectionsByTangoRelease() {
         ArrayList<ServerCollectionClass> serverCollectionClasses = new ArrayList<ServerCollectionClass>();
 
+        //  Do it for specific release
         for (double tangoRelease : tangoReleases) {
             ArrayList<TangoServerRelease>   servers =
                     serverReleaseList.getServersForTangoRelease(tangoRelease);
@@ -194,9 +196,18 @@ public class TangoReleaseTree extends JTree implements TangoConst {
                 serverCollectionClasses.add(new ServerCollectionClass(text, servers));
             }
         }
+        //  Do it for releases > 9.0 (the real release is now given by c++ lib)
+        for (int i=90 ; i<150 ; i++) {
+            double tangoRelease = 0.1*i;
+            ArrayList<TangoServerRelease> servers =
+                    serverReleaseList.getServersForTangoRelease(tangoRelease);
+            if (servers.size()>0) {
+                String text = "Tango-" + tangoRelease;
+                serverCollectionClasses.add(new ServerCollectionClass(text, servers));
+            }
+        }
         //  Add a collection for failed ones.
-        ArrayList<TangoServerRelease>   onError =
-                serverReleaseList.getServersOnError();
+        List<TangoServerRelease>   onError = serverReleaseList.getServersOnError();
         if (onError.size()>0)
             serverCollectionClasses.add(new ServerCollectionClass("Failed", onError));
 
@@ -209,7 +220,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         ArrayList<IdlCollectionClass> idlCollectionClasses =
                 new ArrayList<IdlCollectionClass>();
         for (int idlRelease : idlReleases) {
-            ArrayList<TangoClassRelease>   servers =
+            List<TangoClassRelease>   servers =
                     serverReleaseList.getClassesForIdlRelease(idlRelease);
             if (servers.size()>0)
                 idlCollectionClasses.add(new IdlCollectionClass("Device_"+idlRelease+"Impl", servers));
@@ -466,10 +477,10 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     //===============================================================
     private class ServerCollectionClass {
         String name;
-        ArrayList<TangoServerRelease>   servers;
+        List<TangoServerRelease>   servers;
 
         //===========================================================
-        private ServerCollectionClass(String name, ArrayList<TangoServerRelease> servers) {
+        private ServerCollectionClass(String name, List<TangoServerRelease> servers) {
             this.name = name;
             this.servers = servers;
         }
@@ -487,10 +498,10 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     //===============================================================
     private class IdlCollectionClass {
         String name;
-        ArrayList<TangoClassRelease>   classes;
+        List<TangoClassRelease>   classes;
 
         //===========================================================
-        private IdlCollectionClass(String name, ArrayList<TangoClassRelease> classes) {
+        private IdlCollectionClass(String name, List<TangoClassRelease> classes) {
             this.name = name;
             this.classes = classes;
         }

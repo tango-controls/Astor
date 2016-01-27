@@ -33,8 +33,7 @@ import java.util.Comparator;
 
 public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
 
-    private ArrayList<TangoServerRelease> onErrors =
-            new ArrayList<TangoServerRelease>();
+    private List<TangoServerRelease> onErrors = new ArrayList<TangoServerRelease>();
     private static final int idlMin = 2;
     private static final int idlMax = 10;
 	//===============================================================
@@ -70,7 +69,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     public int nbClasses() {
         int nb = 0;
         for (int idl=idlMin ; idl<=idlMax ; idl++) {
-            ArrayList<TangoClassRelease> classReleases = getClassesForIdlRelease(idl);
+            List<TangoClassRelease> classReleases = getClassesForIdlRelease(idl);
             nb += classReleases.size();
         }
         return nb;
@@ -80,7 +79,10 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     public ArrayList<TangoServerRelease> getServersForTangoRelease(double tangoRelease) {
         ArrayList<TangoServerRelease>   list = new ArrayList<TangoServerRelease>();
         for (TangoServerRelease serverRelease : this) {
-            if (serverRelease.releaseNumber==tangoRelease) {
+            //  Check only first decimal value
+            int r1 = (int) (10*serverRelease.releaseNumber);
+            int r2 = (int) (10*tangoRelease);
+            if (r1==r2) {
                 list.add(serverRelease);
             }
         }
@@ -100,7 +102,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     }
     //===============================================================
     //===============================================================
-    public ArrayList<TangoClassRelease> getClassesForIdlRelease(int idl) {
+    public List<TangoClassRelease> getClassesForIdlRelease(int idl) {
         ArrayList<TangoClassRelease>   list = new ArrayList<TangoClassRelease>();
         for (TangoServerRelease serverRelease : this) {
             ArrayList<TangoClassRelease>    classes =
@@ -121,7 +123,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     }
 	//===============================================================
 	//===============================================================
-    public ArrayList<TangoServerRelease> getServersOnError() {
+    public List<TangoServerRelease> getServersOnError() {
        return onErrors;
     }
 	//===============================================================
@@ -138,13 +140,12 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
 	//===============================================================
     public String toString(double tangoRelease) {
         return toString(getServersForTangoRelease(tangoRelease));
-
     }
 	//===============================================================
 	//===============================================================
     public String toString(int idl) {
         StringBuilder   sb = new StringBuilder();
-        ArrayList<TangoClassRelease> classReleases = getClassesForIdlRelease(idl);
+        List<TangoClassRelease> classReleases = getClassesForIdlRelease(idl);
         for (TangoClassRelease classRelease : classReleases) {
             sb.append(classRelease).append("\n");
         }

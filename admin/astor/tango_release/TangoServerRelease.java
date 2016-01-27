@@ -51,7 +51,6 @@ public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
             //  Get Tango release number
             DbServer dbServer = new DbServer(serverName);
             int release = new DeviceProxy("dserver/"+serverName).getTangoVersion();
-
             //  Get class list
             String[] classNames = getClasses(dbServer);
             if (release>=100)
