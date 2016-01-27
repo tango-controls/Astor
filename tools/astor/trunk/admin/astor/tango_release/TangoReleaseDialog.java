@@ -150,9 +150,6 @@ public class TangoReleaseDialog extends JDialog {
             DeviceData argOut = database.command_inout("DbGetHostServerList", argIn);
             String[] serverNames = argOut.extractStringArray();
             Collections.addAll(serverList, serverNames);
-
-            //  Add the Starter itself
-            serverList.add("Starter/" + hostName);
         }
         catch (DevFailed e) {
             //  Do nothing
