@@ -1,0 +1,70 @@
+#!/bin/sh
+
+
+#--------------------------------------------------------
+# A little script to build a jar file.
+#--------------------------------------------------------
+TANGO_HOME=/segfs/tango
+
+PACK_HOME=../../../bin
+PACKAGE=$1
+VERSION=$2
+JAR_DIR=$3
+
+JAR_FILE=$PACKAGE-$VERSION.jar
+
+#--------------------------------------------------------
+#--------------------------------------------------------
+if [ $# -eq 0 ]
+then
+	echo "$0 usage : $0 <package name> <version number>"
+	exit
+fi
+
+
+#--------------------------------------------------------
+#	build manifest
+#--------------------------------------------------------
+MANIF_FILE=manif
+
+cat > $PACK_HOME/$MANIF_FILE << EOF
+Manifest-Version: 1.0
+$PACKAGE-Version: $VERSION
+EOF
+
+
+
+#--------------------------------------------------------
+#	build jar file
+#--------------------------------------------------------
+cd $PACK_HOME
+jar cmvf $MANIF_FILE        \
+		$JAR_DIR/$JAR_FILE  \
+		admin/astor/*.class \
+		admin/astor/tools/*.class \
+		admin/astor/access/*.class \
+		admin/astor/statistics/*.class \
+		admin/astor/ctrl_system_info/*.class \
+		admin/astor/tango_release/*.class \
+		admin/astor/tango_release/*.html \
+		admin/astor/images/*.jpg \
+		admin/astor/images/*.gif
+
+
+chmod 664 $JAR_DIR/$JAR_FILE
+echo ""
+echo ""
+cat $MANIF_FILE
+rm $MANIF_FILE
+
+
+#--------------------------------------------------------
+#	Install link on this version
+#--------------------------------------------------------
+JAR_LINK=$PACKAGE.jar
+
+rm -f $JAR_DIR/$JAR_LINK
+
+cd $JAR_DIR; ln -s $JAR_FILE	$JAR_LINK
+cd $JAR_DIR; ls -l $PACKAGE* 
+
