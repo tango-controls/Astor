@@ -43,10 +43,10 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
-
 /**
  * JDialog Class to display info
  *
@@ -58,7 +58,7 @@ import java.util.ArrayList;
 @SuppressWarnings("MagicConstant")
 public class UnAvailableHostsDialog extends JDialog {
     private JFrame parent;
-    private ArrayList<StoppedHost> stoppedHosts;
+    private List<StoppedHost> stoppedHosts;
     private String[] lastCollections;
 
     //===============================================================
@@ -109,7 +109,8 @@ public class UnAvailableHostsDialog extends JDialog {
         AstorUtil.increaseSplashProgress(0.6, "Checking " + ctrlHosts.length + " hosts");
 
         PingHosts pg = new PingHosts(ctrlHosts);
-        stoppedHosts = buildStoppedHosts(pg.getStopped());
+        AstorUtil.increaseSplashProgress(0.8, "Building stopped host list");
+        stoppedHosts = buildStoppedHosts(pg.getStoppedList());
         int x = 0;
         int y = 0;
         int modulo = (int)Math.sqrt(stoppedHosts.size());
@@ -150,8 +151,8 @@ public class UnAvailableHostsDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    private ArrayList<StoppedHost> buildStoppedHosts(ArrayList<String> hostNames) {
-        ArrayList<StoppedHost>  list = new ArrayList<StoppedHost>();
+    private List<StoppedHost> buildStoppedHosts(List<String> hostNames) {
+        List<StoppedHost>  list = new ArrayList<StoppedHost>();
         for (String hostName : hostNames) {
             list.add(new StoppedHost(hostName));
         }
@@ -205,7 +206,7 @@ public class UnAvailableHostsDialog extends JDialog {
         unexportAllBtn.setText("Unexport All ");
         unexportAllBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                unexportAllBtnActionPerformed(evt);
+                unExportAllBtnActionPerformed(evt);
             }
         });
         bottomPanel.add(unexportAllBtn);
@@ -285,7 +286,7 @@ public class UnAvailableHostsDialog extends JDialog {
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    private void unexportAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unexportAllBtnActionPerformed
+    private void unExportAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unexportAllBtnActionPerformed
 
         if (stoppedHosts.size()>0) {
             if (JOptionPane.showConfirmDialog(parent,
@@ -389,11 +390,11 @@ public class UnAvailableHostsDialog extends JDialog {
             this.name = name;
             //  Get server list
             DeviceProxy dbDev = new DeviceProxy(ApiUtil.get_db_obj().get_name());
-            DeviceData argin = new DeviceData();
-            argin.insert(name);
-            DeviceData argout = dbDev.command_inout("DbGetHostServersInfo", argin);
-            String[] servers = argout.extractStringArray();
-            for (int i = 0; i < servers.length; i++) {
+            DeviceData argIn = new DeviceData();
+            argIn.insert(name);
+            DeviceData argOut = dbDev.command_inout("DbGetHostServersInfo", argIn);
+            String[] servers = argOut.extractStringArray();
+            for (int i=0 ; i<servers.length ; i++) {
                 if ((i % 3) == 0)   //  1- controlled, 2 - level
                     add(new OneServer(servers[i]));
             }
@@ -429,20 +430,18 @@ public class UnAvailableHostsDialog extends JDialog {
             //  Get device list
             DbServer dbServer = new DbServer(name);
             String[] devClasses = dbServer.get_device_class_list();
-            for (int i = 0; i < devClasses.length; i++) {
+            for (int i=0 ; i<devClasses.length ; i++) {
                 if ((i % 2) == 0) { //  1- class name
                     add(new DeviceProxy(devClasses[i]));
                 }
             }
         }
-
         //===========================================================
         private void unExportDeices() throws DevFailed {
             for (DeviceProxy deviceProxy : this) {
                 deviceProxy.unexport_device();
             }
         }
-
         //===========================================================
         public String toString() {
             StringBuilder sb = new StringBuilder(name + ":\n");
@@ -475,7 +474,6 @@ public class UnAvailableHostsDialog extends JDialog {
             pack();
             ATKGraphicsUtils.centerDialog(this);
         }
-
         //======================================================
         //======================================================
         private void initComponents() {
@@ -514,18 +512,16 @@ public class UnAvailableHostsDialog extends JDialog {
             jScrollPane1.setViewportView(textArea);
             getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
         }
-
         //============================================================
         //============================================================
         public void setFont(java.awt.Font font) {
             textArea.setFont(font);
         }
-
         //============================================================
         //============================================================
         @SuppressWarnings({"UnusedDeclaration"})
         private void unexportButtonActionPerformed(java.awt.event.ActionEvent evt) {
-            System.out.println("Unexport devices for " + host.name);
+            System.out.println("UnExport devices for " + host.name);
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 host.unExportDevices();
@@ -536,21 +532,18 @@ public class UnAvailableHostsDialog extends JDialog {
             }
             doClose();
         }
-
         //============================================================
         //============================================================
         @SuppressWarnings({"UnusedDeclaration"})
         private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {
             doClose();
         }
-
         //============================================================
         //============================================================
         @SuppressWarnings({"UnusedDeclaration"})
         private void closeDialog(java.awt.event.WindowEvent evt) {
             doClose();
         }
-
         //============================================================
         //============================================================
         private void doClose() {
