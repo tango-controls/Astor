@@ -36,123 +36,84 @@ package admin.astor.tools;
 
 
 /**
- *	This class is able to
+ *	This class is able to ping hosts and check alive/stopped list
  *
  * @author verdier
  */
 
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevState;
 import fr.esrf.TangoDs.Except;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class PingHosts {
-    private ArrayList<DevState> states = new ArrayList<DevState>();
-    private String[] hosts;
+    private List<String> aliveList = new ArrayList<String>();
+    private List<String> stoppedList = new ArrayList<String>();
 
-    //===============================================================
-    //===============================================================
-    public PingHosts(String[] hosts) throws DevFailed {
-        this.hosts = hosts;
-        //	Start a thread to ping each host
-        ArrayList<PingThread> threads = new ArrayList<PingThread>();
-        for (String host : hosts) {
-            threads.add(new PingThread(host));
-        }
-        for (PingThread thread : threads) {
-            thread.start();
-        }
-
-        //	Wait a bit
-        try {
-            if (AstorUtil.osIsUnix())
-                Thread.sleep(2000);
-            else
-                Thread.sleep(5000);
-        } catch (InterruptedException e) { /* */ }
-
-        //	Check results
-        for (PingThread thread : threads) {
-            if (thread.hostAlive())
-                states.add(DevState.ON);
-            else
-                states.add(DevState.FAULT);
-            thread.interrupt();
-        }
-    }
-
-    //===============================================================
-    //===============================================================
-    public ArrayList<DevState> getStates() throws DevFailed {
-        return states;
-    }
-
+    private static final String PingCommand =
+            AstorUtil.osIsUnix()? "ping  -c 1 -W 1 " : "ping  -n 1 -w 1 ";
+    private static final String AliveResponse =
+            AstorUtil.osIsUnix()? "1 received" : "Received = 1";
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    public ArrayList<String> getRunning() throws DevFailed {
-        ArrayList<String> v = new ArrayList<String>();
-        for (int i = 0; i < hosts.length && i < states.size(); i++) {
-            if (states.get(i) == DevState.ON) {
-                v.add(hosts[i]);
-            }
-        }
-        return v;
+    public PingHosts(String host) {
+        this(new String[] { host });
     }
+    //===============================================================
+    //===============================================================
+    public PingHosts(String[] hosts) {
+        //	Start a thread to ping each host
+        List<PingThread> threads = new ArrayList<PingThread>();
+        for (String host : hosts) {
+            PingThread thread = new PingThread(host);
+            thread.start();
+            threads.add(thread);
+        }
 
-    //===============================================================
-    //===============================================================
-    public ArrayList<String> getStopped() throws DevFailed {
-        ArrayList<String> v = new ArrayList<String>();
-        for (int i = 0; i < hosts.length && i < states.size(); i++) {
-            if (states.get(i) == DevState.FAULT) {
-                v.add(hosts[i]);
-            }
+        //	Check results
+        for (PingThread thread : threads) {
+            try { thread.join(); } catch (InterruptedException e) { /* */ }
+            if (thread.hostAlive())
+                aliveList.add(thread.hostName);
+            else
+                stoppedList.add(thread.hostName);
+            thread.interrupt();
         }
-        return v;
     }
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    public boolean noStopped() throws DevFailed {
+        return stoppedList.isEmpty();
+    }
+    //===============================================================
+    //===============================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    public List<String> getAliveList() throws DevFailed {
+        return aliveList;
+    }
+    //===============================================================
+    //===============================================================
+    public List<String> getStoppedList() throws DevFailed {
+        return stoppedList;
+    }
+    //===============================================================
+    //===============================================================
 
-    //===============================================================
-    //===============================================================
-    public static void main(String[] args) {
-        try {
-            String[] hosts = AstorUtil.getInstance().getHostControlledList();
-            /*
-                { "l-pinj-1", "l-pinj-2", "l-pinj-3", "deneb",
-				 //"l-c10-4", "l-c10-5", "l-c10-6" , "orion",
-				};
-                */
-            int alives = 0;
-            int deads = 0;
-            long t0 = System.currentTimeMillis();
-            PingHosts client = new PingHosts(hosts);
-            ArrayList<DevState> states = client.getStates();
-            for (int i = 0; i < hosts.length && i < states.size(); i++) {
-                if (states.get(i) == DevState.FAULT)
-                    deads++;
-                else
-                    alives++;
-                System.out.println(hosts[i] + ":	" +
-                        ((states.get(i) == DevState.FAULT) ? "NOT " : "") + " alive");
-            }
-            long t1 = System.currentTimeMillis();
-            System.out.println("elapsed time: " + (t1 - t0) + " ms");
-            System.out.println(alives + " hosts alive   and  " + deads + " hosts dead");
-        } catch (DevFailed e) {
-            Except.print_exception(e);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.exit(0);
-    }
-    //===============================================================
-    //===============================================================
+
+
+
+
+
+
+
 
 
     //===============================================================
@@ -160,36 +121,30 @@ public class PingHosts {
     private class PingThread extends Thread {
         private String hostName;
         private boolean alive = false;
-
         //===============================================================
         //===============================================================
         private PingThread(String hostName) {
             this.hostName = hostName;
         }
-
         //===============================================================
         //===============================================================
         private boolean hostAlive() {
             return alive;
         }
-
         //===============================================================
         //===============================================================
         public void run() {
             try {
-                String str = executeShellCmdOneLine("ping " + hostName);
-                if (AstorUtil.osIsUnix())
-                    alive = (str.toLowerCase().indexOf("unreachable") < 0);
-                else
-                    alive = (str.toLowerCase().indexOf("unreachable") < 0 &&
-                            str.length() > 0 && str.indexOf("timed out") < 0);
+                String str = executeShellCmdOneLine(PingCommand + hostName);
+                alive = str.contains(AliveResponse);
+                if (!alive) System.out.println(str);
+                //if (hostName.contains("fofb-dev")) System.out.println(str);
 
             } catch (DevFailed e) {
                 Except.print_exception(e);
             }
         }
         //===============================================================
-
         /**
          * Execute a shell command and throw exception if command failed.
          *
@@ -199,36 +154,32 @@ public class PingHosts {
          */
         //===============================================================
         public String executeShellCmdOneLine(String cmd) throws DevFailed {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             try {
-                Process proc = Runtime.getRuntime().exec(cmd);
+                Process process = Runtime.getRuntime().exec(cmd);
 
-                // get command's output stream and
+                // get command output stream and
                 // put a buffered reader input stream on it.
-                //-------------------------------------------
-                InputStream istr = proc.getInputStream();
+                InputStream inputStream = process.getInputStream();
                 BufferedReader br =
-                        new BufferedReader(new InputStreamReader(istr));
+                        new BufferedReader(new InputStreamReader(inputStream));
 
                 // read output lines from command
-                //  Ping result is in second line
-                //-------------------------------------------
                 String str;
-                for (int cnt = 0; cnt < 2 && (str = br.readLine()) != null;) {
-                    str = str.trim();
-                    if (str.length() > 0) {
-                        sb.append(str.trim()).append("\n");
-                        cnt++;
-                    }
+                while ((str = br.readLine()) != null) {
+                    sb.append(str).append("\n");
                 }
-                proc.destroy();
+
+                // wait for end of command
+                //process.waitFor();
             } catch (Exception e) {
                 Except.throw_exception(e.toString(),
-                        "The shell command\n" + cmd + "\nHas failed",
-                        "Utils.executeShellCmd()");
+                        "The shell command\n" + cmd + "\nHas failed");
             }
             //System.out.println(sb);
             return sb.toString();
         }
+        //===============================================================
+        //===============================================================
     }
 }
