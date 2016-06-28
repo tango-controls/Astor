@@ -233,25 +233,27 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 info = dialog.getSelection();
                 if (info != null) {
                     info.host = hostname;
+                    if (info.startup_level==0)
+                        info.controlled = false;
                     putStartupInfo(info);
                 } else {
                     //	Check if Server is stopped (it must be)
                     if (state == DevState.ON) {
                         Utils.popupMessage(parent,
                                 "Stop " + name + "  Server before !");
-                        return modif;
+                        return false;
                     }
                     //	Remove Server info in database
                     putStartupInfo(new DbServInfo(name, hostname, false, 0));
 
-                    //	Register devices on empty host and unexport.
+                    //	Register devices on empty host and un export.
                     if (dbServer == null)
                         dbServer = new DbServer(name);
-                    String[] devname = dbServer.get_device_class_list();
-                    for (int i = 0; i < devname.length; i += 2) {
+                    String[] deviceName = dbServer.get_device_class_list();
+                    for (int i = 0; i < deviceName.length; i += 2) {
                         ApiUtil.get_db_obj().export_device(
-                                new DbDevExportInfo(devname[i], "", "", ""));
-                        ApiUtil.get_db_obj().unexport_device(devname[i]);
+                                new DbDevExportInfo(deviceName[i], "", "", ""));
+                        ApiUtil.get_db_obj().unexport_device(deviceName[i]);
                     }
                 }
                 modif = true;
@@ -340,9 +342,8 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         else {  // Do it on local one
             //	Check already Started
             if (jive3 == null) {
-                boolean from_shell = false;
-                boolean read_only = AstorUtil.getInstance().jiveIsReadOnly();
-                jive3 = new jive3.MainPanel(from_shell, read_only);
+                boolean readOnly = AstorUtil.getInstance().jiveIsReadOnly();
+                jive3 = new jive3.MainPanel(false, readOnly);
             }
             jive3.setVisible(true);
             jive3.toFront();

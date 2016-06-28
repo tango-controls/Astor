@@ -31,8 +31,11 @@ public interface ReleaseNote {
 		"<P><!-------TITLE------></P>" +
 
 		"<Center>	<h2>Astor Release Notes</h2>" + 
-			"(Generated Wed Jan 27 07:35:54 CET 2016)" + 
+			"(Generated Tue Jun 28 10:51:10 CEST 2016)" + 
 		"</Center><br>" + 
+
+		"<br><li><b>Astor-6.7.1 -  28/06/16:</li></b>" +
+			"	Fix a little bug in startup level management.<br>" +
 
 		"<br><li><b>Astor-6.7.0 -  27/01/16:</li></b>" +
 			"	Starter domain name could be set with a class property.<br>" +

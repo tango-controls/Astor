@@ -975,6 +975,50 @@ public class AstorUtil implements AstorDefs {
         // Do not check its exit value
     }
     //===============================================================
+    /**
+     *	Execute a shell command and throw exception if command failed.
+     *
+     *	@param cmd	shell command to be executed.
+     */
+    //===============================================================
+    public static String executeShellCmd(String cmd)
+            throws IOException, InterruptedException, DevFailed  {
+        Process process = Runtime.getRuntime().exec(cmd);
+
+        // get command output stream and
+        // put a buffered reader input stream on it.
+        InputStream inputStream = process.getInputStream();
+        BufferedReader br =
+                new BufferedReader(new InputStreamReader(inputStream));
+        String	sb = "";
+
+        // read output lines from command
+        String str;
+        while ((str = br.readLine()) != null) {
+            //System.out.println(str);
+            sb += str+"\n";
+        }
+
+        // wait for end of command
+        process.waitFor();
+
+        // check its exit value
+        int retVal;
+        if ((retVal=process.exitValue()) != 0) {
+            //	An error occurs try to read it
+            InputStream errorStream = process.getErrorStream();
+            br = new BufferedReader(new InputStreamReader(errorStream));
+            while ((str = br.readLine()) != null) {
+                System.out.println(str);
+                sb += str+"\n";
+            }
+            Except.throw_exception("ExecFailed",
+                    "the shell command\n" + cmd + "\nreturns : " + retVal + " !\n\n" + sb);
+        }
+        //System.out.println(sb);
+        return sb;
+    }
+    //===============================================================
     //===============================================================
 
 

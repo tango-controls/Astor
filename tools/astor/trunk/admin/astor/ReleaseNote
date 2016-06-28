@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-6.7.1 -  28/06/16:
+	Fix a little bug in startup level management.
+
 Astor-6.7.0 -  27/01/16:
 	Starter domain name could be set with a class property.
 	Improve "Tango release for servers" feature
