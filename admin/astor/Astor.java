@@ -67,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.7.0  -  Wed Jan 27 07:35:54 CET 2016";
+            "6.7.1  -  Tue Jun 28 10:51:09 CEST 2016";
     /**
      * JTree object to display control system.
      */
@@ -781,10 +781,10 @@ public class Astor extends JFrame implements AstorDefs {
             else
                 rights = "-ro";
             String  cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
-            AstorUtil.executeShellCmdAndReturn(cmd);
+            //AstorUtil.executeShellCmdAndReturn(cmd);
+            AstorUtil.executeShellCmd(cmd);
         } catch (Exception e) {
-            ErrorPane.showErrorMessage(this,
-                    "Cannot change TANGO_HOST", e);
+            ErrorPane.showErrorMessage(this, "Cannot change TANGO_HOST", e);
         }
     }//GEN-LAST:event_changeTgHostBtnActionPerformed
 
