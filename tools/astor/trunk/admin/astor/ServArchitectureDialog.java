@@ -47,39 +47,34 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-
-
-//===============================================================
 
 /**
  * Class Description: Basic Dialog Class to display info
  *
  * @author root
  */
-//===============================================================
-
-
-@SuppressWarnings("MagicConstant")
+@SuppressWarnings({"MagicConstant", "WeakerAccess"})
 public class ServArchitectureDialog extends JDialog {
 
-    private String servname;
-    private boolean from_appli = true;
+    private String serverName;
+    private boolean fromApplication = true;
     private boolean modified = false;
     private TgServer server;
 
-    private ServInfoTree tree;
-    static public final boolean EXPAND_NOT_FULL = false;
-    static public final boolean EXPAND_FULL = true;
+    private ServerInfoTree tree;
+    public static final boolean EXPAND_NOT_FULL = false;
+    public static final boolean EXPAND_FULL = true;
 
     //===============================================================
     /*
      *	Creates new form ServArchitectureDialog
      */
     //===============================================================
-    public ServArchitectureDialog(JFrame parent, String servname) throws DevFailed {
+    public ServArchitectureDialog(JFrame parent, String serverName) throws DevFailed {
         super(parent, false);
-        this.servname = servname;
+        this.serverName = serverName;
         initComponents();
 
         initOwnComponent(parent);
@@ -92,7 +87,7 @@ public class ServArchitectureDialog extends JDialog {
     //===============================================================
     public ServArchitectureDialog(JDialog parent, DeviceProxy dev) throws DevFailed {
         super(parent, false);
-        this.servname = dev.get_name().substring("dserver/".length());
+        this.serverName = dev.get_name().substring("dserver/".length());
         initComponents();
 
         initOwnComponent(parent);
@@ -102,15 +97,15 @@ public class ServArchitectureDialog extends JDialog {
     //===============================================================
     private void initOwnComponent(Component parent) throws DevFailed {
         //	build tree to show the result
-        tree = new ServInfoTree(this);
+        tree = new ServerInfoTree(this);
         treeScrollPane.setViewportView(tree);
         treeScrollPane.setPreferredSize(new Dimension(350, 450));
         textScrollPane.setPreferredSize(new Dimension(350, 180));
-        titleLabel.setText(servname + "  Information");
+        titleLabel.setText(serverName + "  Information");
 
         //	Check if from an appli or from an empty JDialog
         if (parent == null)
-            from_appli = false;
+            fromApplication = false;
 
         jive.MultiLineToolTipUI.initialize();
         pack();
@@ -252,7 +247,7 @@ public class ServArchitectureDialog extends JDialog {
                     "Dialog",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
                 try {
-                    new DeviceProxy("dserver/" + servname).command_inout("init");
+                    new DeviceProxy("dserver/" + serverName).command_inout("init");
                 } catch (DevFailed e) {
                     ErrorPane.showErrorMessage(this, null, e);
                 }
@@ -260,7 +255,7 @@ public class ServArchitectureDialog extends JDialog {
         }
         setVisible(false);
         dispose();
-        if (!from_appli)
+        if (!fromApplication)
             System.exit(0);
     }
 
@@ -275,7 +270,7 @@ public class ServArchitectureDialog extends JDialog {
     static private String separator = ", ";
 
     static public String multiLine2OneLine(String str) {
-        if (str == null) return str;
+        if (str == null) return null;
         //	Take of '\n'
         int idx;
         while ((idx = str.indexOf('\n')) >= 0)
@@ -287,7 +282,7 @@ public class ServArchitectureDialog extends JDialog {
     //===============================================================
     //===============================================================
     static public String OneLine2multiLine(String str) {
-        if (str == null) return str;
+        if (str == null) return null;
         //	replace ", " by '\n'
         int idx;
         while ((idx = str.indexOf(separator)) >= 0)
@@ -299,15 +294,11 @@ public class ServArchitectureDialog extends JDialog {
     //===============================================================
     //===============================================================
     static public String[] string2array(String str) {
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(str, separator);
         while (stk.hasMoreTokens())
-            v.add(stk.nextToken());
-
-        String[] array = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            array[i] = v.get(i);
-        return array;
+            tokens.add(stk.nextToken());
+        return tokens.toArray(new String[tokens.size()]);
     }
 
     //===============================================================
@@ -328,16 +319,16 @@ public class ServArchitectureDialog extends JDialog {
      * JTree Class
      */
     //===============================================================
-    class ServInfoTree extends JTree {
+    private class ServerInfoTree extends JTree {
         private Component parent;
         private DeviceProxy deviceProxy = null;
-        private String[] devlist = null;
+        private String[] deviceList = null;
         private DefaultTreeModel treeModel;
         private DefaultMutableTreeNode root;
 
         //===============================================================
         //===============================================================
-        public ServInfoTree(Component parent) throws DevFailed {
+        private ServerInfoTree(Component parent) throws DevFailed {
             super();
             this.parent = parent;
             initComponent();
@@ -345,11 +336,10 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        void expandTree(boolean expand) {
+        private void expandTree(boolean expand) {
             expandTree(root, expand);
         }
         //===============================================================
-
         /**
          * Expend tree from node (re-entring method)
          *
@@ -383,7 +373,7 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         private void initComponent() throws DevFailed {
             //	Create the nodes (root is the server).
-            server = new TgServer(servname);
+            server = new TgServer(serverName);
             root = new DefaultMutableTreeNode(server);
 
             createNodes(root);
@@ -392,7 +382,6 @@ public class ServArchitectureDialog extends JDialog {
                     (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
             //	Create Tree and Tree model
-            //------------------------------------
             treeModel = new DefaultTreeModel(root);
             setModel(treeModel);
 
@@ -402,7 +391,6 @@ public class ServArchitectureDialog extends JDialog {
             //	Set the icon for leaf nodes.
             setCellRenderer(new TangoRenderer());
             //	Add Action listener
-            //------------------------------------
             addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     treeMouseClicked(evt);
@@ -419,7 +407,7 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         private void createNodes(DefaultMutableTreeNode root) throws DevFailed {
             if (deviceProxy == null)
-                deviceProxy = new DeviceProxy("dserver/" + servname);
+                deviceProxy = new DeviceProxy("dserver/" + serverName);
 
             TgClass[] classes = getClasses();
             server.nbDevices = 0;
@@ -459,25 +447,23 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         //===============================================================
         private TgDevice[] getDevices(String classname) throws DevFailed {
-            if (devlist == null) {
-                DeviceData argout = deviceProxy.command_inout("QueryDevice");
-                devlist = argout.extractStringArray();
+            if (deviceList == null) {
+                DeviceData argOut = deviceProxy.command_inout("QueryDevice");
+                deviceList = argOut.extractStringArray();
             }
             //	get only the device name for specified class
-            ArrayList<String> v = new ArrayList<String>();
+            List<String> deviceNames = new ArrayList<>();
             String str = classname + "::";
-            for (String aDevlist : devlist)
-                if (aDevlist.startsWith(str))
-                    v.add(aDevlist.substring(str.length()));
-            String[] devnames = new String[v.size()];
-            for (int i = 0; i < v.size(); i++)
-                devnames[i] = v.get(i);
+            for (String item : deviceList)
+                if (item.startsWith(str))
+                    deviceNames.add(item.substring(str.length()));
 
             //	Build properties for each device
             TgProperty[] dev_prop = getProperties(classname, "Dev");
-            TgDevice[] devices = new TgDevice[devnames.length];
-            for (int i = 0; i < devnames.length; i++)
-                devices[i] = new TgDevice(devnames[i], dev_prop);
+            TgDevice[] devices = new TgDevice[deviceNames.size()];
+            int i=0;
+            for (String deviceName : deviceNames)
+                devices[i++] = new TgDevice(deviceName, dev_prop);
             return devices;
         }
 
@@ -616,13 +602,13 @@ public class ServArchitectureDialog extends JDialog {
      * Class to define TANGO Server object
      */
     //===============================================================
-    class TgServer {
+    private class TgServer {
         String name;
         String desc;
         int nbDevices = 0;
 
         //===============================================================
-        public TgServer(String name) {
+        private TgServer(String name) {
             this.name = name;
             this.desc = "";
 
@@ -631,7 +617,7 @@ public class ServArchitectureDialog extends JDialog {
                 DeviceInfo info = new DbDevice(admin).get_info();
                 desc = info.toString();
                 textArea.setText(desc + "\n\n"+ new TangoServerRelease(name).toStringFull());
-            } catch (DevFailed e) { /** Nothing to do **/}
+            } catch (DevFailed e) { /* Nothing to do **/}
         }
 
         //===============================================================
@@ -645,11 +631,11 @@ public class ServArchitectureDialog extends JDialog {
      * Class to define TANGO Device object
      */
     //===============================================================
-    class TgDevice extends DeviceProxy {
+    private class TgDevice extends DeviceProxy {
         String name;
         TgProperty[] properties;
 
-        public TgDevice(String name, TgProperty[] properties) throws DevFailed {
+        private TgDevice(String name, TgProperty[] properties) throws DevFailed {
             super(name);
             this.name = name;
 
@@ -674,7 +660,7 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        void put_property(TgProperty prop) throws DevFailed {
+        private void put_property(TgProperty prop) throws DevFailed {
             if (prop.db_value == null) {
                 //	remove property in database
                 delete_property(prop.name);
@@ -688,7 +674,7 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        public String getTagName() {
+        private String getTagName() {
             String tagName = "";
             try {
                 DevInfo info = info();
@@ -701,7 +687,7 @@ public class ServArchitectureDialog extends JDialog {
                     if (end > start)
                         tagName = servinfo.substring(start, end);
                 }
-            } catch (DevFailed e) { /** Nothing to do */}
+            } catch (DevFailed e) { /* Nothing to do */}
             return tagName;
         }
 
@@ -712,12 +698,15 @@ public class ServArchitectureDialog extends JDialog {
         }
     }
     //===============================================================
+    //===============================================================
 
+
+    //===============================================================
     /**
      * Class to define TANGO Class Object
      */
     //===============================================================
-    class TgClass extends DbClass {
+    private class TgClass extends DbClass {
         String name;
         String desc;
         String tagName = null;
@@ -725,7 +714,7 @@ public class ServArchitectureDialog extends JDialog {
         int nbDevices = 0;
 
         //===============================================================
-        public TgClass(String name, TgProperty[] properties) throws DevFailed {
+        private TgClass(String name, TgProperty[] properties) throws DevFailed {
             super(name);
             this.name = name;
             this.desc = "No Description Found in Database";
@@ -757,7 +746,7 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        void put_property(TgProperty prop) throws DevFailed {
+        private void put_property(TgProperty prop) throws DevFailed {
             if (prop.db_value == null) {
                 //	remove property in database
                 delete_property(prop.name);
@@ -771,7 +760,7 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        public void setTagName(String tagName) {
+        private void setTagName(String tagName) {
             this.tagName = tagName;
         }
 
@@ -791,22 +780,20 @@ public class ServArchitectureDialog extends JDialog {
     }
 
     //===============================================================
-
     /**
      * Class to define TANGO property object
      */
     //===============================================================
-    public class TgProperty {
-        public String objname;
-        public String src;
-        public String name;
-        public String desc;
-        public String def_value;
-        public String db_value = null;
-
+    class TgProperty {
+        String objectName;
+        String src;
+        String name;
+        String desc;
+        String def_value;
+        String db_value = null;
         //===============================================================
-        public TgProperty(String objname, String src, String name, String desc, String def_value) {
-            this.objname = objname;
+        private TgProperty(String objectName, String src, String name, String desc, String def_value) {
+            this.objectName = objectName;
             this.src = src;
             this.name = name;
             this.desc = desc;
@@ -814,10 +801,8 @@ public class ServArchitectureDialog extends JDialog {
 
             this.def_value = ServArchitectureDialog.multiLine2OneLine(def_value);
         }
-
         //===============================================================
-        //===============================================================
-        public void setDbValue(String[] values) {
+        private void setDbValue(String[] values) {
             db_value = "";
             for (int i = 0; i < values.length; i++) {
                 db_value += values[i];
@@ -825,29 +810,13 @@ public class ServArchitectureDialog extends JDialog {
                     db_value += ", ";
             }
         }
-
         //===============================================================
-        //===============================================================
-        public String getValue() {
+        private String getValue() {
             if (db_value == null)
                 return def_value;
             else
                 return db_value;
         }
-
-        //===============================================================
-        //===============================================================
-        public String toString(boolean verbose) {
-            if (verbose)
-                return src + ": " + objname + "/" + name + " : \n" +
-                        desc + "\n" +
-                        "    default  value:  " + def_value + "\n" +
-                        "    database value:  " + db_value;
-            else
-                return toString();
-        }
-
-        //===============================================================
         //===============================================================
         public String toString() {
             return name;
@@ -875,7 +844,7 @@ public class ServArchitectureDialog extends JDialog {
 
         //===============================================================
         //===============================================================
-        public TangoRenderer() {
+        private TangoRenderer() {
             root_icon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
             class_icon = Utils.getInstance().getIcon("class.gif");
             prop_icon = Utils.getInstance().getIcon("attleaf.gif");
@@ -942,17 +911,16 @@ public class ServArchitectureDialog extends JDialog {
 
 
     //===============================================================
-
     /**
      * @param args the command line arguments
      */
     //===============================================================
     public static void main(String args[]) {
-        String servname = "VacGaugeServer/sr_c27-ip";
+        String serverName = "VacGaugeServer/sr_c27-ip";
         if (args.length > 0)
-            servname = args[0];
+            serverName = args[0];
         try {
-            new ServArchitectureDialog(null, servname).setVisible(true);
+            new ServArchitectureDialog(null, serverName).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new javax.swing.JDialog(), null, e);
             System.exit(0);

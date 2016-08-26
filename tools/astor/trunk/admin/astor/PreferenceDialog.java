@@ -65,7 +65,7 @@ public class PreferenceDialog extends JDialog {
      * @param parent parent instance
      */
     //===============================================================
-    public PreferenceDialog(JFrame parent) {
+    PreferenceDialog(JFrame parent) {
         super(parent, true);
         this.parent = parent;
         initComponents();

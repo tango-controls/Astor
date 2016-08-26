@@ -34,6 +34,7 @@
 
 package admin.astor;
 
+import fr.esrf.TangoApi.DbServInfo;
 
 /**
  *	This class inherite from TangApi.DbServInfo class
@@ -41,17 +42,6 @@ package admin.astor;
  *
  * @author verdier
  */
-
-
-import fr.esrf.TangoApi.DbServInfo;
-
-
-//===============================================================
-
-/**
- * A Dialog Class to get the State parameters.
- */
-//===============================================================
 public class ServerInfo extends DbServInfo {
 
     //===============================================================

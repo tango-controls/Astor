@@ -40,9 +40,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * @author pons
+ * @author Pascal Verdier
  */
-
 public class RenameDialog extends JDialog {
 
     private JTextField theText;
@@ -50,7 +49,6 @@ public class RenameDialog extends JDialog {
     String value;
 
     //===============================================================
-
     /**
      * Construction without predefined values
      */
@@ -115,6 +113,7 @@ public class RenameDialog extends JDialog {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("unused")
     public void moveToLocation(int x, int y) {
         Rectangle r = getBounds();
         r.setLocation(x, y);

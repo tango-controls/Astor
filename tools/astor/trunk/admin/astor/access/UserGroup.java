@@ -42,6 +42,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
@@ -94,9 +95,9 @@ class UserGroup extends ArrayList <String> {
     }
     //===============================================================
     //===============================================================
-    public static void setUserGroupsToDatabase(Component component, ArrayList<UserGroup> groups) {
-        //  Buid the property string
-        ArrayList<String>   arrayList = new ArrayList<String>();
+    public static void setUserGroupsToDatabase(Component component, List<UserGroup> groups) {
+        //  Build the property string
+        List<String>   arrayList = new ArrayList<>();
         for (UserGroup group : groups) {
             if (group.size()>0 && !group.getName().equals(unsorted)) {
                 StringBuilder   sb = new StringBuilder();
@@ -126,8 +127,8 @@ class UserGroup extends ArrayList <String> {
     }
     //===============================================================
     //===============================================================
-    public static ArrayList<UserGroup> getUserGroupsFromDatabase(String[] users) {
-        ArrayList<UserGroup>    groups = new ArrayList<UserGroup>();
+    public static List<UserGroup> getUserGroupsFromDatabase(String[] users) {
+        List<UserGroup>    groups = new ArrayList<>();
         try {
             DbDatum datum = ApiUtil.get_db_obj().get_property("CtrlSystem", "UserGroups");
             if (!datum.is_empty()) {

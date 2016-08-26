@@ -38,7 +38,7 @@ package admin.astor.access;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
@@ -64,7 +64,7 @@ public class ChooseGroupDialog extends JDialog {
      * @param groups group list
 	 */
 	//===============================================================
-	public ChooseGroupDialog(JFrame parent, String title, ArrayList<UserGroup> groups) {
+	public ChooseGroupDialog(JFrame parent, String title, List<UserGroup> groups) {
 		super(parent, true);
 		initComponents();
         for (UserGroup group : groups) {
@@ -89,7 +89,7 @@ public class ChooseGroupDialog extends JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         javax.swing.JPanel centerPanel = new javax.swing.JPanel();
-        groupComboBox = new javax.swing.JComboBox<UserGroup>();
+        groupComboBox = new javax.swing.JComboBox<>();
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         javax.swing.JLabel dummyLbl = new javax.swing.JLabel();

@@ -45,22 +45,17 @@ import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-
-
-//===============================================================
+import java.util.List;
 
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class ListSelectionDialog extends JDialog {
     private int retVal = JOptionPane.OK_OPTION;
     private ClassAllowed def_class = null;
-    private String[] cmd_exist;
+    private String[] cmdExist;
 
     private int mode;
     private static final int CLASS_MODE = 0;
@@ -70,10 +65,9 @@ public class ListSelectionDialog extends JDialog {
      * Creates new form ListSelectionDialog for classes
      */
     //===============================================================
-    public ListSelectionDialog(JFrame parent, String[] exist)
-            throws DevFailed {
+    public ListSelectionDialog(JFrame parent, String[] exist) throws DevFailed {
         super(parent, true);
-        cmd_exist = exist;
+        cmdExist = exist;
         mode = CLASS_MODE;
         initComponents();
         initOwnComponents();
@@ -87,8 +81,7 @@ public class ListSelectionDialog extends JDialog {
      * Creates new form ListSelectionDialog for commands
      */
     //===============================================================
-    public ListSelectionDialog(JFrame parent, ClassAllowed def_class)
-            throws DevFailed {
+    public ListSelectionDialog(JFrame parent, ClassAllowed def_class) throws DevFailed {
         super(parent, true);
         this.def_class = def_class;
         mode = COMMAND_MODE;
@@ -108,20 +101,17 @@ public class ListSelectionDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    private String[] notExising(String[] array1, String[] array2) {
-        ArrayList<String> v = new ArrayList<String>();
+    private String[] doesNotExist(String[] array1, String[] array2) {
+        List<String> list = new ArrayList<>();
         for (String s1 : array1) {
             String cmd = null;
             for (String s2 : array2)
                 if (s1.toLowerCase().equals(s2.toLowerCase()))
                     cmd = s1;
             if (cmd == null)    //	Not found
-                v.add(s1);
+                list.add(s1);
         }
-        String[] ret = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            ret[i] = v.get(i);
-        return ret;
+        return list.toArray(new String[list.size()]);
     }
 
     //===============================================================
@@ -134,7 +124,7 @@ public class ListSelectionDialog extends JDialog {
         if (mode == CLASS_MODE) {
             String[] classes = dbase.get_class_list("*");
             //	keep only not_existing
-            classes = notExising(classes, cmd_exist);
+            classes = doesNotExist(classes, cmdExist);
             cmdList.setListData(classes);
         } else {
             //	Commands mode
@@ -174,13 +164,13 @@ public class ListSelectionDialog extends JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        okBtn = new javax.swing.JButton();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
+        javax.swing.JButton okBtn = new javax.swing.JButton();
+        javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        javax.swing.JPanel jPanel2 = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        cmdList = new javax.swing.JList<String>();
+        cmdList = new javax.swing.JList<>();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -237,7 +227,7 @@ public class ListSelectionDialog extends JDialog {
     @SuppressWarnings({"UnusedParameters"})
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
-        selection = (String) cmdList.getSelectedValue();
+        selection = cmdList.getSelectedValue();
         retVal = JOptionPane.OK_OPTION;
         doClose();
     }//GEN-LAST:event_okBtnActionPerformed
@@ -264,7 +254,7 @@ public class ListSelectionDialog extends JDialog {
 
         //	Check if double click
         if (evt.getClickCount() == 2) {
-            selection = (String) cmdList.getSelectedValue();
+            selection = cmdList.getSelectedValue();
             retVal = JOptionPane.OK_OPTION;
             doClose();
         }
@@ -290,12 +280,8 @@ public class ListSelectionDialog extends JDialog {
 
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelBtn;
     private javax.swing.JList<String> cmdList;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton okBtn;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //===============================================================

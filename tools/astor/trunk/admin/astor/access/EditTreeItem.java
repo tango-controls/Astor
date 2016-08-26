@@ -41,9 +41,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author pons
+ * @author verdier
  */
 
 public class EditTreeItem extends JDialog {
@@ -137,15 +138,15 @@ public class EditTreeItem extends JDialog {
         //  Check dev name
         String dev = theText.getText().trim().toLowerCase();
         theText.setText(dev);
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(dev, "/");
         while (stk.hasMoreTokens())
-            v.add(stk.nextToken());
-        if (v.size() > 3) {
+            tokens.add(stk.nextToken());
+        if (tokens.size() > 3) {
             admin.astor.tools.Utils.popupError(this, "Incorrect device name  (too many members)");
             return false;
         }
-        if (v.size() < 3) {
+        if (tokens.size() < 3) {
             admin.astor.tools.Utils.popupError(this, "Incorrect device name  (not enough members)");
             return false;
         }
@@ -171,31 +172,32 @@ public class EditTreeItem extends JDialog {
 
         //	Try to split with '.' separator
         StringTokenizer stk = new StringTokenizer(add, ".");
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         while (stk.hasMoreTokens())
-            v.add(stk.nextToken());
-        if (v.size() > 4) {
+            tokens.add(stk.nextToken());
+        if (tokens.size() > 4) {
             admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (Too many members)");
             return false;
-        } else if (v.size() < 4) {
+        } else if (tokens.size() < 4) {
             admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (not enougth members)");
             return false;
         }
 
         //	rebuild add string to be sure that there is no too much '.'
         //		like xxx.xxx....xx....xx
-        add = v.get(0) + "." + v.get(1) + "." + v.get(2) + "." + v.get(3);
+        add = tokens.get(0) + "." + tokens.get(1) + "." + tokens.get(2) + "." + tokens.get(3);
         theText.setText(add);
 
-        for (int i = 0; i < v.size(); i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             //  Check if numbers
             try {
-                Short.parseShort(v.get(i));
+                //noinspection ResultOfMethodCallIgnored
+                Short.parseShort(tokens.get(i));
             } catch (NumberFormatException e) {
                 //  if NOT wildcard
-                if (!v.get(i).equals("*")) {
+                if (!tokens.get(i).equals("*")) {
                     admin.astor.tools.Utils.popupError(this, "Incorrect IP address  (member #" +
-                            (i + 1) + " (" + v.get(i) + ") is not a number)");
+                            (i + 1) + " (" + tokens.get(i) + ") is not a number)");
                     return false;
                 }
             }

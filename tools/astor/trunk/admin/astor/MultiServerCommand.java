@@ -34,12 +34,6 @@
 
 package admin.astor;
 
-/**
- *
- * @author verdier
- */
-
-
 import admin.astor.tools.PopupTable;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
@@ -56,6 +50,10 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author verdier
+ */
 //===============================================================
 public class MultiServerCommand extends JDialog {
     private static String str_filter = "*";
@@ -121,11 +119,11 @@ public class MultiServerCommand extends JDialog {
         javax.swing.JLabel filterLabel = new javax.swing.JLabel();
         filterTxt = new javax.swing.JTextField();
         javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList<String>();
+        jList = new javax.swing.JList<>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        comboBox = new javax.swing.JComboBox<String>();
+        comboBox = new javax.swing.JComboBox<>();
         javax.swing.JButton sendCmdBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
 
@@ -246,7 +244,7 @@ public class MultiServerCommand extends JDialog {
 
         //	Dispach for command
         if (command.toLowerCase().equals("uptime")) {
-            displayServerUptimes(selections);
+            displayServerUpTimes(selections);
         } else if (command.toLowerCase().equals("status")) {
             displayServerStatus(selections);
         } else {
@@ -337,23 +335,19 @@ public class MultiServerCommand extends JDialog {
 
     //======================================================
     //======================================================
-    private void displayServerUptimes(List<String> servNames) {
-        ArrayList<String[]> v = new ArrayList<String[]>();
+    private void displayServerUpTimes(List<String> serverNames) {
+        List<String[]> lines = new ArrayList<>();
         try {
-            for (String servName : servNames) {
+            for (String serverName : serverNames) {
 
-                String[] exportedStr = new TangoServer("dserver/" + servName).getServerUptime();
-                v.add(new String[]{
-                        servName, exportedStr[0], exportedStr[1]});
+                String[] exportedStr = new TangoServer("dserver/" + serverName).getServerUptime();
+                lines.add(new String[]{
+                        serverName, exportedStr[0], exportedStr[1]});
             }
 
             String[] columns = new String[]{"Server", "Last   exported", "Last unexported"};
-            String[][] table = new String[v.size()][];
-            for (int i = 0; i < v.size(); i++) {
-                table[i] = v.get(i);
-            }
             PopupTable ppt = new PopupTable(this, "",
-                    columns, table, new Dimension(650, 250));
+                    columns, lines, new Dimension(650, 250));
             ppt.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
@@ -363,20 +357,22 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     //======================================================
     private static String convertStatus(String status) {
-        if (status.equals("ON"))
-            return "Running";
-        else if (status.equals("FAULT"))
-            return "Stopped";
-        else if (status.equals("MOVING"))
-            return "Running but NOT responding";
-        else
-            return status;
+        switch (status) {
+            case "ON":
+                return "Running";
+            case "FAULT":
+                return "Stopped";
+            case "MOVING":
+                return "Running but NOT responding";
+            default:
+                return status;
+        }
     }
 
     //======================================================
     //======================================================
     private void displayServerStatus(List<String> serverNames) {
-        ArrayList<String[]> statusList = new ArrayList<String[]>();
+        List<String[]> statusList = new ArrayList<>();
 
         for (String serverName : serverNames) {
 
@@ -401,14 +397,9 @@ public class MultiServerCommand extends JDialog {
         }
 
         String[] columns = new String[]{"Servers", "Status"};
-        String[][] table = new String[statusList.size()][];
-        for (int i = 0; i < statusList.size(); i++) {
-            table[i] = statusList.get(i);
-        }
-
         try {
             PopupTable ppt = new PopupTable(this, "",
-                    columns, table, new Dimension(650, 250));
+                    columns, statusList, new Dimension(650, 250));
             ppt.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);

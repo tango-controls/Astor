@@ -46,13 +46,11 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 
-//=======================================================
 /**
  * Class Description: Basic JFrame Class to display info
  *
  * @author Pascal Verdier
  */
-//=======================================================
 public class TangoAccess extends JFrame {
     String accessDeviceName;
     UsersTree usersTree;
@@ -516,10 +514,7 @@ public class TangoAccess extends JFrame {
             ErrorPane.showErrorMessage(new JFrame(),
                     "Cannot start TangoAccess class", e);
             System.exit(0);
-        } catch (java.lang.InternalError e) {
-            System.out.println(e);
-            System.exit(0);
-        } catch (java.awt.HeadlessException e) {
+        } catch (InternalError | HeadlessException e) {
             System.out.println(e);
             System.exit(0);
         }

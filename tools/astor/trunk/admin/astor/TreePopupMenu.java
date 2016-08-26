@@ -46,7 +46,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 public class TreePopupMenu extends JPopupMenu implements AstorDefs {
     private Astor astor;
@@ -331,7 +331,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 }
                 break;
             case SERVER_VERSIONS:
-                ArrayList<String> serverNames = host.getServerNames();
+                List<String> serverNames = host.getServerNames();
                 //  Add the Starter itself
                 serverNames.add("Starter/"+host.hostName());
                 new TangoReleaseDialog(astor, host.hostName(), serverNames).setVisible(true);

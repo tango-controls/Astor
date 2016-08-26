@@ -53,16 +53,6 @@ public class HostInfoDialogVector extends ArrayList<HostInfoDialog> {
         for (Object o : this)
             ((HostInfoDialog) o).setDialogPreferredSize(d);
     }
-
-    //===============================================================
-    //===============================================================
-    void close() {
-        for (Object o : this) {
-            ((HostInfoDialog) o).setVisible(false);
-            ((HostInfoDialog) o).dispose();
-        }
-    }
-
     //===============================================================
     //===============================================================
     HostInfoDialog getByHostName(TangoHost host) {

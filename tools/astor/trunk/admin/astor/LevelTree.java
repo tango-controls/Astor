@@ -50,6 +50,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 //===============================================================
 
@@ -60,11 +61,11 @@ import java.util.ArrayList;
  */
 //===============================================================
 
-public class LevelTree extends JTree implements AstorDefs {
+class LevelTree extends JTree implements AstorDefs {
     private HostInfoDialog parent;
     private DefaultTreeModel treeModel;
-    private ServerPopupMenu server_menu;
-    private ServerPopupMenu level_menu;
+    private ServerPopupMenu serverMenu;
+    private ServerPopupMenu levelMenu;
     private TangoHost host;
     private Color bg;
     private Level level;
@@ -72,54 +73,54 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public LevelTree(JFrame jFrame, HostInfoDialog parent, TangoHost host, int level_row) {
+    LevelTree(JFrame jFrame, HostInfoDialog parent, TangoHost host, int level_row) {
         this.parent = parent;
         this.host = host;
 
         bg = parent.getBackgroundColor();
         setBackground(bg);
-        server_menu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.SERVERS);
-        level_menu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.LEVELS);
+        serverMenu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.SERVERS);
+        levelMenu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.LEVELS);
 
         level = new Level(level_row);
         initComponent();
 
-        manageVisiblity();
+        manageVisibility();
     }
 
     //===============================================================
     //===============================================================
-    public boolean hasRunningServer() {
+    boolean hasRunningServer() {
         return level.hasRunningServer();
     }
 
     //===============================================================
     //===============================================================
-    public DevState getState() {
+    DevState getState() {
         return level.getState();
     }
 
     //===============================================================
     //===============================================================
-    public int getNbServers() {
+    int getNbServers() {
         return level.size();
     }
 
     //===============================================================
     //===============================================================
-    public void manageVisiblity() {
+    private void manageVisibility() {
         setVisible(level.size() > 0);    //	Display only if servers exist
     }
 
     //===============================================================
     //===============================================================
-    public TangoServer getServer(String servname) {
+    TangoServer getServer(String servname) {
         return level.getServer(servname);
     }
 
     //===============================================================
     //===============================================================
-    public int getLevelRow() {
+    int getLevelRow() {
         return level.row;
     }
 
@@ -175,16 +176,16 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void selectionChanged(TreeSelectionEvent evt) {
+    @SuppressWarnings("UnusedParameters")
+    private void selectionChanged(TreeSelectionEvent evt) {
         //parent.fireNewTreeSelection(this);
     }
 
     //======================================================
     //======================================================
-    public void checkUpdate() {
+    void checkUpdate() {
         level.updateServerList();
-        manageVisiblity();
+        manageVisibility();
 
         //	check if new server
         for (int i = 0; i < level.size(); i++) {
@@ -254,7 +255,7 @@ public class LevelTree extends JTree implements AstorDefs {
                         server.putStartupInfo(info);
                         try {
                             Thread.sleep(20);
-                        } catch (Exception e) { /** */}
+                        } catch (Exception e) { /* */}
                     }
                     parent.updateData();
                 }
@@ -267,7 +268,7 @@ public class LevelTree extends JTree implements AstorDefs {
     //===============================================================
     //===============================================================
     void changeServerLevels() {
-        ArrayList<TangoServer> servers = new ArrayList<TangoServer>();
+        List<TangoServer> servers = new ArrayList<>();
         DefaultMutableTreeNode node;
         for (int i = 0; i < root.getChildCount(); i++) {
             node = (DefaultMutableTreeNode) root.getChildAt(i);
@@ -282,15 +283,15 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void resetSelection() {
-        manageVisiblity();
+    void resetSelection() {
+        manageVisibility();
         setSelectionPath(new TreePath(root.getPath()));
     }
 
     //======================================================
     //======================================================
-    public void setSelection(TangoServer server) {
-        manageVisiblity();
+    void setSelection(TangoServer server) {
+        manageVisibility();
         DefaultMutableTreeNode node;
         for (int i = 0; i < root.getChildCount(); i++) {
             node = (DefaultMutableTreeNode) root.getChildAt(i);
@@ -324,7 +325,7 @@ public class LevelTree extends JTree implements AstorDefs {
     //======================================================
     //======================================================
     void displayUptime() {
-        ArrayList<String[]> v = new ArrayList<String[]>();
+        List<String[]> v = new ArrayList<>();
         try {
             for (int i = 0; i < root.getChildCount(); i++) {
                 DefaultMutableTreeNode node =
@@ -357,7 +358,6 @@ public class LevelTree extends JTree implements AstorDefs {
 //
 //======================================================
     //======================================================
-
     /**
      * Manage event on clicked mouse on JTree object.
      *
@@ -379,16 +379,11 @@ public class LevelTree extends JTree implements AstorDefs {
         parent.fireNewTreeSelection(this);
 
         //	Display History if double click
-        if (evt.getClickCount() == 2) {
-            //	Check if btn1
-            //------------------
-            if ((mask & MouseEvent.BUTTON1_MASK) != 0) {
-            }
-        } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
+        if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             if (uo instanceof TangoServer)
-                server_menu.showMenu(evt, this, (TangoServer) uo);
+                serverMenu.showMenu(evt, this, (TangoServer) uo);
             else
-                level_menu.showMenu(evt, this, isExpanded(0));
+                levelMenu.showMenu(evt, this, isExpanded(0));
         }
     }
 
@@ -403,7 +398,7 @@ public class LevelTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    class Level extends ArrayList<TangoServer> {
+    private class Level extends ArrayList<TangoServer> {
         public int row;
 
         //==========================================================
@@ -411,7 +406,6 @@ public class LevelTree extends JTree implements AstorDefs {
             this.row = row;
             updateServerList();
         }
-
         //===========================================================
         private void updateServerList() {
             clear();
@@ -428,7 +422,6 @@ public class LevelTree extends JTree implements AstorDefs {
             //	Alphabetical order
             AstorUtil.getInstance().sortTangoServer(this);
         }
-
         //===========================================================
         TangoServer getServer(String servname) {
             for (TangoServer server : this) {
@@ -437,7 +430,6 @@ public class LevelTree extends JTree implements AstorDefs {
             }
             return null;
         }
-
         //===========================================================
         boolean hasRunningServer() {
             for (TangoServer server : this) {
@@ -447,7 +439,6 @@ public class LevelTree extends JTree implements AstorDefs {
             return false;
 
         }
-
         //===========================================================
         DevState getState() {
             boolean is_faulty = false;
@@ -476,7 +467,6 @@ public class LevelTree extends JTree implements AstorDefs {
             else
                 return DevState.ON;
         }
-
         //===========================================================
         public String toString() {
             String str;

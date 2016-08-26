@@ -34,18 +34,16 @@
 
 package admin.astor.access;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.TangoApi.CommandInfo;
 
 import java.util.ArrayList;
+import java.util.List;
 
-
+/**
+ *	This class is able to define an allowed command
+ *
+ * @author verdier
+ */
 public class ClassAllowed extends ArrayList<String> {
     String name;
 
@@ -69,7 +67,7 @@ public class ClassAllowed extends ArrayList<String> {
     //===============================================================
     //===============================================================
     String[] getNotAllowed(CommandInfo[] info_array) {
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> notAllowedList = new ArrayList<>();
         for (CommandInfo info : info_array) {
             boolean found = false;
             String cmd = info.cmd_name.toLowerCase();
@@ -78,12 +76,9 @@ public class ClassAllowed extends ArrayList<String> {
                 found = (cmd.equals(allowed_cmd));
             }
             if (!found)
-                v.add(info.cmd_name);
+                notAllowedList.add(info.cmd_name);
         }
-        String[] list = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            list[i] = v.get(i);
-        return list;
+        return notAllowedList.toArray(new String[notAllowedList.size()]);
     }
 
     //===============================================================

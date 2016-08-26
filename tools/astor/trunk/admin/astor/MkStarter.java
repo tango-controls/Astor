@@ -34,6 +34,9 @@
 
 package admin.astor;
 
+import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.*;
+import fr.esrf.TangoDs.Except;
 
 /**
  *	This class is able to declare
@@ -41,12 +44,6 @@ package admin.astor;
  *
  * @author verdier
  */
-
-import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.*;
-import fr.esrf.TangoDs.Except;
-
-
 public class MkStarter {
     private final String[] polled_obj_names = {
             "HostState", "RunningServers", "StoppedServers"

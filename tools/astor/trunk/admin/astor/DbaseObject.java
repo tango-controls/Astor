@@ -177,6 +177,7 @@ public class DbaseObject implements AstorDefs {
             try {
                 wait(AstorDefs.PollPeriod);
             } catch (InterruptedException e) {
+                System.err.println(e.toString());
             }
         }
 

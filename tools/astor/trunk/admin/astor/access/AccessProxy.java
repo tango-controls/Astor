@@ -40,15 +40,11 @@ import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
 
-
-//=======================================================
-
 /**
  * Class Description: A DeviceProxy class on AccessControl device
  *
  * @author Pascal Verdier
  */
-//=======================================================
 public class AccessProxy extends DeviceProxy {
     //=======================================================
     //=======================================================

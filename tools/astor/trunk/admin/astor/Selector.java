@@ -38,20 +38,14 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-//===============================================================
-
 /**
  * Class Description: Basic Dialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class Selector extends JDialog {
     private String retVal = "";
-    private List<String>    values = new ArrayList<String>();
+    private List<String>    values = new ArrayList<>();
 
     //===============================================================
     /*
@@ -112,7 +106,7 @@ public class Selector extends JDialog {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
-        comboBox = new javax.swing.JComboBox<String>();
+        comboBox = new javax.swing.JComboBox<>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -235,7 +229,7 @@ public class Selector extends JDialog {
     public static void main(String args[]) {
         String title = "TANGO_HOST ?";
         String[] tgh = {"corvus:10000", "orion:10000"};
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> v = new ArrayList<>();
         v.add(tgh[0]);
         v.add(tgh[1]);
         Selector sel = new Selector(new JFrame(), title, v, "orion:10000");

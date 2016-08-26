@@ -31,14 +31,7 @@
 //
 //-======================================================================
 
-
 package admin.astor;
-
-/**
- *  A dialog with list used to select servers to be started
- * @author verdier
- */
-
 
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
@@ -57,14 +50,17 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ *  A dialog with list used to select servers to be started
+ * @author verdier
+ */
 //===============================================================
 @SuppressWarnings("MagicConstant")
 public class ListDialog extends javax.swing.JDialog {
     private static String str_filter = "*";
     private static String previousItem = null;
     private HostInfoDialog hostInfoDialog;
-    private ArrayList<String> selectedItems = null;
+    private List<String> selectedItems = null;
 
 
     //======================================================
@@ -98,7 +94,6 @@ public class ListDialog extends javax.swing.JDialog {
         jList.setListData(servlist);
 
         //	Search if previous selection exists
-        //----------------------------------------
         for (int i = 0; i < servlist.length; i++)
             if (servlist[i].equals(previousItem))
                 jList.setSelectedIndex(i);
@@ -117,7 +112,7 @@ public class ListDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList<String>();
+        jList = new javax.swing.JList<>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton fromAnotherCrateBtn = new javax.swing.JButton();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
@@ -278,7 +273,7 @@ public class ListDialog extends javax.swing.JDialog {
     //======================================================
     //======================================================
     private void startSelectedItems() {
-        selectedItems = new ArrayList<String>();
+        selectedItems = new ArrayList<>();
 
         //	At first try if already running
         List<String> selections = jList.getSelectedValuesList();
@@ -326,7 +321,7 @@ public class ListDialog extends javax.swing.JDialog {
         try {
             HostList    hostListDialog = new HostList(this);
             if (hostListDialog.showDialog()== JOptionPane.OK_OPTION) {
-                ArrayList<String>   serverList = hostListDialog.getServerList();
+                List<String>   serverList = hostListDialog.getServerList();
                 String[]    array = new String[serverList.size()];
                 for (int i=0 ; i<serverList.size() ; i++)
                     array[i] = serverList.get(i);
@@ -353,7 +348,7 @@ public class ListDialog extends javax.swing.JDialog {
 
     //======================================================
     //======================================================
-    public ArrayList<String> getSelectedItems() {
+    List<String> getSelectedItems() {
         return selectedItems;
     }
 

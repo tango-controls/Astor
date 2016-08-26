@@ -31,15 +31,7 @@
 //
 //-======================================================================
 
-
 package admin.astor;
-
-
-/**
- *	A panel to manage polling for a non running device.
- *
- * @author verdier
- */
 
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
@@ -52,19 +44,14 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
-
-
-//===============================================================
 
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 @SuppressWarnings("MagicConstant")
 public class DbPollPanel extends JDialog {
     private Component parent;
@@ -112,7 +99,7 @@ public class DbPollPanel extends JDialog {
     //===============================================================
     private DeviceProxy[] getDeviceList(String serverName) {
         try {
-            ArrayList<String> deviceList = new ArrayList<String>();
+            List<String> deviceList = new ArrayList<>();
             DbServer dbServer = new DbServer(serverName);
             String[] classes = dbServer.get_class_list();
             for (String className : classes) {
@@ -180,12 +167,12 @@ public class DbPollPanel extends JDialog {
      */
     //===============================================================
     public PolledAttribute[] getPolledAttributes(DeviceProxy dev) throws DevFailed {
-        DbDatum argout = dev.get_property(PollAttProp);
-        String[] data = argout.extractStringArray();
+        DbDatum argOut = dev.get_property(PollAttProp);
+        String[] data = argOut.extractStringArray();
         if (data==null || data.length<2)
             return new PolledAttribute[0];
 
-        ArrayList<PolledAttribute> polledAttributeList = new ArrayList<PolledAttribute>();
+        List<PolledAttribute> polledAttributeList = new ArrayList<>();
         for (int i=0 ; i<data.length ; i+=2)
             polledAttributeList.add(new PolledAttribute(data[i], data[i + 1]));
 
@@ -231,7 +218,7 @@ public class DbPollPanel extends JDialog {
 
         javax.swing.JPanel topPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
-        devComboBox = new javax.swing.JComboBox<String>();
+        devComboBox = new javax.swing.JComboBox<>();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
@@ -294,7 +281,7 @@ public class DbPollPanel extends JDialog {
 
         //	Check selected attributes
         String message = "Remove polling for :\n";
-        ArrayList<String> attributeList = new ArrayList<String>();
+        List<String> attributeList = new ArrayList<>();
         for (PolledAttribute att : attlist)
             if (att.radioButton.getSelectedObjects() == null)
                 message += att.name + "\n";

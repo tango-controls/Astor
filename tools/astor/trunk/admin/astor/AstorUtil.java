@@ -34,14 +34,6 @@
 
 package admin.astor;
 
-
-/**
- *	This class group many info and methods used By Astor.
- *
- * @author verdier
- */
-
-
 import admin.astor.tools.MySqlUtil;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
@@ -62,6 +54,12 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
+/**
+ *	This class group many info and methods used By Astor.
+ *
+ * @author verdier
+ */
+@SuppressWarnings("WeakerAccess")
 public class AstorUtil implements AstorDefs {
 
     private static DbClass _class = null;
@@ -178,13 +176,10 @@ public class AstorUtil implements AstorDefs {
             stk = new StringTokenizer(str);
         else
             stk = new StringTokenizer(str, separ);
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (stk.hasMoreTokens())
-            v.add(stk.nextToken());
-        String[] array = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            array[i] = v.get(i);
-        return array;
+            list.add(stk.nextToken());
+        return list.toArray(new String[list.size()]);
     }
 
     //===============================================================
@@ -271,7 +266,7 @@ public class AstorUtil implements AstorDefs {
 
         //  Get tango hosts from database
         String[]        csTangoHosts = getDbaseKnownTangoHosts();
-        List<String>    list = new ArrayList<String>();
+        List<String>    list = new ArrayList<>();
         if (csTangoHosts!=null)
             Collections.addAll(list, csTangoHosts);
 
@@ -346,12 +341,12 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     private static List<String> getFromEnvFile(String propertyName, String fileName) {
-        List<String>    list = new ArrayList<String>();
+        List<String>    list = new ArrayList<>();
         try {
             //  Get file content
             String	code = readFile(fileName);
             StringTokenizer stk = new StringTokenizer(code, "\n");
-            List<String>    lines = new ArrayList<String>();
+            List<String>    lines = new ArrayList<>();
             while (stk.hasMoreTokens())  {
                 String line = stk.nextToken().trim();
                 if (!line.startsWith("#"))  {
@@ -427,8 +422,8 @@ public class AstorUtil implements AstorDefs {
      */
     //===============================================================
     @SuppressWarnings("UnusedDeclaration")
-    public static ArrayList<String> readFileLines(String filename) throws DevFailed {
-        ArrayList<String>   lines = new ArrayList<String>();
+    public static List<String> readFileLines(String filename) throws DevFailed {
+        List<String>   lines = new ArrayList<>();
         try {
             String str = readFile(filename);
             StringTokenizer stk = new StringTokenizer(str, "\n");
@@ -547,7 +542,7 @@ public class AstorUtil implements AstorDefs {
                 starterStartup = datum.extractBoolean();
 
             properties_read = true;
-        } catch (DevFailed e) { /** Do Nothing */}
+        } catch (DevFailed e) { /* Do Nothing */}
     }
 
     //===============================================================
@@ -626,13 +621,13 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public ArrayList<String> getCollectionList() throws DevFailed {
+    public List<String> getCollectionList() throws DevFailed {
         return getCollectionList(getTangoHostList());
     }
     //===============================================================
     //===============================================================
-    public ArrayList<String> getCollectionList(TangoHost[] hosts) {
-        ArrayList<String> list = new ArrayList<String>();
+    public List<String> getCollectionList(TangoHost[] hosts) {
+        List<String> list = new ArrayList<>();
         for (TangoHost host : hosts) {
             //  Check if collection property is defined.
             if (host.collection == null)
@@ -942,16 +937,13 @@ public class AstorUtil implements AstorDefs {
     //======================================================
     static String[] string2StringArray(String str) {
         int idx;
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while ((idx = str.indexOf("\n")) > 0) {
-            v.add(str.substring(0, idx));
+            list.add(str.substring(0, idx));
             str = str.substring(idx + 1);
         }
-        v.add(str);
-        String[] result = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            result[i] = v.get(i);
-        return result;
+        list.add(str);
+        return list.toArray(new String[list.size()]);
     }
     //===============================================================
     /**

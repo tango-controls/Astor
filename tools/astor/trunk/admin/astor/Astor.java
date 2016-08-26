@@ -67,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "6.7.1  -  Tue Jun 28 10:51:09 CEST 2016";
+            "7.0.0  -  26-08-2016  14:15:15";
     /**
      * JTree object to display control system.
      */
@@ -81,12 +81,8 @@ public class Astor extends JFrame implements AstorDefs {
      * JTree Container
      */
     private JScrollPane scrollPane;
-    /**
-     * true if Astor is fully built and displayed.
-     */
-    static boolean displayed = false;
 
-    public static DevBrowser dev_browser = null;
+    private static DevBrowser devBrowser = null;
     static long t0;
     private String tango_host = "";
     private MultiServerCommand multiServerCommand = null;
@@ -128,7 +124,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Move the window to the center of the screen
      */
 	//===========================================================
-    public void centerWindow() {
+    private void centerWindow() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension scrsize = toolkit.getScreenSize();
         Dimension appsize = getSize();
@@ -355,8 +351,8 @@ public class Astor extends JFrame implements AstorDefs {
     }
 
     private int nb_def_tools = 1;
-    private ArrayList<OneTool> app_tools = new ArrayList<OneTool>();
-    private ArrayList<ActionListener> tools_al = new ArrayList<ActionListener>();
+    private List<OneTool> app_tools = new ArrayList<>();
+    private List<ActionListener> tools_al = new ArrayList<>();
     //======================================================================
     /**
      * This method is called from within the constructor to
@@ -853,8 +849,8 @@ public class Astor extends JFrame implements AstorDefs {
             new DeviceTreeDialog(this);
 
             // ToDo
-             /**
-              * Really too slow And too much threads
+            /*
+             * Really too slow And too much threads
             try {
                  new TangoReleaseDialog(this).setVisible(true);
                  new CtrlSystemInfo(this);
@@ -1087,7 +1083,7 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     //======================================================================
     private void displaySubscribedHostList(boolean onEvt) {
-        ArrayList<String> hostsList = new ArrayList<String>();
+        List<String> hostsList = new ArrayList<>();
         for (TangoHost host : tree.hosts) {
             if (onEvt) {
 				if (host.onEvents)
@@ -1140,9 +1136,9 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void deviceBrowserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceBrowserBtnActionPerformed
-        if (dev_browser == null)
-            dev_browser = new DevBrowser(this);
-        dev_browser.setVisible(true);
+        if (devBrowser == null)
+            devBrowser = new DevBrowser(this);
+        devBrowser.setVisible(true);
     }//GEN-LAST:event_deviceBrowserBtnActionPerformed
 
     //======================================================================
@@ -1259,7 +1255,7 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     //======================================================================
     public void doExit() {
-        if (dev_browser != null && dev_browser.isVisible())
+        if (devBrowser != null && devBrowser.isVisible())
             setVisible(false);
         else {
             setVisible(false);
@@ -1311,30 +1307,29 @@ public class Astor extends JFrame implements AstorDefs {
 
         //	Check if line command
         if (args.length > 0) {
-            if (args[0].equals("-ro")) {
-                System.out.println("Astor is in READ_ONLY mode !!!");
-                rwMode = READ_ONLY;
-            }
-            else
-            if (args[0].equals("-db_ro")) {
-                System.out.println("Astor is in DB_READ_ONLY mode !!!");
-                rwMode = DB_READ_ONLY;
-            }
-            else
-            if (args[0].equals("-rw")) {
-                System.out.println("Astor is in READ_WRITE mode !!!");
-                rwMode = READ_WRITE;
-            }
-            else {
-                try {
-                    new AstorCmdLine(args);
-                } catch (DevFailed e) {
-                    Except.print_exception(e);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    e.printStackTrace();
-                }
-                System.exit(0);
+            switch (args[0]) {
+                case "-ro":
+                    System.out.println("Astor is in READ_ONLY mode !!!");
+                    rwMode = READ_ONLY;
+                    break;
+                case "-db_ro":
+                    System.out.println("Astor is in DB_READ_ONLY mode !!!");
+                    rwMode = DB_READ_ONLY;
+                    break;
+                case "-rw":
+                    System.out.println("Astor is in READ_WRITE mode !!!");
+                    rwMode = READ_WRITE;
+                    break;
+                default:
+                    try {
+                        new AstorCmdLine(args);
+                    } catch (DevFailed e) {
+                        Except.print_exception(e);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                    }
+                    System.exit(0);
             }
         }
         //	Else start application
@@ -1346,7 +1341,6 @@ public class Astor extends JFrame implements AstorDefs {
                 try {
                     Astor astor = new Astor();
                     astor.setVisible(true);
-                    Astor.displayed = true;
                 } catch (DevFailed e) {
                     System.err.println(e.errors[0].desc);
                     if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
@@ -1355,9 +1349,7 @@ public class Astor extends JFrame implements AstorDefs {
 
                     ErrorPane.showErrorMessage(new JFrame(), null, e);
                     System.exit(-1);
-                } catch (java.lang.InternalError e) {
-                    System.err.println(e.getMessage());
-                } catch (java.awt.HeadlessException e) {
+                } catch (java.lang.InternalError| java.awt.HeadlessException e) {
                     System.err.println(e.getMessage());
                 }
                 long t1 = System.currentTimeMillis();
@@ -1377,7 +1369,7 @@ public class Astor extends JFrame implements AstorDefs {
      * A thread class to execute a hosts scan
      */
     //===============================================================
-    class HostsScanThread extends Thread {
+    private class HostsScanThread extends Thread {
         private JFrame parent;
         private TangoHost[] hosts;
 
@@ -1396,7 +1388,7 @@ public class Astor extends JFrame implements AstorDefs {
             monitor.setProgressValue(ratio, "Starting...");
             try {
                 sleep(500);
-            } catch (InterruptedException e) { /** */}
+            } catch (InterruptedException e) { /* */}
             try {
                 int nb_serv = 0;
                 for (int i = 0; i < hosts.length; i++) {

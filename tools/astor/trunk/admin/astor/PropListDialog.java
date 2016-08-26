@@ -34,13 +34,6 @@
 
 package admin.astor;
 
-/**
- *
- * @author verdier
- * @version
- */
-
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -52,7 +45,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ *
+ * @author verdier
+ */
+//===============================================================
 //===============================================================
 public class PropListDialog extends javax.swing.JDialog {
     private JFrame parent;
@@ -86,12 +85,12 @@ public class PropListDialog extends javax.swing.JDialog {
       *	Creates new form PropListDialog
       */
     //======================================================
-    public PropListDialog(JFrame parent, ArrayList<String> vProps) {
+    public PropListDialog(JFrame parent, List<String> propertyList) {
         super(parent, true);
         this.parent = parent;
-        this.props = new String[vProps.size()];
-        for (int i = 0; i < vProps.size(); i++)
-            this.props[i] = vProps.get(i);
+        this.props = new String[propertyList.size()];
+        for (int i = 0; i < propertyList.size(); i++)
+            this.props[i] = propertyList.get(i);
         initComponents();
 
         buildList();
@@ -115,7 +114,7 @@ public class PropListDialog extends javax.swing.JDialog {
 
     //======================================================
     //======================================================
-    private boolean alreadyIn(ArrayList<String> stringList, String s) {
+    private boolean alreadyIn(List<String> stringList, String s) {
         for (String str : stringList)
             if (str.equals(s))
                 return true;
@@ -126,7 +125,7 @@ public class PropListDialog extends javax.swing.JDialog {
     //======================================================
     private void hosts2path(TangoHost[] hosts) {
         try {
-            ArrayList<String> pathList = new ArrayList<String>();
+            List<String> pathList = new ArrayList<>();
             for (TangoHost host : hosts) {
                 String deviceName = AstorUtil.getStarterDeviceHeader() + host.getName();
                 DeviceProxy dev = new DeviceProxy(deviceName);
@@ -174,7 +173,7 @@ public class PropListDialog extends javax.swing.JDialog {
         JButton addBtn = new JButton();
         JButton dismissBtn = new JButton();
         JScrollPane jScrollPane1 = new JScrollPane();
-        jList = new javax.swing.JList<String>();
+        jList = new javax.swing.JList<>();
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);

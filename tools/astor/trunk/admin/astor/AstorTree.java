@@ -56,6 +56,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -87,14 +88,14 @@ public class AstorTree extends JTree implements AstorDefs {
      */
     HostInfoDialogVector hostDialogs = new HostInfoDialogVector();
 
-    private static ArrayList<String> collecNames = new ArrayList<String>();
+    private static List<String> collecNames = new ArrayList<>();
     private static DefaultMutableTreeNode root;
     private static int hostSubscribed = 0;
     @SuppressWarnings("InspectionUsingGrayColors")
-    public static final Color background = new Color(0xf0, 0xf0, 0xf0);
+    private static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
     // startup objects
-    private ArrayList<String> subscribeError = new ArrayList<String>();
+    private List<String> subscribeError = new ArrayList<>();
     private UpdateSplashThread updateSplashThread = null;
     PopupText subscribeErrWindow = null;
     private long startSubscribeTime;
@@ -165,7 +166,7 @@ public class AstorTree extends JTree implements AstorDefs {
      * because it gets too much time in loop.
      */
     //===============================================================
-    class UpdateSplashThread extends Thread {
+    private class UpdateSplashThread extends Thread {
         private String message = "";
         private int ratio;
         private boolean stop = false;
@@ -291,7 +292,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public boolean isAccessControlled() {
+    boolean isAccessControlled() {
         return accessControl != null;
     }
 
@@ -323,7 +324,7 @@ public class AstorTree extends JTree implements AstorDefs {
         //	Listen for when the selection changes.
         addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                hostSelectionPerformed(e);
+                hostSelectionPerformed();
             }
         });
 
@@ -351,33 +352,33 @@ public class AstorTree extends JTree implements AstorDefs {
     private void initTangoObjects() throws DevFailed {
         //	Build Database objects
         String tango_hosts = AstorUtil.getTangoHost();
-        if (tango_hosts == null ||
-                tango_hosts.length() == 0)
+        if (tango_hosts == null || tango_hosts.length() == 0)
             Except.throw_connection_failed("TangoApi_TANGO_HOST_NOT_SET",
                     "TANGO_HOST is not set",
                     "AstorTree.initTangoObjects()");
+        else {
+            StringTokenizer stk;
+            if (tango_hosts.contains(","))
+                stk = new StringTokenizer(tango_hosts, ",");
+            else
+                stk = new StringTokenizer(tango_hosts);
 
-        StringTokenizer stk;
-        if (tango_hosts != null && tango_hosts.indexOf(",") > 0)
-            stk = new StringTokenizer(tango_hosts, ",");
-        else
-            stk = new StringTokenizer(tango_hosts);
+            List<String> list = new ArrayList<>();
+            while (stk.hasMoreTokens())
+                list.add(stk.nextToken());
+            dbase = new DbaseObject[list.size()];
+            for (int i = 0; i < list.size(); i++)
+                dbase[i] = new DbaseObject(this, list.get(i));
 
-        ArrayList<String> vector = new ArrayList<String>();
-        while (stk.hasMoreTokens())
-            vector.add(stk.nextToken());
-        dbase = new DbaseObject[vector.size()];
-        for (int i = 0; i < vector.size(); i++)
-            dbase[i] = new DbaseObject(this, vector.get(i));
+            //	Build Host objects
+            AstorUtil au = AstorUtil.getInstance();
+            hosts = au.getTangoHostList();
+            collecNames = au.getCollectionList(hosts);
 
-        //	Build Host objects
-        AstorUtil au = AstorUtil.getInstance();
-        hosts = au.getTangoHostList();
-        collecNames = au.getCollectionList(hosts);
-
-        String accessControlDeviceName = AstorUtil.getAccessControlDeviceName();
-        if (accessControlDeviceName != null)
-            accessControl = new TACobject(this, accessControlDeviceName);
+            String accessControlDeviceName = AstorUtil.getAccessControlDeviceName();
+            if (accessControlDeviceName != null)
+                accessControl = new TACobject(this, accessControlDeviceName);
+        }
     }
 
     //===============================================================
@@ -386,9 +387,9 @@ public class AstorTree extends JTree implements AstorDefs {
 
         updateSplashThread = new UpdateSplashThread(hosts.length);
         updateSplashThread.start();
-        ArrayList<DefaultMutableTreeNode> collections = new ArrayList<DefaultMutableTreeNode>();
-        for (String collec_name : collecNames) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(collec_name);
+        List<DefaultMutableTreeNode> collections = new ArrayList<>();
+        for (String collectionName : collecNames) {
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(collectionName);
             collections.add(node);
             root.add(node);
         }
@@ -418,7 +419,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    ArrayList<String> getCollectionList() {
+    List<String> getCollectionList() {
         return collecNames;
     }
 
@@ -435,7 +436,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void collapsedPerformed(TreeExpansionEvent e) {
+    private void collapsedPerformed(TreeExpansionEvent e) {
         //	Get path
         TreePath path = e.getPath();
         if (path.getPathCount() > 2)
@@ -500,7 +501,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    Object getSelectedObject() {
+    private Object getSelectedObject() {
         DefaultMutableTreeNode node =
                 (DefaultMutableTreeNode) getLastSelectedPathComponent();
         return node.getUserObject();
@@ -662,8 +663,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void hostSelectionPerformed(TreeSelectionEvent e) {
+    private void hostSelectionPerformed() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 getLastSelectedPathComponent();
 
@@ -749,7 +749,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void setSelectionRoot() {
+    void setSelectionRoot() {
         setSelectionPath(new TreePath(root.getPath()));
     }
     //======================================================
@@ -789,7 +789,6 @@ public class AstorTree extends JTree implements AstorDefs {
         if (selected_db != null && selected_db.state == faulty) {
             ErrorPane.showErrorMessage(parent, null, selected_db.except);
         } else {
-            boolean from_shell = false;
             boolean read_only = AstorUtil.getInstance().jiveIsReadOnly();
             if (Astor.rwMode!=AstorDefs.READ_WRITE)
                 read_only = true;
@@ -797,7 +796,7 @@ public class AstorTree extends JTree implements AstorDefs {
             //	Check if it has changed
             //	or not already Started
             if (jive_is_read_only != read_only || jive3 == null)
-                jive3 = new jive3.MainPanel(from_shell, read_only);
+                jive3 = new jive3.MainPanel(false, read_only);
             jive3.setVisible(true);
             jive3.toFront();
             jive_is_read_only = read_only;
@@ -805,7 +804,7 @@ public class AstorTree extends JTree implements AstorDefs {
     }
     //===============================================================
     //===============================================================
-    public void showJive(TangoServer server) {
+    void showJive(TangoServer server) {
         displayJiveAppli();
         jive3.goToServerNode(server.getName());
     }
@@ -873,23 +872,25 @@ public class AstorTree extends JTree implements AstorDefs {
             if (hostname == null)
                 Except.throw_exception("UNKNOWN_HOST",
                         "May be this device has never been exported !", "");
-            //	Take off IP address if exists
-            StringTokenizer st = new StringTokenizer(hostname);
-            hostname = st.nextToken();
-            //	Take off name extention (e.g. .esrf.fr) if exists
-            st = new StringTokenizer(hostname, ".");
-            hostname = st.nextToken();
+            else {
+                //	Take off IP address if exists
+                StringTokenizer st = new StringTokenizer(hostname);
+                hostname = st.nextToken();
+                //	Take off name extention (e.g. .esrf.fr) if exists
+                st = new StringTokenizer(hostname, ".");
+                hostname = st.nextToken();
 
-            //	Select Host on main Tree and Popup host panel
-            parent.setVisible(true);
-            setSelectionPath(new TreePath(root.getPath()));    // remove previous selection
-            setSelectionPath(hostname);
-            displayHostInfo();
-            String servname = new DeviceProxy(devname).adm_name();
-            servname = servname.substring(servname.indexOf('/') + 1);
-            HostInfoDialog dlg = hostDialogs.getByHostName(selectedHost);
-            if (dlg != null)
-                dlg.setSelection(servname);
+                //	Select Host on main Tree and Popup host panel
+                parent.setVisible(true);
+                setSelectionPath(new TreePath(root.getPath()));    // remove previous selection
+                setSelectionPath(hostname);
+                displayHostInfo();
+                String servname = new DeviceProxy(devname).adm_name();
+                servname = servname.substring(servname.indexOf('/') + 1);
+                HostInfoDialog dlg = hostDialogs.getByHostName(selectedHost);
+                if (dlg != null)
+                    dlg.setSelection(servname);
+            }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
@@ -897,7 +898,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void displayHostInfo() {
+    void displayHostInfo() {
         //	Check if a host is selected
         if (selectedHost == null) {
             Utils.popupError(this, "this Host is not controlled by Astor !");
@@ -949,7 +950,7 @@ public class AstorTree extends JTree implements AstorDefs {
     void resetCollectionStatistics() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 getLastSelectedPathComponent();
-        ArrayList<String> hostList = new ArrayList<String>();
+        List<String> hostList = new ArrayList<>();
         int nb = node.getChildCount();
         for (int i = 0; i < nb; i++) {
             node = node.getNextNode();
@@ -987,7 +988,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public void startTACpanel() {
+    void startTACpanel() {
         try {
             if (tangoAccessPanel == null || !tangoAccessPanel.isVisible()) {
                 if (TangoAccess.checkPassword(parent) == JOptionPane.OK_OPTION) {
@@ -1004,7 +1005,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public void updateState() {
+    void updateState() {
         repaint();
         if (hostDialogs != null && hosts != null) {
             //	Close host dialogs if exists
@@ -1114,7 +1115,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected int branchState(Object tree_node) {
+        int branchState(Object tree_node) {
             int state;
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
 
@@ -1165,7 +1166,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected boolean isHost(Object tree_node) {
+        boolean isHost(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             return (obj instanceof TangoHost);
@@ -1173,7 +1174,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected TangoHost getHost(Object tree_node) {
+        TangoHost getHost(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             if (obj instanceof TangoHost)
@@ -1183,7 +1184,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected DbaseObject getDbase(Object tree_node) {
+        DbaseObject getDbase(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             if (obj instanceof DbaseObject)
@@ -1193,7 +1194,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected boolean isDatabase(Object tree_node) {
+        boolean isDatabase(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             if (obj instanceof DbaseObject)
@@ -1207,7 +1208,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected TACobject getTACobject(Object tree_node) {
+        TACobject getTACobject(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             if (obj instanceof TACobject)
@@ -1217,7 +1218,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        protected boolean isTAC(Object tree_node) {
+        boolean isTAC(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
             return (obj instanceof TACobject);
@@ -1230,11 +1231,7 @@ public class AstorTree extends JTree implements AstorDefs {
       *	A thread to subscribe State events for all hosts
       */
     //===============================================================
-    class subscribeThread extends Thread {
-        subscribeThread() {
-        }
-
-        //===============================================================
+    private class subscribeThread extends Thread {
         //===============================================================
         public void run() {
             for (TangoHost host : hosts) {
@@ -1243,6 +1240,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 }
             }
         }
+        //===============================================================
     }
 
 
@@ -1251,7 +1249,7 @@ public class AstorTree extends JTree implements AstorDefs {
       *	A Database Popup menu
       */
     //===============================================================
-    class DbPopupMenu extends JPopupMenu {
+    private class DbPopupMenu extends JPopupMenu {
         private JTree tree;
         private final String[] menuLabels = {
                 "Server Info",
@@ -1266,7 +1264,7 @@ public class AstorTree extends JTree implements AstorDefs {
         private final int BROWSE_DATABASE = 3;
 
         //===========================================================
-        DbPopupMenu(JTree tree) {
+        private DbPopupMenu(JTree tree) {
             this.tree = tree;
 
             //	Build menu
@@ -1286,7 +1284,7 @@ public class AstorTree extends JTree implements AstorDefs {
         }
 
         //===========================================================		}
-        public void showMenu(java.awt.event.MouseEvent evt) {
+        private void showMenu(java.awt.event.MouseEvent evt) {
 
             Object obj = getSelectedObject();
 
@@ -1343,7 +1341,7 @@ public class AstorTree extends JTree implements AstorDefs {
       *	A TAC Popup menu
       */
     //===============================================================
-    class TacPopupMenu extends JPopupMenu {
+    private class TacPopupMenu extends JPopupMenu {
         private JTree tree;
         private final String[] menuLabels = {
                 "Server Info",
@@ -1356,7 +1354,7 @@ public class AstorTree extends JTree implements AstorDefs {
         private final int MANAGER_PANEL = 2;
 
         //===========================================================
-        TacPopupMenu(JTree tree) {
+        private TacPopupMenu(JTree tree) {
             this.tree = tree;
 
             //	Build menu
@@ -1415,7 +1413,5 @@ public class AstorTree extends JTree implements AstorDefs {
             }
         }
     }
-
-
 }
 

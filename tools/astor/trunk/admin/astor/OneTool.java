@@ -34,17 +34,14 @@
 
 package admin.astor;
 
+import javax.swing.*;
 
 /**
- *	This class is able to define a tool object to be instancied 
+ *	This class is able to define a tool object to be instancied
  *	using introspection classes.
  *
  * @author verdier
  */
-
-import javax.swing.*;
-
-
 public class OneTool {
     String name;
     String classname;

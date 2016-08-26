@@ -47,6 +47,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
@@ -86,7 +87,7 @@ public class UsersTree extends JTree implements TangoConst {
 
 
 
-    private ArrayList<UserGroup>  groups = new ArrayList<UserGroup>();
+    private List<UserGroup>  groups = new ArrayList<>();
     //===============================================================
     //===============================================================
     public UsersTree(JFrame parent, AccessProxy access_proxy) throws DevFailed {
@@ -105,7 +106,7 @@ public class UsersTree extends JTree implements TangoConst {
         try {
             str_root = "Access to  " +
                     ApiUtil.get_db_obj().get_tango_host();
-        } catch (DevFailed e) { /** Nothing to do */}
+        } catch (DevFailed e) { /* Nothing to do */}
 
         //  Create the nodes.
         root = new DefaultMutableTreeNode(str_root);
@@ -761,17 +762,13 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String[] getDefinedUsers() {
-        ArrayList<String> userList = new ArrayList<String>();
+        List<String> userList = new ArrayList<>();
         for (UserGroup group : groups) {
             for (String member : group) {
                 userList.add(member);
             }
         }
-
-        String[] str = new String[userList.size()];
-        for (int i = 0; i < userList.size(); i++)
-            str[i] = userList.get(i);
-        return str;
+        return userList.toArray(new String[userList.size()]);
     }
 
     //===============================================================
@@ -1088,8 +1085,8 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    private ArrayList<String> getUserList() {
-        ArrayList<String> users = new ArrayList<String>();
+    private List<String> getUserList() {
+        List<String> users = new ArrayList<>();
         for (int i = 0; i < root.getChildCount(); i++) {
             DefaultMutableTreeNode childNode =
                     (DefaultMutableTreeNode) root.getChildAt(i);
@@ -1127,15 +1124,13 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private void expandNode(DefaultMutableTreeNode node) {
-        ArrayList<DefaultMutableTreeNode> v = new ArrayList<DefaultMutableTreeNode>();
-        v.add(node);
+        List<DefaultMutableTreeNode> nodeList = new ArrayList<>();
+        nodeList.add(node);
         while (node != root) {
             node = (DefaultMutableTreeNode) node.getParent();
-            v.add(0, node);
+            nodeList.add(0, node);
         }
-        TreeNode[] tn = new DefaultMutableTreeNode[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            tn[i] = v.get(i);
+        TreeNode[] tn = nodeList.toArray(new TreeNode[nodeList.size()]);
         TreePath tp = new TreePath(tn);
         setSelectionPath(tp);
         scrollPathToVisible(tp);
@@ -1302,13 +1297,13 @@ public class UsersTree extends JTree implements TangoConst {
         private void checkHostname(String add) {
             //	Split the address
             StringTokenizer stk = new StringTokenizer(add, ".");
-            ArrayList<String> v = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             while (stk.hasMoreTokens())
-                v.add(stk.nextToken());
+                tokens.add(stk.nextToken());
             byte[] bytes = new byte[4];
-            for (int i = 0; i < 4 && i < v.size(); i++)
+            for (int i = 0; i < 4 && i < tokens.size(); i++)
                 try {
-                    bytes[i] = (byte) Integer.parseInt(v.get(i));
+                    bytes[i] = (byte) Integer.parseInt(tokens.get(i));
                 } catch (NumberFormatException e) {
                     hostname = null;
                     return;
@@ -1316,9 +1311,9 @@ public class UsersTree extends JTree implements TangoConst {
 
             //	Check if host name
             try {
-                java.net.InetAddress iadd =
+                java.net.InetAddress inetAddress =
                         java.net.InetAddress.getByAddress(bytes);
-                hostname = iadd.getHostName();
+                hostname = inetAddress.getHostName();
                 //	remove fqdn if any
                 int pos = hostname.indexOf('.');
                 if (pos > 0)
