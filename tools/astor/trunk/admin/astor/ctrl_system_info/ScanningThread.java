@@ -210,7 +210,7 @@ public class ScanningThread extends Thread {
                 String  strValue = stk.nextToken().trim();
                 return Integer.parseInt(strValue);
             } catch (NumberFormatException e) {
-                System.err.println(e);
+                System.err.println(e.toString());
                 return -1;
             }
         }
