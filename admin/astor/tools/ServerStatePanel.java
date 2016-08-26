@@ -33,14 +33,6 @@
 
 package admin.astor.tools;
 
-
-/**
- *	This class is able to start a panel containing
- *	 a state viewer for each device of specified server
- *
- * @author Pascal Verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbServer;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -54,7 +46,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-
+/**
+ *	This class is able to start a panel containing
+ *	 a state viewer for each device of specified server
+ *
+ * @author Pascal Verdier
+ */
 public class ServerStatePanel extends JScrollPane {
     private String title;
     private AttributeList attlist = new AttributeList();
@@ -302,7 +299,8 @@ public class ServerStatePanel extends JScrollPane {
 
         //==================================================================
         public void errorChange(ErrorEvent evt) {
-            System.err.println(evt.getError());
+            //noinspection ThrowableResultOfMethodCallIgnored
+            System.err.println(evt.getError().toString());
         }
 
         //===============================================================

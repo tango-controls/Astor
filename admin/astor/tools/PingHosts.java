@@ -31,15 +31,7 @@
 //
 //-======================================================================
 
-
 package admin.astor.tools;
-
-
-/**
- *	This class is able to ping hosts and check alive/stopped list
- *
- * @author verdier
- */
 
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
@@ -51,10 +43,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *	This class is able to ping hosts and check alive/stopped list
+ *
+ * @author verdier
+ */
 
-public class PingHosts {
-    private List<String> aliveList = new ArrayList<String>();
-    private List<String> stoppedList = new ArrayList<String>();
+class PingHosts {
+    private List<String> aliveList = new ArrayList<>();
+    private List<String> stoppedList = new ArrayList<>();
 
     private static final String PingCommand =
             AstorUtil.osIsUnix()? "ping  -c 1 -W 1 " : "ping  -n 1 -w 1 ";
@@ -68,9 +65,9 @@ public class PingHosts {
     }
     //===============================================================
     //===============================================================
-    public PingHosts(String[] hosts) {
+    PingHosts(String[] hosts) {
         //	Start a thread to ping each host
-        List<PingThread> threads = new ArrayList<PingThread>();
+        List<PingThread> threads = new ArrayList<>();
         for (String host : hosts) {
             PingThread thread = new PingThread(host);
             thread.start();
@@ -101,7 +98,7 @@ public class PingHosts {
     }
     //===============================================================
     //===============================================================
-    public List<String> getStoppedList() throws DevFailed {
+    List<String> getStoppedList() throws DevFailed {
         return stoppedList;
     }
     //===============================================================
@@ -153,7 +150,7 @@ public class PingHosts {
          * @throws fr.esrf.Tango.DevFailed if executed command has failed.
          */
         //===============================================================
-        public String executeShellCmdOneLine(String cmd) throws DevFailed {
+        String executeShellCmdOneLine(String cmd) throws DevFailed {
             StringBuilder sb = new StringBuilder();
             try {
                 Process process = Runtime.getRuntime().exec(cmd);

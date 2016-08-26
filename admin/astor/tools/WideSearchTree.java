@@ -46,6 +46,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class WideSearchTree extends JTree implements TangoConst {
@@ -116,8 +117,7 @@ public class WideSearchTree extends JTree implements TangoConst {
         int mask = evt.getModifiers();
 
         //  Check button clicked
-        if (evt.getClickCount() == 2 && (mask & MouseEvent.BUTTON1_MASK) != 0) {
-        } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
+        if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             if (!(o instanceof TangoClass))
                 menu.showMenu(evt, (LeafClass) o);
         }
@@ -125,22 +125,22 @@ public class WideSearchTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    private ArrayList<CollectionClass> initGlobalObject(String wildcard) throws DevFailed {
-        ArrayList<CollectionClass> collec = new ArrayList<CollectionClass>();
+    private List<CollectionClass> initGlobalObject(String wildcard) throws DevFailed {
+        List<CollectionClass> collectionClasses = new ArrayList<>();
         Database db = ApiUtil.get_db_obj();
         String[] classes = db.get_class_list(wildcard);
         if (classes.length > 0) {
             CollectionClass cc = new CollectionClass("Classes");
             for (String name : classes)
                 cc.add(new TangoClass(name));
-            collec.add(cc);
+            collectionClasses.add(cc);
         }
         String[] servers = db.get_server_list(wildcard);
         if (servers.length > 0) {
             CollectionClass cc = new CollectionClass("Servers");
             for (String name : servers)
                 cc.add(new TangoServer(name));
-            collec.add(cc);
+            collectionClasses.add(cc);
         }
         try {
             String[] devices = db.get_device_list(wildcard);
@@ -148,7 +148,7 @@ public class WideSearchTree extends JTree implements TangoConst {
                 CollectionClass cc = new CollectionClass("Devices");
                 for (String name : devices)
                     cc.add(new TangoDevice(name));
-                collec.add(cc);
+                collectionClasses.add(cc);
             }
         } catch (NoSuchMethodError e) {
             ((WideSearchDialog) parent).setWarning();
@@ -163,19 +163,19 @@ public class WideSearchTree extends JTree implements TangoConst {
             CollectionClass cc = new CollectionClass("Aliases");
             for (String name : aliases)
                 cc.add(new TangoAlias(name));
-            collec.add(cc);
+            collectionClasses.add(cc);
         }
-        return collec;
+        return collectionClasses;
     }
 
     //===============================================================
     //===============================================================
     private void createCollectionClassNodes(String wildcard) throws DevFailed {
-        ArrayList<CollectionClass> collec = initGlobalObject(wildcard);
-        if (collec.size() == 0)
+        List<CollectionClass> collectionClasses = initGlobalObject(wildcard);
+        if (collectionClasses.size() == 0)
             root.setUserObject("No Object Found for  " + wildcard);
         else
-            for (CollectionClass aCollec : collec) {
+            for (CollectionClass aCollec : collectionClasses) {
                 DefaultMutableTreeNode node =
                         new DefaultMutableTreeNode(aCollec);
                 root.add(node);
@@ -220,15 +220,15 @@ public class WideSearchTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private void expandNode(DefaultMutableTreeNode node) {
-        ArrayList<DefaultMutableTreeNode> v = new ArrayList<DefaultMutableTreeNode>();
-        v.add(node);
+        List<DefaultMutableTreeNode> nodeList = new ArrayList<>();
+        nodeList.add(node);
         while (node != root) {
             node = (DefaultMutableTreeNode) node.getParent();
-            v.add(0, node);
+            nodeList.add(0, node);
         }
-        TreeNode[] tn = new DefaultMutableTreeNode[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            tn[i] = v.get(i);
+        TreeNode[] tn = new DefaultMutableTreeNode[nodeList.size()];
+        for (int i = 0; i < nodeList.size(); i++)
+            tn[i] = nodeList.get(i);
         TreePath tp = new TreePath(tn);
         setSelectionPath(tp);
         scrollPathToVisible(tp);
@@ -321,7 +321,10 @@ public class WideSearchTree extends JTree implements TangoConst {
                 deviceName = ApiUtil.get_db_obj().get_device_from_alias(
                         ((TangoAlias) obj).name);
             else
+            if (obj instanceof  TangoDevice)
                 deviceName = ((TangoDevice) obj).name;
+            else
+                return;
 
             DeviceInfo info = getDevInfo(deviceName);
             String hostname = info.hostname;

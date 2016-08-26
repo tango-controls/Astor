@@ -46,6 +46,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
@@ -477,15 +478,18 @@ public class Server2TangoHost extends JDialog {
         }
         //===============================================================
         private void expandNode(DefaultMutableTreeNode node) {
-            ArrayList<DefaultMutableTreeNode> nodeList = new ArrayList<DefaultMutableTreeNode>();
+            List<DefaultMutableTreeNode> nodeList = new ArrayList<>();
             nodeList.add(node);
             while (node != root) {
                 node = (DefaultMutableTreeNode) node.getParent();
                 nodeList.add(0, node);
             }
+            TreeNode[] tn = nodeList.toArray(new TreeNode[nodeList.size()]);
+            /*
             TreeNode[] tn = new DefaultMutableTreeNode[nodeList.size()];
             for (int i = 0; i < nodeList.size(); i++)
                 tn[i] =  nodeList.get(i);
+            */
             TreePath tp = new TreePath(tn);
             setSelectionPath(tp);
             scrollPathToVisible(tp);

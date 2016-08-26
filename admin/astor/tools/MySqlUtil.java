@@ -34,14 +34,6 @@
 
 package admin.astor.tools;
 
-
-/**
- *	This class group many info and methods used By Astor.
- *
- * @author verdier
- */
-
-
 import admin.astor.AstorUtil;
 import admin.astor.TangoHost;
 import fr.esrf.Tango.DevFailed;
@@ -54,6 +46,13 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *	This class group many info and methods used By Astor.
+ *
+ * @author verdier
+ */
 
 public class MySqlUtil {
 
@@ -79,17 +78,17 @@ public class MySqlUtil {
     /**
      * Execute a SELECT command on TANGO databse.
      *
-     * @param cmd the command to be excuted
+     * @param command the command to be excuted
      * @throws DevFailed in case of database server is not running
-     *                   or in case of syntax error in cmd parameter.
+     *                   or in case of syntax error in command parameter.
      * @return the data found in TANGO database
      */
     //===============================================================
-    public MySqlData executeMySqlSelect(String cmd) throws DevFailed {
+    public MySqlData executeMySqlSelect(String command) throws DevFailed {
         //long	t0 = System.currentTimeMillis();
 
         DeviceData argIn = new DeviceData();
-        argIn.insert(cmd);
+        argIn.insert(command);
         DeviceData argout = ApiUtil.get_db_obj().command_inout("DbMySqlSelect", argIn);
         //long	t1 = System.currentTimeMillis();
         //System.out.println("elapsed time : " + (t1-t0) + " ms");
@@ -100,13 +99,13 @@ public class MySqlUtil {
     /**
      * Get the EventImport info for specified devices using low level MySql command.
      *
-     * @param devname specified device names (using % as wildcard)
+     * @param deviceName specified device names (using % as wildcard)
      * @throws DevFailed case of database server is not running
      * @return the EventImport info for specified devices.
      */
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    public DbEventImportInfo[] getMultipleEventImportInfo(String devname) throws DevFailed {
+    public DbEventImportInfo[] getMultipleEventImportInfo(String deviceName) throws DevFailed {
         String table = "event";
         String[] fields = {"name", "host", "exported", "ior"};
 
@@ -117,7 +116,7 @@ public class MySqlUtil {
                 cmd += ",";
         }
         cmd += " FROM " + table;
-        cmd += " WHERE name LIKE \"" + devname + "\"";
+        cmd += " WHERE name LIKE \"" + deviceName + "\"";
 
         MySqlData result = executeMySqlSelect(cmd);
         DbEventImportInfo[] info = new DbEventImportInfo[result.size()];
@@ -147,12 +146,12 @@ public class MySqlUtil {
     /**
      * Get the DevImport info for specified devices using low level MySql command.
      *
-     * @param devname specified device names (using % as wildcard)
+     * @param deviceName specified device names (using % as wildcard)
      * @throws DevFailed case of database server is not running
      * @return the DevImport info for specified devices.
      */
     //===============================================================
-    public DbDevImportInfo[] getHostDevImportInfo(String devname) throws DevFailed {
+    public DbDevImportInfo[] getHostDevImportInfo(String deviceName) throws DevFailed {
         String table = "device";
         String[] fields = {"name", "exported", "version", "ior",
                 "server", "host", "class"};
@@ -164,7 +163,7 @@ public class MySqlUtil {
                 cmd += ",";
         }
         cmd += " FROM " + table;
-        cmd += " WHERE name LIKE \"" + devname + "\" ORDER BY name";
+        cmd += " WHERE name LIKE \"" + deviceName + "\" ORDER BY name";
 
         MySqlData result = executeMySqlSelect(cmd);
 
@@ -183,17 +182,16 @@ public class MySqlUtil {
         return info;
     }
     //===============================================================
-
     /**
      * Get the property value for specified devices using low level MySql command.
      *
-     * @param devname  specified device names (using % as wildcard)
-     * @param propname specified device property name
+     * @param deviceName  specified device names (using % as wildcard)
+     * @param propertyName specified device property name
      * @throws DevFailed case of database server is not running
      * @return a vector of MySql result rows.
      */
     //===============================================================
-    public ArrayList<String[]> getHostProperty(String devname, String propname) throws DevFailed {
+    public List<String[]> getHostProperty(String deviceName, String propertyName) throws DevFailed {
         String table = "property_device";
         String[] fields = {"device", "value"};
 
@@ -204,18 +202,17 @@ public class MySqlUtil {
                 cmd += ",";
         }
         cmd += " FROM " + table;
-        cmd += " WHERE device LIKE \"" + devname + "\"";
-        cmd += " And name = \"" + propname + "\"";
+        cmd += " WHERE device LIKE \"" + deviceName + "\"";
+        cmd += " And name = \"" + propertyName + "\"";
 
         MySqlData result = executeMySqlSelect(cmd);
-        ArrayList<String[]> v = new ArrayList<String[]>();
+        List<String[]> lines = new ArrayList<>();
         for (MySqlRow row : result)
             if (!row.hasNull())
-                v.add(new String[]{row.get(0), row.get(1)});
-        return v;
+                lines.add(new String[]{row.get(0), row.get(1)});
+        return lines;
     }
     //===============================================================
-
     /**
      * Read the Starter properties for all Hosts and
      * set them in TangoHost objects
@@ -227,9 +224,9 @@ public class MySqlUtil {
         try {
             String starters = AstorUtil.getStarterDeviceHeader()+"%";
             MySqlUtil mysql = MySqlUtil.getInstance();
-            ArrayList<String[]> collections = mysql.getHostProperty(starters, "HostCollection");
-            ArrayList<String[]> host_usage = mysql.getHostProperty(starters, "HostUsage");
-            ArrayList<String[]> use_evt = mysql.getHostProperty(starters, "UseEvents");
+            List<String[]> collections = mysql.getHostProperty(starters, "HostCollection");
+            List<String[]> host_usage = mysql.getHostProperty(starters, "HostUsage");
+            List<String[]> use_evt = mysql.getHostProperty(starters, "UseEvents");
             for (TangoHost host : hosts) {
                 String devname = host.get_name();
                 for (String[] collection : collections)
@@ -255,7 +252,7 @@ public class MySqlUtil {
     //===============================================================
     private class MySqlRow extends ArrayList<String> {
         //===========================================================
-        private MySqlRow(ArrayList<String> vs) {
+        private MySqlRow(List<String> vs) {
             super();
             for (String s : vs)
                 add(s);
@@ -278,17 +275,17 @@ public class MySqlUtil {
         //===========================================================
         private MySqlData(DevVarLongStringArray lsa) {
             super();
-            int nb_rows = lsa.lvalue[lsa.lvalue.length - 2];
-            int nb_fields = lsa.lvalue[lsa.lvalue.length - 1];
+            int nbRows = lsa.lvalue[lsa.lvalue.length - 2];
+            int nbFields = lsa.lvalue[lsa.lvalue.length - 1];
             int idx = 0;
-            for (int i = 0; i < nb_rows; i++) {
-                ArrayList<String> vs = new ArrayList<String>();
-                for (int j = 0; j < nb_fields; j++, idx++)
+            for (int i = 0; i < nbRows; i++) {
+                List<String> row = new ArrayList<>();
+                for (int j=0 ; j<nbFields ; j++, idx++)
                     if (lsa.lvalue[idx] != 0)    //	is valid
-                        vs.add(lsa.svalue[idx]);
+                        row.add(lsa.svalue[idx]);
                     else
-                        vs.add(null);
-                add(new MySqlRow(vs));
+                        row.add(null);
+                add(new MySqlRow(row));
             }
         }
         //===========================================================

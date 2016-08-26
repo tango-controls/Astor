@@ -45,19 +45,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.ArrayList;
-
-//=======================================================
+import java.util.List;
 
 /**
  * JLChart Class to display statistics
  *
  * @author Pascal Verdier
  */
-//=======================================================
 public class GlobalStatisticsTable extends JTable {
     private JFrame parent;
-    private ArrayList<ServerStat> serverStatistics;
-    private ArrayList<ServerStat> filteredServerStatistics = new ArrayList<ServerStat>();
+    private List<ServerStat> serverStatistics;
+    private List<ServerStat> filteredServerStatistics = new ArrayList<>();
     private DataTableModel model;
     private TablePopupMenu menu;
 
@@ -224,7 +222,7 @@ public class GlobalStatisticsTable extends JTable {
 
     //=======================================================
     //=======================================================
-    public void setStatistics(ArrayList<ServerStat> serverStatistics) {
+    public void setStatistics(List<ServerStat> serverStatistics) {
         this.serverStatistics = serverStatistics;
         copyServerStatistics();
         sort(LAST_FAILURE);

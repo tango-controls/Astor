@@ -34,13 +34,6 @@
 
 package admin.astor.statistics;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
@@ -54,7 +47,6 @@ import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.*;
-
 
 public class Utils {
     private static final String percentageFormat = "%7.4f";
@@ -110,7 +102,7 @@ public class Utils {
     //===============================================================
     public static String formatDate(long ms) {
         StringTokenizer st = new StringTokenizer(new Date(ms).toString());
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> v = new ArrayList<>();
         while (st.hasMoreTokens())
             v.add(st.nextToken());
 
@@ -130,9 +122,9 @@ public class Utils {
     //=======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     public static StarterStat readHostStatistics(String hostName) {
-        ArrayList<String> vs = new ArrayList<String>();
+        List<String> vs = new ArrayList<>();
         vs.add(hostName);
-        ArrayList<StarterStat> stat = readHostStatistics(vs);
+        List<StarterStat> stat = readHostStatistics(vs);
         if (stat.size() > 0)
             return stat.get(0);
         return null;
@@ -140,14 +132,14 @@ public class Utils {
 
     //=======================================================
     //=======================================================
-    public static ArrayList<StarterStat> readHostStatistics(ArrayList<String> ctrlHosts) {
+    public static List<StarterStat> readHostStatistics(List<String> ctrlHosts) {
         //  If host list is empty, get controlled host list
         if (ctrlHosts == null || ctrlHosts.size() == 0) {
             ctrlHosts = getHostControlledList(false, true);
         }
 
         int increment = 80 / ctrlHosts.size();
-        ArrayList<StarterStat> stats = new ArrayList<StarterStat>();
+        List<StarterStat> stats = new ArrayList<>();
         for (String host : ctrlHosts) {
             AstorUtil.increaseSplashProgress(increment, "Get statistics for " + host);
             //System.out.println(host);
@@ -159,10 +151,10 @@ public class Utils {
 
     //=======================================================
     //=======================================================
-    public static ArrayList<String> getHostControlledList(boolean keepLastCollections, boolean display) {
+    public static List<String> getHostControlledList(boolean keepLastCollections, boolean display) {
         if (display)
             AstorUtil.increaseSplashProgress(5, "Get Controlled host list....");
-        ArrayList<String> ctrlHosts = new ArrayList<String>();
+        List<String> ctrlHosts = new ArrayList<>();
 
         try {
             //  get host list

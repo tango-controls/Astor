@@ -34,23 +34,21 @@
 
 package admin.astor.tools;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoDs.TangoConst;
 
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
-
+/**
+ *	This class is able to defined a polled element
+ *
+ * @author verdier
+ */
 public class PolledElement {
-    String devname = "unknown";
+    String deviceName = "unknown";
     String name = "unknown";
     String type;
     int period = -1;
@@ -66,8 +64,8 @@ public class PolledElement {
 
     //===============================================================
     //===============================================================
-    public PolledElement(String devname, String status) {
-        this.devname = devname;
+    public PolledElement(String deviceName, String status) {
+        this.deviceName = deviceName;
         this.status = status;
         parsePollingStatus(status);
         if (period < 0 || buffer_depth < 0 || reading_time < 0 || realPeriods.length == 0)
@@ -140,39 +138,39 @@ public class PolledElement {
         int idx;
         if ((idx = line.indexOf(equal)) > 0) {
             String str = line.substring(idx + equal.length());
-            StringTokenizer stk2 = new StringTokenizer(str, ", ");
-            ArrayList<String> v = new ArrayList<String>();
-            while (stk2.hasMoreTokens())
-                v.add(stk2.nextToken());
-            realPeriods = new int[v.size()];
-            for (int j = 0; j < v.size(); j++)
+            StringTokenizer stk = new StringTokenizer(str, ", ");
+            List<String> tokens = new ArrayList<>();
+            while (stk.hasMoreTokens())
+                tokens.add(stk.nextToken());
+            realPeriods = new int[tokens.size()];
+            int i=0;
+            for (String token : tokens) {
                 try {
-                    realPeriods[j] =
-                            Integer.parseInt(v.get(j));
+                    realPeriods[i++] = Integer.parseInt(token);
                 } catch (NumberFormatException e) { /* Do nothing */}
+            }
         }
     }
 
     //===============================================================
     //===============================================================
-    private void paseLastUpdate(String line) {
+    private void parseLastUpdate(String line) {
         int idx;
         if ((idx = line.indexOf(since)) > 0) {
             String str = line.substring(idx + since.length());
             last_update_str = str;
 
             str = str.substring(0, str.indexOf("mS"));
-            StringTokenizer stk2 = new StringTokenizer(str, " S and ");
-            ArrayList<String> v = new ArrayList<String>();
-            while (stk2.hasMoreTokens()) {
-                String s = stk2.nextToken();
-                v.add(s);
+            StringTokenizer stk = new StringTokenizer(str, " S and ");
+            List<String> tokens = new ArrayList<>();
+            while (stk.hasMoreTokens()) {
+                tokens.add(stk.nextToken());
             }
-            switch (v.size()) {
+            switch (tokens.size()) {
                 case 1:
                     //	Get ms
                     try {
-                        last_update = Integer.parseInt(v.get(0));
+                        last_update = Integer.parseInt(tokens.get(0));
                     } catch (NumberFormatException e) {
                         last_update = 1000;
                     }
@@ -180,22 +178,22 @@ public class PolledElement {
                 case 2:
                     //	Get seconds and ms
                     try {
-                        last_update = Integer.parseInt(v.get(1));
+                        last_update = Integer.parseInt(tokens.get(1));
                         last_update +=
-                                1000 * Integer.parseInt(v.get(0));
+                                1000 * Integer.parseInt(tokens.get(0));
                     } catch (NumberFormatException e) {
                         //	more
                         last_update += 60000;
                     }
                     break;
                 default:
-                    if (v.size() > 1) {
+                    if (tokens.size() > 1) {
                         try {
                             last_update =
-                                    60000 * Integer.parseInt(v.get(0));
-                            last_update += Integer.parseInt(v.get(3));
+                                    60000 * Integer.parseInt(tokens.get(0));
+                            last_update += Integer.parseInt(tokens.get(3));
                             last_update +=
-                                    1000 * Integer.parseInt(v.get(2));
+                                    1000 * Integer.parseInt(tokens.get(2));
                         } catch (NumberFormatException e) {
                             //	more
                             last_update += 60000;
@@ -210,7 +208,7 @@ public class PolledElement {
     private String[] info;
 
     private void parsePollingStatus(String status) {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(status, "\n");
         for (int i = 0; stk.hasMoreTokens(); i++) {
             String line = stk.nextToken();
@@ -233,7 +231,7 @@ public class PolledElement {
                     break;
 
                 case 4:
-                    paseLastUpdate(line);
+                    parseLastUpdate(line);
                     break;
 
                 case 5:
@@ -267,31 +265,27 @@ public class PolledElement {
     //===============================================================
     //===============================================================
     public String[] getInfo() {
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         if (polled) {
-            v.add(type + "  " + name);
-            v.add("Polling period = " + period + "ms");
-            v.add("Last record takes " + reading_time + " ms");
+            lines.add(type + "  " + name);
+            lines.add("Polling period = " + period + "ms");
+            lines.add("Last record takes " + reading_time + " ms");
 
-            if (info.length > 4) v.add(info[4]);
-            if (info.length > 5) v.add(info[5]);
+            if (info.length > 4) lines.add(info[4]);
+            if (info.length > 5) lines.add(info[5]);
 
-            v.add("");
+            lines.add("");
             String str = "Drifts (ms):   ";
             for (int realPeriod : realPeriods)
                 str += "" + (realPeriod - period) + ", ";
-            v.add(str);
+            lines.add(str);
         } else {
             //	If triggered -> return status
             StringTokenizer stk = new StringTokenizer(status, "\n");
             while (stk.hasMoreTokens())
-                v.add(stk.nextToken());
+                lines.add(stk.nextToken());
         }
-
-        String[] retStr = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            retStr[i] = v.get(i);
-        return retStr;
+        return lines.toArray(new String[lines.size()]);
     }
 }

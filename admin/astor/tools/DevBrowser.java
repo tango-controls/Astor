@@ -273,7 +273,7 @@ public class DevBrowser extends JFrame {
     @SuppressWarnings({"UnusedDeclaration"})
     void managePolling(SubscribedSignal sig) {
         try {
-            new ManagePollingDialog(this, sig.devname, sig.attname).setVisible(true);
+            new ManagePollingDialog(this, sig.deviceName, sig.attributeName).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }

@@ -43,6 +43,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 
 //===============================================================
@@ -54,10 +55,10 @@ import java.awt.*;
 //===============================================================
 
 
-@SuppressWarnings("MagicConstant")
+@SuppressWarnings({"MagicConstant", "Convert2Diamond"})
 public class ListDialog extends JDialog {
 
-    private String selection = null;
+    private List<String> selection = null;
 
     //===============================================================
 
@@ -158,7 +159,7 @@ public class ListDialog extends JDialog {
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
         Object  object = jList.getSelectedValue();
         if (object!=null)
-            selection = object.toString();
+            selection = jList.getSelectedValuesList();
         doClose();
     }//GEN-LAST:event_okBtnActionPerformed
 
@@ -181,14 +182,13 @@ public class ListDialog extends JDialog {
     private void jListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListMouseClicked
         if (evt.getClickCount() == 2) {
             if (jList.getSelectedValue() != null) {
-                selection = jList.getSelectedValue().toString();
+                selection = jList.getSelectedValuesList();
                 doClose();
             }
         }
     }//GEN-LAST:event_jListMouseClicked
 
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -200,7 +200,7 @@ public class ListDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    public String showDialog() {
+    public List<String> showDialog() {
         setVisible(true);
         return selection;
     }
@@ -224,9 +224,10 @@ public class ListDialog extends JDialog {
         try {
             String[] servers = ApiUtil.get_db_obj().get_server_name_list();
             ListDialog dialog = new ListDialog(null, "Servers", servers);
-            String serverName = dialog.showDialog();
-            if (serverName != null)
-                System.out.println(serverName);
+            List<String> serverNames = dialog.showDialog();
+            for (String serverName : serverNames)
+                if (serverName != null)
+                    System.out.println(serverName);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new Frame(), null, e);
         }

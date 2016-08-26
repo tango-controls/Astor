@@ -37,17 +37,15 @@ package admin.astor.statistics;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoDs.Except;
 
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
-
-//=======================================================
 
 /**
  * Compute global statistics for a multi StarterStat object
  *
  * @author Pascal Verdier
  */
-//=======================================================
 public class GlobalStatistics {
     public long readAt = 0;
     public int nbHosts = 0;
@@ -57,7 +55,7 @@ public class GlobalStatistics {
     public long runDuration = 0;
     public long failedDuration = 0;
     public int nbFailures = 0;
-    private ArrayList<StarterStat> starterStats;
+    private List<StarterStat> starterStats;
     private String fileName = null;
 
     //  Saving file definitions
@@ -81,7 +79,7 @@ public class GlobalStatistics {
     //=======================================================
     public GlobalStatistics(String fileName) throws DevFailed {
         this.fileName = fileName;
-        starterStats = new ArrayList<StarterStat>();
+        starterStats = new ArrayList<>();
         String code = Utils.readFile(fileName);
         if (!code.startsWith(header))
             Except.throw_exception("FILE_NOT_VALID",
@@ -93,7 +91,7 @@ public class GlobalStatistics {
 
     //=======================================================
     //=======================================================
-    public GlobalStatistics(ArrayList<StarterStat> starterStats) {
+    public GlobalStatistics(List<StarterStat> starterStats) {
         this.starterStats = starterStats;
         readAt = System.currentTimeMillis();
         computeStatistics();
@@ -119,7 +117,7 @@ public class GlobalStatistics {
     }
     //=======================================================
     //=======================================================
-    public ArrayList<StarterStat> getStarterStatistics() {
+    public List<StarterStat> getStarterStatistics() {
         return starterStats;
     }
 
@@ -165,6 +163,7 @@ public class GlobalStatistics {
     }
     //=======================================================
     //=======================================================
+    @SuppressWarnings("unused")
     public String getHostForOldestTime() {
         String hostName = "";
         long t = System.currentTimeMillis();
@@ -182,7 +181,7 @@ public class GlobalStatistics {
     //=======================================================
     private void parseStatistics(String code) throws DevFailed {
         StringTokenizer stk = new StringTokenizer(code, "\n");
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         boolean globalFound = false;
 
         //  Get global info and collect lines between begin/end for StarterStat
@@ -202,7 +201,7 @@ public class GlobalStatistics {
         }
 
         //  Collect StarterStat lines, and create objects
-        ArrayList<String> records = new ArrayList<String>();
+        List<String> records = new ArrayList<>();
         for (String line : lines) {
             //  Is it the end of server stat ?
             if (line.startsWith("</" + StarterStat.className)) {

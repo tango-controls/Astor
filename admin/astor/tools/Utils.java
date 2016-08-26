@@ -34,20 +34,17 @@
 
 package admin.astor.tools;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.tangoatk.core.ATKException;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.awt.*;
 
-
+/**
+ *	This class is a set of tools
+ *
+ * @author verdier
+ */
 public class Utils {
     static private Utils instance = null;
     static public final String img_path = "/admin/astor/images/";

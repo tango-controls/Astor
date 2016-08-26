@@ -1,6 +1,6 @@
 TANGO_HOME=/segfs/tango
 LIB=$TANGO_HOME/release/java/lib
-APPLI=$TANGO_HOME/release/java/appli
+APPLI=$TANGO_HOME/release/java/astor
 
 API=$TANGO_HOME/javaapi/bin
 

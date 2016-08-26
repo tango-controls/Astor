@@ -39,6 +39,7 @@ package admin.astor.tools;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 //===============================================================
@@ -54,7 +55,7 @@ public class TablePopupMenu extends JPopupMenu {
     /**
      * Popup menu to be used on right button clicked.
      */
-    static private String[] pMenuLabels = {
+    static private String[] menuLabels = {
             "Signal Info",
             "Signal History",
             "Remove",
@@ -71,7 +72,6 @@ public class TablePopupMenu extends JPopupMenu {
     static public final int UP = 0;
     static public final int DOWN = 1;
     //==========================================================
-
     /**
      * Class Constructor
      */
@@ -92,9 +92,9 @@ public class TablePopupMenu extends JPopupMenu {
         titleLbl.setFont(new java.awt.Font("Dialog", 1, 16));
         add(titleLbl);
         add(new JPopupMenu.Separator());
-        for (int i = 0; i < pMenuLabels.length; i++) {
-            JMenuItem btn = new JMenuItem(pMenuLabels[i]);
-            btn.addActionListener(new java.awt.event.ActionListener() {
+        for (String label : menuLabels) {
+            JMenuItem btn = new JMenuItem(label);
+            btn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     executeActionPerformed(evt);
                 }
@@ -125,11 +125,11 @@ public class TablePopupMenu extends JPopupMenu {
     private void executeActionPerformed(ActionEvent evt) {
         String cmd = evt.getActionCommand();
 
-        if (cmd.equals(pMenuLabels[INFO]))
+        if (cmd.equals(menuLabels[INFO]))
             parent.displayInfo(signal);
-        else if (cmd.equals(pMenuLabels[HISTORY]))
+        else if (cmd.equals(menuLabels[HISTORY]))
             parent.displayHistory(signal);
-        else if (cmd.equals(pMenuLabels[REMOVE])) {
+        else if (cmd.equals(menuLabels[REMOVE])) {
             if (JOptionPane.showConfirmDialog(parent,
                     "OK to remove " + signal + " ?",
                     "Confim Dialog",
@@ -137,9 +137,9 @@ public class TablePopupMenu extends JPopupMenu {
                 //	Remove signal
                 parent.remove(signal);
             }
-        } else if (cmd.equals(pMenuLabels[MOVE_UP]))
+        } else if (cmd.equals(menuLabels[MOVE_UP]))
             parent.move(signal, UP);
-        else if (cmd.equals(pMenuLabels[MOVE_DOWN]))
+        else if (cmd.equals(menuLabels[MOVE_DOWN]))
             parent.move(signal, DOWN);
     }
 }

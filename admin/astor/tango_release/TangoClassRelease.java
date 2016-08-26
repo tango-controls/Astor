@@ -15,21 +15,17 @@
 
 package admin.astor.tango_release;
 
-
-/** 
- *	This class define a Tango class object with its
- *	Tango and IDL release number.
- *
- * @author  verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbServer;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.Except;
 
-
-
+/**
+ *	This class define a Tango class object with its
+ *	Tango and IDL release number.
+ *
+ * @author  verdier
+ */
 public class  TangoClassRelease {
 
     String  className;

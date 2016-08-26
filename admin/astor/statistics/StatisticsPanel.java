@@ -46,6 +46,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -127,8 +128,8 @@ public class StatisticsPanel extends JFrame {
     //=======================================================
     private void displayGlobalStatistics() {
         //  Build the server failed list and display it in a table
-        ArrayList<ServerStat> failedServers = getServerFailedList(
-                globalStatistics.getStarterStatistics());
+        List<ServerStat> failedServers =
+                getServerFailedList(globalStatistics.getStarterStatistics());
         statisticsTable = new GlobalStatisticsTable(this);
         statisticsTable.setStatistics(failedServers);
         globalStatTextArea.setText(globalStatistics.toString());
@@ -518,8 +519,8 @@ public class StatisticsPanel extends JFrame {
 
     //=======================================================
     //=======================================================
-    private ArrayList<ServerStat> getServerFailedList(ArrayList<StarterStat> starterStats) {
-        ArrayList<ServerStat> serverStats = new ArrayList<ServerStat>();
+    private List<ServerStat> getServerFailedList(List<StarterStat> starterStats) {
+        List<ServerStat> serverStats = new ArrayList<>();
         for (StarterStat starterStat : starterStats) {
             for (ServerStat server : starterStat) {
                 if (server.nbFailures > 0) {
@@ -591,7 +592,7 @@ public class StatisticsPanel extends JFrame {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             //  Read Statistics for all controlled starters
-            ArrayList<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
+            List<StarterStat> starterStatistics = Utils.readHostStatistics(hostList);
             Collections.sort(starterStatistics, new CompareStarterResetTime());
             globalStatistics = new GlobalStatistics(starterStatistics);
 

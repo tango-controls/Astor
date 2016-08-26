@@ -34,17 +34,9 @@
 
 package admin.astor.statistics;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoDs.Except;
-
 
 public class ServerRecord {
     DevState state;
@@ -91,12 +83,17 @@ public class ServerRecord {
             Except.throw_exception("SYNTAX_ERROR", e.toString(), "ServerRecord.ServerRecord()");
         }
         String str = Utils.parseXmlProperty(line, autoStartStr);
-        if (str.equals("auto"))
-            autoRestart = START_AUTO;
-        else if (str.equals("request"))
-            autoRestart = START_REQUEST;
-        else
-            autoRestart = START_UNKNOWN;
+        switch (str) {
+            case "auto":
+                autoRestart = START_AUTO;
+                break;
+            case "request":
+                autoRestart = START_REQUEST;
+                break;
+            default:
+                autoRestart = START_UNKNOWN;
+                break;
+        }
     }
 
     //===============================================================
@@ -137,7 +134,7 @@ public class ServerRecord {
     //===============================================================
     //===============================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (state == DevState.ON)
             sb.append("Start");
         else

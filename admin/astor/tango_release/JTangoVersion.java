@@ -44,7 +44,7 @@ import java.util.StringTokenizer;
 
 public class JTangoVersion {
 
-    private ArrayList<ManifestModule>   modules = new ArrayList<ManifestModule>();
+    private List<ManifestModule>   modules = new ArrayList<>();
 
     private static String jarFileName;
     private static int    jarFileType;
@@ -156,7 +156,7 @@ public class JTangoVersion {
         String classpath = System.getProperty("java.class.path");
         String separator = System.getProperty("path.separator");
         //  Split classpath to check jar file used.
-        ArrayList<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(classpath, separator);
         while (stk.hasMoreTokens()) {
             paths.add(stk.nextToken());
@@ -249,7 +249,7 @@ public class JTangoVersion {
         //====================================================================
         private String  splitDate(String date) {
             StringTokenizer stk = new StringTokenizer(date);
-            ArrayList<String>   tokens = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             while (stk.hasMoreTokens())
                 tokens.add(stk.nextToken());
             return tokens.get(2) + " " + tokens.get(1) + " " + tokens.get(5);

@@ -179,12 +179,12 @@ public class TangoReleaseTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    private ArrayList<ServerCollectionClass> initCollectionsByTangoRelease() {
-        ArrayList<ServerCollectionClass> serverCollectionClasses = new ArrayList<ServerCollectionClass>();
+    private List<ServerCollectionClass> initCollectionsByTangoRelease() {
+        List<ServerCollectionClass> serverCollectionClasses = new ArrayList<>();
 
         //  Do it for specific release
         for (double tangoRelease : tangoReleases) {
-            ArrayList<TangoServerRelease>   servers =
+            List<TangoServerRelease>   servers =
                     serverReleaseList.getServersForTangoRelease(tangoRelease);
             if (servers.size()>0) {
                 String text = "Tango-"+tangoRelease;
@@ -199,7 +199,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         //  Do it for releases > 9.0 (the real release is now given by c++ lib)
         for (int i=90 ; i<150 ; i++) {
             double tangoRelease = 0.1*i;
-            ArrayList<TangoServerRelease> servers =
+            List<TangoServerRelease> servers =
                     serverReleaseList.getServersForTangoRelease(tangoRelease);
             if (servers.size()>0) {
                 String text = "Tango-" + tangoRelease;
@@ -207,7 +207,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
             }
         }
         //  Add a collection for failed ones.
-        List<TangoServerRelease>   onError = serverReleaseList.getServersOnError();
+        List<TangoServerRelease> onError = serverReleaseList.getServersOnError();
         if (onError.size()>0)
             serverCollectionClasses.add(new ServerCollectionClass("Failed", onError));
 
@@ -215,10 +215,9 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     }
     //===============================================================
     //===============================================================
-    private ArrayList<IdlCollectionClass> initCollectionsByIdlRelease() {
+    private List<IdlCollectionClass> initCollectionsByIdlRelease() {
 
-        ArrayList<IdlCollectionClass> idlCollectionClasses =
-                new ArrayList<IdlCollectionClass>();
+        List<IdlCollectionClass> idlCollectionClasses = new ArrayList<>();
         for (int idlRelease : idlReleases) {
             List<TangoClassRelease>   servers =
                     serverReleaseList.getClassesForIdlRelease(idlRelease);
@@ -234,7 +233,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
         //  Build collections (depending on mode)
         switch (mode) {
             case TangoReleaseDialog.byTango:
-                ArrayList<ServerCollectionClass> serverCollectionClasses = initCollectionsByTangoRelease();
+                List<ServerCollectionClass> serverCollectionClasses = initCollectionsByTangoRelease();
 
                 //  Build collection nodes
                 for (ServerCollectionClass serverCollectionClass : serverCollectionClasses) {
@@ -243,8 +242,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
                     root.add(tangoNode);
 
                     //  Declare a map to split server name on executable/instance
-                    HashMap<String, DefaultMutableTreeNode> executableNodes =
-                            new HashMap<String, DefaultMutableTreeNode>();
+                    HashMap<String, DefaultMutableTreeNode> executableNodes = new HashMap<>();
 
                     //  Build server nodes
                     for (TangoServerRelease serverRelease : serverCollectionClass.servers) {
@@ -267,7 +265,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
                 }
                 break;
             case TangoReleaseDialog.byIDL:
-                ArrayList<IdlCollectionClass> idlCollectionClasses = initCollectionsByIdlRelease();
+                List<IdlCollectionClass> idlCollectionClasses = initCollectionsByIdlRelease();
                 for (IdlCollectionClass idlCollectionClass : idlCollectionClasses) {
                     DefaultMutableTreeNode idlNode =
                             new DefaultMutableTreeNode(idlCollectionClass);
@@ -319,15 +317,13 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private void expandNode(DefaultMutableTreeNode node) {
-        ArrayList<DefaultMutableTreeNode> list = new ArrayList<DefaultMutableTreeNode>();
+        List<DefaultMutableTreeNode> list = new ArrayList<>();
         list.add(node);
         while (node != root) {
             node = (DefaultMutableTreeNode) node.getParent();
             list.add(0, node);
         }
-        TreeNode[] tn = new DefaultMutableTreeNode[list.size()];
-        for (int i = 0; i < list.size(); i++)
-            tn[i] = list.get(i);
+        TreeNode[] tn = list.toArray(new TreeNode[list.size()]);
         TreePath tp = new TreePath(tn);
         setSelectionPath(tp);
         scrollPathToVisible(tp);

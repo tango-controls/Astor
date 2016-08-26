@@ -156,7 +156,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
                 al_node = new DefaultMutableTreeNode(new BrowserDevice(deviceName, alias));
                 al_node.add(new DefaultMutableTreeNode("dummy"));
                 c_node.add(al_node);
-            } catch (DevFailed e) {/** Do Nothing */}
+            } catch (DevFailed e) {/* Do Nothing */}
         }
     }
 
@@ -892,7 +892,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
             this.instance = instance;
             try {
                 dev = new BrowserDevice_2("dserver/" + name);
-            } catch (DevFailed e) { /** Do nothing */}
+            } catch (DevFailed e) { /* Do nothing */}
         }
 
         //==========================================================

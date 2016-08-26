@@ -15,22 +15,20 @@
 
 package admin.astor.tango_release;
 
-
-/** 
- *	This class Manage a list Tango class objects with their
- *	Tango and IDL release number.
- *
- * @author  verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbServer;
 import fr.esrf.TangoApi.DeviceProxy;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-
+/**
+ *	This class Manage a list Tango class objects with their
+ *	Tango and IDL release number.
+ *
+ * @author  verdier
+ */
 public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
 
     String      name;
@@ -91,8 +89,8 @@ public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
     }
 	//===============================================================
 	//===============================================================
-    public ArrayList<TangoClassRelease> getIdlClasses(int idl) {
-        ArrayList<TangoClassRelease>    list = new ArrayList<TangoClassRelease>();
+    public List<TangoClassRelease> getIdlClasses(int idl) {
+        List<TangoClassRelease> list = new ArrayList<>();
         for (TangoClassRelease classRelease : this) {
             if (classRelease.idl==idl &&
                !classRelease.className.equals(dserverClassName))

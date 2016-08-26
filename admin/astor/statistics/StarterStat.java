@@ -34,14 +34,6 @@
 
 package admin.astor.statistics;
 
-
-/**
- *	This class is able to manage a vector of ServerStat objects
- *  built from a Starter statistics file.
- *
- * @author verdier
- */
-
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceAttribute;
@@ -49,10 +41,16 @@ import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.Except;
 
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
-
+/**
+ *	This class is able to manage a vector of ServerStat objects
+ *  built from a Starter statistics file.
+ *
+ * @author verdier
+ */
 public class StarterStat extends ArrayList<ServerStat> {
     public String name;
     public boolean readOK = false;
@@ -89,7 +87,7 @@ public class StarterStat extends ArrayList<ServerStat> {
      * @throws DevFailed in case of xml parsing failed.
      */
     //===============================================================
-    public StarterStat(ArrayList<String> lines) throws DevFailed {
+    public StarterStat(List<String> lines) throws DevFailed {
         super();
         parseXmlStatistics(lines);
     }
@@ -148,7 +146,7 @@ public class StarterStat extends ArrayList<ServerStat> {
         DeviceData argout = dev.command_inout("DevReadLog", argin);
         String str = argout.extractString();
 
-        ArrayList<LogRecord> records = new ArrayList<LogRecord>();
+        List<LogRecord> records = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(str, "\n");
         while (stk.hasMoreTokens()) {
             LogRecord record = new LogRecord(stk.nextToken());
@@ -168,7 +166,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     }
     //===============================================================
     //===============================================================
-    private void buildServerStatistics(ArrayList<LogRecord> records) {
+    private void buildServerStatistics(List<LogRecord> records) {
         for (LogRecord rec : records) {
             ServerStat server = getServerStat(rec.name);
             if (server == null) {
@@ -227,12 +225,12 @@ public class StarterStat extends ArrayList<ServerStat> {
     }
     //=======================================================
     //=======================================================
-    private void parseXmlStatistics(ArrayList<String> lines) throws DevFailed {
+    private void parseXmlStatistics(List<String> lines) throws DevFailed {
         //  The first line is the Starter definition
         if (lines.size() >= 0)
             parseXmlProperties(lines.get(0));
 
-        ArrayList<String> records = new ArrayList<String>();
+        List<String> records = new ArrayList<>();
         boolean inServer = false;
         for (int i = 1; i < lines.size(); i++) {
             String line = lines.get(i);
