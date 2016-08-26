@@ -46,31 +46,17 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-
-//===============================================================
-/**
- *	JDialog Class to display info
- *
- *	@author  Pascal Verdier
- */
-//===============================================================
-
-
-
-
-
-//===============================================================
 /*
  * A thread to do the job.
  */
-//===============================================================
 public class ScanningControlSystem  {
 
-    private ArrayList<String>   classList = new ArrayList<String>();
-    private ArrayList<String>   binaryList = new ArrayList<String>();
-    private ArrayList<String>   stoppedList = new ArrayList<String>();
-    private ArrayList<TangoCommand>   dserverCommands = new ArrayList<TangoCommand>();
+    private List<String> classList = new ArrayList<>();
+    private List<String> binaryList = new ArrayList<>();
+    private List<String> stoppedList = new ArrayList<>();
+    private List<TangoCommand> dServerCommands = new ArrayList<>();
 
     private StringBuilder   results = new StringBuilder();
     //===========================================================
@@ -81,7 +67,7 @@ public class ScanningControlSystem  {
         }
         else {
             String fileName = args[0];
-            ArrayList<String>   hostNames = new ArrayList<String>();
+            List<String>   hostNames = new ArrayList<>();
             hostNames.addAll(Arrays.asList(args).subList(1, args.length));
             System.out.println("Stating scan - put results in " + fileName);
             new ScanningControlSystem(fileName, hostNames);
@@ -90,11 +76,11 @@ public class ScanningControlSystem  {
     }
     //===========================================================
     //===========================================================
-    public ScanningControlSystem(String fileName, ArrayList<String> hostNames) {
+    public ScanningControlSystem(String fileName, List<String> hostNames) {
         try {
 
             //  Browse the Database.
-            ArrayList<TangoHost>    hostList = new ArrayList<TangoHost>();
+            List<TangoHost>    hostList = new ArrayList<>();
             for (String hostName : hostNames) {
                 hostList.add(new TangoHost(hostName));
             }
@@ -210,8 +196,8 @@ public class ScanningControlSystem  {
     //===============================================================
     //===============================================================
     private class TangoDevice extends ArrayList<TangoAttribute> {
-        String name;
-        ArrayList<TangoCommand>   commands = new ArrayList<TangoCommand>();
+        private String name;
+        private List<TangoCommand>   commands = new ArrayList<>();
         //===========================================================
         private TangoDevice(String name, boolean running) {
             this.name = name;
@@ -242,20 +228,20 @@ public class ScanningControlSystem  {
             //  Create a DServer device
             //  It is not necessary to read it, all dserver are same device
             //  Only the first dserver device will be called
-            if (running && dserverCommands.isEmpty()) {
+            if (running && dServerCommands.isEmpty()) {
                 try {
                     //int i=0;
                     DeviceProxy proxy = new DeviceProxy(name);
                     CommandInfo[]   commandInfoList = proxy.command_list_query();
                     for (CommandInfo commandInfo : commandInfoList) {
-                        dserverCommands.add(new TangoCommand(commandInfo));
+                        dServerCommands.add(new TangoCommand(commandInfo));
                         //System.out.println(i++ + "/" +
                         //        commandInfoList.length + ":\t" + commandInfo.cmd_name);
                     }
                 }
                 catch (DevFailed e) { /* */ }
             }
-            for (TangoCommand tangoCommand : dserverCommands) {
+            for (TangoCommand tangoCommand : dServerCommands) {
                 commands.add(tangoCommand);
             }
         }
@@ -271,12 +257,11 @@ public class ScanningControlSystem  {
         //===========================================================
         public String toString() {
             String  tab = "        ";
-            StringBuilder   sb = new StringBuilder(name+":\n");
-            sb.append(tab).append(size())           .append(" attributes\n");
-            sb.append(tab).append(commands.size())  .append(" commands\n");
-            sb.append(tab).append(tab).append(getControlPointCount()).append(" control point\n");
+            String sb = name + ":\n" + tab + size() + " attributes\n" +
+                    tab + commands.size() + " commands\n" +
+                    tab + tab + getControlPointCount() + " control point\n";
 
-            return tab + sb.toString().trim();
+            return tab + sb.trim();
         }
         //===========================================================
     }

@@ -1,6 +1,6 @@
 TANGO_HOME=/segfs/tango
 LIB=$TANGO_HOME/release/java/lib
-APPLI=$TANGO_HOME/release/java/appli
+APPLI=$TANGO_HOME/release/java/astor
 
 TangORB=$LIB/TangORB.jar
 ASTOR=$TANGO_HOME/tools/admin/astor/bin
@@ -8,7 +8,7 @@ ATK=$LIB/ATKCore.jar:$LIB/ATKWidget.jar
 
 
 
-CLASSPATH=$TangORB:$ASTOR:$ATK
+#CLASSPATH=$TangORB:$ASTOR:$ATK
 
 echo "CLASSPATH=$CLASSPATH"
 

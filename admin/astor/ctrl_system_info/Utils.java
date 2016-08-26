@@ -35,12 +35,10 @@
 
 package admin.astor.ctrl_system_info;
 
-
 import admin.astor.AstorUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.DbDatum;
-
 
 /**
  *	This class is a set of tools
@@ -66,7 +64,7 @@ public class  Utils {
     }
     //===============================================================
     //===============================================================
-    public static String getControlSystemName() throws DevFailed {
+    static String getControlSystemName() throws DevFailed {
         DbDatum datum = ApiUtil.get_db_obj().get_property("CtrlSystem", "Name");
         if (datum.is_empty())
             return "";
@@ -75,7 +73,7 @@ public class  Utils {
     }
     //===============================================================
     //===============================================================
-    public static String[] getLastCollectionList() throws  DevFailed {
+    static String[] getLastCollectionList() throws  DevFailed {
         DbDatum datum = ApiUtil.get_db_obj().get_property("Astor", "LastCollections");
         if (datum.is_empty()) {
             return new String[] {};
@@ -92,7 +90,7 @@ public class  Utils {
      * @throws fr.esrf.Tango.DevFailed in case of database connection failed.
      */
     //===============================================================
-    public static String[] getHostControlledList() throws DevFailed {
+    static String[] getHostControlledList() throws DevFailed {
         return ApiUtil.get_db_obj().get_device_member(AstorUtil.getStarterDeviceHeader()+"*");
     }
 

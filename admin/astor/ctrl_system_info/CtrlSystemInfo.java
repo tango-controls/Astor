@@ -45,6 +45,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -62,8 +63,8 @@ import java.util.Comparator;
 public class CtrlSystemInfo extends JDialog {
 
     private JFrame	parent;
-    private ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
-    private ArrayList<HostCollection>    collectionList;
+    private List<JRadioButton> buttons = new ArrayList<>();
+    private List<HostCollection> collectionList;
     private ScanningThread  scanningThread;
     private Monitor monitor;
     private String controlSystemName;
@@ -109,9 +110,9 @@ public class CtrlSystemInfo extends JDialog {
     }
     //===============================================================
     //===============================================================
-    private ArrayList<HostCollection> getCollectionList() throws DevFailed {
+    private List<HostCollection> getCollectionList() throws DevFailed {
         String[]    hostNames = Utils.getHostControlledList();
-        ArrayList<HostCollection>   list = new ArrayList<HostCollection>();
+        List<HostCollection>   list = new ArrayList<>();
         for (String hostName : hostNames) {
             DbDatum datum = new DeviceProxy(
                     AstorUtil.getStarterDeviceHeader()+hostName).get_property("HostCollection");
@@ -137,7 +138,7 @@ public class CtrlSystemInfo extends JDialog {
 
         String[] lastNames = Utils.getLastCollectionList();
         if (lastNames!=null && lastNames.length>0) {
-            ArrayList<HostCollection> lastCollections = new ArrayList<HostCollection>();
+            List<HostCollection> lastCollections = new ArrayList<>();
             for (HostCollection hostCollection : list) {
                 for (String lastName : lastNames) {
                     if (hostCollection.getName().equals(lastName)) {
@@ -270,7 +271,7 @@ public class CtrlSystemInfo extends JDialog {
     @SuppressWarnings("UnusedParameters")
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         // TODO add your handling code here:
-        ArrayList<String>   hostList = new ArrayList<String>();
+        ArrayList<String>   hostList = new ArrayList<>();
         for (JRadioButton button : buttons) {
             if (button.isSelected()) {
                 String  collectionName = button.getText();
