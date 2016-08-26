@@ -41,21 +41,17 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.ArrayList;
-
-//===============================================================
+import java.util.List;
 
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 @SuppressWarnings("MagicConstant")
 public class TopDialog extends JDialog {
     private BlackBoxTable.BlackBox blackBox;
-    private ArrayList<JTextArea>    textAreas;
+    private List<JTextArea> textAreaList;
     private String  deviceName;
     //===============================================================
     /**
@@ -67,17 +63,17 @@ public class TopDialog extends JDialog {
         this.blackBox = blackBox;
         this.deviceName = deviceName;
         initComponents();
-        textAreas = new ArrayList<JTextArea>();
-        textAreas.add(null);    //	DATE is not used
-        textAreas.add(operationTxt);
-        textAreas.add(nameTxt);
-        textAreas.add(sourceTxt);
-        textAreas.add(hostTxt);
-        textAreas.add(processTxt);
+        textAreaList = new ArrayList<>();
+        textAreaList.add(null);    //	DATE is not used
+        textAreaList.add(operationTxt);
+        textAreaList.add(nameTxt);
+        textAreaList.add(sourceTxt);
+        textAreaList.add(hostTxt);
+        textAreaList.add(processTxt);
 
         for (int i = BlackBoxTable.OPERATION; i <= BlackBoxTable.PROCESS; i++) {
-            textAreas.get(i).getParent().setPreferredSize(new Dimension(500, 350));
-            textAreas.get(i).setFont(new Font("dialog", Font.BOLD, 12));
+            textAreaList.get(i).getParent().setPreferredSize(new Dimension(500, 350));
+            textAreaList.get(i).setFont(new Font("dialog", Font.BOLD, 12));
         }
         tabbedPane.setSelectedIndex(BlackBoxTable.PROCESS - 1);    //	-1 for DATES not used
 
@@ -92,7 +88,7 @@ public class TopDialog extends JDialog {
             return;
 
         for (int i = BlackBoxTable.OPERATION; i <= BlackBoxTable.PROCESS; i++)
-            textAreas.get(i).setText(computeTop(i).toString());
+            textAreaList.get(i).setText(computeTop(i).toString());
         titleLabel.setText("Top on  " + deviceName + " during " + blackBox.getDeltaTimeStr());
     }
 
@@ -119,7 +115,7 @@ public class TopDialog extends JDialog {
             }
             //  If not -> add it in object
             if (!found) {
-                ArrayList<String> lineItems = new ArrayList<String>();
+                ArrayList<String> lineItems = new ArrayList<>();
                 lineItems.add(item);
                 topObject.add(lineItems);
             }
@@ -295,11 +291,11 @@ public class TopDialog extends JDialog {
         private double[] computeRatios() {
             int sum = 0;
             double [] ratios = new double[size()];
-            for (ArrayList<String> line : this) {
+            for (List<String> line : this) {
                 sum += line.size();
             }
             int i = 0;
-            for (ArrayList<String> line : this) {
+            for (List<String> line : this) {
                 ratios[i++] = 100.0*line.size()/sum;
             }
             return ratios;
@@ -309,7 +305,7 @@ public class TopDialog extends JDialog {
             double [] ratios = computeRatios();
             int i=0;
             StringBuilder sb = new StringBuilder();
-            for (ArrayList<String> line : this)
+            for (List<String> line : this)
                 sb.append(String.format("%3d", line.size()))
                         .append(" calls(").append(String.format("%5.1f", ratios[i++]))
                         .append(" %):\t").append(line.get(0)).append('\n');

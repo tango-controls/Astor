@@ -55,17 +55,13 @@ import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
-
-//===============================================================
+import java.util.List;
 
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 @SuppressWarnings("MagicConstant")
 public class BlackBoxTable extends JDialog {
     private String deviceName;
@@ -87,12 +83,12 @@ public class BlackBoxTable extends JDialog {
     private class Column {
         String name;
         int width;
-
         //==========================
         Column(String n, int w) {
             name = n;
             width = w;
         }
+        //==========================
     }
 
     private final Column[] columns = {
@@ -526,24 +522,23 @@ public class BlackBoxTable extends JDialog {
 
 
     //===============================================================
-
     /**
      * The blacbox class (to parse string array)
      */
     //===============================================================
     class BlackBox extends ArrayList<ArrayList<String>>    //	Data parsed.
     {
-        private ArrayList<ArrayList<String>> filtered;        //	the data filtered
+        private List<ArrayList<String>> filtered;        //	the data filtered
         private Filter filter = null;    //	The filter requirement
-        private ArrayList<String> code;            //	Original lines
-        private ArrayList<String> filtered_code;    //	filtered original lines
+        private List<String> code;            //	Original lines
+        private List<String> filtered_code;    //	filtered original lines
         private double delta_time = 0.0;//	time between first and last record.
 
         //===========================================================
         private BlackBox() {
-            code = new ArrayList<String>();
-            filtered = new ArrayList<ArrayList<String>>();
-            filtered_code = new ArrayList<String>();
+            code = new ArrayList<>();
+            filtered = new ArrayList<>();
+            filtered_code = new ArrayList<>();
 
             //	Parse the string array from the device black box
             //addRecords(parseContent(array), array);
@@ -642,22 +637,22 @@ public class BlackBoxTable extends JDialog {
                 return 0.0;
 
             //	Build time
-            ArrayList<String> vs = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             StringTokenizer stk = new StringTokenizer(str, ":");
             while (stk.hasMoreTokens())
-                vs.add(stk.nextToken());
-            if (vs.size() < 4)
+                tokens.add(stk.nextToken());
+            if (tokens.size() < 4)
                 return 0.0;
 
             double t = 0.0;
             try {
-                t = 3600.0 * Integer.parseInt(vs.get(0));
-                t += 60.0 * Integer.parseInt(vs.get(1));
-                t += 1.0 * Integer.parseInt(vs.get(2));
-                t += 1.0 * Integer.parseInt(vs.get(3)) / 100;
+                t = 3600.0 * Integer.parseInt(tokens.get(0));
+                t += 60.0 * Integer.parseInt(tokens.get(1));
+                t += 1.0 * Integer.parseInt(tokens.get(2));
+                t += 1.0 * Integer.parseInt(tokens.get(3)) / 100;
                 //System.out.println(str + " -> " + t);
             } catch (NumberFormatException e) {
-                System.out.println(e);
+                System.out.println(e.toString());
             }
             return t;
         }
@@ -678,7 +673,7 @@ public class BlackBoxTable extends JDialog {
 
         //===========================================================
         private void update(String[] array) {
-            ArrayList<ArrayList<String>> tmp = parseContent(array);
+            List<ArrayList<String>> tmp = parseContent(array);
             boolean found = false;
 
             if (size() > 0) {
@@ -727,7 +722,7 @@ public class BlackBoxTable extends JDialog {
         }
 
         //===========================================================
-        private void addRecords(ArrayList<ArrayList<String>> tmp, String[] array) {
+        private void addRecords(List<ArrayList<String>> tmp, String[] array) {
             int idx = array.length - 1;
             if (tmp.size() > 0)
                 for (int i = tmp.size() - 1; i >= 0; i--) {
@@ -742,10 +737,10 @@ public class BlackBoxTable extends JDialog {
 
         //===========================================================
         private ArrayList<ArrayList<String>> parseContent(String[] array) {
-            ArrayList<ArrayList<String>> info = new ArrayList<ArrayList<String>>();
+            ArrayList<ArrayList<String>> info = new ArrayList<>();
             for (String line : array) {
                 //	Get date
-                ArrayList<String> vs = new ArrayList<String>(columns.length);
+                ArrayList<String> vs = new ArrayList<>(columns.length);
                 String date = getDate(line);
                 int offset = date.length() + 3;
 
@@ -830,14 +825,14 @@ public class BlackBoxTable extends JDialog {
         private String getProcess(String line) {
             int offset;
             String process = "";
-            String jclient = "java client with main class";
-            String cppclient = "cpp/python client with pid";
-            if ((offset = line.toLowerCase().indexOf(jclient)) > 0) {
-                process = line.substring(offset + jclient.length());
+            String javaClient = "java client with main class";
+            String cppClient = "cpp/python client with pid";
+            if ((offset = line.toLowerCase().indexOf(javaClient)) > 0) {
+                process = line.substring(offset + javaClient.length());
                 if ((offset = process.indexOf(')')) > 0)
                     process = process.substring(0, offset);
-            } else if ((offset = line.toLowerCase().indexOf(cppclient)) > 0)
-                process = "PID=" + getNextWord(line, offset + cppclient.length());
+            } else if ((offset = line.toLowerCase().indexOf(cppClient)) > 0)
+                process = "PID=" + getNextWord(line, offset + cppClient.length());
             return process.trim();
         }
 
@@ -1121,8 +1116,7 @@ public class BlackBoxTable extends JDialog {
      */
     //===============================================================
     public class FilterDialog extends JDialog {
-        private ArrayList<JRadioButton>
-                buttons = new ArrayList<JRadioButton>();
+        private List<JRadioButton> buttons = new ArrayList<>();
         private JPanel txtPanel;
         private JTextField strFilterTxt;
         private JLabel titleLabel;

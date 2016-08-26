@@ -48,6 +48,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class PoolThreadsTree extends JTree implements TangoConst {
@@ -87,7 +88,6 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         this.setDragEnabled(true);
         setTransferHandler(new TransferHandler("Text"));
     }
-
     //===============================================================
     //===============================================================
     private void buildTree() {
@@ -131,17 +131,20 @@ public class PoolThreadsTree extends JTree implements TangoConst {
                 treeMouseReleased(evt);
             }
 
+            /*
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 treeMouseClicked(evt);
             }
+            */
         });
     }
 
     //======================================================
     /*
-      *	Manage event on clicked mouse on JTree object.
-      */
+     *	Manage event on clicked mouse on JTree object.
+     */
     //======================================================
+        /*
     private void treeMouseClicked(java.awt.event.MouseEvent evt) {
         //	Set selection at mouse position
         TreePath selectedPath = getPathForLocation(evt.getX(), evt.getY());
@@ -154,6 +157,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
         }
     }
+        */
 
     //===============================================================
     //===============================================================
@@ -210,15 +214,15 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private void expandNode(DefaultMutableTreeNode node) {
-        ArrayList<DefaultMutableTreeNode> v = new ArrayList<DefaultMutableTreeNode>();
-        v.add(node);
+        List<DefaultMutableTreeNode> nodeList = new ArrayList<>();
+        nodeList.add(node);
         while (node != root) {
             node = (DefaultMutableTreeNode) node.getParent();
-            v.add(0, node);
+            nodeList.add(0, node);
         }
-        TreeNode[] tn = new DefaultMutableTreeNode[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            tn[i] = v.get(i);
+        TreeNode[] tn = new DefaultMutableTreeNode[nodeList.size()];
+        for (int i = 0; i < nodeList.size(); i++)
+            tn[i] = nodeList.get(i);
         TreePath tp = new TreePath(tn);
         setSelectionPath(tp);
         scrollPathToVisible(tp);
@@ -227,7 +231,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private DefaultMutableTreeNode getFutureSelectedNode(DefaultMutableTreeNode node) {
-        //	Get the future selectd node, after remove.
+        //	Get the future selected node, after remove.
         DefaultMutableTreeNode parent_node =
                 (DefaultMutableTreeNode) node.getParent();
         DefaultMutableTreeNode ret_node = parent_node;
@@ -297,8 +301,8 @@ public class PoolThreadsTree extends JTree implements TangoConst {
 
     //===============================================================
     //===============================================================
-    private ArrayList<String> manageMaxLength(ArrayList<String> lines) {
-        ArrayList<String>   list = new ArrayList<String>();
+    private List<String> manageMaxLength(List<String> lines) {
+        List<String>   list = new ArrayList<>();
         for (String line : lines) {
             while (line.length()>LINE_MAX_LENGTH) {
                 list.add(line.substring(0, LINE_MAX_LENGTH-1)+'\\');
@@ -314,7 +318,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         //  ToDo
         //	Get configuration from tree
         int nbThreads = root.getChildCount();
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         for (int i=0 ; i<root.getChildCount() ; i++) {
             DefaultMutableTreeNode threadNode =
                     (DefaultMutableTreeNode) root.getChildAt(i);
@@ -500,9 +504,8 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         }
 
         //===========================================================
-        private ArrayList<String> rebuildLines(String[] config) {
-
-            ArrayList<String>   lines = new ArrayList<String>();
+        private List<String> rebuildLines(String[] config) {
+            List<String>   lines = new ArrayList<>();
             String line = config[0];
             for (int i=1 ; i<config.length ; i++) {
                 if (line.endsWith("\\")) {
@@ -522,7 +525,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
             if (config.length==0) //  Do nothing
                 return;
             //  first time rebuild lines (ended by '\'
-            ArrayList<String>   lines = rebuildLines(config);
+            List<String>   lines = rebuildLines(config);
 
             int threadCounter = 0;
             for (String line : lines) {

@@ -42,6 +42,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 
 //===============================================================
@@ -182,34 +183,34 @@ public class DevPropertyDialog extends JDialog {
     @SuppressWarnings({"UnusedDeclaration"})
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
 
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         for (int i = 0; i < txt.length; i++) {
-            String strval = txt[i].getText();
+            String stringValue = txt[i].getText();
             //	Check if it has been changed
-            if (!strval.equals(att.prop[i].strval)) {
+            if (!stringValue.equals(att.prop[i].strval)) {
                 try {
                     //	Write it in database
                     DbAttribute att1 = new DbAttribute(att.name);
                     DbDatum datum = new DbDatum(att.prop[i].name);
-                    datum.insert(strval);
+                    datum.insert(stringValue);
                     att1.add(datum);
 
                     dev.put_attribute_property(att1);
 
                     //	Update message to be displayed
-                    v.add(att.prop[i].name + ":    " +
-                            att.prop[i].strval + " --> " + strval);
+                    lines.add(att.prop[i].name + ":    " +
+                            att.prop[i].strval + " --> " + stringValue);
 
                     //	Update local value
-                    att.prop[i].strval = strval;
+                    att.prop[i].strval = stringValue;
                 } catch (DevFailed e) {
                     ErrorPane.showErrorMessage(this, "att.prop[i]", e);
                 }
             }
         }
         String message = "";
-        if (v.size() > 0) {
-            for (String s : v)
+        if (lines.size() > 0) {
+            for (String s : lines)
                 message += s;
         } else
             message = "Nothing changed !";
@@ -303,10 +304,10 @@ public class DevPropertyDialog extends JDialog {
     //===============================================================
     //===============================================================
 /*
-	private void get_property_history(String devname, String attname, String propname)
+	private void get_property_history(String deviceName, String attributeName, String propname)
 	{
-		DbHistory[] 	histo = 
-			get_device_attribute_property_history(devname, attname, propname);
+		DbHistory[] 	history =
+			get_device_attribute_property_history(deviceName, attributeName, propname);
 	}
 */
 }

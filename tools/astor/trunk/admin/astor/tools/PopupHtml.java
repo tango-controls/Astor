@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class Description:
@@ -55,18 +56,18 @@ import java.util.ArrayList;
  *
  * @author verdier
  */
-
 public class PopupHtml extends JDialog implements TangoConst {
 
     protected JFrame parent;
-    protected ArrayList<URL> histo;
+    protected List<URL> history;
     protected JEditorPane pane;
 
-    protected final static boolean back = false;
-    protected final static boolean foward = true;
-
     private boolean deleteFileAtExit = false;
+    private JButton backBtn;
+    private JTextArea urlText;
 
+    protected final static boolean back = false;
+    protected final static boolean forward = true;
     //===============================================================
     /*
      * Initializes the Form
@@ -77,7 +78,7 @@ public class PopupHtml extends JDialog implements TangoConst {
         initComponents();
 
         this.parent = parent;
-        histo = new ArrayList<URL>();
+        history = new ArrayList<>();
         pack();
 
         if (parent != null) {
@@ -108,10 +109,10 @@ public class PopupHtml extends JDialog implements TangoConst {
      */
     //===============================================================
     private void initComponents() {//GEN-BEGIN:initComponents
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        cancelBtn = new javax.swing.JButton();
+        JPanel  jPanel1 = new javax.swing.JPanel();
+        JPanel  jPanel2 = new javax.swing.JPanel();
+        JLabel  jLabel1 = new javax.swing.JLabel();
+        JButton cancelBtn = new javax.swing.JButton();
         backBtn = new javax.swing.JButton();
         urlText = new javax.swing.JTextArea();
         setBackground(new java.awt.Color(198, 178, 168));
@@ -123,11 +124,6 @@ public class PopupHtml extends JDialog implements TangoConst {
         });
 
         jPanel1.setLayout(new java.awt.FlowLayout(2, 5, 5));
-
-
-        //pbar = new JProgressBar();
-        //jPanel1.add (pbar);
-
 
         jLabel1.setText("                     ");
         jPanel1.add(jLabel1);
@@ -141,7 +137,6 @@ public class PopupHtml extends JDialog implements TangoConst {
         });
 
         jPanel1.add(cancelBtn);
-
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
@@ -171,9 +166,9 @@ public class PopupHtml extends JDialog implements TangoConst {
     //======================================================
     @SuppressWarnings({"UnusedParameters"})
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dismissBtnActionPerformed
-        if (histo.size() > 1) {
-            int last = histo.size() - 2;
-            URL prev_url = histo.get(last);
+        if (history.size() > 1) {
+            int last = history.size() - 2;
+            URL prev_url = history.get(last);
             //System.out.println("Back to " + prev_url);
             setPage(prev_url, back);
         }
@@ -183,7 +178,7 @@ public class PopupHtml extends JDialog implements TangoConst {
     public void hyperlinkUpdateClicked(HyperlinkEvent evt) {
         if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
             URL new_url = evt.getURL();
-            setPage(new_url, foward);
+            setPage(new_url, forward);
         }
     }
 
@@ -270,14 +265,14 @@ public class PopupHtml extends JDialog implements TangoConst {
             //noinspection PointlessBooleanExpression
             if (way == back) {
                 //  Check if back on error or really back
-                URL url0 = histo.get(histo.size() - 1);
+                URL url0 = history.get(history.size() - 1);
                 if (url0 != url)
-                    histo.remove(histo.size() - 1);    //	remove last index
+                    history.remove(history.size() - 1);    //	remove last index
             } else
-                histo.add(url);                    //	Add url for history
+                history.add(url);                    //	Add url for history
 
             //	And manage Back button
-            if (histo.size() > 1)
+            if (history.size() > 1)
                 backBtn.setEnabled(true);
             else
                 backBtn.setEnabled(false);
@@ -351,12 +346,12 @@ public class PopupHtml extends JDialog implements TangoConst {
             setSize(width, height);
 
             URL url = new URL(strurl);
-            setPage(url, foward);
+            setPage(url, forward);
         } catch (MalformedURLException e) {
             try {
                 //	Try if it is a strurl is html code.
                 URL url = new URL(buildTmpFile(strurl));
-                setPage(url, foward);
+                setPage(url, forward);
             } catch (IOException ex) {
                 ex.printStackTrace(System.err);
                 return;
@@ -404,7 +399,7 @@ public class PopupHtml extends JDialog implements TangoConst {
         setVisible(false);
         if (deleteFileAtExit)
             try {
-                URL url = histo.get(0);
+                URL url = history.get(0);
                 String urlstr = url.toString();
                 if (urlstr.startsWith("file:"))
                     urlstr = urlstr.substring("file:".length());
@@ -412,23 +407,11 @@ public class PopupHtml extends JDialog implements TangoConst {
                 if (!new File(urlstr).delete())
                     System.err.println("Cannot delete " + urlstr);
             } catch (Exception e) {
-                System.err.println(e);
+                System.err.println(e.toString());
             }
 
         dispose();
     }
-    //----------------------------------------------------------
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton cancelBtn;
-    private javax.swing.JButton backBtn;
-    private javax.swing.JTextArea urlText;
-    // End of variables declaration//GEN-END:variables
-
-
     //===============================================================
     //===============================================================
     public static void main(String args[]) {

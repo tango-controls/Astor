@@ -45,6 +45,7 @@ import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 
 //===============================================================
@@ -71,9 +72,10 @@ public class PopupTable extends JDialog {
      */
     private String[][] data;
 
-    private java.awt.Window parent;
-    private boolean from_appli = true;
-    private boolean sort_available = true;
+    private JLabel titleLabel;
+    private Window parent;
+    private boolean fromApplication = true;
+    private boolean sortAvailable = true;
     //===============================================================
     //===============================================================
     public PopupTable(JFrame parent, String filename)
@@ -103,11 +105,12 @@ public class PopupTable extends JDialog {
 
         //	Check if from an appli or from an empty JFrame
         if (parent.getWidth() == 0)
-            from_appli = false;
+            fromApplication = false;
     }
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("unused")
     public PopupTable(JFrame parent, String title, String filename)
             throws SecurityException,
             IOException,
@@ -135,13 +138,40 @@ public class PopupTable extends JDialog {
 
         //	Check if from an appli or from an empty JFrame
         if (parent.getWidth() == 0)
-            from_appli = false;
+            fromApplication = false;
     }
 
     //===============================================================
     //===============================================================
+    public PopupTable(JFrame parent, String title, String[] col, List<String[]> list) throws DevFailed {
+        this(parent, title, col, list, null);
+    }
+    //===============================================================
+    //===============================================================
+    public PopupTable(JDialog parent, String title, String[] col, List<String[]> list) throws DevFailed {
+        this(parent, title, col, list, null);
+    }
+    //===============================================================
+    //===============================================================
     public PopupTable(JDialog parent, String title, String[] col, String[][] array) throws DevFailed {
         this(parent, title, col, array, null);
+    }
+    //===============================================================
+    /**
+     * Creates new form PopupTable
+     *
+     * @param dim default size
+     * @throws fr.esrf.Tango.DevFailed in case of problem to display in table.
+     * @param    parent    parent component.
+     * @param    title    Widow title.
+     * @param    col      columns title.
+     * @param    list    list of String arrays (lines).
+     */
+    //===============================================================
+    public PopupTable(JDialog parent, String title, String[] col, List<String[]> list, Dimension dim) throws DevFailed {
+        super(parent, false);
+        this.parent = parent;
+        buildObject(title, col, list.toArray(new String[list.size()][]), dim);
     }
     //===============================================================
     /**
@@ -174,6 +204,23 @@ public class PopupTable extends JDialog {
      * @throws fr.esrf.Tango.DevFailed in case of problem to display in table.
      * @param    parent    parent component.
      * @param    title    Widow title.
+     * @param    col      columns title.
+     * @param    list    list of String arrays (lines).
+     */
+    //===============================================================
+    public PopupTable(JFrame parent, String title, String[] col, List<String[]> list, Dimension dim) throws DevFailed {
+        super(parent, false);
+        this.parent = parent;
+        buildObject(title, col, list.toArray(new String[list.size()][]), dim);
+    }
+    //===============================================================
+    /**
+     * Creates new form PopupTable
+     *
+     * @param dim default size
+     * @throws fr.esrf.Tango.DevFailed in case of problem to display in table.
+     * @param    parent    parent component.
+     * @param    title    Widow title.
      * @param    col        columns title.
      * @param    array    array of String arrays.
      */
@@ -185,7 +232,7 @@ public class PopupTable extends JDialog {
 
         //	Check if from an appli or from an empty JFrame
         if (parent.getWidth() == 0)
-            from_appli = false;
+            fromApplication = false;
     }
 
     //===============================================================
@@ -204,16 +251,16 @@ public class PopupTable extends JDialog {
         fid.close();
 
         //	Get all lines
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(str, "\n");
         while (stk.hasMoreTokens())
-            v.add(stk.nextToken());
-        System.out.println(v.size() + " lines");
+            tokens.add(stk.nextToken());
+        System.out.println(tokens.size() + " lines");
 
         //	Split each line
-        data = new String[v.size() - 1][];
-        for (int i = 0; i < v.size(); i++) {
-            String line = v.get(i);
+        data = new String[tokens.size() - 1][];
+        for (int i = 0; i < tokens.size(); i++) {
+            String line = tokens.get(i);
             stk = new StringTokenizer(line, "\t");
 
             //	First line is column's title
@@ -256,9 +303,9 @@ public class PopupTable extends JDialog {
      */
     //===============================================================
     private void initComponents() {//GEN-BEGIN:initComponents
-        jPanel1 = new javax.swing.JPanel();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        JPanel  jPanel1 = new javax.swing.JPanel();
+        JButton cancelBtn = new javax.swing.JButton();
+        JPanel  jPanel2 = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -330,7 +377,7 @@ public class PopupTable extends JDialog {
     //===============================================================
     //===============================================================
     public void setSortAvailable(boolean b) {
-        sort_available = b;
+        sortAvailable = b;
     }
 
     //===============================================================
@@ -339,7 +386,7 @@ public class PopupTable extends JDialog {
 
         int column = my_table.getTableHeader().columnAtPoint(
                 new Point(evt.getX(), evt.getY()));
-        if (sort_available)
+        if (sortAvailable)
             new UsedData().sort(column);
 
         model.fireTableDataChanged();
@@ -375,7 +422,6 @@ public class PopupTable extends JDialog {
         doClose();
     }
     //===============================================================
-
     /**
      * Closes the dialog
      */
@@ -383,21 +429,13 @@ public class PopupTable extends JDialog {
     private void doClose() {
         setVisible(false);
         dispose();
-        if (!from_appli)
+        if (!fromApplication)
             System.exit(0);
     }
     //===============================================================
     //===============================================================
 
 
-    //===============================================================
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JButton cancelBtn;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel titleLabel;
-    // End of variables declaration//GEN-END:variables
-    //===============================================================
 
 
     //=========================================================================

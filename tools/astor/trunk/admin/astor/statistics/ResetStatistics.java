@@ -40,16 +40,13 @@ import fr.esrf.TangoApi.DeviceProxy;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-
-//=======================================================
+import java.util.List;
 
 /**
  * Execute a ResetStatistics on all Controlled starter
  *
  * @author Pascal Verdier
  */
-//=======================================================
 public class ResetStatistics {
     private int nbHosts = 0;
     private int done = 0;
@@ -60,7 +57,7 @@ public class ResetStatistics {
     public ResetStatistics(JFrame parent) {
         this.parent = parent;
 
-        ArrayList<String> hosts = Utils.getHostControlledList(true, false);
+        List<String> hosts = Utils.getHostControlledList(true, false);
         StringBuffer failed = new StringBuffer();
         if (getConfirm(hosts)) {
             nbHosts = hosts.size();
@@ -120,7 +117,7 @@ public class ResetStatistics {
 
     //=======================================================
     //=======================================================
-    private boolean getConfirm(ArrayList<String> hosts) {
+    private boolean getConfirm(List<String> hosts) {
         if (parent != null) {
 
             return JOptionPane.showConfirmDialog(parent,

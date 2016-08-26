@@ -152,7 +152,7 @@ public class UnAvailableHostsDialog extends JDialog {
     //===============================================================
     //===============================================================
     private List<StoppedHost> buildStoppedHosts(List<String> hostNames) {
-        List<StoppedHost>  list = new ArrayList<StoppedHost>();
+        List<StoppedHost>  list = new ArrayList<>();
         for (String hostName : hostNames) {
             list.add(new StoppedHost(hostName));
         }

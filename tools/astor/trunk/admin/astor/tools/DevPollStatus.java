@@ -34,13 +34,6 @@
 
 package admin.astor.tools;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -48,7 +41,11 @@ import fr.esrf.TangoDs.Except;
 
 import java.util.ArrayList;
 
-
+/**
+ *	This class is able to
+ *
+ * @author verdier
+ */
 public class DevPollStatus extends ArrayList<PolledElement> {
     private DeviceProxy deviceProxy;
     private boolean pollSeveralAttributes = false;

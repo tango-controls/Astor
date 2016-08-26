@@ -43,6 +43,7 @@ import fr.esrf.TangoDs.Except;
 import fr.esrf.TangoDs.TangoConst;
 
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
@@ -51,6 +52,7 @@ import java.util.ArrayList;
  * Signal Object Definition
  */
 //=========================================================================
+@SuppressWarnings("WeakerAccess")
 public class SubscribedSignal implements TangoConst {
     final static String defVal = "-----";
     Exception except = null;
@@ -60,10 +62,10 @@ public class SubscribedSignal implements TangoConst {
     String time = defVal;
     String d_time = defVal;
     String d_value = defVal;
-    ArrayList<EventHisto> histo = new ArrayList<EventHisto>();
+    List<EventHisto> histo = new ArrayList<>();
 
-    String devname;
-    String attname;
+    String deviceName;
+    String attributeName;
     int mode;
     int cnt = 0;
     int data_type;
@@ -90,13 +92,13 @@ public class SubscribedSignal implements TangoConst {
         this.name = name;
         //	Split device name and att name
         int pos = name.lastIndexOf("/");
-        devname = name.substring(0, pos);
-        attname = name.substring(pos + 1);
+        deviceName = name.substring(0, pos);
+        attributeName = name.substring(pos + 1);
         this.mode = mode;
 
         try {
             attinfo = new AttributeProxy(name).get_info_ex();
-        } catch (DevFailed e) { /** Nothing to do */}
+        } catch (DevFailed e) { /* Nothing to do */}
     }
 
     //================================================================
@@ -259,11 +261,11 @@ public class SubscribedSignal implements TangoConst {
         if (subscribed && adapter != null)
             try {
                 if (arch_listener != null)
-                    adapter.removeTangoArchiveListener(arch_listener, attname);
+                    adapter.removeTangoArchiveListener(arch_listener, attributeName);
                 if (change_listener != null)
-                    adapter.removeTangoChangeListener(change_listener, attname);
+                    adapter.removeTangoChangeListener(change_listener, attributeName);
                 if (periodic_listener != null)
-                    adapter.removeTangoPeriodicListener(periodic_listener, attname);
+                    adapter.removeTangoPeriodicListener(periodic_listener, attributeName);
                 System.out.println("unsubscribe event for " + name);
             } catch (DevFailed e) {
                 System.out.println("Failed to unsubscribe event for " + name);
@@ -320,11 +322,11 @@ public class SubscribedSignal implements TangoConst {
     //=====================================================================
     static String getStrDate(long ms) {
         StringTokenizer st = new StringTokenizer(new Date(ms).toString());
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         while (st.hasMoreTokens())
-            v.add(st.nextToken());
+            tokens.add(st.nextToken());
 
-        return v.get(3) + "  " + v.get(2) + " " + v.get(1);
+        return tokens.get(3) + "  " + tokens.get(2) + " " + tokens.get(1);
     }
 
     //=====================================================================
@@ -524,19 +526,19 @@ public class SubscribedSignal implements TangoConst {
             while (!signal.subscribed) {
                 System.out.println("Trying to subscribe on " + name);
                 try {
-                    signal.adapter = new TangoEventsAdapter(devname);
+                    signal.adapter = new TangoEventsAdapter(deviceName);
                     if (mode == EventsTable.SUBSCRIBE_ARCHIVE) {
                         arch_listener = new ArchiveEventListener(signal);
                         adapter.addTangoArchiveListener(
-                                arch_listener, attname, new String[0]);
+                                arch_listener, attributeName, new String[0]);
                     } else if (mode == EventsTable.SUBSCRIBE_CHANGE) {
                         change_listener = new ChangeEventListener(signal);
                         adapter.addTangoChangeListener(
-                                change_listener, attname, new String[0]);
+                                change_listener, attributeName, new String[0]);
                     } else if (mode == EventsTable.SUBSCRIBE_PERIODIC) {
                         periodic_listener = new PeriodicEventListener(signal);
                         adapter.addTangoPeriodicListener(
-                                periodic_listener, attname, new String[0]);
+                                periodic_listener, attributeName, new String[0]);
                     } else
                         Except.throw_exception("",
                                 "Unknown event subscription mode (" + mode + ")",
@@ -555,7 +557,7 @@ public class SubscribedSignal implements TangoConst {
 
                 try {
                     sleep(2000);
-                } catch (Exception ex) {/** Nothing to do */}
+                } catch (Exception ex) {/* Nothing to do */}
             }
         }
     }
@@ -581,6 +583,7 @@ public class SubscribedSignal implements TangoConst {
             try {
                 if (source.length()==0)
                     source = (event.isZmqEvent()) ? "ZMQ" : "Notifd";
+                //System.out.println("receive event");
             }
             catch (Exception e) {
                 source = "? ?"; //  TangORB too old

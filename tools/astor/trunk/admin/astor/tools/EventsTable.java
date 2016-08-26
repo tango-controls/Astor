@@ -65,7 +65,7 @@ import java.util.List;
 //===============================================================
 
 
-@SuppressWarnings("MagicConstant")
+@SuppressWarnings({"MagicConstant", "WeakerAccess"})
 public class EventsTable extends JDialog {
     /**
      * Subscribe mode definitions
@@ -103,7 +103,7 @@ public class EventsTable extends JDialog {
     /**
      * An array of String array for data to be displayed
      */
-    private ArrayList<SubscribedSignal> signals = new ArrayList<SubscribedSignal>();
+    private List<SubscribedSignal> signals = new ArrayList<>();
     private boolean first = true;
     private TablePopupMenu menu = null;
     private Component parent = null;
@@ -646,15 +646,15 @@ public class EventsTable extends JDialog {
     //===============================================================
     //===============================================================
     public int[] getColumnWidth() {
-        final Enumeration cenum = table.getColumnModel().getColumns();
-        ArrayList<TableColumn> v = new ArrayList<TableColumn>();
-        while (cenum.hasMoreElements())
-            v.add((TableColumn) cenum.nextElement());
+        final Enumeration cellNumber = table.getColumnModel().getColumns();
+        List<TableColumn> list = new ArrayList<>();
+        while (cellNumber.hasMoreElements())
+            list.add((TableColumn) cellNumber.nextElement());
 
         //	Copy to array
-        int[] width = new int[v.size()];
-        for (int i = 0; i < v.size(); i++) {
-            TableColumn tc = v.get(i);
+        int[] width = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            TableColumn tc = list.get(i);
             width[i] = tc.getPreferredWidth();
         }
         return width;
@@ -663,7 +663,7 @@ public class EventsTable extends JDialog {
     //===============================================================
     @SuppressWarnings("UnusedDeclaration")
     public List<String> getSubscribedNames() {
-        ArrayList<String>   list = new ArrayList<String>();
+        List<String>   list = new ArrayList<>();
         for (SubscribedSignal signal : signals)
             list.add(signal.name);
         return list;
@@ -694,8 +694,6 @@ public class EventsTable extends JDialog {
     //===============================================================
     //===============================================================
     public static void main(String[] args) {
-        int mode = SUBSCRIBE_ARCHIVE;
-
         if (args.length > 0)
             if (args[0].equals("-?"))
                 EventsTable.displaySyntax();
@@ -704,7 +702,7 @@ public class EventsTable extends JDialog {
             if (args.length > 1)
                 if (args[0].equals("-a")) {
                     for (int i = 1; i < args.length; i++)
-                        table.add(args[i], mode);
+                        table.add(args[i], SUBSCRIBE_ARCHIVE);
                 } else if (args[0].equals("-f"))
                     table.openEventList(args[1]);
             table.setVisible(true);

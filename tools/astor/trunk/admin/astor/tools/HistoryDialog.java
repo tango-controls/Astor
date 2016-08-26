@@ -58,18 +58,14 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
      */
     private JLChart chart = new JLChart();
 
-    /**
-     *
-     */
+    private JLabel titleLabel;
     private SubscribedSignal signal;
     //===============================================================
-
     /**
      * Creates new form HistoryDialog
      *
-     * @param parent   The parent dislog
-     * @param signame  the attribure name
-     * @param readData The data read on device to be displayed.
+     * @param parent   The parent dialog
+     * @param signal  the attribute name
      */
     //===============================================================
     public HistoryDialog(JDialog parent, SubscribedSignal signal) {
@@ -104,7 +100,7 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
         //  Get nb curves
         int nb = 0;
         for (int i = 0; nb == 0 && i < signal.histo.size(); i++) {
-            SubscribedSignal.EventHisto histo = (SubscribedSignal.EventHisto) signal.histo.get(i);
+            SubscribedSignal.EventHisto histo = signal.histo.get(i);
             if (histo.values != null)
                 nb = histo.values.length;
         }
@@ -122,11 +118,10 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
             axis.addDataView(dv[i]);
         }
 
-        double x = 0;
-        double y = 0;
-        double maxi = 0;
+        double x;
+        double y;
         for (int i = 0; i < signal.histo.size(); i++) {
-            SubscribedSignal.EventHisto histo = (SubscribedSignal.EventHisto) signal.histo.get(i);
+            SubscribedSignal.EventHisto histo = signal.histo.get(i);
             if (histo.values != null) {
                 double max = 0;
                 for (int v = 0; v < histo.values.length; v++) {
@@ -154,14 +149,13 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
         String[] retVal = new String[4];
         retVal[0] = new Date((long) data.x).toString();
         retVal[1] = "Value = " + SubscribedSignal.formatValue(data.y);
-        SubscribedSignal.EventHisto histo = (SubscribedSignal.EventHisto) signal.histo.get(idx);
+        SubscribedSignal.EventHisto histo = signal.histo.get(idx);
         retVal[2] = "Delta Value = " + histo.d_value;
         retVal[3] = "Delta time  = " + histo.d_time;
 
         return retVal;
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -171,9 +165,9 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
     //===============================================================
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        JPanel  jPanel1 = new javax.swing.JPanel();
+        JButton cancelBtn = new javax.swing.JButton();
+        JPanel  jPanel2 = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -205,25 +199,19 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
 
     //===============================================================
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
+    @SuppressWarnings("UnusedParameters")
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
     private void doClose() {
         setVisible(false);
@@ -231,17 +219,6 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
     }
 
     //===============================================================
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelBtn;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel titleLabel;
-    // End of variables declaration//GEN-END:variables
-    //===============================================================
-
-
-    //===============================================================
-
     /**
      * @param args the command line arguments
      */
@@ -249,6 +226,4 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
     public static void main(String args[]) {
         //	new HistoryDialog(new javax.swing.JDialog()).show();
     }
-
-
 }

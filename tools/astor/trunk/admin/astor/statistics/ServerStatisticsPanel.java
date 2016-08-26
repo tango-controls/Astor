@@ -39,17 +39,11 @@ import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import javax.swing.*;
 import java.awt.*;
 
-
-//===============================================================
-
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class ServerStatisticsPanel extends JDialog {
     private Window parent;
     private ServerStatisticsTable statisticsTable;

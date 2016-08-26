@@ -78,7 +78,7 @@ import java.util.ArrayList;
  */
 public class StatisticsFileFilter extends FileFilter {
 
-    private ArrayList<String> filters = new ArrayList<String>();
+    private ArrayList<String> filters = new ArrayList<>();
     private String description = null;
     private String fullDescription = null;
     private boolean useExtensionsInDescription = true;
@@ -278,6 +278,6 @@ public class StatisticsFileFilter extends FileFilter {
         } catch (DevFailed e) {
             return false;
         }
-        return (code.indexOf(GlobalStatistics.header) >= 0);
+        return (code.contains(GlobalStatistics.header));
     }
 }

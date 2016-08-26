@@ -15,14 +15,6 @@
 
 package admin.astor.tango_release;
 
-
-/** 
- *	This class Manage a list Tango server objects with their
- *	Tango and IDL release number.
- *
- * @author  verdier
- */
-
 import admin.astor.AstorUtil;
 
 import java.util.ArrayList;
@@ -30,10 +22,15 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
-
+/**
+ *	This class Manage a list Tango server objects with their
+ *	Tango and IDL release number.
+ *
+ * @author  verdier
+ */
 public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
 
-    private List<TangoServerRelease> onErrors = new ArrayList<TangoServerRelease>();
+    private List<TangoServerRelease> onErrors = new ArrayList<>();
     private static final int idlMin = 2;
     private static final int idlMax = 10;
 	//===============================================================
@@ -76,8 +73,8 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     }
 	//===============================================================
 	//===============================================================
-    public ArrayList<TangoServerRelease> getServersForTangoRelease(double tangoRelease) {
-        ArrayList<TangoServerRelease>   list = new ArrayList<TangoServerRelease>();
+    public List<TangoServerRelease> getServersForTangoRelease(double tangoRelease) {
+        List<TangoServerRelease>   list = new ArrayList<>();
         for (TangoServerRelease serverRelease : this) {
             //  Check only first decimal value
             int r1 = (int) (10*serverRelease.releaseNumber);
@@ -91,8 +88,8 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     //===============================================================
     //===============================================================
     @SuppressWarnings("UnusedDeclaration")
-    public ArrayList<TangoServerRelease> getServersForIdlRelease(int idl) {
-        ArrayList<TangoServerRelease>   list = new ArrayList<TangoServerRelease>();
+    public List<TangoServerRelease> getServersForIdlRelease(int idl) {
+        List<TangoServerRelease>   list = new ArrayList<>();
         for (TangoServerRelease serverRelease : this) {
             if (serverRelease.hasIDL(idl)) {
                 list.add(serverRelease);
@@ -103,10 +100,9 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     //===============================================================
     //===============================================================
     public List<TangoClassRelease> getClassesForIdlRelease(int idl) {
-        ArrayList<TangoClassRelease>   list = new ArrayList<TangoClassRelease>();
+        List<TangoClassRelease>   list = new ArrayList<>();
         for (TangoServerRelease serverRelease : this) {
-            ArrayList<TangoClassRelease>    classes =
-                    serverRelease.getIdlClasses(idl);
+            List<TangoClassRelease>    classes = serverRelease.getIdlClasses(idl);
             for (TangoClassRelease class_ : classes) {
                 //  Check if already in list
                 boolean found = false;
@@ -128,7 +124,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     }
 	//===============================================================
 	//===============================================================
-    public String toString(ArrayList<TangoServerRelease>   list) {
+    public String toString(List<TangoServerRelease>   list) {
 
         StringBuilder   sb = new StringBuilder();
         for (TangoServerRelease serverRelease : list) {
@@ -164,7 +160,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
 	//===============================================================
 	public static void main (String[] args) {
 
-        ArrayList<String>   list = new ArrayList<String>();
+        List<String>   list = new ArrayList<>();
         list.add("VacGaugeServer/sr_c1-pen");
         list.add("VacGaugeServer/sr_c1-ip");
         list.add("PLCvacuumValve/sr_c01");

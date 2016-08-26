@@ -49,17 +49,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
-//===============================================================
 /**
  *	JDialog Class to display display a tree
  *  with servers sorted by Tango or IDL versions.
  *
  *	@author  Pascal Verdier
  */
-//===============================================================
-
-
 @SuppressWarnings("MagicConstant")
 public class TangoReleaseDialog extends JDialog {
 
@@ -82,7 +77,7 @@ public class TangoReleaseDialog extends JDialog {
 
         //  Get host list
         String[] hostList = AstorUtil.getInstance().getHostControlledList();
-        ArrayList<String>   serverList = new ArrayList<String>();
+        List<String>   serverList = new ArrayList<>();
 
         //  For each host
         for (String  hostName : hostList) {
@@ -141,8 +136,7 @@ public class TangoReleaseDialog extends JDialog {
     //===============================================================
     //===============================================================
     private List<String>  getControlledServers(String hostName) {
-
-        ArrayList<String>  serverList = new ArrayList<String>();
+        List<String>  serverList = new ArrayList<>();
         try {
             Database database = ApiUtil.get_db_obj();
             DeviceData argIn = new DeviceData();
@@ -317,7 +311,7 @@ public class TangoReleaseDialog extends JDialog {
             if (args.length>0) {
                 if (args[0].equals("-test")) {
                     //  Do it for a list
-                    ArrayList<String>   list = new ArrayList<String>();
+                    List<String>   list = new ArrayList<>();
                     //list.add("PowerSupply/pv");
                     //list.add("Dummy/pv");
                     list.add("FirstPipe/pv");

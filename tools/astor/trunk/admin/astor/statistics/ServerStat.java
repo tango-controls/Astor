@@ -34,19 +34,12 @@
 
 package admin.astor.statistics;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoDs.Except;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 public class ServerStat extends ArrayList<ServerRecord> {
     public String name;
@@ -55,7 +48,7 @@ public class ServerStat extends ArrayList<ServerRecord> {
     public long failedDuration = 0;
     public long runDuration = 0;
     public long oldestTime = 0;
-    private ArrayList<LogRecord> logs = new ArrayList<LogRecord>();
+    private List<LogRecord> logs = new ArrayList<>();
 
     //  Saving file definitions
     public static final String className = "ServerStat";
@@ -76,7 +69,6 @@ public class ServerStat extends ArrayList<ServerRecord> {
 
 
     //===============================================================
-
     /**
      * Statistics for the specified server
      *
@@ -84,13 +76,13 @@ public class ServerStat extends ArrayList<ServerRecord> {
      * @throws DevFailed if parsing xml lines failed.
      */
     //===============================================================
-    public ServerStat(ArrayList<String> lines) throws DevFailed {
+    public ServerStat(List<String> lines) throws DevFailed {
         parseXmlStatistics(lines);
     }
 
     //=======================================================
     //=======================================================
-    private void parseXmlStatistics(ArrayList<String> lines) throws DevFailed {
+    private void parseXmlStatistics(List<String> lines) throws DevFailed {
         //  The first line is the Starter definition
         if (lines.size() >= 0) {
             parseXmlProperties(lines.get(0));
@@ -114,7 +106,6 @@ public class ServerStat extends ArrayList<ServerRecord> {
         }
     }
     //===============================================================
-
     /**
      * Statistics for the specified server
      *
@@ -153,7 +144,7 @@ public class ServerStat extends ArrayList<ServerRecord> {
         oldestTime = System.currentTimeMillis();
 
         //  For each Log record
-        ArrayList<ServerRecord> serverRecords = new ArrayList<ServerRecord>();
+        List<ServerRecord> serverRecords = new ArrayList<>();
         for (int i = logs.size() - 1; i >= 0; i--) {
             LogRecord log = logs.get(i);
             DevState state = log.newState;
@@ -241,7 +232,7 @@ public class ServerStat extends ArrayList<ServerRecord> {
     //===============================================================
     //===============================================================
     public String recordsToString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(name).append(":\n");
         for (ServerRecord rec : this) {
             sb.append(rec).append("\n");
@@ -283,7 +274,7 @@ public class ServerStat extends ArrayList<ServerRecord> {
     //=======================================================
     //=======================================================
     public String toXml() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(tab).append("").append(toXmlLine()).append(">\n");
         for (ServerRecord record : this)
             sb.append(record.toXml()).append("\n");
@@ -294,7 +285,7 @@ public class ServerStat extends ArrayList<ServerRecord> {
     //===============================================================
     //===============================================================
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(name).append(":\thas run ").append(Utils.formatDuration(runDuration));
         if (nbFailures > 0)
             sb.append("   has failed ").append(nbFailures).append(" times  (total time: ").

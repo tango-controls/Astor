@@ -42,7 +42,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 
 //===============================================================
@@ -54,20 +54,18 @@ import java.util.Vector;
 //===============================================================
 
 
-@SuppressWarnings("MagicConstant")
+@SuppressWarnings({"MagicConstant", "Convert2Diamond"})
 public class LastBranchesListDialog extends JDialog {
-
 	private JFrame	parent;
-    private ArrayList<String>    branches;
-    //ArrayList<String> branches = new ArrayList<String>();
-	private int		returnValue = JOptionPane.OK_OPTION;
+    private List<String> branches;
+	private int	returnValue = JOptionPane.OK_OPTION;
 
 	//===============================================================
 	/**
 	 *	Creates new form LastBranchesListDialog
 	 */
 	//===============================================================
-	public LastBranchesListDialog(JFrame parent, ArrayList<String> branches, String[] lastBranches) throws DevFailed {
+	public LastBranchesListDialog(JFrame parent, List<String> branches, String[] lastBranches) throws DevFailed {
 		super(parent, true);
 		this.parent = parent;
         this.branches = branches;
@@ -233,14 +231,14 @@ public class LastBranchesListDialog extends JDialog {
     private void removeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBtnActionPerformed
         String  selection = branchList.getSelectedValue();
         ListModel    model = branchList.getModel();
-        Vector<String>  stringVector = new Vector<String>();
+        List<String>  stringList = new ArrayList<>();
         for (int i=0 ; i<model.getSize() ; i++) {
             String  s = (String) model.getElementAt(i);
             if (!s.equals(selection))
-                stringVector.add(s);
+                stringList.add(s);
         }
 
-        branchList.setListData(stringVector);
+        branchList.setListData(stringList.toArray(new String[stringList.size()]));
         removeBtn.setEnabled(false);
     }//GEN-LAST:event_removeBtnActionPerformed
 
@@ -249,7 +247,7 @@ public class LastBranchesListDialog extends JDialog {
     @SuppressWarnings("UnusedParameters")
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         //  Get the last branches
-        Vector<String>   lastBranches = new Vector<String>();
+        List<String>   lastBranches = new ArrayList<>();
         ListModel    model = branchList.getModel();
         for (int i=0 ; i<model.getSize() ; i++) {
             String  s = (String) model.getElementAt(i);
@@ -257,7 +255,7 @@ public class LastBranchesListDialog extends JDialog {
         }
 
         //  And subtract them to branch list
-        ArrayList<String>  availableBranches = new ArrayList<String>();
+        List<String>  availableBranches = new ArrayList<>();
         for (String branch : branches) {
             if (!branch.equals("Tango Database")) {
                 boolean found = false;
@@ -284,7 +282,7 @@ public class LastBranchesListDialog extends JDialog {
                         array, array[0]);
         if (branchName != null) {
             lastBranches.add(branchName);
-            branchList.setListData(lastBranches);
+            branchList.setListData(lastBranches.toArray(new String[lastBranches.size()]));
         }
 
         }//GEN-LAST:event_addBtnActionPerformed
@@ -304,7 +302,7 @@ public class LastBranchesListDialog extends JDialog {
     private void upBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upBtnActionPerformed
         String  selection = branchList.getSelectedValue();
         //  Get the last branches
-        Vector<String>   lastBranches = new Vector<String>();
+        List<String>   lastBranches = new ArrayList<>();
         ListModel    model = branchList.getModel();
         for (int i=0 ; i<model.getSize() ; i++) {
             String  s = (String) model.getElementAt(i);
@@ -316,7 +314,7 @@ public class LastBranchesListDialog extends JDialog {
             else
                 lastBranches.add(s);
         }
-        branchList.setListData(lastBranches);
+        branchList.setListData(lastBranches.toArray(new String[lastBranches.size()]));
         branchList.setSelectedValue(selection,true);
     }//GEN-LAST:event_upBtnActionPerformed
 
@@ -326,7 +324,7 @@ public class LastBranchesListDialog extends JDialog {
     private void downBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downBtnActionPerformed
         String  selection = branchList.getSelectedValue();
         //  Get the last branches
-        Vector<String>   lastBranches = new Vector<String>();
+        List<String>   lastBranches = new ArrayList<>();
         ListModel    model = branchList.getModel();
         for (int i=0 ; i<model.getSize() ; i++) {
             String  s = (String) model.getElementAt(i);
@@ -341,7 +339,7 @@ public class LastBranchesListDialog extends JDialog {
                 i++;
             }
         }
-        branchList.setListData(lastBranches);
+        branchList.setListData(lastBranches.toArray(new String[lastBranches.size()]));
         branchList.setSelectedValue(selection,true);
 
     }//GEN-LAST:event_downBtnActionPerformed
@@ -397,7 +395,7 @@ public class LastBranchesListDialog extends JDialog {
 	public static void main(String args[]) {
 		try {
             String[]    last = { "Miscellaneous", "Insertion Devices" };
-            ArrayList<String>    branches = new ArrayList<String>();
+            List<String>    branches = new ArrayList<>();
             branches.add("AAAA");
             branches.add("In Test");
             branches.add("Miscellaneous");
