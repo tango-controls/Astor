@@ -1,0 +1,51 @@
+#!/bin/sh
+#---------------------------------------------------------
+#	
+#---------------------------------------------------------
+TANGO_HOME=/segfs/tango
+
+#----------------------------------------------
+#       Define PATH
+#----------------------------------------------
+OS=`/csadmin/common/scripts/get_os`
+
+#----------------------------------------------
+#       LD_LIBRARY_PATH
+#----------------------------------------------
+ZMQ=$TANGO_HOME/release/$OS/lib
+
+LD_LIBRARY_PATH=$ZMQ
+
+echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+echo
+
+
+#----------------------------------------------
+#       CLASSPATH
+#----------------------------------------------
+API=$TANGO_HOME/javaapi/bin
+
+ASTOR=$TANGO_HOME/tools/admin/astor/src
+ASTOR_BIN=$ASTOR/../bin
+
+LIB_HOME=$TANGO_HOME/release/java/lib
+APPLI_HOME=$TANGO_HOME/release/java/appli
+
+#TANGO=$LIB_HOME/TangORB.jar
+TANGO=$LIB_HOME/JTango.jar
+
+ATK=$LIB_HOME/ATKWidget.jar:$LIB_HOME/ATKCore.jar:$APPLI_HOME/atkpanel.jar
+JIVE=$APPLI_HOME/Jive.jar
+LOG_VIEWER=$APPLI_HOME/LogViewer.jar
+
+HOST_INFO=$APPLI_HOME/host_info.jar
+
+#export CLASSPATH=$API:$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$LOG_VIEWER:$HOST_INFO
+export CLASSPATH=$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$LOG_VIEWER:$HOST_INFO
+
+echo "CLASSPATH=$CLASSPATH"
+echo
+
+
+#export ZMQ_ENABLE=true
+#export ApiTrace=true
