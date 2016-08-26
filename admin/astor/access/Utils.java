@@ -34,16 +34,8 @@
 
 package admin.astor.access;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import javax.swing.*;
 import java.awt.*;
-
 
 class Utils {
     static private Utils instance = null;

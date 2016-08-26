@@ -49,6 +49,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -65,8 +66,7 @@ import java.util.ArrayList;
 public class TangoHost extends DeviceProxy {
     private TangoServer starter = null;
     private String name;
-    private ArrayList<TangoServer>
-            servers;
+    private List<TangoServer> servers = new ArrayList<>();
     public String usage = null;
     public int state;
     public DevFailed except;
@@ -90,8 +90,6 @@ public class TangoHost extends DeviceProxy {
         super(AstorUtil.getStarterDeviceHeader() + name);
         adm_name = "dserver/starter/" + name;
         set_transparency_reconnection(true);
-
-        servers = new ArrayList<TangoServer>();
         notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
@@ -138,15 +136,15 @@ public class TangoHost extends DeviceProxy {
     //  Event info managed from MySqlUtil removed
     //  Because is unused in case ZMQ events.
     /*
-    public TangoHost(DbDevImportInfo devinfo,
-                     DbDevImportInfo adminfo,
+    public TangoHost(DbDevImportInfo deviceInfo,
+                     DbDevImportInfo adminInfo,
                      DbEventImportInfo evtinfo) throws DevFailed {
         //	Initialize device proxy class objects.
-        super(devinfo);
+        super(deviceInfo);
         try {
 
-            if (devinfo.exported) {
-                import_admin_device(adminfo);
+            if (deviceInfo.exported) {
+                import_admin_device(adminInfo);
                 if (evtinfo != null)
                     this.getAdm_dev().set_evt_import_info(evtinfo);
                 else
@@ -157,7 +155,7 @@ public class TangoHost extends DeviceProxy {
             Except.print_exception(e);
             onEvents = false;
         }
-        adm_name = adminfo.name;
+        adm_name = adminInfo.name;
         set_transparency_reconnection(true);
 
         servers = new ArrayList<TangoServer>();
@@ -165,10 +163,10 @@ public class TangoHost extends DeviceProxy {
 
         //	Check if name contain sub network added, then cut it.
         int i;
-        if ((i = devinfo.name.indexOf(".")) < 0)
-            this.name = devinfo.name;
+        if ((i = deviceInfo.name.indexOf(".")) < 0)
+            this.name = deviceInfo.name;
         else
-            this.name = devinfo.name.substring(0, i);
+            this.name = deviceInfo.name.substring(0, i);
         //	Get only member as name
         int idx = name.indexOf('/');
         if (idx > 0)
@@ -179,22 +177,19 @@ public class TangoHost extends DeviceProxy {
     */
     //==============================================================
     //==============================================================
-    public TangoHost(DbDevImportInfo devinfo,
-                     DbDevImportInfo adminfo) throws DevFailed {
+    public TangoHost(DbDevImportInfo deviceInfo, DbDevImportInfo adminInfo) throws DevFailed {
         //	Initialize device proxy class objects.
-        super(devinfo);
-        adm_name = adminfo.name;
+        super(deviceInfo);
+        adm_name = adminInfo.name;
         set_transparency_reconnection(true);
-
-        servers = new ArrayList<TangoServer>();
         notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;
-        if ((i = devinfo.name.indexOf(".")) < 0)
-            this.name = devinfo.name;
+        if ((i = deviceInfo.name.indexOf(".")) < 0)
+            this.name = deviceInfo.name;
         else
-            this.name = devinfo.name.substring(0, i);
+            this.name = deviceInfo.name.substring(0, i);
         //	Get only member as name
         int idx = name.indexOf('/');
         if (idx > 0)
@@ -228,8 +223,8 @@ public class TangoHost extends DeviceProxy {
     }
     //==============================================================
     //==============================================================
-    public ArrayList<String> getServerNames() {
-        ArrayList<String>  controlledServers = new ArrayList<String>();
+    public List<String> getServerNames() {
+        List<String>  controlledServers = new ArrayList<>();
         try {
             DeviceAttribute attribute = read_attribute("Servers");
             String[]  lines = attribute.extractStringArray();
@@ -311,7 +306,7 @@ public class TangoHost extends DeviceProxy {
             dev = new DeviceProxy(devname);
             dev.ping();
             running = true;
-        } catch (DevFailed e) {  /** */}
+        } catch (DevFailed e) {  /* */}
 
         if (running) {
             IORdump d = new IORdump(devname);
@@ -377,28 +372,22 @@ public class TangoHost extends DeviceProxy {
     //======================================================
     //======================================================
     public void displayUptimes(JFrame parent) {
-        ArrayList<String[]> v = new ArrayList<String[]>();
         try {
             Database db = ApiUtil.get_db_obj();
-            DeviceData argin = new DeviceData();
-            argin.insert(name);
-            DeviceData argout = db.command_inout("DbGetHostServerList", argin);
-            String[] servnames = argout.extractStringArray();
-            for (String sevname : servnames) {
+            DeviceData argIn = new DeviceData();
+            argIn.insert(name);
+            DeviceData argOut = db.command_inout("DbGetHostServerList", argIn);
+            String[] serverNames = argOut.extractStringArray();
+            List<String[]> lines = new ArrayList<>();
+            for (String severName : serverNames) {
 
-                String[] exportedStr = new TangoServer("dserver/" + sevname).getServerUptime();
-                v.add(new String[]{
-                        sevname, exportedStr[0], exportedStr[1]});
+                String[] exportedStr = new TangoServer("dserver/" + severName).getServerUptime();
+                lines.add(new String[]{
+                        severName, exportedStr[0], exportedStr[1]});
             }
 
             String[] columns = new String[]{"Server", "Last   exported", "Last unexported"};
-            String[][] table = new String[v.size()][];
-            for (int i = 0; i < v.size(); i++) {
-                table[i] = v.get(i);
-                System.out.println(table[i][0] + ":\t" + table[i][1]);
-            }
-            PopupTable ppt = new PopupTable(parent, name,
-                    columns, table, new Dimension(650, 250));
+            PopupTable ppt = new PopupTable(parent, name, columns, lines, new Dimension(650, 250));
             ppt.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
@@ -417,12 +406,12 @@ public class TangoHost extends DeviceProxy {
         try {
             ////	new LoggingDialog(parent, this).setVisible(true);
 
-            DeviceData argin = new DeviceData();
-            argin.insert("Starter");
-            DeviceData argout = command_inout("DevReadLog", argin);
-            String str = argout.extractString();
+            DeviceData argIn = new DeviceData();
+            argIn.insert("Starter");
+            DeviceData argOut = command_inout("DevReadLog", argIn);
+            String str = argOut.extractString();
             String[] array = AstorUtil.string2array(str, "\n");
-            ArrayList<String[]> v = new ArrayList<String[]>();
+            List<String[]> lines = new ArrayList<>();
             String prev_date = null;
             for (String line : array) {
                 String[] words = AstorUtil.string2array(line);
@@ -435,22 +424,19 @@ public class TangoHost extends DeviceProxy {
                     //	Check if date changed
                     if (prev_date != null) {
                         if (!words[0].equals(prev_date))
-                            v.add(new String[]{"-", "-", "-", "-"});
+                            lines.add(new String[]{"-", "-", "-", "-"});
                     }
                     prev_date = words[0];
-                    v.add(words);
+                    lines.add(words);
                 }
             }
-            if (v.size() > 0) {
-                String[][] lines = new String[v.size()][];
-                for (int i = 0; i < v.size(); i++)
-                    lines[i] = v.get(i);
-                String[] colnames = {"Date", "Time", "Action", "Server"};
+            if (lines.size() > 0) {
+                String[] columnNames = {"Date", "Time", "Action", "Server"};
                 PopupTable table;
                 if (parent instanceof JFrame)
-                    table = new PopupTable((JFrame) parent, "Starter on " + name, colnames, lines);
+                    table = new PopupTable((JFrame) parent, "Starter on " + name, columnNames, lines);
                 else
-                    table = new PopupTable((JDialog) parent, "Starter on " + name, colnames, lines);
+                    table = new PopupTable((JDialog) parent, "Starter on " + name, columnNames, lines);
                 table.setColumnWidth(new int[]{70, 70, 70, 250});
                 table.setSortAvailable(false);
                 table.setVisible(true);
@@ -504,7 +490,7 @@ public class TangoHost extends DeviceProxy {
                     str += "\n----------- Tag Release -----------\n" +
                             "        " + tagName;
                 }
-            } catch (DevFailed e) { /** Nothing to do */}
+            } catch (DevFailed e) { /* Nothing to do */}
 
         } catch (DevFailed e) {
             str += e.errors[0].desc;
@@ -684,9 +670,9 @@ public class TangoHost extends DeviceProxy {
                     str += "     " + att.getErrStack()[0].desc + "\n";
                 else {
                     str += "\n";
-                    ArrayList<String> running = new ArrayList<String>();
-                    ArrayList<String> moving = new ArrayList<String>();
-                    ArrayList<String> stopped = new ArrayList<String>();
+                    List<String> running = new ArrayList<>();
+                    List<String> moving = new ArrayList<>();
+                    List<String> stopped = new ArrayList<>();
                     String[] list = att.extractStringArray();
                     for (String line : list) {
                         StringTokenizer stk = new StringTokenizer(line);
@@ -694,12 +680,17 @@ public class TangoHost extends DeviceProxy {
                         String st = stk.nextToken();
                         String str_ctrl = stk.nextToken();
                         if (str_ctrl.equals("1")) {
-                            if (st.equals("FAULT"))
-                                stopped.add(name);
-                            else if (st.equals("MOVING"))
-                                moving.add(name);
-                            else
-                                running.add(name);
+                            switch (st) {
+                                case "FAULT":
+                                    stopped.add(name);
+                                    break;
+                                case "MOVING":
+                                    moving.add(name);
+                                    break;
+                                default:
+                                    running.add(name);
+                                    break;
+                            }
                         }
                     }
                     if (stopped.size() > 0)

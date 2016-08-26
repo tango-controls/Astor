@@ -34,14 +34,6 @@
 
 package admin.astor;
 
-/**
- *	This class is the Astor dialog
- *	to create a new Starter server in TANGO database
- *	and add a new host in AstorTree.
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
@@ -49,14 +41,22 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ *	This class is the Astor dialog
+ *	to create a new Starter server in TANGO database
+ *	and add a new host in AstorTree.
+ *
+ * @author verdier
+ */
 @SuppressWarnings("MagicConstant")
 public class NewStarterDialog extends JDialog implements AstorDefs {
 
     private Astor parent;
     private TangoHost[] hosts;
     private TangoHost host;
-    private ArrayList<String> collec;
+    private List<String> collections;
     private int retVal = JOptionPane.CANCEL_OPTION;
     private boolean creating;
 
@@ -81,15 +81,15 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
 	 */
     //======================================================================
     public NewStarterDialog(Astor parent, TangoHost host,
-                            ArrayList<String> collectionList, TangoHost[] hosts, boolean creating) {
+                            List<String> collectionList, TangoHost[] hosts, boolean creating) {
         super(parent, true);
         this.parent = parent;
         this.hosts = hosts;
         this.creating = creating;
         //	Take Off Database (first one)
-        this.collec = new ArrayList<String>();
+        this.collections = new ArrayList<>();
         for (int i = 1; i < collectionList.size(); i++)
-            this.collec.add(collectionList.get(i));
+            this.collections.add(collectionList.get(i));
 
         initComponents();
 
@@ -310,7 +310,7 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     private void familyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_familyBtnActionPerformed
 
         //	Create the list for host family
-        PropListDialog list = new PropListDialog(parent, collec);
+        PropListDialog list = new PropListDialog(parent, collections);
         list.showDialog();
 
         String family = list.getSelectedItem();

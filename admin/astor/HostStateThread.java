@@ -34,15 +34,6 @@
 
 package admin.astor;
 
-
-/**
- *	This class is a thread reading servers states and displaying these
- *	states on synopsis.
- *
- * @author verdier
- */
-
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.DeviceAttribute;
@@ -54,7 +45,12 @@ import fr.esrf.TangoApi.events.TangoEventsAdapter;
 import javax.swing.*;
 import java.util.Date;
 
-
+/**
+ *	This class is a thread reading servers states and displaying these
+ *	states on synopsis.
+ *
+ * @author verdier
+ */
 public class HostStateThread extends Thread implements AstorDefs {
     private AstorTree parent;
     private TangoHost host;
@@ -151,7 +147,7 @@ public class HostStateThread extends Thread implements AstorDefs {
                 time_to_sleep = 100;
             wait(time_to_sleep);
         } catch (InterruptedException e) {
-            System.out.println(e);
+            System.out.println(e.toString());
         }
     }
     //======================================================================
@@ -355,7 +351,7 @@ public class HostStateThread extends Thread implements AstorDefs {
                 }
             } catch (Exception e) {
                 System.out.println("AstorEvent." + deviceName);
-                System.out.println(e);
+                System.out.println(e.toString());
                 System.out.println("HostStateThread.StateEventListener : could not extract data!");
                 hostState = DevState.UNKNOWN;
             }

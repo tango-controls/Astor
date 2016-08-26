@@ -42,17 +42,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
-
-//===============================================================
-
 /**
  * Class Description: Basic Dialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class GetTextDialog extends JDialog {
     private int retVal = JOptionPane.OK_OPTION;
 
@@ -64,7 +58,7 @@ public class GetTextDialog extends JDialog {
     public GetTextDialog(JDialog parent, String title, String tip, String[] lines) {
         super(parent, true);
         initComponents();
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (lines!=null)
             Collections.addAll(list,lines);
 
@@ -206,11 +200,11 @@ public class GetTextDialog extends JDialog {
     //===============================================================
     public List<String> getTextLines() {
         String str = getText();
-        ArrayList<String> list = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(str, "\n");
-        while (st.hasMoreTokens())
-            list.add(st.nextToken());
-        return list;
+        List<String> tokens = new ArrayList<>();
+        StringTokenizer stk = new StringTokenizer(str, "\n");
+        while (stk.hasMoreTokens())
+            tokens.add(stk.nextToken());
+        return tokens;
     }
     //===============================================================
     //===============================================================

@@ -7,7 +7,7 @@ PATH=/sware/pub/java-1.7.0_67/linux_x64/bin/:$PATH
 
 
 ASTOR=../../bin
-HDB=/segfs/tango/release/java/appli/HdbAccessStat.jar
+HDB=/segfs/tango/release/java/astor/HdbAccessStat.jar
 
 CLASSPATH=$ASTOR:$CLASSPATH:$HDB
 export CLASSPATH

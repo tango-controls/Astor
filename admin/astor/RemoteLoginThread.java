@@ -34,6 +34,8 @@
 
 package admin.astor;
 
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *	This class is a thread to open a window with a
@@ -41,17 +43,11 @@ package admin.astor;
  *
  * @author verdier
  */
-
-
-import javax.swing.*;
-import java.awt.*;
-
 public class RemoteLoginThread extends Thread implements AstorDefs {
     private Component parent;
     private String hostname;
 
     //======================================================================
-
     /**
      * Thread constructor.
      *
@@ -66,7 +62,6 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
 
 
     //======================================================================
-
     /**
      * Running thread method.
      */
@@ -76,30 +71,30 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
 
 
         //	Check if rlogin user is defined
-        String remlog = AstorUtil.getRloginCmd();
+        String remoteLogin = AstorUtil.getRloginCmd();
         String user = AstorUtil.getRloginUser();
-        if (remlog == null || remlog.length() == 0) {
+        if (remoteLogin == null || remoteLogin.isEmpty()) {
             if (user == null || user.length() == 0)
                 cmd += "  -e telnet " + hostname;
             else
-                remlog = "  -e rlogin  " + hostname;
+                remoteLogin = "  -e rlogin  " + hostname;
         } else {
             //	Check if rlogin command (with or without user)
-            if (remlog.equals("rlogin")) {
+            if (remoteLogin.equals("rlogin")) {
                 if (user == null || user.length() == 0)
                     cmd += "  -e  rlogin " + hostname;
                 else
                     cmd += "_" + user + "  -e  rlogin -l " + user + "  " + hostname;
             } else
                 //	Check if ssh command (with or without user)
-                if (remlog.startsWith("ssh")) {
+                if (remoteLogin.startsWith("ssh")) {
                     if (user == null || user.length() == 0)
                         cmd += "  -e  ssh -X " + hostname;
                     else
                         cmd += "_" + user + "  -e  ssh -X " + user + "@" + hostname;
                 } else {
                     JOptionPane.showMessageDialog(parent,
-                            "Command : " + remlog + " Not Managed !",
+                            "Command : " + remoteLogin + " Not Managed !",
                             "Error Window",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
@@ -111,10 +106,10 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
             //	Execute
             Process proc = Runtime.getRuntime().exec(cmd);
             proc.waitFor();
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (Exception e) {
+            System.out.println(e.toString());
             JOptionPane.showMessageDialog(parent,
-                    ex.toString(),
+                    e.toString(),
                     "Error Window",
                     JOptionPane.INFORMATION_MESSAGE);
         }

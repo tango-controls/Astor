@@ -43,16 +43,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
-//===============================================================
 /**
  * Class Description: Basic Dialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class EditDialog extends JDialog {
     private int retVal = JOptionPane.OK_OPTION;
 
@@ -86,7 +83,7 @@ public class EditDialog extends JDialog {
      */
     //===============================================================
     public EditDialog(JFrame parent, String user,
-                      String address, ArrayList<UserGroup> groups, UserGroup defaultGroup) {
+                      String address, List<UserGroup> groups, UserGroup defaultGroup) {
         super(parent, true);
         mode = (address==null)? CLONE_USER : EDIT_USER;
         titles = (address==null)? clone_titles : edit_titles;
@@ -96,7 +93,7 @@ public class EditDialog extends JDialog {
         //  Add a JComboBox for groups
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        groupBox = new JComboBox<UserGroup>();
+        groupBox = new JComboBox<>();
         for (UserGroup group : groups) {
             groupBox.addItem(group);
         }
@@ -269,7 +266,7 @@ public class EditDialog extends JDialog {
             } catch (Exception e) { /* */ }
 
             //  Check dev name
-            ArrayList<String> tokens = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             if (mode == CHECK_ACCESS) {
                 //	Try to split with '.' separator
                 StringTokenizer stk = new StringTokenizer(device, "/");

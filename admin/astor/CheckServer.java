@@ -34,19 +34,15 @@
 
 package admin.astor;
 
-
-/**
- *	This class is able to
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
 import fr.esrf.TangoDs.Except;
 
-
+/**
+ *
+ * @author verdier
+ */
 public class CheckServer {
     private static final String[] actions = {
             "start",
@@ -70,18 +66,23 @@ public class CheckServer {
     //===============================================================
     //===============================================================
     public void doAction() throws DevFailed {
-        if (action.equals("start")) {
-            execute("DevStart");
-            System.out.println(servname + " started");
-        } else if (action.equals("stop")) {
-            execute("DevStop");
-            System.out.println(servname + " stopped");
-        } else if (action.equals("restart")) {
-            restart();
-            System.out.println(servname + " restarted");
-        } else if (action.equals("ping")) {
-            new DeviceProxy("dserver/" + servname).ping();
-            System.out.println(servname + " is alive");
+        switch (action) {
+            case "start":
+                execute("DevStart");
+                System.out.println(servname + " started");
+                break;
+            case "stop":
+                execute("DevStop");
+                System.out.println(servname + " stopped");
+                break;
+            case "restart":
+                restart();
+                System.out.println(servname + " restarted");
+                break;
+            case "ping":
+                new DeviceProxy("dserver/" + servname).ping();
+                System.out.println(servname + " is alive");
+                break;
         }
     }
 

@@ -37,6 +37,7 @@ package admin.astor.access;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 public class AllowedCmdTreePopupMenu extends JPopupMenu {
@@ -75,12 +76,12 @@ public class AllowedCmdTreePopupMenu extends JPopupMenu {
         add(title);
         add(new JPopupMenu.Separator());
 
-        for (int i = 0; i < menuLabels.length; i++) {
-            if (menuLabels[i] == null)
-                add(new JPopupMenu.Separator());
+        for (String menuLabel : menuLabels) {
+            if (menuLabel == null)
+                add(new Separator());
             else {
-                JMenuItem btn = new JMenuItem(menuLabels[i]);
-                btn.addActionListener(new java.awt.event.ActionListener() {
+                JMenuItem btn = new JMenuItem(menuLabel);
+                btn.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         hostActionPerformed(evt);
                     }
@@ -165,15 +166,14 @@ public class AllowedCmdTreePopupMenu extends JPopupMenu {
     //===============================================================
     //===============================================================
     private void hostActionPerformed(ActionEvent evt) {
-        String cmd = evt.getActionCommand();
         //	Check component source
         Object obj = evt.getSource();
-        int cmdidx = 0;
+        int commandIndex = 0;
         for (int i = 0; i < menuLabels.length; i++)
             if (getComponent(OFFSET + i) == obj)
-                cmdidx = i;
+                commandIndex = i;
 
-        switch (cmdidx) {
+        switch (commandIndex) {
             case ADD_CLASS:
                 parent.addClass();
                 break;

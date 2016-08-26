@@ -48,11 +48,12 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DeviceTree extends JTree implements AstorDefs {
     private CtrlSystem cs;
-    private Astor appli;
+    private Astor astor;
     private JTextArea infoLabel;
     private final String[] collections = {"Controlled Servers", "Not Controlled servers", "Devices"};
 
@@ -65,12 +66,12 @@ public class DeviceTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    public DeviceTree(Astor appli, Monitor monitor, JTextArea lbl, String title) {
+    public DeviceTree(Astor astor, Monitor monitor, JTextArea lbl, String title) {
         super();
-        this.appli = appli;
+        this.astor = astor;
         this.monitor = monitor;
         infoLabel = lbl;
-        cs = new CtrlSystem(appli.tree.hosts.length);
+        cs = new CtrlSystem(astor.tree.hosts.length);
 
         //	Build panel and its tree
         initComponent(title);
@@ -226,7 +227,7 @@ public class DeviceTree extends JTree implements AstorDefs {
                 Thread.sleep(10);
             }
         } catch (DevFailed e) {
-            ErrorPane.showErrorMessage(appli, null, e);
+            ErrorPane.showErrorMessage(astor, null, e);
         } catch (InterruptedException e) { /* */ }
     }
 
@@ -297,7 +298,7 @@ public class DeviceTree extends JTree implements AstorDefs {
         //	do not collapse if Root
         if (path.getPathCount() == 1) {
             setExpandedState(new TreePath(node.getPath()), true);
-            Utils.popupMessage(appli, cs.toString(), "TangoClass.gif");
+            Utils.popupMessage(astor, cs.toString(), "TangoClass.gif");
         }
     }
 
@@ -305,34 +306,34 @@ public class DeviceTree extends JTree implements AstorDefs {
     //======================================================
     String[][] getNotCtrlServers() {
         DefaultMutableTreeNode node = collnodes[N_CTRL_SERVERS];
-        int nb_serv = node.getChildCount();
-        ArrayList<String> v_serv = new ArrayList<String>();
+        int nbServers = node.getChildCount();
+        List<String> serverNames = new ArrayList<>();
         //	Search all Classes
-        for (int i = 0; i < nb_serv; i++) {
+        for (int i = 0; i < nbServers; i++) {
             node = node.getNextNode();
-            String servname = node.toString();
+            String serverName = node.toString();
             int nb_inst = node.getChildCount();
             try {
                 //	For all instances
                 for (int j = 0; j < nb_inst; j++) {
                     node = node.getNextNode();
-                    String server = servname + "/" + node;
+                    String server = serverName + "/" + node;
                     DbServInfo info = new DbServer(server).get_info();
                     //	Store in vector if controlled
                     if (!info.controlled)
                         //	Starter cannot controle itself.
-                        if (!servname.equals("Starter"))
-                            v_serv.add(server);
+                        if (!serverName.equals("Starter"))
+                            serverNames.add(server);
                 }
             } catch (DevFailed e) {
-                v_serv.add(e.errors[0].desc);
+                serverNames.add(e.errors[0].desc);
             }
         }
 
         //	Add last exported date
-        String[][] result = new String[v_serv.size()][];
-        for (int i = 0; i < v_serv.size(); i++) {
-            String server = v_serv.get(i);
+        String[][] result = new String[serverNames.size()][];
+        for (int i = 0; i < serverNames.size(); i++) {
+            String server = serverNames.get(i);
             result[i] = new String[2];
             result[i][0] = server;
             //	Get last started date
@@ -357,16 +358,18 @@ public class DeviceTree extends JTree implements AstorDefs {
             if (hostname == null)
                 Except.throw_exception("UNKNOWN_HOST",
                         "May be this device has never been exported !", "");
-            //	Take off IP address if exists
-            StringTokenizer st = new StringTokenizer(hostname);
-            hostname = st.nextToken();
-            //	Take off name extention (e.g. .esrf.fr) if exists
-            st = new StringTokenizer(hostname, ".");
-            hostname = st.nextToken();
+            else {
+                //	Take off IP address if exists
+                StringTokenizer st = new StringTokenizer(hostname);
+                hostname = st.nextToken();
+                //	Take off name extention (e.g. .esrf.fr) if exists
+                st = new StringTokenizer(hostname, ".");
+                hostname = st.nextToken();
 
-            //	Select Host on main Tree and Popup host panel
-            appli.tree.setSelectionPath(hostname);
-            appli.tree.displayHostInfo();
+                //	Select Host on main Tree and Popup host panel
+                astor.tree.setSelectionPath(hostname);
+                astor.tree.displayHostInfo();
+            }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
         }

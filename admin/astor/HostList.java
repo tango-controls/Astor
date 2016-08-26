@@ -45,18 +45,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 
-//===============================================================
 /**
  *	JDialog Class to display a host list, to select one of them
  *	and to return the list of servers registered for this host.
  *
  *	@author  Pascal Verdier
  */
-//===============================================================
-
-
 @SuppressWarnings("MagicConstant")
 public class HostList extends JDialog {
 	private JDialog	parent;
@@ -115,7 +112,7 @@ public class HostList extends JDialog {
         javax.swing.JButton okBtn = new javax.swing.JButton();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        hostList = new javax.swing.JList<String>();
+        hostList = new javax.swing.JList<>();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -166,14 +163,14 @@ public class HostList extends JDialog {
     }
     //===============================================================
     //===============================================================
-    public ArrayList<String> getServerList() throws DevFailed {
+    public List<String> getServerList() throws DevFailed {
 
-        DeviceData argin = new DeviceData();
-        argin.insert(selectedHostName);
+        DeviceData argIn = new DeviceData();
+        argIn.insert(selectedHostName);
         //cout << "DbGetHostServerList for " << hostnames[i] << endl;
-        DeviceData  argout = ApiUtil.get_db_obj().command_inout("DbGetHostServerList", argin);
+        DeviceData  argout = ApiUtil.get_db_obj().command_inout("DbGetHostServerList", argIn);
         String[] serverList = argout.extractStringArray();
-        ArrayList<String>  list = new ArrayList<String>();
+        List<String>  list = new ArrayList<>();
         for (String server : serverList) {
             if (!server.startsWith("Starter/"))
                 list.add(server);
@@ -249,23 +246,4 @@ public class HostList extends JDialog {
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 	//===============================================================
-
-
-
-
-	//===============================================================
-	/**
-	* @param args the command line arguments
-	*/
-	//===============================================================
-    /*
-	public static void main(String args[]) {
-		try {
-			new HostList(null).setVisible(true);
-		}
-		catch(DevFailed e) {
-            ErrorPane.showErrorMessage(new Frame(), null, e);
-		}
-	}
-    */
 }

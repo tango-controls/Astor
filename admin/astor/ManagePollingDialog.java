@@ -34,13 +34,6 @@
 
 package admin.astor;
 
-/**
- *	This class is a dialog to manage polling device commands.
- *
- * @author verdier
- */
-
-
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.CommandInfo;
@@ -53,6 +46,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+/**
+ *	This class is a dialog to manage polling device commands.
+ *
+ * @author verdier
+ */
 @SuppressWarnings("MagicConstant")
 public class ManagePollingDialog extends javax.swing.JDialog implements TangoConst {
 
@@ -201,8 +199,8 @@ public class ManagePollingDialog extends javax.swing.JDialog implements TangoCon
         javax.swing.JLabel jLabel9 = new javax.swing.JLabel();
         javax.swing.JButton dismissBtn = new javax.swing.JButton();
         javax.swing.JPanel jPanel3 = new javax.swing.JPanel();
-        devicesBox = new javax.swing.JComboBox<String>();
-        cmdBox = new javax.swing.JComboBox<String>();
+        devicesBox = new javax.swing.JComboBox<>();
+        cmdBox = new javax.swing.JComboBox<>();
         javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
         cmdLabel = new javax.swing.JLabel();
         javax.swing.JButton addBtn = new javax.swing.JButton();

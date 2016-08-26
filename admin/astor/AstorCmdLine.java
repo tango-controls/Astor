@@ -34,13 +34,6 @@
 
 package admin.astor;
 
-
-/**
- *	This class is able to start and stop servers from shell command line.
- *
- * @author verdier
- */
-
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DbServer;
@@ -50,8 +43,13 @@ import fr.esrf.TangoDs.Except;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-
+/**
+ *	This class is able to start and stop servers from shell command line.
+ *
+ * @author verdier
+ */
 public class AstorCmdLine {
     private int action = NOT_INITIALIZED;
     private TangoHost[] hosts = null;
@@ -219,20 +217,21 @@ public class AstorCmdLine {
     static final int REMOVE_POLLING_FORCED = 1;
     private static final String PollAttProp = "polled_attr";
 
-    public AstorCmdLine(int doWhat, String servname) {
+    @SuppressWarnings("unused")
+    public AstorCmdLine(int doWhat, String serverName) {
         boolean forced = true;
         try {
             switch (doWhat) {
                 case REMOVE_POLLING:
                     forced = false;
                 case REMOVE_POLLING_FORCED:
-                    DeviceProxy[] devices = getDeviceList(servname);
+                    DeviceProxy[] devices = getDeviceList(serverName);
 
                     if (devices.length == 0)
                         Except.throw_exception("NO_DEVICES",
-                                "No device found for " + servname,
-                                "DbPollPanel.CmdLineSolution(" + servname + ")");
-                    System.out.println("Polled Attributes For " + servname);
+                                "No device found for " + serverName,
+                                "DbPollPanel.CmdLineSolution(" + serverName + ")");
+                    System.out.println("Polled Attributes For " + serverName);
                     displayAndConfirm(devices, forced);
             }
         } catch (Exception e) {
@@ -266,21 +265,17 @@ public class AstorCmdLine {
     //===============================================================
     private void removePolling(DeviceProxy dev, PolledAttr[] attr, boolean[] remove_it)
             throws DevFailed {
-        ArrayList<String> v = new ArrayList<String>();
-        for (int i = 0; i < attr.length; i++)
+        List<String> stringList = new ArrayList<>();
+        for (int i=0 ; i<attr.length ; i++)
             if (!remove_it[i]) {
-                v.add(attr[i].name);
-                v.add(attr[i].period);
+                stringList.add(attr[i].name);
+                stringList.add(attr[i].period);
             }
-        String[] str = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            str[i] = v.get(i);
+        DbDatum argIn = new DbDatum(PollAttProp);
+        argIn.insert(stringList.toArray(new String[stringList.size()]));
+        dev.put_property(new DbDatum[]{argIn});
 
-        DbDatum argin = new DbDatum(PollAttProp);
-        argin.insert(str);
-        dev.put_property(new DbDatum[]{argin});
-
-        for (int i = 0; i < attr.length; i++)
+        for (int i=0 ; i<attr.length ; i++)
             if (remove_it[i])
                 System.out.println(attr[i].name + " ..... Polling Removed");
     }
@@ -288,17 +283,17 @@ public class AstorCmdLine {
     //===============================================================
     //===============================================================
     private DeviceProxy[] getDeviceList(String servname) throws DevFailed {
-        ArrayList<String> v = new ArrayList<String>();
-        DbServer serv = new DbServer(servname);
-        String[] classes = serv.get_class_list();
+        List<String> stringList = new ArrayList<>();
+        DbServer server = new DbServer(servname);
+        String[] classes = server.get_class_list();
         for (String classname : classes) {
-            String[] devnames = serv.get_device_name(classname);
-            v.addAll(Arrays.asList(devnames));
+            String[] deviceNames = server.get_device_name(classname);
+            stringList.addAll(Arrays.asList(deviceNames));
         }
         //	Create device proxy in reverse order
-        DeviceProxy[] dp = new DeviceProxy[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            dp[i] = new DeviceProxy(v.get(i));
+        DeviceProxy[] dp = new DeviceProxy[stringList.size()];
+        for (int i=0 ; i<stringList.size() ; i++)
+            dp[i] = new DeviceProxy(stringList.get(i));
         return dp;
     }
 
@@ -310,14 +305,10 @@ public class AstorCmdLine {
         if (data == null)
             return new PolledAttr[0];
 
-        ArrayList<PolledAttr> v = new ArrayList<PolledAttr>();
+        ArrayList<PolledAttr> polledAttrList = new ArrayList<>();
         for (int i = 0; i < data.length; i += 2)
-            v.add(new PolledAttr(data[i], data[i + 1]));
-
-        PolledAttr[] pa = new PolledAttr[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            pa[i] = v.get(i);
-        return pa;
+            polledAttrList.add(new PolledAttr(data[i], data[i + 1]));
+        return polledAttrList.toArray(new PolledAttr[polledAttrList.size()]);
     }
 
     //===============================================================

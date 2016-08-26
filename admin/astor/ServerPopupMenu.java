@@ -34,14 +34,6 @@
 
 package admin.astor;
 
-
-/**
- *	This class display a JPopupMenu.for server commands
- *
- * @author verdier
- */
-
-
 import admin.astor.tools.DeviceHierarchyDialog;
 import admin.astor.tools.PollingProfiler;
 import admin.astor.tools.PopupTable;
@@ -56,12 +48,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-//===============================================================
-
 /**
- * A class to display a popup menu.
+ *	This class display a JPopupMenu.for server commands
+ *
+ * @author verdier
  */
-//===============================================================
 @SuppressWarnings({"PointlessArithmeticExpression"})
 public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 

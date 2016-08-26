@@ -37,20 +37,15 @@ package admin.astor.access;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
-
-
-//===============================================================
 
 /**
  * JDialog Class to display info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
-
 public class PasswordDialog extends JDialog {
     private byte[] bytePassword;
     private int retVal = JOptionPane.OK_OPTION;
@@ -58,7 +53,7 @@ public class PasswordDialog extends JDialog {
 
     private static final int GET_PASSWORD = 0;
     private static final int CHANGE_PASSWORD = 1;
-    private static final String defaultPasssword = "SUPER_TANGO";
+    private static final String defaultPassword = "SUPER_TANGO";
 
     //===============================================================
     /*
@@ -200,7 +195,7 @@ public class PasswordDialog extends JDialog {
         }
         String str = new String(passwordField.getPassword());
         byte[] text = str.getBytes();
-        byte[] superTango = defaultPasssword.getBytes();
+        byte[] superTango = defaultPassword.getBytes();
 
         if (comparePassword(text, bytePassword))
             doClose(JOptionPane.OK_OPTION);
@@ -279,17 +274,17 @@ public class PasswordDialog extends JDialog {
     //===============================================================
     private static byte[] str2bytes(String str) {
         StringTokenizer stk = new StringTokenizer(str);
-        ArrayList<Integer> v = new ArrayList<Integer>();
+        List<Integer> tokens = new ArrayList<>();
         while (stk.hasMoreTokens()) {
             try {
-                v.add(Integer.parseInt(stk.nextToken()));
+                tokens.add(Integer.parseInt(stk.nextToken()));
             } catch (NumberFormatException e) {
-                v.add(0);
+                tokens.add(0);
             }
         }
-        byte[] b = new byte[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            b[i] = v.get(i).byteValue();
+        byte[] b = new byte[tokens.size()];
+        for (int i = 0; i < tokens.size(); i++)
+            b[i] = tokens.get(i).byteValue();
         return b;
     }
 

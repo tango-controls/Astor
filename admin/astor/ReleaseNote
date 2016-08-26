@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.0.0 -  26/08/16:
+	Java-7 syntax compatibility.
+
 Astor-6.7.1 -  28/06/16:
 	Fix a little bug in startup level management.
 

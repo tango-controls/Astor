@@ -47,6 +47,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class AllowedCmdTree extends JTree implements TangoConst {
@@ -80,7 +81,7 @@ public class AllowedCmdTree extends JTree implements TangoConst {
         try {
             str_root = "Access to  " +
                     ApiUtil.get_db_obj().get_tango_host();
-        } catch (DevFailed e) { /** Nothing to do */}
+        } catch (DevFailed e) { /* Nothing to do */}
 
         //  Create the nodes.
         root = new DefaultMutableTreeNode(str_root);
@@ -137,8 +138,7 @@ public class AllowedCmdTree extends JTree implements TangoConst {
         int mask = evt.getModifiers();
 
         //  Check button clicked
-        if (evt.getClickCount() == 2 && (mask & MouseEvent.BUTTON1_MASK) != 0) {
-        } else if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
+        if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
             if (node == root) {
                 menu.showMenu(evt, (String) o);
             } else if (o instanceof String) {
@@ -200,13 +200,10 @@ public class AllowedCmdTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private String[] getDefinedClasses() {
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> stringList = new ArrayList<>();
         for (int i = 0; i < root.getChildCount(); i++)
-            v.add(root.getChildAt(i).toString());
-        String[] str = new String[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            str[i] = v.get(i);
-        return str;
+            stringList.add(root.getChildAt(i).toString());
+        return stringList.toArray(new String[stringList.size()]);
     }
     //===============================================================
     //===============================================================

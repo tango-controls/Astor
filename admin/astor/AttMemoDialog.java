@@ -44,9 +44,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.ArrayList;
-
-
-//===============================================================
+import java.util.List;
 
 /**
  * Class Description:
@@ -54,19 +52,16 @@ import java.util.ArrayList;
  *
  * @author root
  */
-//===============================================================
-
-
 public class AttMemoDialog extends JDialog {
     private JDialog parent;
     private DbServer server;
     private boolean from_appli = true;
     private Memorized[] memorized;
-
+    private static final String unknown = " ? ";
     //===============================================================
     /*
-      *	Creates new form AttMemoDialog
-      */
+     *	Creates new form AttMemoDialog
+     */
     //===============================================================
     public AttMemoDialog(JDialog parent, DbServer server) throws DevFailed {
         super(parent, true);
@@ -84,7 +79,6 @@ public class AttMemoDialog extends JDialog {
         if (from_appli)
             AstorUtil.centerDialog(this, parent);
     }
-
     //===============================================================
     //===============================================================
     private JLabel[] attLbl;
@@ -129,65 +123,62 @@ public class AttMemoDialog extends JDialog {
 
     //===============================================================
     //===============================================================
-    private static final String unknown = " ? ";
-
     private void readAttributes() throws DevFailed {
         DeviceProxy[] devices = getDevices();
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> stringList = new ArrayList<>();
         for (DeviceProxy device : devices) {
-            String devname = device.get_name();
+            String deviceName = device.get_name();
             //	Get Attribute known by Database
             DeviceData argin = new DeviceData();
             String[] args = new String[2];
-            args[0] = devname;
+            args[0] = deviceName;
             args[1] = "*";
             argin.insert(args);
-            DeviceData argout =
+            DeviceData argOut =
                     ApiUtil.get_db_obj().command_inout("DbGetDeviceAttributeList", argin);
-            String[] attlist = argout.extractStringArray();
+            String[] attlist = argOut.extractStringArray();
             //	Get only witch have memorized value set
             for (String att : attlist) {
                 DbAttribute db_att = device.get_attribute_property(att);
-                String[] proplist = db_att.get_property_list();
-                for (int j = 0; j < proplist.length; j++) {
-                    if (proplist[j].equals("__value")) {
+                String[] propertyList = db_att.get_property_list();
+                for (int j = 0; j < propertyList.length; j++) {
+                    if (propertyList[j].equals("__value")) {
                         String min = unknown;
                         if (!db_att.is_empty("min_value"))
                             min = db_att.get_value("min_value")[0];
                         String max = unknown;
                         if (!db_att.is_empty("max_value"))
                             max = db_att.get_value("max_value")[0];
-                        v.add(devname + "/" + att);
-                        v.add(db_att.get_string_value(j));
-                        v.add(min);
-                        v.add(max);
+                        stringList.add(deviceName + "/" + att);
+                        stringList.add(db_att.get_string_value(j));
+                        stringList.add(min);
+                        stringList.add(max);
                     }
                 }
             }
         }
         //	build memorized array
-        memorized = new Memorized[v.size() / 4];
-        for (int i = 0; i < v.size(); i += 4)
-            memorized[i / 4] = new Memorized(v.get(i),
-                    v.get(i + 1),
-                    v.get(i + 2),
-                    v.get(i + 3));
+        memorized = new Memorized[stringList.size() / 4];
+        for (int i = 0; i < stringList.size(); i += 4)
+            memorized[i / 4] = new Memorized(stringList.get(i),
+                    stringList.get(i + 1),
+                    stringList.get(i + 2),
+                    stringList.get(i + 3));
     }
 
     //===============================================================
     //===============================================================
     private DeviceProxy[] getDevices() throws DevFailed {
-        ArrayList<String> v = new ArrayList<String>();
+        List<String> deviceNames = new ArrayList<>();
         String[] classes = server.get_class_list();
-
         for (String aClass : classes) {
             String[] devices = server.get_device_name(aClass);
-            v.addAll(Arrays.asList(devices));
+            deviceNames.addAll(Arrays.asList(devices));
         }
-        DeviceProxy[] dev = new DeviceProxy[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            dev[i] = new DeviceProxy(v.get(i));
-
+        DeviceProxy[] dev = new DeviceProxy[deviceNames.size()];
+        int i=0;
+        for (String deviceName : deviceNames)
+            dev[i++] = new DeviceProxy(deviceName);
         return dev;
     }
     //===============================================================
@@ -199,11 +190,13 @@ public class AttMemoDialog extends JDialog {
      * always regenerated by the Form Editor.
      */
     //===============================================================
-    private void initComponents() {//GEN-BEGIN:initComponents
-        jPanel1 = new javax.swing.JPanel();
-        okBtn = new javax.swing.JButton();
-        cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
+        javax.swing.JButton okBtn = new javax.swing.JButton();
+        javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        javax.swing.JPanel jPanel2 = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         valuePanel = new javax.swing.JPanel();
 
@@ -219,7 +212,6 @@ public class AttMemoDialog extends JDialog {
                 okBtnActionPerformed(evt);
             }
         });
-
         jPanel1.add(okBtn);
 
         cancelBtn.setText("Cancel");
@@ -228,23 +220,22 @@ public class AttMemoDialog extends JDialog {
                 cancelBtnActionPerformed(evt);
             }
         });
-
         jPanel1.add(cancelBtn);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         titleLabel.setText("Dialog Title");
         jPanel2.add(titleLabel);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
 
         valuePanel.setLayout(new java.awt.GridBagLayout());
-
         getContentPane().add(valuePanel, java.awt.BorderLayout.CENTER);
 
         pack();
-    }//GEN-END:initComponents
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
 
     //===============================================================
     //===============================================================
@@ -362,11 +353,7 @@ public class AttMemoDialog extends JDialog {
     //===============================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel titleLabel;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JButton okBtn;
     private javax.swing.JPanel valuePanel;
-    private javax.swing.JButton cancelBtn;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 

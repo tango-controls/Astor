@@ -12,9 +12,9 @@
 #-======================================================================
 
 
-MAJOR_REV   = 6
-MIDDLE_REV  = 7
-MINOR_REV   = 1
+MAJOR_REV   = 7
+MIDDLE_REV  = 0
+MINOR_REV   = 0
 
 APPLI_VERS	=	$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
 SVN_TAG_REV =	Release-$(MAJOR_REV).$(MIDDLE_REV).$(MINOR_REV)
@@ -79,16 +79,19 @@ clean:
 	rm  -f  $(BIN_DIR)/admin/astor/tango_release/*.class
 	rm  -f  $(BIN_DIR)/admin/astor/*.class
 
-MAIN_CLASS=		$(PACKAGE)
+MAIN_CLASS =	$(PACKAGE)
+UPDATE_CLASS =  org.tango.pogo.pogo_gui.tools.UpdateRelease
 version:
 	echo "Updating date and revision number..."
-	upd_rev  -f $(MAIN_CLASS).java         -r $(APPLI_VERS)
-	upd_rev  -java  "Astor Release Notes"     admin.astor
-	$(JAVAC) *.java
+	java  -cp /segfs/tango/release/java/appli/org.tango.pogo.jar \
+		$(UPDATE_CLASS) \
+		-file Astor.java \
+		-release $(APPLI_VERS) \
+		-title   "Astor Release Notes" \
+		-package admin.astor
 
 
-
-#	$(JAVA) -classpath   /segfs/tango/release/java/appli/org.tango.pogo.jar  \
+#	$(JAVA) -classpath   /segfs/tango/release/java/astor/org.tango.pogo.jar  \
 #		pogo.make_util.ReleaseNote2html -java  "Astor Release Note"   admin.astor
 #	$(JAVAC) *.java
 
@@ -97,7 +100,7 @@ jar:
 	@make_jar $(PACKAGE) $(APPLI_VERS) $(JAR_DIR)
 
 install_doc:
-	java -classpath /segfs/tango/release/java/appli/org.tango.pogo.jar  \
+	java -classpath /segfs/tango/release/java/astor/org.tango.pogo.jar  \
 					pogo.make_util.ReleaseNote2html -html  "Astor Release Note"
 	mv ReleaseNote.html $(DOC_ORIG)
 	cp $(DOC_ORIG)/*.html    $(DOC_HOME)/

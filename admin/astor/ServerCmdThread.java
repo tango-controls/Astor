@@ -35,20 +35,18 @@
 package admin.astor;
 
 
-/**
- *	This class is a thread to send command to all servers.
- *
- * @author verdier
- */
-
 
 import fr.esrf.Tango.DevFailed;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
 
-
+/**
+ *	This class is a thread to send command to all servers.
+ *
+ * @author verdier
+ */
 public class ServerCmdThread extends Thread implements AstorDefs {
     private Component parent;
     private TangoHost[] hosts;
@@ -59,7 +57,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     private String monitor_title;
     private boolean confirm = true;
     private boolean from_array = true;
-    private ArrayList<Integer> levels;
+    private List<Integer> levels;
 
     //=======================================================
     /**
@@ -115,7 +113,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
      * @param    levels list of levels
      */
     //=======================================================
-    public ServerCmdThread(Component parent, TangoHost host, int cmd, ArrayList<Integer> levels) {
+    public ServerCmdThread(Component parent, TangoHost host, int cmd, List<Integer> levels) {
         this(parent, host, cmd, levels, true);
     }
     //=======================================================
@@ -129,7 +127,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
      * @param    levels list of levels
      */
     //=======================================================
-    public ServerCmdThread(Component parent, TangoHost host, int cmd, ArrayList<Integer> levels, boolean confirm) {
+    public ServerCmdThread(Component parent, TangoHost host, int cmd, List<Integer> levels, boolean confirm) {
         this.parent = parent;
 
         this.hosts = new TangoHost[1];
