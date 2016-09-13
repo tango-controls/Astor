@@ -651,19 +651,23 @@ public class AstorUtil implements AstorDefs {
 
         //	Check if default Bottom collection
         String[] lasts = getLastCollectionList();
+
         //	Check if collections exist
-        if (lasts != null)
+        if (lasts != null) {
             for (String last : lasts) {
                 boolean found = false;
                 for (int j = 0; !found && j < list.size(); j++) {
                     //	 put it at end of vector
-                    if (found = last.equals(list.get(j))) {
-                        String s = list.get(j);
-                        list.remove(j);
-                        list.add(s);
+                    String collection = list.get(j);
+                    if (last!=null && collection!=null){
+                        if (found=last.equals(list.get(j))) {
+                            list.remove(j);
+                            list.add(collection);
+                        }
                     }
                 }
             }
+        }
         return list;
     }
 
@@ -1350,12 +1354,14 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     public static void main(String[] args) {
         //AstorUtil.getAllKnownTangoHosts();
+        /*
         try {
             AstorUtil.getInstance().startExternalApplication("host_info.HostStatus", "l-c01-1");
         }
         catch (DevFailed e) {
             Except.print_exception(e);
         }
+        */
     }
     //===============================================================
     //===============================================================
