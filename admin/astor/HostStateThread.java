@@ -362,17 +362,19 @@ public class HostStateThread extends Thread implements AstorDefs {
                 System.err.println(e.errors[0].desc);
             }
 
-            try {
-                //	Check if notify daemon running in synchronous
-                DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
-                if (att_synch.hasFailed())
+            if (host.manageNotifd) {
+                try {
+                    //	Check if notify daemon running in synchronous
+                    DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
+                    if (att_synch.hasFailed())
+                        notifdState = DevState.UNKNOWN;
+                    else
+                        notifdState = att_synch.extractState();
+                } catch (Exception e) {
                     notifdState = DevState.UNKNOWN;
-                else
-                    notifdState = att_synch.extractState();
-            } catch (Exception e) {
-                notifdState = DevState.UNKNOWN;
+                }
+                updateNotifdHost(notifdState);
             }
-            updateNotifdHost(notifdState);
             updateHost(hostState);
         }
     }
