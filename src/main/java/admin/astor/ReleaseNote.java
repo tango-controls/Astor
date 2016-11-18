@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 26-08-2016  14:15:15)</center><br>\n" + 
+		"	(Generated 18-11-2016  15:35:17)</center><br>\n" + 
+		"<li><b>Astor-7.0.1 -  18/11/16:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Maven project<br>" + 
 		"<li><b>Astor-7.0.0 -  26/08/16:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Java-7 syntax compatibility.<br>" + 
 		"<li><b>Astor-6.7.1 -  28/06/16:</b><br>" + 
