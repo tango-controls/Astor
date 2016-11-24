@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 18-11-2016  15:35:17)</center><br>\n" + 
+		"	(Generated 24-11-2016  13:03:18)</center><br>\n" + 
+		"<li><b>Astor-7.0.2 -  24/11/16:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a bug in last branches management.<br>" + 
 		"<li><b>Astor-7.0.1 -  18/11/16:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Maven project<br>" + 
 		"<li><b>Astor-7.0.0 -  26/08/16:</b><br>" + 
