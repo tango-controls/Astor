@@ -57,7 +57,7 @@ import java.awt.*;
 public class PreferenceDialog extends JDialog {
     private JFrame  parent;
     private String  csName = "";
-
+    private boolean lastCollectionsChanged = false;
     //===============================================================
     /**
      * Creates new form PreferenceDialog
@@ -84,8 +84,13 @@ public class PreferenceDialog extends JDialog {
 
     //===============================================================
     //===============================================================
+    public boolean isLastCollectionsChanged() {
+        return lastCollectionsChanged;
+    }
+    //===============================================================
+    //===============================================================
     private void storePreferences() {
-        //	Get velues
+        //	Get values
         String rl_user = rshUserTxt.getText();
         String rl_cmd = rshCmdTxt.getText();
 
@@ -202,7 +207,6 @@ public class PreferenceDialog extends JDialog {
     }
 
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -586,8 +590,11 @@ public class PreferenceDialog extends JDialog {
         try {
             LastBranchesListDialog dialog = new LastBranchesListDialog(parent,
                 AstorUtil.getInstance().getCollectionList(), lastCollections);
-            if (dialog.showDialog() == JOptionPane.OK_OPTION)
-                lastCollections = dialog.getLastBranches();
+            if (dialog.showDialog() == JOptionPane.OK_OPTION) {
+                String[] tmp = dialog.getLastBranches();
+                lastCollectionsChanged = tmp != lastCollections;
+                lastCollections = tmp;
+            }
         }
         catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);

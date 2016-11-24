@@ -698,10 +698,17 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void ctrlPreferenceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctrlPreferenceBtnActionPerformed
-        new PreferenceDialog(this).setVisible(true);
         try {
-            setControlSystemTitle();    //  Could have changed.
-        } catch (DevFailed e) { /* **/ }
+            PreferenceDialog dialog = new PreferenceDialog(this);
+            dialog.setVisible(true);
+            setControlSystemTitle();    //  Something could have changed.
+
+            //  If last collections changed -> read tree from DB
+            if (dialog.isLastCollectionsChanged())
+                refreshBtnActionPerformed(null);
+        } catch (DevFailed e) {
+            System.err.println(e.errors[0].desc);
+        }
 
     }//GEN-LAST:event_ctrlPreferenceBtnActionPerformed
     //======================================================================

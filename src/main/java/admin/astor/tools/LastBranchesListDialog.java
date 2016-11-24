@@ -72,7 +72,8 @@ public class LastBranchesListDialog extends JDialog {
 		initComponents();
 
         branchList.removeAll();
-        branchList.setListData(lastBranches);
+        if (lastBranches!=null && lastBranches.length>0)
+            branchList.setListData(lastBranches);
         removeBtn.setEnabled(false);
         upBtn.setEnabled(false);
         downBtn.setEnabled(false);
