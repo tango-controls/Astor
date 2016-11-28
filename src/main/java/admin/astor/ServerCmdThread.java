@@ -36,7 +36,9 @@ package admin.astor;
 
 
 
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +58,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
     private short nbStartupLevels;
     private String monitor_title;
     private boolean confirm = true;
-    private boolean from_array = true;
+    private boolean fromList;
     private List<Integer> levels;
 
     //=======================================================
@@ -69,7 +71,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
      * @param    cmd    command to be executed on all hosts.
      */
     //=======================================================
-    public ServerCmdThread(Component parent, TangoHost[] hosts, int cmd) {
+    public ServerCmdThread(JFrame parent, TangoHost[] hosts, int cmd) {
         this.parent = parent;
         this.hosts = hosts;
         this.cmd = cmd;
@@ -79,28 +81,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         levelUsed = new boolean[nbStartupLevels];
         for (int i = 0; i < nbStartupLevels; i++)
             levelUsed[i] = true;
-    }
-    //=======================================================
-    /**
-     * Thread Constructor for one host.
-     *
-     * @param    parent The application parent used as parent
-     *                          for ProgressMonitor.
-     * @param    host   The controlled host.
-     * @param    cmd    command to be executed on all hosts.
-     * @param    levelUsed    true if level is used by server on this host.
-     */
-    //=======================================================
-    @SuppressWarnings({"UnusedDeclaration"})
-    public ServerCmdThread(Component parent, TangoHost host, int cmd, boolean[] levelUsed) {
-        this.parent = parent;
-
-        this.hosts = new TangoHost[1];
-        this.hosts[0] = host;
-        this.cmd = cmd;
-        this.levelUsed = levelUsed;
-        monitor_title = " on " + host + "   ";
-        nbStartupLevels = AstorUtil.getStarterNbStartupLevels();
+        fromList = false;
     }
     //=======================================================
     /**
@@ -113,7 +94,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
      * @param    levels list of levels
      */
     //=======================================================
-    public ServerCmdThread(Component parent, TangoHost host, int cmd, List<Integer> levels) {
+    public ServerCmdThread(JDialog parent, TangoHost host, int cmd, List<Integer> levels) {
         this(parent, host, cmd, levels, true);
     }
     //=======================================================
@@ -127,7 +108,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
      * @param    levels list of levels
      */
     //=======================================================
-    public ServerCmdThread(Component parent, TangoHost host, int cmd, List<Integer> levels, boolean confirm) {
+    public ServerCmdThread(JDialog parent, TangoHost host, int cmd, List<Integer> levels, boolean confirm) {
         this.parent = parent;
 
         this.hosts = new TangoHost[1];
@@ -137,7 +118,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         this.confirm = confirm;
         monitor_title = " on " + host + "   ";
         nbStartupLevels = AstorUtil.getStarterNbStartupLevels();
-        from_array = false;
+        fromList = true;
     }
     //=======================================================
     /*
@@ -160,7 +141,6 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         //System.out.println(hostIndex + " -> " + ratio);
         monitor.setProgressValue(ratio, message);
     }
-
     //=======================================================
     /**
      * Execute the servers commands.
@@ -173,28 +153,54 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         //	Start progress monitor
         updateProgressMonitor(0, 0, 0.05);
 
+        //  Build the confirm dialog
+        StartStopDialog startStopDialog;
+        if (parent instanceof JDialog)
+            startStopDialog = new StartStopDialog((JDialog)parent);
+        else
+            startStopDialog = new StartStopDialog((JFrame) parent);
+        startStopDialog.setForAllLevels(!confirm);
+
         //	For each startup level
         //	(Increase for start or decrease for stop)
-        if (from_array) {
+        if (fromList) {
+            for (int level : levels) {
+                if (startStopDialog.doItForAllLevels()) {
+                    executeCommand(hosts, level);
+                } else {
+                    switch (startStopDialog.showDialog(cmdStr[cmd] + " for level " + level + " ?  ")) {
+                        case JOptionPane.CANCEL_OPTION:
+                            monitor.setProgressValue(100.0);
+                            return;
+                        case JOptionPane.OK_OPTION:
+                            executeCommand(hosts, level);
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            break;
+                    }
+                }
+            }
+        }
+        else { //   For all levels
             switch (cmd) {
                 case StartAllServers:
                     for (int level=1 ; !monitor.isCanceled() && level<=nbStartupLevels; level++) {
                         if (levelUsed[level - 1]) {
-                            if (confirm) {
-                                int option = JOptionPane.showConfirmDialog(parent,
-                                        cmdStr[cmd] + " for level " + level,
-                                        "",
-                                        JOptionPane.YES_NO_CANCEL_OPTION);
-
-                                if (option == JOptionPane.CANCEL_OPTION)
-                                    level = nbStartupLevels;
-                                else {
-                                    if (option == JOptionPane.OK_OPTION)
+                            if (startStopDialog.doItForAllLevels()) {
+                                executeCommand(hosts, level);
+                            }
+                            else {
+                                switch (startStopDialog.showDialog(cmdStr[cmd] + " for level " + level + " ?  ")) {
+                                    case JOptionPane.CANCEL_OPTION :
+                                        level = nbStartupLevels;
+                                        break;
+                                    case JOptionPane.OK_OPTION:
                                         executeCommand(hosts, level);
+                                        break;
+                                    case JOptionPane.NO_OPTION:
+                                        break;
                                 }
                             }
-                            else
-                                executeCommand(hosts, level);
                         }
                     }
                     break;
@@ -202,40 +208,24 @@ public class ServerCmdThread extends Thread implements AstorDefs {
                 case StopAllServers:
                     for (int level = nbStartupLevels; !monitor.isCanceled() && level>0 ; level--) {
                         if (levelUsed[level - 1]) {
-                            int option = JOptionPane.showConfirmDialog(parent,
-                                    cmdStr[cmd] + " for level " + level,
-                                    "",
-                                    JOptionPane.YES_NO_CANCEL_OPTION);
-                            if (option == JOptionPane.CANCEL_OPTION)
-                                level = 0;
+                            if (startStopDialog.doItForAllLevels()) {
+                                executeCommand(hosts, level);
+                            }
                             else {
-                                if (option == JOptionPane.OK_OPTION)
-                                    executeCommand(hosts, level);
+                                switch (startStopDialog.showDialog(cmdStr[cmd] + " for level " + level)) {
+                                    case JOptionPane.CANCEL_OPTION:
+                                        level = 0;
+                                        break;
+                                    case JOptionPane.OK_OPTION:
+                                        executeCommand(hosts, level);
+                                        break;
+                                    case JOptionPane.NO_OPTION:
+                                        break;
+                                }
                             }
                         }
                     }
                     break;
-            }
-        }
-        else {   //	New version from a vector
-
-            for (int l=0 ; l<levels.size() ; l++) {
-                int level = levels.get(l);
-                int option = JOptionPane.showConfirmDialog(parent,
-                        cmdStr[cmd] + " for level " + level,
-                        "",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-
-                switch (option) {
-                    case JOptionPane.CANCEL_OPTION:
-                        l = levels.size();
-                        break;
-                    case JOptionPane.OK_OPTION:
-                        executeCommand(hosts, level);
-                        break;
-                    case JOptionPane.NO_OPTION:
-                        break;
-                }
             }
         }
         monitor.setProgressValue(100.0);
@@ -282,5 +272,150 @@ public class ServerCmdThread extends Thread implements AstorDefs {
             } catch (DevFailed e) { /* */ }
             host.updateData();
         }
+    }
+
+
+    //===============================================================
+    /**
+     *	JDialog Class to ask start/stop at each level
+     *  Do not use JOptionPane any more to have a radio button for all levels
+     */
+    //===============================================================
+    private class StartStopDialog extends JDialog {
+
+        private JPanel centerPanel;
+        private JLabel titleLabel;
+        private JRadioButton forAllLevelsBtn;
+        private int returnValue = JOptionPane.OK_OPTION;
+        //===============================================================
+        private StartStopDialog(JDialog parent) {
+            super(parent, true);
+            initComponents();
+        }
+        //===============================================================
+        private StartStopDialog(JFrame parent) {
+                super(parent, true);
+                initComponents();
+        }
+        //===============================================================
+        private boolean doItForAllLevels() {
+            return forAllLevelsBtn.isSelected();
+        }
+        //===============================================================
+        public void setForAllLevels(boolean b) {
+            forAllLevelsBtn.setSelected(b);
+        }
+        //===============================================================
+        private void initComponents() {
+            java.awt.GridBagConstraints gridBagConstraints;
+
+            javax.swing.JPanel topPanel = new javax.swing.JPanel();
+            titleLabel = new javax.swing.JLabel();
+            centerPanel = new javax.swing.JPanel();
+            javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
+            forAllLevelsBtn = new javax.swing.JRadioButton();
+            javax.swing.JButton yesBtn = new javax.swing.JButton();
+            javax.swing.JButton noBtn = new javax.swing.JButton();
+            javax.swing.JButton cancelBtn = new javax.swing.JButton();
+
+            addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    closeDialog();
+                }
+            });
+
+            titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+            titleLabel.setText("Dialog Title");
+            titleLabel.setIcon(Utils.getInstance().getIcon("TangoClass.gif", 0.25));
+            topPanel.add(titleLabel);
+
+            getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
+
+            centerPanel.setLayout(new java.awt.GridBagLayout());
+            getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
+
+            bottomPanel.setLayout(new java.awt.GridBagLayout());
+
+            forAllLevelsBtn.setText("Do it for all levels");
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridwidth = 2;
+            gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+            bottomPanel.add(forAllLevelsBtn, gridBagConstraints);
+
+            yesBtn.setText("Yes");
+            yesBtn.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    yesBtnActionPerformed();
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 1;
+            gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+            bottomPanel.add(yesBtn, gridBagConstraints);
+
+            noBtn.setText("No");
+            noBtn.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    noBtnActionPerformed();
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 1;
+            gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+            bottomPanel.add(noBtn, gridBagConstraints);
+
+            cancelBtn.setText("Cancel");
+            cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    cancelBtnActionPerformed();
+                }
+            });
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 2;
+            gridBagConstraints.gridy = 1;
+            gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+            bottomPanel.add(cancelBtn, gridBagConstraints);
+
+            getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
+
+            pack();
+            ATKGraphicsUtils.centerDialog(this);
+        }
+        //===============================================================
+        private void yesBtnActionPerformed() {
+            returnValue = JOptionPane.YES_OPTION;
+            doClose();
+        }
+        //===============================================================
+        private void noBtnActionPerformed() {
+            returnValue = JOptionPane.NO_OPTION;
+            doClose();
+        }
+        //===============================================================
+        private void cancelBtnActionPerformed() {
+            returnValue = JOptionPane.CANCEL_OPTION;
+            doClose();
+        }
+        //===============================================================
+        private void closeDialog() {
+            returnValue = JOptionPane.CANCEL_OPTION;
+            doClose();
+        }
+        //===============================================================
+        private void doClose() {
+            setVisible(false);
+            dispose();
+        }
+        //===============================================================
+        public int showDialog(String title) {
+            titleLabel.setText(title);
+            setVisible(true);
+            return returnValue;
+        }
+        //===============================================================
     }
 }
