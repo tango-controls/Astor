@@ -31,7 +31,6 @@
 //
 //-======================================================================
 
-
 package admin.astor;
 
 import fr.esrf.Tango.DevFailed;
@@ -39,12 +38,10 @@ import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
-import javax.swing.*;
-import java.awt.*;
 
 /**
- *	This class is a thread to open a window with a
- *	remote login to a remote host.
+ *	This class is a thread to open a terminal with a
+ *	ssh connection to a remote host.
  *
  * @author verdier
  */
@@ -82,4 +79,6 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
         terminal.setVisible(true);
 
     }
+    //======================================================================
+    //======================================================================
 }
