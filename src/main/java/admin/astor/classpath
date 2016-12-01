@@ -25,13 +25,12 @@ echo
 #----------------------------------------------
 API=$TANGO_HOME/javaapi/bin
 
-ASTOR=$TANGO_HOME/tools/admin/astor/src
-ASTOR_BIN=$ASTOR/../bin
+ASTOR=$TANGO_HOME/tools/admin/Astor
+ASTOR_BIN=$ASTOR/target/classes
 
 LIB_HOME=$TANGO_HOME/release/java/lib
 APPLI_HOME=$TANGO_HOME/release/java/appli
 
-#TANGO=$LIB_HOME/TangORB.jar
 TANGO=$LIB_HOME/JTango.jar
 
 ATK=$LIB_HOME/ATKWidget.jar:$LIB_HOME/ATKCore.jar:$APPLI_HOME/atkpanel.jar
@@ -39,9 +38,10 @@ JIVE=$APPLI_HOME/Jive.jar
 LOG_VIEWER=$APPLI_HOME/LogViewer.jar
 
 HOST_INFO=$APPLI_HOME/host_info.jar
+TERM=$APPLI_HOME/JSSHTerminal.jar
 
 #export CLASSPATH=$API:$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$LOG_VIEWER:$HOST_INFO
-export CLASSPATH=$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$LOG_VIEWER:$HOST_INFO
+export CLASSPATH=$ASTOR:$ASTOR_BIN:$TANGO:$ATK:$JIVE:$LOG_VIEWER:$HOST_INFO:$TERM
 
 echo "CLASSPATH=$CLASSPATH"
 echo

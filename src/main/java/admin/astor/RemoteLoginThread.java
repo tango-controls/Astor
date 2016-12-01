@@ -34,6 +34,11 @@
 
 package admin.astor;
 
+import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.ApiUtil;
+import fr.esrf.TangoApi.DbDatum;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -44,74 +49,37 @@ import java.awt.*;
  * @author verdier
  */
 public class RemoteLoginThread extends Thread implements AstorDefs {
-    private Component parent;
     private String hostname;
 
     //======================================================================
     /**
      * Thread constructor.
      *
-     * @param    hostname    Host to do the remote login.
-     * @param    parent        parent component used to display error message.
+     * @param hostname Host to do the remote login.
      */
     //======================================================================
-    public RemoteLoginThread(String hostname, Component parent) {
+    public RemoteLoginThread(String hostname) {
         this.hostname = hostname;
-        this.parent = parent;
     }
-
-
     //======================================================================
     /**
      * Running thread method.
      */
     //======================================================================
     public void run() {
-        String cmd = "xterm -sb -title " + hostname + "";
-
-
-        //	Check if rlogin user is defined
-        String remoteLogin = AstorUtil.getRloginCmd();
-        String user = AstorUtil.getRloginUser();
-        if (remoteLogin == null || remoteLogin.isEmpty()) {
-            if (user == null || user.length() == 0)
-                cmd += "  -e telnet " + hostname;
-            else
-                remoteLogin = "  -e rlogin  " + hostname;
-        } else {
-            //	Check if rlogin command (with or without user)
-            if (remoteLogin.equals("rlogin")) {
-                if (user == null || user.length() == 0)
-                    cmd += "  -e  rlogin " + hostname;
-                else
-                    cmd += "_" + user + "  -e  rlogin -l " + user + "  " + hostname;
-            } else
-                //	Check if ssh command (with or without user)
-                if (remoteLogin.startsWith("ssh")) {
-                    if (user == null || user.length() == 0)
-                        cmd += "  -e  ssh -X " + hostname;
-                    else
-                        cmd += "_" + user + "  -e  ssh -X " + user + "@" + hostname;
-                } else {
-                    JOptionPane.showMessageDialog(parent,
-                            "Command : " + remoteLogin + " Not Managed !",
-                            "Error Window",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-        }
-
+        JSSHTerminal.MainPanel terminal;
+        String defaultUser = "dserver";
+        String defaultPassword = "dev-server";
         try {
-            //	Execute
-            Process proc = Runtime.getRuntime().exec(cmd);
-            proc.waitFor();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            JOptionPane.showMessageDialog(parent,
-                    e.toString(),
-                    "Error Window",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
+            DbDatum[] data = ApiUtil.get_db_obj().get_property("Astor", new String[]{"RloginUser", "RloginPassword"});
+            if (!data[0].is_empty()) defaultUser = data[0].extractString();
+            if (!data[1].is_empty()) defaultPassword = data[0].extractString();
+        } catch (DevFailed e) { /* */ }
+        terminal = new JSSHTerminal.MainPanel(hostname, defaultUser, defaultPassword, 80, 24, 1024);
+        terminal.setX11Forwarding(true);
+        terminal.setExitOnClose(false);
+        ATKGraphicsUtils.centerFrameOnScreen(terminal);
+        terminal.setVisible(true);
+
     }
 }

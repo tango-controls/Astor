@@ -111,7 +111,7 @@ public class Astor extends JFrame implements AstorDefs {
         tangorbBtn.setText(JTangoVersion.JarUsed[jarUsed] + " Version");
 
         centerWindow();
-
+        System.out.println("Version: " + getClass().getPackage().getImplementationVersion());
         try {
             tango_host = ApiUtil.get_db_obj().get_tango_host();
         } catch (DevFailed e) { /* do nothing */ }

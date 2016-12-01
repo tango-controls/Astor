@@ -49,8 +49,9 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
                             <mainClass>admin.astor.Astor</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>
@@ -80,5 +81,10 @@
             <artifactId>ATKPanel</artifactId>
             <version>RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.tango</groupId>
+            <artifactId>JSSHTerminal</artifactId>
+            <version>RELEASE</version>
+            <type>pom</type> </dependency>
     </dependencies>
 </project>

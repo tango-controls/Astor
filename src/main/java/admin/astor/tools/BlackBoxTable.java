@@ -1084,12 +1084,12 @@ public class BlackBoxTable extends JDialog {
         //===========================================================
         private void popupActionPerformed(ActionEvent evt) {
             Object src = evt.getSource();
-            int cmdidx = 0;
+            int commandIndex = 0;
             for (int i = 0; i < menuLabels.length; i++)
                 if (getComponent(OFFSET + i) == src)
-                    cmdidx = i;
+                    commandIndex = i;
 
-            switch (cmdidx) {
+            switch (commandIndex) {
                 case HOST_PANEL:
                     if (parent instanceof Astor)
                         ((Astor) parent).tree.displayHostInfoDialog(hostname);
@@ -1098,7 +1098,7 @@ public class BlackBoxTable extends JDialog {
                     break;
 
                 case REMOTE_LOG:
-                    new RemoteLoginThread(hostname, parent).start();
+                    new RemoteLoginThread(hostname).start();
                     break;
             }
         }

@@ -922,10 +922,10 @@ public class AstorTree extends JTree implements AstorDefs {
                 if (AstorUtil.osIsUnix()) {
                     if (JOptionPane.showConfirmDialog(parent,
                             "Starter is not running on " + selectedHost + "\n\n\n" +
-                                    "Do you want a remote login to start it ?",
+                                    "Do you want a ssh login to start it ?",
                             "Dialog",
                             JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
-                        new RemoteLoginThread(selectedHost.getName(), parent).start();
+                        new RemoteLoginThread(selectedHost.getName()).start();
                     }
                 } else
                     Utils.popupError(parent,

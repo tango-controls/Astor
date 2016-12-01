@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.0.4 -  01/12/16:
+	JSSHTerminal is now used for remote login (JSSHTerminal.jar must be added in CLASSPATH)
+
 Astor-7.0.3 -  28/11/16:
 	Add a button to start/stop servers on all levels.
 

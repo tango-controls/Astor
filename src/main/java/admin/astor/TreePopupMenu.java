@@ -190,7 +190,6 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
 
     //======================================================
     //======================================================
-    @SuppressWarnings({"PointlessArithmeticExpression"})
     public void showMenu(MouseEvent evt) {
         //	Set selection at mouse position
         TreePath selectedPath =
@@ -220,6 +219,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             getComponent(OFFSET + RESET_STAT).setVisible(false);
             getComponent(OFFSET + CHANGE_NAME).setVisible(false);
 
+            getComponent(OFFSET + REM_LOGIN).setVisible(true);
             getComponent(OFFSET + CHANGE_BRANCH).setEnabled(true);
             getComponent(OFFSET + EDIT_PROP).setEnabled(true);
             getComponent(OFFSET + CLONE_HOST).setEnabled(true);
@@ -290,12 +290,6 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                     getComponent(OFFSET + CHANGE_NAME).setVisible(false);
                 }
             }
-
-        //	Do not do it if Windows
-        //---------------------------------------
-        if (!AstorUtil.osIsUnix())
-            getComponent(OFFSET + REM_LOGIN).setVisible(false);
-
         show(parent, evt.getX(), evt.getY());
     }
 
@@ -343,7 +337,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 host.displayInfo(parent);
                 break;
             case REM_LOGIN:
-                new RemoteLoginThread(host.getName(), parent).start();
+                new RemoteLoginThread(host.getName()).start();
                 break;
             case CLONE_HOST:
                 astor.addNewHost(host);

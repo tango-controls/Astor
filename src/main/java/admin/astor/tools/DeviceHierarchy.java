@@ -325,7 +325,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         if (obj instanceof Device) {
             try {
                 String hostname = ((Device) obj).getHost();
-                new RemoteLoginThread(hostname, parent).start();
+                new RemoteLoginThread(hostname).start();
             } catch (DevFailed e) {
                 parent.setText(Except.str_exception(e));
             }
