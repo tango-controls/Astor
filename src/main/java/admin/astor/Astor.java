@@ -67,7 +67,7 @@ public class Astor extends JFrame implements AstorDefs {
      * Initialized by make jar call and used to display title.
      */
     private static String revNumber =
-            "7.0.4  -  01-12-2016  09:34:53";
+            "7.0.5  -  02-12-2016  15:58:08";
     /**
      * JTree object to display control system.
      */

@@ -70,7 +70,7 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
         try {
             DbDatum[] data = ApiUtil.get_db_obj().get_property("Astor", new String[]{"RloginUser", "RloginPassword"});
             if (!data[0].is_empty()) defaultUser = data[0].extractString();
-            if (!data[1].is_empty()) defaultPassword = data[0].extractString();
+            if (!data[1].is_empty()) defaultPassword = data[1].extractString();
         } catch (DevFailed e) { /* */ }
         terminal = new JSSHTerminal.MainPanel(hostname, defaultUser, defaultPassword, 80, 24, 1024);
         terminal.setX11Forwarding(true);

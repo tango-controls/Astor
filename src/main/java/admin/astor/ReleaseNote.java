@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 01-12-2016  09:34:53)</center><br>\n" + 
+		"	(Generated 02-12-2016  15:58:08)</center><br>\n" + 
+		"<li><b>Astor-7.0.5 -  02/12/16:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a bug in launching JSSHTerminal.<br>" + 
 		"<li><b>Astor-7.0.4 -  01/12/16:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; JSSHTerminal is now used for remote login (JSSHTerminal.jar must be added in CLASSPATH)<br>" + 
 		"<li><b>Astor-7.0.3 -  28/11/16:</b><br>" + 
