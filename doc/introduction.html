@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <Title> Astor User s Guide </Title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#7F00FF" ALINK="#FF0000">
+
+
+<!------------------ Introduction ----------------------->
+<Center><h2><u>Introduction to Astor</u></h2></Center>
+<h2>Goal:</h2>
+<ul>
+	<li> The first goal is to know at a quick glance, if everything is OK in a control system,<BR>
+		and otherwise to be able to diagnose a problem and solve it.<Br>
+	<li> The second goal is to configure the control system and its components.<BR>
+	<li> The third goal is to have long term analysis on components (logs, statistics, usage,....)<BR>
+</ul>
+<BR>
+<BR>
+<h2>Principle:</h2>
+<ul>
+	<li>On each host to be controlled, a device server (called
+		<a href="http://www.esrf.fr/computing/cs/tango/tango_doc/ds_doc/tango-ds/System/starter/ClassDescription.html" Target=new> <b>Starter</b></a>)
+		takes care of all device servers running (or supposed to) on this computer.<Br>
+	The controlled server list is read from the TANGO database.<Br>
+	A graphical client (called Astor) is connected to all Starter servers and is able to:
+	<ul>
+		<li> Display the control system status and component status using 	coloured icons,.
+		<li> Execute actions on components (start, stop, test, configure, display 	information, ...)
+		<li> Execute diagnostics on components.
+		<li> Execute global analysis on a large number of crates or database.
+	</ul>
+</ul>
+
+<P><IMG SRC="img/Astor-Starter.gif">
+<BR>
+<!-- P><IMG SRC="img/Astor-Starter-database.jpg" -->
+<BR>
+<BR>
+
+<ul>
+	<li> To control a host in remote, the TANGO device server
+		<a href="http://www.esrf.fr/computing/cs/tango/tango_doc/ds_doc/tango-ds/System/starter/ClassDescription.html" Target=new> <b>Starter</b></a>)
+		Target="new"> <b>Starter</b></a> must be running on it.<Br>
+	<li> <font size=+1 color="#ff0000"> Warning: </font><Br>
+		The starter device must have a specific name to be
+		recognized by astor. This name must be <b>tango/admin/<i>{hostname}</i></b>
+		(e.g. <i>tango/admin/hal</i>).
+
+</ul>
+
+<BR>
+<BR>
+<h2>Running Astor:</h2>
+<ul>
+    <li> Astor is a <b>Java</b> program using <b>Swing</b> classes.<Br>
+        Classes has been compiled and the jar file has been built  whith java 1.6.<Br>
+
+    <li> To start the application, start the script file : <Br>
+        <i> $TANGO_HOME/bin/astor </i>
+
+        <Br><Br>
+    <li><b>There are 3 modes to start Astor:</b></li>
+    <Table Border=2 Cellpadding=3 CELLSPACING=0>
+        <tr>
+            <td><b>Parameter</b></td>           <td><b>Mode</b></td>
+        </tr>
+        <tr>
+            <td><b>-rw</b> or <b>none</b></td>  <td><b>Astor is fully READ/WRITE </b></td>
+        </tr>
+        <tr>
+            <td><b>-db_ro</b></td>              <td><b>Astor is READ/WRITE but Database is READ_ONLY</b></td>
+        </tr>
+        <tr>
+            <td><b>-ro</b></td>                 <td><b>Astor is fully READ_ONLY</b></td>
+        </tr>
+    </table>
+</ul>
+<BR>
+<BR>
+<h2> Display:</h2>
+<ul>
+	<li> At startup, Astor display a tree where node could be a family of hosts (see Starter properties),
+		and leaf are hosts where a Starter device server is registred in database.<br>
+	<li> The icon of the leaf depends on the controlled device servers status
+		as the following definition:
+</ul>
+<Br>
+<Table Border=2 Cellpadding=3 CELLSPACING=0 WIDTH="100%">
+<TR>
+	<Td><Center><b>Hosts</b></Center></td>
+	<Td><Center><b>Servers</b></Center></td>
+</Tr>
+<Tr>
+	<Td>
+		<li> <Img Src="img/greenbal.gif"> All controlled servers are running.
+		<li> <Img Src="img/blueball.gif"> Starter is starting server(s).
+		<li> <Img Src="img/orangebal.gif">At least, one controlled server is stopped and one is running.
+		<li> <Img Src="img/whiteball.gif">All controlled servers are stopped.
+		<li> <Img Src="img/redball.gif">  Starter is not running on host.
+	</Td>
+	<Td>
+		<li> <Img Src="img/greenbal.gif"> Server is running
+		<li> <Img Src="img/blueball.gif"> Server is running but not alive (Starting ?)
+		<li> <Img Src="img/redball.gif">  Server is not running.
+	</Td>
+</Tr>
+</Table>
+<br>
+<Br>
+<BR>
+<BR>
+<h2> Host Control:</h2>
+<ul>
+	Host control could be done by right click popup menu or double click on host:
+</ul>
+<BR>
+<a Name=Appli></a>
+	<img src=img/Astor.jpg>	
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

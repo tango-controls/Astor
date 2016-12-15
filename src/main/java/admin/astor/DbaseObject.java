@@ -36,7 +36,6 @@ package admin.astor;
 
 import admin.astor.tools.BlackBoxTable;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevInfo;
 import fr.esrf.TangoApi.*;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
@@ -68,37 +67,14 @@ public class DbaseObject implements AstorDefs {
         //	Start update thread.
         state_thread.start();
     }
-
-    //======================================================
-    //======================================================
-    String getCvsTag(DeviceProxy dev) throws DevFailed {
-        String tagName = null;
-        DevInfo info = dev.info();
-        String servinfo = info.doc_url;
-        String tag = "CVS Tag = ";
-        int start = servinfo.indexOf(tag);
-        if (start > 0) {
-            start += tag.length();
-            int end = servinfo.indexOf('\n', start);
-            if (end > start)
-                tagName = servinfo.substring(start, end);
-        }
-        if (tagName == null)
-            return "";
-        else
-            return "CVS Tag:   " + tagName + "\n";
-    }
-
     //======================================================
     //======================================================
     String getServerInfo() throws DevFailed {
-        String devname = state_thread.db.get_name();
-        DeviceProxy dev = new DeviceProxy(devname);
+        String deviceName = state_thread.db.get_name();
+        DeviceProxy dev = new DeviceProxy(deviceName);
         String str = "TANGO_HOST:    " + tango_host + "\n\n";
 
         str += dev.get_info() + "\n\n";
-        str += getCvsTag(dev);
-
         try {
             DeviceAttribute att = dev.read_attribute("StoredProcedureRelease");
             str += "Stored Procedure: " + att.extractString();

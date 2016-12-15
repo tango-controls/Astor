@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<Title> Astor User s Guide </Title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#7F00FF" ALINK="#FF0000">
+
+<!------------------ Start server ----------------------->
+<Center><h2><u>Start a new server with Astor</u></h2></Center>
+	<li> <b> If the server is already defined in database:</b> <br>
+	<ul>
+		<li> Be sure that a <b>Starter</b> device server is running on the same host.<Br>
+			If there is no <b> Starter </b> running, start it.
+
+		<li> On Astor main window, click on the host to open  <a href="host_window.html"> host  window</a>.<Br>
+			On this window,  click on <b> Start New </b> button.<br>
+
+		<li> A window with a list of all servers defined in TANGO database will be displayed.<Br>
+
+        <Br>
+		<img src=img/start_new_server.jpg>	
+        <br>
+        <br>
+		<li> Select the expected server and click on <b> Start </b> button.<br>
+		<li> And define Astor control and statup level.
+        <br>
+        <br>
+		<img src=img/startup_level.jpg>	
+	</ul>
+    <br>
+    <br>
+    <br>
+	<li> <b> If the server is NOT already defined in database:</b> <br>
+	<ul>
+		<li> You can declare the server in database using
+			<a href="http://www.esrf.eu/computing/cs/tango/tango_doc/tools_doc/jive_doc/index.html" target=new>
+			Jive</a>.
+		<li> Or click on <b>Create New Server</b> button to start the
+		
+		<a href=movies/wizard.html> wizard </a>. <br>
+    <br>
+    <br>
+    <br>
+	</ul>
+	<li> <b> If the server has been started from shell.</b><Br>
+		The default startup level is not set and the server is not controlled by Astor.<Br>
+		That means that it does not appear in  <a href="host_window.html"> host  window</a>.<Br>
+		To see it click open <b>Not Controlled</b> level. And change it startup level if needed.
+</BODY>
+</HTML>

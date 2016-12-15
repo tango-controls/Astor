@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<Title> Astor User s Guide </Title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#7F00FF" ALINK="#FF0000">
+
+<!------------------ Configuration ----------------------->
+    <Center><h2><u>Astor Configuration</u></h2></Center>
+    <br>
+	<li>Astor can be configured using the following window.<br>
+	 	Click on <b>File/Ctrl System Preferences</b> menu to open<br>
+	<br>
+    <TABLE BORDER="0">
+        <tr	ALIGN="top">
+            <td>
+                <img src="img/preferences.jpg">
+            </td>
+            <td>
+                <ul>
+                    <li> <A HREF="config.html#name">          Define control system name  </a>
+                    <li> <A HREF="config.html#sizes">         Define default window sizes </a>
+                    <li> <A HREF="config.html#add_tools">     Additional java tools.      </a>
+                    <li> <A HREF="config.html#html_pages">    Additional html pages.      </a>
+                    <li> <A HREF="config.html#known_hosts">   Multi Tango Host.           </a>
+                    <li> <A HREF="config.html#remote_loggin"> Host remote loggin command. </a>
+                    <li> <A HREF="config.html#remote_user">   Host remote loggin user.    </a>
+                    <li> <A HREF="config.html#jive_mode">     Jive in RAD_ONLY mode.      </a>
+                    <li> <A HREF="config.html#starter_start"> Starter starts servers at startup </a>
+                </ul>
+            </td>
+        </tr>
+    </table>
+	<br>
+	<b>NOTE</b>:
+	 To disable the <b>Preference</b> menu, start Astor with <b>-DNO_PREF=true</b>.
+
+	<br>
+	<br>
+	<A Name="name"> </A>
+	<li> <b>Control system name : </b>
+	<ul>
+		This name will be displayed on top of Astor main window.<br>
+		It could be useful when user has to manage several control systems.
+	</ul>
+	<br>
+	<br>
+	<A Name="sizes"> </A>
+	<li> <b>Default window sizes : </b>
+	<ul>
+		<b>Hosts tree  Width/Height</b> defines the preferred size for the tree object in main window.<br>
+		<b>Host window Width/Height</b> defines default maximum size for host window.<br>
+        If the number of hosts needs a bigger window, scroll bars will be added.
+	</ul>
+	<br>
+	<br>
+	<A Name="last_collec"> </A>
+	<li> <b>Last Collections : </b>
+	<ul>
+		Hosts can be distributed in families.<br>
+		In the tree, the families are sorted by alphabetic order.<br>
+ 		The property <i>LastCollections</i> give the possibility put collections (families) at the end of the tree.<br>
+		It could be useful to put at the end of the tree, families like <i>Not Critical, In Test, ...</i>
+	</ul>
+	<br>
+	<br>
+
+
+	<A Name="html_pages"> </A>
+	<li> <b>Additional html pages : </b>
+	<ul>
+ 		The property <i>HtmlHelps</i> give the possibility to add specific html pages.<br>
+		This is a string array property.<br>
+		<ul>
+			<li> The first line is the message displayed in help menu.
+			<li> The second one is the URL address for the specified page.
+		</ul>
+		<br>
+		The following example add a link to the Tango device servers pages:<br>
+		<br>
+		<IMG SRC="img/html_pages.jpg">
+		<br><br>
+	</ul>
+	<br>
+	<br>
+
+
+	<A Name="add_tools"> </A>
+	<li> <b>Additional java Tools: </b>
+	<ul>
+ 		The property <i>Tools</i> give the possibility to add java class to tools menu.<br>
+		These additional tools could be specific for one controle system<br>
+		This is a string array property.<br>
+		One tool (java class) is define by two strings:
+		<ul>
+			<li> The first line is the message displayed in tools menu.
+			<li> The second one is the class (and package) to be instancied.
+		</ul>
+		<br>
+		The following example add 3 java tools used on ESRF machine control system for TACO HDB:<br>
+		<br>
+		<IMG SRC="img/add-tools.jpg">
+		<br><br>
+		<b>Remarks:</b>
+		<ul> 
+			<li> The tools java classes need to have a constructor with a
+				<i> JFrame</i> parameter as parent. <br>
+			<li> It need also to not exit if it has been instancied from a parent application.
+			<li> The tools class or jar file needs to be found in <i>$CLASSPATH</i>
+				of <b>Astor</b> startup.
+		</ul>	
+	</ul>
+	<br>
+	<br>
+
+
+	<A Name="known_hosts"> </A>
+	<li> <b> KnownTangoHosts: </b>
+	<ul>
+		This property give a list of TANGO_HOST to be controlled by Astor.<br>
+		The TANGO_HOST can be change by typing a new name but the specified list 
+		will be available in a combo box.
+	</ul>
+	<br>
+	<br>
+
+	<A Name="remote_loggin"> </A>
+	<li> <b> RloginCmd: </b>
+	<ul>
+ 		This property give the possibility change the default remote loggin command.<br>
+		The default command is telnet (or rlogin if RloginUser is defined). <br>
+	</ul>
+	<br>
+	<br>
+	<A Name="remote_user"> </A>
+	<li> <b> RloginUser: </b>
+	<ul>
+ 		This property give the possibility set the remote loggin to the specified user. <br>
+	</ul>
+	<br>
+	<br>
+
+    <A Name="jive_mode"> </A>
+    <li> <b> Jive in READ_ONLY mode: </b>
+    <ul>
+        If this property is <b>true</b> the Jive application will be instancied
+        in READ_ONLY mode.<br>
+        If the property is <b>not set</b> or <b>false</b>, Jive is in READ_WRITE mode.
+    </ul>
+    <br>
+    <br>
+
+	<A Name="starter_start"> </A>
+	<li> <b> Starter starts servers at startup: </b>
+	<ul>
+ 		This boolean property allows the starter to starts the device servers when it starts.<br>
+		If it is false, when the starter will be started, it will not start any server.<br>
+        It could be useful when a large control system is re-started
+        (e.g. after an electrical power cut) to do not overload the Tango database.
+	</ul>
+	<br>
+	<br>
+</BODY>
+</HTML>

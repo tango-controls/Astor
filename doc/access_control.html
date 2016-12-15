@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <Title> Astor User s Guide </Title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#7F00FF" ALINK="#FF0000">
+
+<!------------------ Access Control ----------------------->
+    <Center><h2><u>Tango Access Control (TAC) Configuration</u></h2></Center>
+    <br>
+
+    TANGO provides an access control (see
+        <a href="http://www.esrf.eu/computing/cs/tango/tango_doc/kernel_doc/ds_prog/index.html">
+            kernel documentation
+        </a> &nbsp;&nbsp;chapter Advanced Features)
+    <br>
+    <br>
+    <br>
+    <h3>TAC Configuration Tool:</h3>
+    <ul>
+        Astor provides a tool to configure it.<br>
+        This tool is reserved to the TANGO administrator and needs a password to be opened.
+        <br>
+        <br>
+        <img src="img/TAC.gif" alt="Tango Access Control">
+    </ul>
+    <h3>Configure TAC by IP address and user:</h3>
+    <ul>
+		User list is displyed in a tree under groups.<br>
+        To configure you can Add/Remove a user and its group.<br>
+        And define this user rights. <br>
+        <table width="0">
+            <tr>
+                <td>
+                    <img src="img/TACusers.gif" alt="Tango Access Control users">
+                </td>
+                <td>
+                    <ul>
+                        <li><b> All Users: </b></li>
+                        <ul>
+                            Have only read access for all devices<br>
+                        </ul>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <li><b> User opid02 </b></li>
+                        <ul>
+                            Has write access only for devices
+                            <ul>
+                                <li>fe/id/2</li>
+                                <li>id/id/2 </li>
+                                <li>sys/hdb-push/* </li>
+                            </ul>
+                            and only for clients  running on machines <br>
+                            with IP address as xxx.yyy.22.*
+                        </ul>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </ul>
+    <br>
+    <br>
+    <br>
+    <h3>Configure TAC for allowed commands:</h3>
+    <ul>
+        <table width="0">
+            <tr>
+                <td>
+                    <img src="img/TACcommands.jpg" alt="Tango Access Control users">
+                </td>
+                <td>
+                    <ul>
+                        The access control allows <b>Write</b> access or <b>Read Only</b> access.<br>
+                        The <b>Read Only</b> acces means:
+                        <ul>
+                            <li>Read only device attributes.</li>
+                            <li>Cannot write device attributes.</li>
+                            <li>Cannot execute commands (a command could be a write action).</li>
+                        </ul>
+                        Some commands could be a simple read action.<br>
+                        For instance on <b>Dserver</b> class, the command <b>QueryDevice</b><br>
+                        does not write anything and returns the device list.<br>
+                        This class is needed to establish a connection between a client<br>
+                        and a device, and it is useful even if user is in read only access.<br>
+                        This tool provide a list of allowed commands for  aspecified class.<br>
+                        You can add or reove class by a right click menu.
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </ul>
+</BODY>
+</HTML>

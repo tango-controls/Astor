@@ -37,7 +37,6 @@ package admin.astor;
 import admin.astor.tango_release.TangoServerRelease;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevInfo;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -438,9 +437,6 @@ public class ServArchitectureDialog extends JDialog {
                         node.add(new DefaultMutableTreeNode(property.getValue()));
                     }
                 }
-                //  Get (in devive.info() the tag name for this class.
-                if (devices.length > 0)
-                    _class.setTagName(devices[0].getTagName());
             }
         }
 
@@ -671,26 +667,6 @@ public class ServArchitectureDialog extends JDialog {
                 put_property(data);
             }
         }
-
-        //===============================================================
-        //===============================================================
-        private String getTagName() {
-            String tagName = "";
-            try {
-                DevInfo info = info();
-                String servinfo = info.doc_url;
-                String tag = "CVS Tag = ";
-                int start = servinfo.indexOf(tag);
-                if (start > 0) {
-                    start += tag.length();
-                    int end = servinfo.indexOf('\n', start);
-                    if (end > start)
-                        tagName = servinfo.substring(start, end);
-                }
-            } catch (DevFailed e) { /* Nothing to do */}
-            return tagName;
-        }
-
         //===============================================================
         //===============================================================
         public String toString() {
@@ -757,13 +733,6 @@ public class ServArchitectureDialog extends JDialog {
                 put_property(data);
             }
         }
-
-        //===============================================================
-        //===============================================================
-        private void setTagName(String tagName) {
-            this.tagName = tagName;
-        }
-
         //===============================================================
         //===============================================================
         public String toString() {

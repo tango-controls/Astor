@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <Title> Astor User s Guide </Title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#7F00FF" ALINK="#FF0000">
+
+<!------------------ Polling Management ----------------------->
+<Center><h2><u>Polling Management</u></h2></Center>
+<ul>
+    A Tango device attribute can be polled periodically.<br>
+    To configure this polling, a diagnostic tool is available.<br>
+    It displays when each attribute has been polled the last four times (see following figure)
+    and how much time was required to read and set it.<br>
+    It is very useful to tune the device attribute polling when a server
+    has several devices with many attributes each.<br>
+    Or in case of a hardware problem with time out in reading.
+
+    This window could be popuped from <a href="host_window.html"> host window</a>
+     or from <a href="event_tester.html"> event manager.</a>
+    <br>
+    <br>
+    It display polling information for one or all attributes for one (or all) devices.<br>
+    It allows to remove, add or change polling.<br>
+    It allows to display polling graphically as a profiler.
+    <br>
+    <br>
+    <img Src="img/polling_window.jpg">
+    <br>
+    <br>
+    <img Src="img/polling_profiler.jpg">
+    <br>
+    <br>
+    <br>
+    <b>Pool of polling threads:</b>
+    <table width="0">
+        <tr>
+            <Td> <img src="img/pool_threads.gif"> </Td>
+            <Td>
+                By default, a single thread is started to poll attributes.<br>
+                In case of several devices, a pool of threads is available.<br>
+                Astor proposes a graphic tool to distribute device(s) by thread.<br>
+                Use drag and drop to configure the pool.
+            </td>
+        </tr>
+    </table>
+    </ul>
+</ul>
+</BODY>
+</HTML>

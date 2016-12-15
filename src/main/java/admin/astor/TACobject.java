@@ -65,31 +65,10 @@ public class TACobject extends DeviceProxy implements AstorDefs {
 
     //======================================================
     //======================================================
-    String getCvsTag() throws DevFailed {
-        String tagName = null;
-        DevInfo info = info();
-        String servinfo = info.doc_url;
-        String tag = "CVS Tag = ";
-        int start = servinfo.indexOf(tag);
-        if (start > 0) {
-            start += tag.length();
-            int end = servinfo.indexOf('\n', start);
-            if (end > start)
-                tagName = servinfo.substring(start, end);
-        }
-        if (tagName == null)
-            return "";
-        else
-            return "CVS Tag:   " + tagName + "\n";
-    }
-
-    //======================================================
-    //======================================================
     String getServerInfo() throws DevFailed {
         String str = "Tango Access Control:\n\n";
 
         str += get_info() + "\n\n";
-        str += getCvsTag();
         str += "\n\n";
 
         return str;

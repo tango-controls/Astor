@@ -63,28 +63,8 @@
     <dependencies>
         <dependency>
             <groupId>org.tango</groupId>
-            <artifactId>TangORB</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tango.gui</groupId>
-            <artifactId>LogViewer</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tango</groupId>
             <artifactId>Jive</artifactId>
-            <version>RELEASE</version>
+            <version>7.9</version>
         </dependency>
-        <dependency>
-            <groupId>org.tango.gui</groupId>
-            <artifactId>ATKPanel</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tango</groupId>
-            <artifactId>JSSHTerminal</artifactId>
-            <version>RELEASE</version>
-            <type>pom</type> </dependency>
     </dependencies>
 </project>

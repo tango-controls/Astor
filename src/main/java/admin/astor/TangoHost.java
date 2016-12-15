@@ -39,7 +39,6 @@ import admin.astor.tools.PopupTable;
 import admin.astor.tools.PopupText;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevInfo;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoApi.events.TangoEventsAdapter;
 import fr.esrf.TangoDs.Except;
@@ -475,23 +474,6 @@ public class TangoHost extends DeviceProxy {
                 if (s.controlled)
                     str += s.name + "\n";
             }
-
-            String tagName = "";
-            try {
-                DevInfo info = info();
-                String servinfo = info.doc_url;
-                String tag = "CVS Tag = ";
-                int start = servinfo.indexOf(tag);
-                if (start > 0) {
-                    start += tag.length();
-                    int end = servinfo.indexOf('\n', start);
-                    if (end > start)
-                        tagName = servinfo.substring(start, end);
-                    str += "\n----------- Tag Release -----------\n" +
-                            "        " + tagName;
-                }
-            } catch (DevFailed e) { /* Nothing to do */}
-
         } catch (DevFailed e) {
             str += e.errors[0].desc;
             ErrorPane.showErrorMessage(parent, str, e);
