@@ -86,7 +86,7 @@ public class HostInfoDialogVector extends ArrayList<HostInfoDialog> {
             position.translate(10, 10);
             host.info_dialog.setLocation(position);
         } else
-            host.info_dialog.updatePanel();
+            host.info_dialog.updatePanel(true);
         host.info_dialog.setVisible(true);
 
         return host.info_dialog;

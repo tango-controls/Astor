@@ -156,9 +156,9 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         //  Build the confirm dialog
         StartStopDialog startStopDialog;
         if (parent instanceof JDialog)
-            startStopDialog = new StartStopDialog((JDialog)parent);
+            startStopDialog = new StartStopDialog((JDialog)parent, levels.size()>1);
         else
-            startStopDialog = new StartStopDialog((JFrame) parent);
+            startStopDialog = new StartStopDialog((JFrame) parent, levels.size()>1);
         startStopDialog.setForAllLevels(!confirm);
 
         //	For each startup level
@@ -288,25 +288,25 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         private JRadioButton forAllLevelsBtn;
         private int returnValue = JOptionPane.OK_OPTION;
         //===============================================================
-        private StartStopDialog(JDialog parent) {
+        private StartStopDialog(JDialog parent, boolean allLevelAvailable) {
             super(parent, true);
-            initComponents();
+            initComponents(allLevelAvailable);
         }
         //===============================================================
-        private StartStopDialog(JFrame parent) {
+        private StartStopDialog(JFrame parent, boolean allLevelAvailable) {
                 super(parent, true);
-                initComponents();
+                initComponents(allLevelAvailable);
         }
         //===============================================================
         private boolean doItForAllLevels() {
-            return forAllLevelsBtn.isSelected();
+            return forAllLevelsBtn!=null && forAllLevelsBtn.isSelected();
         }
         //===============================================================
         public void setForAllLevels(boolean b) {
             forAllLevelsBtn.setSelected(b);
         }
         //===============================================================
-        private void initComponents() {
+        private void initComponents(boolean allLevelAvailable) {
             java.awt.GridBagConstraints gridBagConstraints;
 
             javax.swing.JPanel topPanel = new javax.swing.JPanel();
@@ -336,14 +336,15 @@ public class ServerCmdThread extends Thread implements AstorDefs {
 
             bottomPanel.setLayout(new java.awt.GridBagLayout());
 
-            forAllLevelsBtn.setText("Do it for all levels");
-            gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 0;
-            gridBagConstraints.gridwidth = 2;
-            gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-            bottomPanel.add(forAllLevelsBtn, gridBagConstraints);
-
+            if (allLevelAvailable) {
+                forAllLevelsBtn.setText("Do it for all levels");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+                bottomPanel.add(forAllLevelsBtn, gridBagConstraints);
+            }
             yesBtn.setText("Yes");
             yesBtn.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {

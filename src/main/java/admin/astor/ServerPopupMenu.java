@@ -366,12 +366,12 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     //======================================================
     private void serverCmdActionPerformed(ActionEvent evt) {
         Object obj = evt.getSource();
-        int cmdidx = -1;
+        int index = -1;
         for (int i = 0; i < serverMenuLabels.length; i++)
             if (getComponent(OFFSET + i) == obj)
-                cmdidx = i;
+                index = i;
 
-        switch (cmdidx) {
+        switch (index) {
             case STARTUP_LEVEL:
                 if (server.startupLevel(parent, host.getName(), location))
                     parent.updateData();

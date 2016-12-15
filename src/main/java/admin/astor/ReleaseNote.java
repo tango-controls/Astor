@@ -16,9 +16,10 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 15-12-2016  08:58:06)</center><br>\n" + 
+		"	(Generated 15-12-2016  10:07:09)</center><br>\n" + 
 		"<li><b>Astor-7.0.6 -  15/12/16:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Remove old CVS references<br>" + 
+		"&nbsp; &nbsp; &nbsp; Improve resize host info dialog.<br>" + 
 		"<li><b>Astor-7.0.5 -  02/12/16:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Fix a bug in launching JSSHTerminal.<br>" + 
 		"<li><b>Astor-7.0.4 -  01/12/16:</b><br>" + 

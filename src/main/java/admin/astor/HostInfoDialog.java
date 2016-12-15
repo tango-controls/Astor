@@ -167,15 +167,15 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
     //===============================================================
     //===============================================================
-    void updatePanel() {
+    void updatePanel(final boolean resizePanel) {
         //	Build panel
         if (trees == null) {
-            int nb_levels = AstorUtil.getStarterNbStartupLevels();
-            nb_levels++; //	for not controlled
+            int nbLevels = AstorUtil.getStarterNbStartupLevels();
+            nbLevels++; //	for not controlled
 
             levelsPanel = new JPanel();
             levelsPanel.setLayout(new GridBagLayout());
-            centerPanel.add(levelsPanel, java.awt.BorderLayout.CENTER);
+            centerPanel.add(levelsPanel, BorderLayout.CENTER);
 
             //	First time build notifd label
             if (host.manageNotifd) {
@@ -185,7 +185,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                gbc.gridwidth = nb_levels;
+                gbc.gridwidth = nbLevels;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 notifdPanel.add(notifdLabel, gbc);
                 levelsPanel.add(notifdPanel, gbc);
@@ -197,10 +197,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                     }
                 });
             }
-            treePanels = new JPanel[nb_levels];
-            trees = new LevelTree[nb_levels];
+            treePanels = new JPanel[nbLevels];
+            trees = new LevelTree[nbLevels];
 
-            for (int i = 0; i < nb_levels; i++) {
+            for (int i = 0; i < nbLevels; i++) {
                 trees[i] = new LevelTree(jFrame, this, host, i);
                 treePanels[i] = new JPanel();
                 treePanels[i].add(trees[i]);
@@ -218,7 +218,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             public void run() {
                 checkActiveLevels();
                 updateHostState();
-                packTheDialog();
+                if (resizePanel)
+                    packTheDialog();
             }
         });
     }
@@ -612,8 +613,10 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         //	Check if something has changed
         switch (updateHost(servers)) {
             case STATE_CHANGED:
+                updatePanel(false);
+                break;
             case LIST_CHANGED:
-                updatePanel();
+                updatePanel(true);
                 break;
             case NO_CHANGE:
                 return;
@@ -711,7 +714,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     //=========================================================
     //=========================================================
     void updateData() {
-        updatePanel();
+        updatePanel(true);
     }
     //=========================================================
     //=========================================================
