@@ -1,0 +1,19 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Update version in application and generate ReleaseNote.java
+#-----------------------------------------------------------------------
+APPLI_VERS=7.0.6
+MAIN_CLASS=Astor
+PACKAGE=admin.astor
+
+POGO=$TANGO_HOME/release/java/appli/org.tango.pogo.jar
+UPDATE_CLASS=org.tango.pogo.pogo_gui.tools.UpdateRelease
+SRC_HOME=src/main/java/admin/astor
+
+echo "Updating date and revision number..."
+java  -cp $POGO   $UPDATE_CLASS \
+		-file $SRC_HOME/$MAIN_CLASS.java \
+		-release $APPLI_VERS \
+		-title   "$MAIN_CLASS Release Notes" \
+		-package $PACKAGE \
+		-note_path $SRC_HOME
