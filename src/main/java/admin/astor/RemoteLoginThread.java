@@ -33,9 +33,11 @@
 
 package admin.astor;
 
+import admin.astor.tools.PingHosts;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.DbDatum;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 
 
@@ -55,8 +57,11 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
      * @param hostname Host to do the remote login.
      */
     //======================================================================
-    public RemoteLoginThread(String hostname) {
+    public RemoteLoginThread(String hostname) throws DevFailed {
         this.hostname = hostname;
+        PingHosts pingHosts = new PingHosts(hostname);
+        if (pingHosts.getAliveList().isEmpty())
+            Except.throw_exception("NoResponse", hostname + " is not responding");
     }
     //======================================================================
     /**

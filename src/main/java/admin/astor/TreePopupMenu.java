@@ -337,7 +337,11 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
                 host.displayInfo(parent);
                 break;
             case REM_LOGIN:
-                new RemoteLoginThread(host.getName()).start();
+                try {
+                    new RemoteLoginThread(host.getName()).start();
+                } catch (DevFailed e) {
+                    ErrorPane.showErrorMessage(this, null, e);
+                }
                 break;
             case CLONE_HOST:
                 astor.addNewHost(host);

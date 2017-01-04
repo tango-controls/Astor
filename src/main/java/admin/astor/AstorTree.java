@@ -925,7 +925,11 @@ public class AstorTree extends JTree implements AstorDefs {
                                     "Do you want a ssh login to start it ?",
                             "Dialog",
                             JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
-                        new RemoteLoginThread(selectedHost.getName()).start();
+                        try {
+                            new RemoteLoginThread(selectedHost.getName()).start();
+                        } catch (DevFailed e) {
+                            ErrorPane.showErrorMessage(this, null, e);
+                        }
                     }
                 } else
                     Utils.popupError(parent,

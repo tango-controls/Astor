@@ -49,6 +49,7 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
             else
                 onErrors.add(serverRelease);
 
+            //  Must wait ????
             if (AstorUtil.osIsUnix()) {
                 //  If Linux, needs to wait 3 minutes
                 //  for file systems release
@@ -77,9 +78,9 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
         List<TangoServerRelease>   list = new ArrayList<>();
         for (TangoServerRelease serverRelease : this) {
             //  Check only first decimal value
-            int r1 = (int) (10*serverRelease.releaseNumber);
-            int r2 = (int) (10*tangoRelease);
-            if (r1==r2) {
+            int release1 = (int) (100*serverRelease.releaseNumber);
+            int release2 = (int) (100*tangoRelease);
+            if (release1==release2) {
                 list.add(serverRelease);
             }
         }
@@ -147,9 +148,6 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
         }
 
         return sb.toString();
-
-        //return toString(getServersForIdlRelease(idl));
-
     }
 	//===============================================================
 	//===============================================================
@@ -158,26 +156,6 @@ public class  TangoServerReleaseList  extends ArrayList<TangoServerRelease> {
     }
     //===============================================================
 	//===============================================================
-	public static void main (String[] args) {
-
-        List<String>   list = new ArrayList<>();
-        list.add("VacGaugeServer/sr_c1-pen");
-        list.add("VacGaugeServer/sr_c1-ip");
-        list.add("PLCvacuumValve/sr_c01");
-        list.add("Starter/l-c01-1");
-
-
-        try {
-            TangoServerReleaseList	client = new TangoServerReleaseList(list);
-            System.out.println(client.toString(4));
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-	}
-    //======================================================
-    //======================================================
-
 
 
 

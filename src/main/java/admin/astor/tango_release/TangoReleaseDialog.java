@@ -262,7 +262,7 @@ public class TangoReleaseDialog extends JDialog {
     //===============================================================
     @SuppressWarnings("UnusedParameters")
     private void helpBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
-        URL url = getClass().getResource("TangoRelease.html");
+        URL url = getClass().getResource("/admin/astor/TangoRelease.html");
         PopupHtml   dialog = new PopupHtml(null);
         dialog.setLocation(getLocation());
         dialog.show(url, 900, 600);
@@ -312,10 +312,8 @@ public class TangoReleaseDialog extends JDialog {
                 if (args[0].equals("-test")) {
                     //  Do it for a list
                     List<String>   list = new ArrayList<>();
-                    //list.add("PowerSupply/pv");
-                    //list.add("Dummy/pv");
-                    list.add("FirstPipe/pv");
-                     list.add("Starter/debian7-devel");
+                    list.add("HostInfo/draco3");
+                     list.add("Starter/draco3");
                    new TangoReleaseDialog(null, "My Test", list).setVisible(true);
                 }
                 else {

@@ -14,6 +14,7 @@
 Astor-7.0.6 -  15/12/16:
 	Remove old CVS references
 	Improve resize host info dialog.
+	fix a problem in help for server TANGO release
 
 Astor-7.0.5 -  02/12/16:
 	Fix a bug in launching JSSHTerminal.

@@ -340,6 +340,7 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
+    @SuppressWarnings("SameParameterValue")
     private static List<String> getFromEnvFile(String propertyName, String fileName) {
         List<String>    list = new ArrayList<>();
         try {

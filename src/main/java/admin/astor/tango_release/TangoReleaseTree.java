@@ -56,8 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
-
-
 public class TangoReleaseTree extends JTree implements TangoConst {
     private JFrame appli;
     private DefaultMutableTreeNode root;
@@ -68,7 +66,7 @@ public class TangoReleaseTree extends JTree implements TangoConst {
 
     //  ToDo add here new release to be checked.
     private static final double[]   tangoReleases = { 1.0, 2.0, 5.0, 5.2, 7.0, 8.0, 8.1 };
-    private static final int[]      idlReleases   = { 1, 2, 3, 4, 5 };
+    private static final int[]      idlReleases   = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
     private static ImageIcon networkIcon;
     private static ImageIcon tangoIcon;
@@ -197,8 +195,8 @@ public class TangoReleaseTree extends JTree implements TangoConst {
             }
         }
         //  Do it for releases > 9.0 (the real release is now given by c++ lib)
-        for (int i=90 ; i<150 ; i++) {
-            double tangoRelease = 0.1*i;
+        for (int release=900 ; release<1500 ; release++) {
+            double tangoRelease = 0.01*release;
             List<TangoServerRelease> servers =
                     serverReleaseList.getServersForTangoRelease(tangoRelease);
             if (servers.size()>0) {
@@ -448,17 +446,19 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private class Instance  {
         String name;
         TangoServerRelease server;
-
         //===========================================================
         private Instance(TangoServerRelease server) {
             this.server = server;
             this.name    = server.instanceName;
-            if (server.releaseNumber>=1.0)
-                name += "  (Tango-"+ String.format("%1.1f", server.releaseNumber) + ")";
+            if (server.releaseNumber>=1.0) {
+                String strRelease = String.format("%4.2f", server.releaseNumber);
+                if (strRelease.endsWith("0"))
+                    strRelease = strRelease.substring(0, strRelease.length()-1);
+                name += "  (Tango-"+ strRelease + ")";
+            }
             else
                 name += "  (" + server.error + ")";
         }
-
         //===========================================================
         public String toString() {
             return name;
@@ -474,13 +474,11 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private class ServerCollectionClass {
         String name;
         List<TangoServerRelease>   servers;
-
         //===========================================================
         private ServerCollectionClass(String name, List<TangoServerRelease> servers) {
             this.name = name;
             this.servers = servers;
         }
-
         //===========================================================
         public String toString() {
             return name + "  (" + servers.size() + ")";
@@ -495,13 +493,11 @@ public class TangoReleaseTree extends JTree implements TangoConst {
     private class IdlCollectionClass {
         String name;
         List<TangoClassRelease>   classes;
-
         //===========================================================
         private IdlCollectionClass(String name, List<TangoClassRelease> classes) {
             this.name = name;
             this.classes = classes;
         }
-
         //===========================================================
         public String toString() {
             return name + "  (" + classes.size() + ")";
@@ -514,24 +510,10 @@ public class TangoReleaseTree extends JTree implements TangoConst {
      */
     //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
-        private Font[] fonts;
-
-        private final int TITLE = 0;
-        private final int COLLEC = 1;
-        private final int SERVER = 2;
-        private final int CLASS  = 3;
-
-        //===============================================================
-        //===============================================================
-        public TangoRenderer() {
-
-            fonts = new Font[CLASS + 1];
-            fonts[TITLE]  = new Font("Dialog", Font.BOLD, 18);
-            fonts[COLLEC] = new Font("Dialog", Font.BOLD, 14);
-            fonts[SERVER] = new Font("Dialog", Font.BOLD, 12);
-            fonts[CLASS]  = new Font("Dialog", Font.PLAIN, 12);
-        }
-
+        private final Font titleFont  = new Font("Dialog", Font.BOLD, 18);
+        private final Font branchFont = new Font("Dialog", Font.BOLD, 14);
+        private final Font serverFont = new Font("Dialog", Font.BOLD, 12);
+        private final Font classFont  = new Font("Dialog", Font.PLAIN, 12);
         //===============================================================
         //===============================================================
         public Component getTreeCellRendererComponent(
@@ -551,36 +533,41 @@ public class TangoReleaseTree extends JTree implements TangoConst {
             setBackgroundNonSelectionColor(Color.white);
             setForeground(Color.black);
             setBackgroundSelectionColor(Color.lightGray);
-            if (row == 0) {
-                //	ROOT
-                setFont(fonts[TITLE]);
+            if (obj==root) {
+                setFont(titleFont);
                 setIcon(networkIcon);
             } else {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) obj;
 
                 if (node.getUserObject() instanceof ServerCollectionClass ||
                     node.getUserObject() instanceof IdlCollectionClass) {
-                    setFont(fonts[COLLEC]);
+                    setFont(branchFont);
                     setIcon(tangoIcon);
                 }
                 else
                 if (node.getUserObject() instanceof Executable ||
                     node.getUserObject() instanceof Instance) {
-                    setFont(fonts[SERVER]);
+                    setFont(serverFont);
                     setIcon(serverIcon);
                 }
                 else
                 if (node.getUserObject() instanceof TangoClassRelease) {
-                    setFont(fonts[CLASS]);
+                    setFont(classFont);
                     setIcon(classIcon);
                 }
             }
             return this;
         }
     }//	End of Renderer Class
+    //==============================================================================
+    //==============================================================================
+
+
+
+
 
     //==============================================================================
-//==============================================================================
+    //==============================================================================
     static private final int ROOT_OPTION  = 0;
     static private final int IN_TEXT_AREA = 1;
     static private final int SAVE         = 2;
@@ -774,5 +761,8 @@ public class TangoReleaseTree extends JTree implements TangoConst {
                 break;
             }
         }
+        //======================================================
     }
+    //==========================================================
+    //==========================================================
 }

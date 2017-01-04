@@ -113,7 +113,7 @@ public class  TangoServerRelease extends ArrayList<TangoClassRelease> {
     public String toString() {
         StringBuilder   sb = new StringBuilder(name + " (");
         if (releaseNumber>=1.0) {
-            sb.append("Tango-").append(String.format("%1.1f", releaseNumber));
+            sb.append("Tango-").append(String.format("%4.2f", releaseNumber));
         }
         else
             sb.append(error);

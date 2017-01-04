@@ -1098,7 +1098,11 @@ public class BlackBoxTable extends JDialog {
                     break;
 
                 case REMOTE_LOG:
-                    new RemoteLoginThread(hostname).start();
+                    try {
+                        new RemoteLoginThread(hostname).start();
+                    } catch (DevFailed e) {
+                        ErrorPane.showErrorMessage(parent, null,e);
+                    }
                     break;
             }
         }

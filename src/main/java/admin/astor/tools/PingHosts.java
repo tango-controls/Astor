@@ -49,7 +49,7 @@ import java.util.List;
  * @author verdier
  */
 
-class PingHosts {
+public class PingHosts {
     private List<String> aliveList = new ArrayList<>();
     private List<String> stoppedList = new ArrayList<>();
 
@@ -92,7 +92,6 @@ class PingHosts {
     }
     //===============================================================
     //===============================================================
-    @SuppressWarnings({"UnusedDeclaration"})
     public List<String> getAliveList() throws DevFailed {
         return aliveList;
     }
