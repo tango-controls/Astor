@@ -64,7 +64,12 @@
         <dependency>
             <groupId>org.tango</groupId>
             <artifactId>Jive</artifactId>
-            <version>7.9</version>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tango</groupId>
+            <artifactId>DBBench</artifactId>
+            <version>RELEASE</version>
         </dependency>
     </dependencies>
 </project>

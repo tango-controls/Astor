@@ -130,7 +130,6 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
         buildBtnPopupMenu();
     }
     //===============================================================
-
     /**
      * Create a Popup menu for host control
      */

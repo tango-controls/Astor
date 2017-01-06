@@ -1250,8 +1250,8 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     /*
-      *	A Database Popup menu
-      */
+     *	A Database Popup menu
+     */
     //===============================================================
     private class DbPopupMenu extends JPopupMenu {
         private JTree tree;
@@ -1259,14 +1259,15 @@ public class AstorTree extends JTree implements AstorDefs {
                 "Server Info",
                 "Database Info",
                 "Database Black Box",
+                "Database Monitoring",
                 "Browse Database (Jive)",
         };
         private final int OFFSET = 2;        //	Label And separator
         private final int SERVER_INFO = 0;
         private final int DATABASE_INFO = 1;
         private final int DATABASE_BLACKBOX = 2;
-        private final int BROWSE_DATABASE = 3;
-
+        private final int DATABASE_MONITOR  = 3;
+        private final int BROWSE_DATABASE = 4;
         //===========================================================
         private DbPopupMenu(JTree tree) {
             this.tree = tree;
@@ -1286,10 +1287,8 @@ public class AstorTree extends JTree implements AstorDefs {
                 add(btn);
             }
         }
-
-        //===========================================================		}
+        //===========================================================
         private void showMenu(java.awt.event.MouseEvent evt) {
-
             Object obj = getSelectedObject();
 
             //	Add host name in menu label title
@@ -1297,7 +1296,6 @@ public class AstorTree extends JTree implements AstorDefs {
             lbl.setText(obj.toString() + "  :");
             show(tree, evt.getX(), evt.getY());
         }
-
         //===========================================================
         private void treeActionPerformed(ActionEvent evt) {
             Object src = evt.getSource();
@@ -1312,38 +1310,39 @@ public class AstorTree extends JTree implements AstorDefs {
                         displayJiveAppli();
                         break;
                     default:
-                        manageOneDbaseOption(cmdidx);
+                        manageOneDataBaseOption(cmdidx);
                 }
             } catch (DevFailed e) {
                 ErrorPane.showErrorMessage(this, null, e);
             }
         }
-
         //===========================================================
-        private void manageOneDbaseOption(int action) throws DevFailed {
+        private void manageOneDataBaseOption(int action) throws DevFailed {
             //	Create a Popup text window
             DbaseObject db = (DbaseObject) getSelectedObject();
-            PopupText ppt = new PopupText(parent, true);
-            //ppt.setFont(new Font("helvetica", Font.BOLD, 14));
             switch (action) {
                 case SERVER_INFO:
-                    ppt.show(db.getServerInfo());
+                    new PopupText(parent, true).show(db.getServerInfo());
                     break;
                 case DATABASE_INFO:
-                    ppt.show(db.getInfo());
+                    new PopupText(parent, true).show(db.getInfo());
                     break;
                 case DATABASE_BLACKBOX:
-                    db.blackbox(parent);
+                    db.showBlackBox(parent);
+                    break;
+                case DATABASE_MONITOR:
+                    db.monitor();
                     break;
             }
         }
+        //===========================================================
     }
 
 
     //===============================================================
     /*
-      *	A TAC Popup menu
-      */
+     *	A TAC Popup menu
+     */
     //===============================================================
     private class TacPopupMenu extends JPopupMenu {
         private JTree tree;
@@ -1416,6 +1415,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 ErrorPane.showErrorMessage(this, null, e);
             }
         }
+        //===========================================================
     }
 }
 

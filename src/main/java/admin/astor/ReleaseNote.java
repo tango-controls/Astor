@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 04-01-2017  16:24:30)</center><br>\n" + 
+		"	(Generated 06-01-2017  09:36:27)</center><br>\n" + 
+		"<li><b>Astor-7.0.8 -  06/01/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Add DBBench call to monitor database.<br>" + 
 		"<li><b>Astor-7.0.7 -  04/01/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Fix problem in TANGO release<br>" + 
 		"&nbsp; &nbsp; &nbsp; Check if host is alive before openning a terminal<br>" + 

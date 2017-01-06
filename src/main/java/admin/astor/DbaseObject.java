@@ -37,6 +37,7 @@ package admin.astor;
 import admin.astor.tools.BlackBoxTable;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
@@ -48,7 +49,6 @@ public class DbaseObject implements AstorDefs {
 
     int state = unknown;
     DevFailed except = null;
-
     //======================================================
     //======================================================
     public DbaseObject(AstorTree parent, String tango_host) {
@@ -60,7 +60,6 @@ public class DbaseObject implements AstorDefs {
         state_thread = new DbaseState();
         state_thread.start();
     }
-
     //===============================================================
     //===============================================================
     void start() {
@@ -81,10 +80,7 @@ public class DbaseObject implements AstorDefs {
         } catch (DevFailed e) {
             //	Attribute not found
         }
-
-        str += "\n\n";
-
-        return str;
+        return str + "\n\n";
     }
 
     //======================================================
@@ -96,7 +92,7 @@ public class DbaseObject implements AstorDefs {
 
     //======================================================
     //======================================================
-    void blackbox(JFrame parent) {
+    void showBlackBox(JFrame parent) {
         try {
             new BlackBoxTable(parent,
                     state_thread.db.getDeviceName()).setVisible(true);
@@ -104,7 +100,13 @@ public class DbaseObject implements AstorDefs {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }
-
+    //======================================================
+    //======================================================
+    void monitor() {
+        dbbench.DBBench dbBench = new dbbench.DBBench(state_thread.db.getDeviceName(), false);
+        ATKGraphicsUtils.centerFrameOnScreen(dbBench);
+        dbBench.setVisible(true);
+    }
     //======================================================
     //======================================================
     public String toString() {
@@ -115,19 +117,17 @@ public class DbaseObject implements AstorDefs {
     //======================================================
     //======================================================
     private class DbConnection extends Connection {
-        private String devname;
+        private String deviceName;
 
         private DbConnection(String host, String port) throws DevFailed {
             super(host, port, false);
-            devname = get_name();
+            deviceName = get_name();
         }
-
         private String getDeviceName() {
-            return devname;
+            return deviceName;
         }
     }
     //======================================================
-
     /**
      * A thread class to control device.
      */
