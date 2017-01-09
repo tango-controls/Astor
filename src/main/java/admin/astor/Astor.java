@@ -48,6 +48,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -753,7 +754,7 @@ public class Astor extends JFrame implements AstorDefs {
     private void changeTgHostBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeTgHostBtnActionPerformed
 
         try {
-            String newTangoHost;
+            final String newTangoHost;
             List<String> knownTangoHosts = AstorUtil.getAllKnownTangoHosts();
             Selector    tangoHostSelector = new Selector(this,
                         "Tango Host  (e.g.  hal:2001)", knownTangoHosts, tango_host);
@@ -775,7 +776,7 @@ public class Astor extends JFrame implements AstorDefs {
                 return;
 
             //  Set the rw mode for new astor
-            String rights;
+            final String rights;
             if (rwMode==READ_WRITE)
                 rights = "-rw";
             else
@@ -783,9 +784,20 @@ public class Astor extends JFrame implements AstorDefs {
                 rights = "-db_ro";
             else
                 rights = "-ro";
-            String  cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
-            //AstorUtil.executeShellCmdAndReturn(cmd);
-            AstorUtil.executeShellCmd(cmd);
+            //  Start a new shell because TANGO_HOST is for the JVM
+            //  Start it in a tread to do not block this one
+            new Thread() {
+                public void run() {
+                    try {
+                        String cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
+                        //AstorUtil.executeShellCmdAndReturn(cmd);
+                        AstorUtil.executeShellCmd(cmd);
+                    }
+                    catch (IOException | InterruptedException | DevFailed e) {
+                        ErrorPane.showErrorMessage(new JFrame(), "Cannot fork", e);
+                    }
+                }
+            }.start();
         } catch (Exception e) {
             ErrorPane.showErrorMessage(this, "Cannot change TANGO_HOST", e);
         }

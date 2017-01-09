@@ -9,6 +9,17 @@
     <name>Astor</name>
     <description>Astor</description>
 
+    <developers>
+        <developer>
+            <name>verdier</name>
+            <email>accelerator-control@esrf.fr</email>
+            <organizationUrl>ESRF</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git@github.com:tango-controls/Astor.git</connection>
         <developerConnection>scm:git:git@github.com:tango-controls/Astor.git</developerConnection>
