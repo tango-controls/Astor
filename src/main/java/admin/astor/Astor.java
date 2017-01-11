@@ -105,7 +105,7 @@ public class Astor extends JFrame implements AstorDefs {
         setTitle("TANGO Manager - " + revNumber);
         setControlSystemTitle();
         buildTree();
-        ImageIcon icon = Utils.getInstance().getIcon("astor.gif");
+        ImageIcon icon = Utils.getInstance().getIcon("astor.png");
         setIconImage(icon.getImage());
 
         jarUsed = JTangoVersion.getInstance().getJarFileType();
