@@ -156,9 +156,9 @@ public class ServerCmdThread extends Thread implements AstorDefs {
         //  Build the confirm dialog
         StartStopDialog startStopDialog;
         if (parent instanceof JDialog)
-            startStopDialog = new StartStopDialog((JDialog)parent, levels.size()>1);
+            startStopDialog = new StartStopDialog((JDialog)parent, levels==null || levels.size()>1);
         else
-            startStopDialog = new StartStopDialog((JFrame) parent, levels.size()>1);
+            startStopDialog = new StartStopDialog((JFrame) parent, levels==null || levels.size()>1);
         startStopDialog.setForAllLevels(!confirm);
 
         //	For each startup level

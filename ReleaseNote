@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.0.10 -  16/01/17:
+	Fix bug in Start/Stop all servers for several hosts
+
 Astor-7.0.9 -  09/01/17:
 	Fix a bug in Change TANGO_HOST
 
