@@ -66,21 +66,30 @@ public class HostList extends JDialog {
 	 *	Creates new form HostList
 	 */
 	//===============================================================
-	public HostList(JDialog parent) throws DevFailed {
+	public HostList(JDialog parent, String theHost) throws DevFailed {
 		super(parent, true);
 		this.parent = parent;
 		initComponents();
         hosts =  AstorUtil.getInstance().getTangoHostList();
-        String[]    hostNames = new String[hosts.length];
+        List<String> hostNames = new ArrayList<>();
         int i=0;
         for (TangoHost host : hosts) {
             int start = host.name().lastIndexOf('/');
             if (start>0)
-                hostNames[i++] = host.name().substring(start+1);
+                hostNames.add(host.name().substring(start+1));
             else
-                hostNames[i++] = host.name();
+                hostNames.add(host.name());
         }
-        hostList.setListData(hostNames);
+
+        //  Remove theHost
+        for (String hostName : hostNames) {
+            if (hostName.equals(theHost)) {
+                hostNames.remove(hostName);
+                break;
+            }
+        }
+
+        hostList.setListData(hostNames.toArray(new String[hostNames.size()]));
         hostList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 listSelectionPerformed(e);
@@ -89,7 +98,7 @@ public class HostList extends JDialog {
 
         titleLabel.setText("Host List ");
 
-        int h = 20*hostNames.length;
+        int h = 20*hostNames.size();
         if (h>600)  h = 600;
         jScrollPane1.setPreferredSize(new Dimension(200, h));
 		pack();
@@ -168,8 +177,8 @@ public class HostList extends JDialog {
         DeviceData argIn = new DeviceData();
         argIn.insert(selectedHostName);
         //cout << "DbGetHostServerList for " << hostnames[i] << endl;
-        DeviceData  argout = ApiUtil.get_db_obj().command_inout("DbGetHostServerList", argIn);
-        String[] serverList = argout.extractStringArray();
+        DeviceData  argOut = ApiUtil.get_db_obj().command_inout("DbGetHostServerList", argIn);
+        String[] serverList = argOut.extractStringArray();
         List<String>  list = new ArrayList<>();
         for (String server : serverList) {
             if (!server.startsWith("Starter/"))

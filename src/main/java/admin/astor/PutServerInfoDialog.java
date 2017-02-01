@@ -59,6 +59,11 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
     //-======================================================================
     //-======================================================================
     public PutServerInfoDialog(JDialog parent, boolean modal) {
+        this(parent, modal, true);
+    }
+    //-======================================================================
+    //-======================================================================
+    public PutServerInfoDialog(JDialog parent, boolean modal, boolean manageUnregister) {
         super(parent, modal);
         this.parent = parent;
         initComponents();
@@ -70,6 +75,7 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
             String s = "Level " + i;
             jComboBox1.addItem(s);
         }
+        this.manage_unregister = manageUnregister;
         pack();
     }
 
@@ -317,7 +323,6 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
 
 
     //============================================================
-
     /**
      * Update configuration buttons.
      */
@@ -373,7 +378,6 @@ public class PutServerInfoDialog extends javax.swing.JDialog {
     }
 
     //============================================================
-
     /**
      * Get configuration from buttons and return info object.
      */

@@ -58,7 +58,7 @@ public class HostInfoDialogVector extends ArrayList<HostInfoDialog> {
     HostInfoDialog getByHostName(TangoHost host) {
         HostInfoDialog hid = null;
         for (HostInfoDialog hostInfoDialog : this) {
-            if (host.getName().equals(hostInfoDialog.name))
+            if (host.getName().equals(hostInfoDialog.getHostName()))
                 hid = hostInfoDialog;
         }
         return hid;

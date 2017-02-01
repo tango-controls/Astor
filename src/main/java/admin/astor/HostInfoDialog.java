@@ -39,6 +39,8 @@ package admin.astor;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.ApiUtil;
+import fr.esrf.TangoApi.DbServInfo;
+import fr.esrf.TangoApi.DbServer;
 import fr.esrf.TangoApi.DeviceAttribute;
 import fr.esrf.TangoApi.events.ITangoChangeListener;
 import fr.esrf.TangoApi.events.TangoChange;
@@ -69,7 +71,7 @@ import java.util.StringTokenizer;
 @SuppressWarnings("MagicConstant")
 public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     public TangoHost host;
-    public String name;
+    private String hostName;
     private JFrame jFrame;
     private Color bg = null;
 
@@ -94,7 +96,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
      * Creates new form HostInfoDialog
      *
      * @param parent        the Astor parent instance
-     * @param hostName      host name to display info
+     * @param hostName      host hostName to display info
      * @param standAlone    true if stand alone
      * @throws DevFailed    if starter connection failed
      */
@@ -117,7 +119,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         super(jFrame, false);
         this.jFrame = jFrame;
         this.host = host;
-        this.name = host.getName();
+        this.hostName= host.getName();
         initComponents();
         setTitle(host + "  Control");
         displayAllBtn.setSelected(true);
@@ -128,7 +130,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         updateThread.start();
 
         bg = titlePanel.getBackground();
-        titleLabel.setText("Controlled Servers on " + name);
+        titleLabel.setText("Controlled Servers on " + hostName);
         notifdMenu = new ServerPopupMenu(jFrame, this, host, ServerPopupMenu.NOTIFD);
 
         //  Manage for READ_ONLY mode
@@ -142,6 +144,11 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         ATKGraphicsUtils.centerDialog(this);
     }
 
+    //===============================================================
+    //===============================================================
+    public String getHostName() {
+        return hostName;
+    }
     //===============================================================
     //===============================================================
     public Astor getAstorObject() {
@@ -212,7 +219,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         int nb = 0;
         for (int i = 1; i < trees.length; i++)
             nb += trees[i].getNbServers();
-        titleLabel.setText("" + nb + " Controlled Servers on " + name);
+        titleLabel.setText("" + nb + " Controlled Servers on " + hostName);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -499,44 +506,113 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     @SuppressWarnings({"UnusedDeclaration"})
     private void startNewBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startNewBtnActionPerformed
 
-        //	Get Server name
-        ListDialog jlist = new ListDialog(this);
+        //	Get Server hostName
+        ListDialog listDialog = new ListDialog(this);
         //	Search Btn position to set dialog location
-        Point p = getLocationOnScreen();
-        p.translate(50, 50);
-        jlist.setLocation(p);
-        jlist.showDialog();
-        List<String> serverNames = jlist.getSelectedItems();
-        if (serverNames == null)
-            return;
-        for (String serverName : serverNames) {
-            if (serverName != null) {
-                try {
-                    //	OK to start, do it.
-                    host.registerServer(serverName);
-                    host.startOneServer(serverName);
-
-                    //	OK to start get the Startup control params.
-                    TangoServer ts = new TangoServer(serverName, DevState.OFF);
-                    ts.startupLevel(this, host.getName(), p);
-                } catch (DevFailed e) {
-                    ErrorPane.showErrorMessage(jFrame, null, e);
-                }
-            }
-        }
-        //  Force a Starter update
-        host.updateServersList(jFrame);
-        try {
-            //  And force asynchronous update
-            DeviceAttribute attribute = host.read_attribute("Servers");
-            manageServersAttribute(attribute);
-        }
-        catch(DevFailed e) {
-            // Nothing
+        Point point = getLocationOnScreen();
+        point.translate(50, 50);
+        listDialog.setLocation(point);
+        listDialog.showDialog();
+        List<String> serverNames = listDialog.getSelectedItems();
+        if (serverNames != null) {
+            new StartServersThread(this, serverNames, point).start();
         }
     }//GEN-LAST:event_startNewBtnActionPerformed
 
 
+    //===============================================================
+    //===============================================================
+    private class StartServersThread extends Thread {
+        private JDialog dialog;
+        private List<String> serverNames;
+        private Point point;
+        private StartServersThread(JDialog dialog, List<String> serverNames, Point point) {
+            this.dialog = dialog;
+            this.serverNames = serverNames;
+            this.point = point;
+        }
+        public void run () {
+            try {
+                //  If several servers -> ask level management ?
+                DbServInfo dbServInfo = null;
+                int levelManagement = ASK_FOR_EACH;
+                if (serverNames.size()>4) {
+                    levelManagement=getLevelManagement();
+                    if (levelManagement == CANCEL)
+                        return;
+
+                    if (levelManagement == SET_ONE) {
+                        TangoServer server = new TangoServer(serverNames.get(0), DevState.OFF);
+                        dbServInfo = server.getStartupLevel(dialog, point);
+                    }
+                }
+                //  Start each server
+                for (String serverName : serverNames) {
+                    if (serverName != null) {
+                        try {
+                            //	OK to start, do it.
+                            host.registerServer(serverName);
+                            host.startOneServer(serverName);
+
+                            switch (levelManagement) {
+                                case DON_T_ASK:
+                                    //  Do not loop to fast
+                                    try { Thread.sleep(2000); } catch (InterruptedException e) { /* */ }
+                                    break;
+                                case ASK_FOR_EACH:
+                                    //	OK to start get the Startup control params.
+                                    TangoServer server=new TangoServer(serverName, DevState.OFF);
+                                    server.startupLevel(dialog, host.getName(), point);
+                                    break;
+                                case SET_ONE:
+                                    //  Set the specified level
+                                    if (dbServInfo != null) {
+                                        dbServInfo.name = serverName;
+                                        dbServInfo.host=host.getName();
+                                        new DbServer(serverName).put_info(dbServInfo);
+                                    }
+                                    //  Do not loop to fast
+                                    try { Thread.sleep(2000); } catch (InterruptedException e) { /* */ }
+                                    break;
+                            }
+                        } catch (DevFailed e) {
+                            ErrorPane.showErrorMessage(jFrame, null, e);
+                        }
+                    }
+
+                    //  Force a Starter update
+                    host.updateServersList(jFrame);
+
+                    //  And force asynchronous update
+                    DeviceAttribute attribute=host.read_attribute("Servers");
+                    manageServersAttribute(attribute);
+                }
+            }
+            catch(DevFailed e) {
+                // Nothing
+            }
+        }
+    }
+    //===============================================================
+    private static final int DON_T_ASK = 0;
+    private static final int SET_ONE = 1;
+    private static final int ASK_FOR_EACH = 2;
+    private static final int CANCEL = 3;
+    //===============================================================
+    private int getLevelManagement() {
+        Object[] options = {"Don't ask", "Set one for all", "Ask for each", "Cancel"};
+        int option = JOptionPane.showOptionDialog(this,
+                "Device servers startup level ?\n\n",
+                "Question", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        switch (option) {
+            case 3:    //	Cancel
+            case -1:   //	escape
+                return CANCEL;
+            default:
+                return option;
+        }
+    }
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -606,7 +682,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 }
             }
         } catch (DevFailed e) {
-            System.err.println(name);
+            System.err.println(hostName);
             Except.print_exception(e);
         }
 
@@ -642,7 +718,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 try {
                     server = new TangoServer(newServer.name, newServer.state);
                 } catch (DevFailed e) {
-                    System.err.println(name);
+                    System.err.println(hostName);
                     Except.print_exception(e);
                 }
                 host.addServer(server);
@@ -984,7 +1060,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 //if (AstorUtil.getDebug())
                 // 	System.out.println(host + "/" + att.getName() + " changed " + " : ");
             } catch (DevFailed e) {
-                System.out.println(name);
+                System.out.println(hostName);
                 if (e.errors[0].reason.equals("API_EventTimeout")) {
                     System.err.println("HostStataThread.ServerEventListener" +
                             deviceName + " : API_EventTimeout");
@@ -992,7 +1068,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 } else
                     fr.esrf.TangoDs.Except.print_exception(e);
             } catch (Exception e) {
-                System.err.println(name);
+                System.err.println(hostName);
                 System.err.println("AstorEvent." + deviceName);
                 System.err.println(e.toString());
                 System.err.println("HostStateThread.ServerEventListener : could not extract data!");

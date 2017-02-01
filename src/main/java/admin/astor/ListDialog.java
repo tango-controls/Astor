@@ -66,16 +66,15 @@ public class ListDialog extends javax.swing.JDialog {
     //======================================================
     /**
      * Creates new form ListDialog
-     * @param hostInfoDialog1 hostInfoDialog dialog instance
+     * @param hostInfoDialog hostInfoDialog dialog instance
      */
     //======================================================
-    public ListDialog(HostInfoDialog hostInfoDialog1) {
-        super(hostInfoDialog1, true);
-        this.hostInfoDialog = hostInfoDialog1;
+    public ListDialog(HostInfoDialog hostInfoDialog) {
+        super(hostInfoDialog, true);
+        this.hostInfoDialog = hostInfoDialog;
         initComponents();
 
         //	fix str filter and add a mouse listener on list
-        //---------------------------------------------------
         filterTxt.setText(str_filter);
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -90,12 +89,12 @@ public class ListDialog extends javax.swing.JDialog {
     //======================================================
     private void setList() throws DevFailed {
         str_filter = filterTxt.getText();
-        String[] servlist = ApiUtil.get_db_obj().get_server_list(str_filter);
-        jList.setListData(servlist);
+        String[] serverList = ApiUtil.get_db_obj().get_server_list(str_filter);
+        jList.setListData(serverList);
 
         //	Search if previous selection exists
-        for (int i = 0; i < servlist.length; i++)
-            if (servlist[i].equals(previousItem))
+        for (int i = 0; i < serverList.length; i++)
+            if (serverList[i].equals(previousItem))
                 jList.setSelectedIndex(i);
     }
 
@@ -212,15 +211,14 @@ public class ListDialog extends javax.swing.JDialog {
             jive.DevWizard wdlg = new jive.DevWizard(hostInfoDialog, hostInfoDialog.host);
             wdlg.showWizard(null);
 
-            String servname = DevWizard.lastServStarted;
-            if (servname != null) {
+            String serverName = DevWizard.lastServStarted;
+            if (serverName != null) {
                 //	Search Btn position to set dialog location
                 Point p = getLocationOnScreen();
                 p.translate(50, 50);
                 try {
                     //	OK to start get the Startup control params.
-                    //--------------------------------------------------
-                    if (new TangoServer(servname, DevState.OFF).startupLevel(hostInfoDialog, hostInfoDialog.host.getName(), p))
+                    if (new TangoServer(serverName, DevState.OFF).startupLevel(hostInfoDialog, hostInfoDialog.host.getName(), p))
                         hostInfoDialog.updateData();
                 } catch (DevFailed e) {
                     Utils.popupError(hostInfoDialog, null, e);
@@ -319,13 +317,10 @@ public class ListDialog extends javax.swing.JDialog {
     @SuppressWarnings({"UnusedDeclaration"})
     private void fromAnotherCrateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fromAnotherCrateBtnActionPerformed
         try {
-            HostList    hostListDialog = new HostList(this);
+            HostList    hostListDialog = new HostList(this, hostInfoDialog.getHostName());
             if (hostListDialog.showDialog()== JOptionPane.OK_OPTION) {
-                List<String>   serverList = hostListDialog.getServerList();
-                String[]    array = new String[serverList.size()];
-                for (int i=0 ; i<serverList.size() ; i++)
-                    array[i] = serverList.get(i);
-                jList.setListData(array);
+                List<String> serverList = hostListDialog.getServerList();
+                jList.setListData(serverList.toArray(new String[serverList.size()]));
                 filterPanel.setVisible(false);
                 titleLabel.setText("Start servers from " + hostListDialog.getSelectedHostName());
             }

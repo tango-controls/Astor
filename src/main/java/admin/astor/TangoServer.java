@@ -78,7 +78,6 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //=============================================================
     public TangoServer(String name, DevState state) throws DevFailed {
         //	Create object
-        //---------------------------------
         super("dserver/" + name);
         set_transparency_reconnection(true);
         this.name = name;
@@ -91,7 +90,6 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //=============================================================
     public TangoServer(String name) throws DevFailed {
         //	Create object
-        //---------------------------------
         super(name);
         set_transparency_reconnection(true);
         this.name = name;
@@ -182,21 +180,20 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     private String[] queryDevice(boolean add_dserver) throws DevFailed {
         //	Query the device list
         //	(Check two times for backward compatibility)
-        //-------------------------------------------------
-        DeviceData argout;
+        DeviceData argOut;
         try {
-            argout = command_inout("QueryDevice");
+            argOut = command_inout("QueryDevice");
         } catch (DevFailed e) {
             //	If not "command not found" re-throw exception
             if (!e.errors[0].reason.equals("API_CommandNotFound"))
                 throw e;
             else
-                argout = command_inout("DevQueryDevice");
+                argOut = command_inout("DevQueryDevice");
         }
 
         //	remove class name at begining of each device name added in Tango-5
         String separator = "::";
-        String[] tmp = argout.extractStringArray();
+        String[] tmp = argOut.extractStringArray();
         String[] devices = new String[(add_dserver) ? tmp.length + 1 : tmp.length];
         for (int i = 0, start; i < tmp.length; i++)
             if ((start = tmp[i].indexOf(separator)) > 0)
@@ -220,7 +217,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     boolean startupLevel(JDialog parent, String hostname, Point p) {
-        boolean modif = false;
+        boolean modified = false;
         try {
             //	Get dbServer startup info and popup dialog
             PutServerInfoDialog dialog = new PutServerInfoDialog(parent, true);
@@ -255,15 +252,38 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                         ApiUtil.get_db_obj().unexport_device(deviceName[i]);
                     }
                 }
-                modif = true;
+                modified = true;
             }
         } catch (DevFailed e) {
             e.printStackTrace();
             ErrorPane.showErrorMessage(parent, null, e);
         }
-        return modif;
+        return modified;
     }
+    //===============================================================
+    //===============================================================
+    DbServInfo getStartupLevel(JDialog parent, Point p) {
+        try {
+            //	Get dbServer startup info and popup dialog
+            PutServerInfoDialog dialog = new PutServerInfoDialog(parent, true, false);
+            dialog.setLocation(p);
+            updateStartupInfo();
 
+            //	if OK put the new info to database
+            if (dialog.showDialog(info) == PutServerInfoDialog.RET_OK) {
+                info = dialog.getSelection();
+                if (info != null) {
+                    if (info.startup_level == 0)
+                        info.controlled=false;
+                }
+                return info;
+            }
+        } catch (DevFailed e) {
+            e.printStackTrace();
+            ErrorPane.showErrorMessage(parent, null, e);
+        }
+        return null;
+    }
     //===============================================================
     //===============================================================
     private String chooseDevice(Component parent) throws DevFailed {
@@ -279,7 +299,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         switch (devices.length) {
             case 0:
                 Except.throw_exception("NO_DEVICE_REGISTRED",
-                        "No device registred for this derver",
+                        "No device registered for this server",
                         "TangoServer.chooseDevice()");
                 break;
             case 1:
