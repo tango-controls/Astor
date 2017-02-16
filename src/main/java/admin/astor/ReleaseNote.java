@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 01-02-2017  08:32:03)</center><br>\n" + 
+		"	(Generated 16-02-2017  14:29:19)</center><br>\n" + 
+		"<li><b>Astor-7.0.12 -  16/02/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Improve check host name when create/clone host object<br>" + 
 		"<li><b>Astor-7.0.11 -  01/02/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Improve startup, level management when start more than 4 servers.<br>" + 
 		"<li><b>Astor-7.0.10 -  16/01/17:</b><br>" + 

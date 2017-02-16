@@ -37,6 +37,7 @@ package admin.astor;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
@@ -59,7 +60,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     private List<String> collections;
     private int retVal = JOptionPane.CANCEL_OPTION;
     private boolean creating;
-
     //======================================================================
     //======================================================================
     private boolean getUseEvents() {
@@ -126,7 +126,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     }
 
     //======================================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -357,21 +356,22 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
-        String hostname = hostText.getText();
-        String usage = usageText.getText();
-        String family = familyText.getText();
-        String str_ds_path = pathText.getText().trim();
-        if (hostname.length() == 0 || str_ds_path.length() == 0) {
-            JOptionPane.showMessageDialog(parent,
-                    "Fill the fields before creation !",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
         try {
+            String hostName = hostText.getText();
+            String usage = usageText.getText();
+            String family = familyText.getText();
+            String str_ds_path = pathText.getText().trim();
+            if (hostName.length() == 0 || str_ds_path.length() == 0) {
+                JOptionPane.showMessageDialog(parent,
+                        "Fill the fields before creation !",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             String[] ds_path = AstorUtil.string2StringArray(str_ds_path);
             boolean use_events = (useEventsBtn.getSelectedObjects() != null);
-            MkStarter starter = new MkStarter(hostname, ds_path, use_events);
+             MkStarter starter = new MkStarter(hostName, ds_path, use_events);
             if (creating)
                 starter.create();
             starter.setProperties();
@@ -393,11 +393,11 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
             if (creating)
                 message =
                         "A Starter server has been created in TANGO database.\n\n" +
-                                "You can now start it on " + hostname + " machine.";
+                                "You can now start it on " + hostName + " machine.";
             else {
                 message = "The property has been modified in database";
                 try {
-                    String deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
+                    String deviceName = AstorUtil.getStarterDeviceHeader() + hostName;
                     new DeviceProxy(deviceName).command_inout("Init");
                     message += "\nand the device has been re-initialized.";
                 } catch (DevFailed e) {

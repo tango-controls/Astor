@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.0.12 -  16/02/17:
+	Improve check host name when create/clone host object
+
 Astor-7.0.11 -  01/02/17:
 	Improve startup, level management when start more than 4 servers.
 

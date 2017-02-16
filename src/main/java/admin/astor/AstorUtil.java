@@ -690,7 +690,7 @@ public class AstorUtil implements AstorDefs {
         }
 
         //	And create TangoHost array object
-        TangoHost[] hosts = new TangoHost[hostNames.length];
+        List<TangoHost> hosts = new ArrayList<>();
         int idx = 0;
         for (String hostName : hostNames) {
             if (db_server_idl_4) {
@@ -699,20 +699,24 @@ public class AstorUtil implements AstorDefs {
                 DbDevImportInfo adminInfo  = getDevImportInfo(hostName, adminfo);
                 if (deviceInfo!=null) {
                     if (!deviceInfo.exported || adminInfo==null)
-                        hosts[idx++] = new TangoHost(hostName, false);
+                        hosts.add(new TangoHost(hostName, false));
                     else {
                         //	Create the device proxies with 2 info
                         //  Because event info is unused in case ZMQ events.
-                        hosts[idx++] = new TangoHost(deviceInfo, adminInfo);
+                        hosts.add(new TangoHost(deviceInfo, adminInfo));
                     }
                 }
+                else {
+                    System.err.println("----------> " + hostName);
+                }
+
             }
             else
-                hosts[idx++] = new TangoHost(hostName, true);
+                hosts.add(new TangoHost(hostName, true));
         }
         if (db_server_idl_4)
             MySqlUtil.getInstance().manageTangoHostProperties(hosts);
-        return hosts;
+        return hosts.toArray(new TangoHost[hosts.size()]);
     }
 
     //===============================================================

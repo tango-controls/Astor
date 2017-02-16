@@ -220,7 +220,7 @@ public class MySqlUtil {
      * @param hosts the TangoHost objects to set teh property values found
      */
     //===============================================================
-    public void manageTangoHostProperties(TangoHost[] hosts) {
+    public void manageTangoHostProperties(List<TangoHost> hosts) {
         try {
             String starters = AstorUtil.getStarterDeviceHeader()+"%";
             MySqlUtil mysql = MySqlUtil.getInstance();
@@ -228,17 +228,19 @@ public class MySqlUtil {
             List<String[]> host_usage = mysql.getHostProperty(starters, "HostUsage");
             List<String[]> use_evt = mysql.getHostProperty(starters, "UseEvents");
             for (TangoHost host : hosts) {
-                String devname = host.get_name();
-                for (String[] collection : collections)
-                    if (devname.equals(collection[0]))
-                        host.collection = collection[1];
-                for (String[] usage : host_usage)
-                    if (devname.equals(usage[0]))
-                        host.usage = usage[1];
-                for (String[] use : use_evt)
-                    if (devname.equals(use[0]))
-                        host.manageNotifd =
-                                (use[1].equals("true") || use[1].equals("1"));
+                if (host!=null) {
+                    String deviceName=host.get_name();
+                    for (String[] collection : collections)
+                        if (deviceName.equals(collection[0]))
+                            host.collection=collection[1];
+                    for (String[] usage : host_usage)
+                        if (deviceName.equals(usage[0]))
+                            host.usage=usage[1];
+                    for (String[] use : use_evt)
+                        if (deviceName.equals(use[0]))
+                            host.manageNotifd=
+                                    (use[1].equals("true") || use[1].equals("1"));
+                }
             }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);

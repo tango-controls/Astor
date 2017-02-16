@@ -53,7 +53,7 @@ public class MkStarter {
             "logging_target",
             "logging_rft"
     };
-    private String hostname;
+    private String hostName;
     private String[] ds_path;
     private boolean use_events = false;
 
@@ -63,27 +63,39 @@ public class MkStarter {
     private DeviceProxy dev;
 
     private static final int polling_period = 1000;
+    private static final String[] unexpectedChars = {
+            "!", "@", "#", "$", "%", "^", "&", "*",
+            "(", ")", "/", "/", ",", "<", ">", ";",
+            ":", "{", "}", "[", "]", "=", "+"
+    };
     //===============================================================
     //===============================================================
     public MkStarter() throws DevFailed {
         getEnvironment();
-
-        serverName = classname + "/" + hostname;
-        deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
+        checkHostName(hostName);
+        serverName = classname + "/" + hostName;
+        deviceName = AstorUtil.getStarterDeviceHeader() + hostName;
     }
 
     //===============================================================
     //===============================================================
-    public MkStarter(String hostname, String[] ds_path, boolean use_events)
+    public MkStarter(String hostName, String[] ds_path, boolean use_events)
             throws DevFailed {
-        this.hostname = hostname;
+        this.hostName = hostName;
         this.ds_path = ds_path;
         this.use_events = use_events;
+        checkHostName(hostName);
 
-        serverName = classname + "/" + hostname;
-        deviceName = AstorUtil.getStarterDeviceHeader() + hostname;
+        serverName = classname + "/" + hostName;
+        deviceName = AstorUtil.getStarterDeviceHeader() + hostName;
     }
-
+    //======================================================================
+    //======================================================================
+    private void checkHostName(String hostName) throws DevFailed {
+        for (String unexpected : unexpectedChars)
+            if (hostName.contains(unexpected))
+                Except.throw_exception("SyntaxError", "Char \'" + unexpected + "\' unexpected !");
+    }
     //===============================================================
     //===============================================================
     public void create() throws DevFailed {
@@ -98,7 +110,7 @@ public class MkStarter {
         }
         if (exists)
             Except.throw_exception("DeviceAlreadyExists",
-                    serverName + " is already exits in database.",
+                    serverName + " already exits in database.",
                     "MkStarter.MkStarter()");
 
         //	create the new Starter server
@@ -116,7 +128,7 @@ public class MkStarter {
         //	Set logging properties (will be done at creation only later)
         String[] valStr = new String[] {
                 "WARNING",
-                "file::/tmp/ds.log/starter_" + hostname + ".log",
+                "file::/tmp/ds.log/starter_" + hostName + ".log",
                 Integer.toString(500) };
         DbDatum[] datum = new DbDatum[logging_properties.length];
         for (int i = 0; i < logging_properties.length; i++)
@@ -159,7 +171,7 @@ public class MkStarter {
     //===============================================================
     //===============================================================
     private void getEnvironment() throws DevFailed {
-        if ((hostname = System.getProperty("HOST_NAME")) == null)
+        if ((hostName = System.getProperty("HOST_NAME")) == null)
             Except.throw_exception("EnvironmentException",
                     "HOST_NAME is not defined.",
                     "MkStarter.getEnvironment()");
