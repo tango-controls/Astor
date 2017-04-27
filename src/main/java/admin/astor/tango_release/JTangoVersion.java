@@ -73,14 +73,16 @@ public class JTangoVersion {
     //========================================================================
     private JTangoVersion() {
         jarFileType = getTangoJarUsed();
-        jarFileName = getRealFileName(jarFileName);
+        if(jarFileName != null) {
+            jarFileName = getRealFileName(jarFileName);
 
-        if (jarFileType==JTANGO) {
-            for (String pack : packages) {
-                String packageName = packageHeader + pack + "/" + manifestName;
-                ManifestModule module = getManifestModule(packageName);
-                if (module!=null)
-                    modules.add(module);
+            if (jarFileType == JTANGO) {
+                for (String pack : packages) {
+                    String packageName = packageHeader + pack + "/" + manifestName;
+                    ManifestModule module = getManifestModule(packageName);
+                    if (module != null)
+                        modules.add(module);
+                }
             }
         }
     }
