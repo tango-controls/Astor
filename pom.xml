@@ -15,10 +15,17 @@
             <email>accelerator-control@esrf.fr</email>
             <organizationUrl>ESRF</organizationUrl>
             <roles>
-                <role>Developer</role>
+                <role>Maintainer</role>
             </roles>
         </developer>
     </developers>
+
+    <contributors>
+        <contributor>
+            <name>ingvord</name>
+            <email>mail@ingvord.ru</email>
+        </contributor>
+    </contributors>
 
     <scm>
         <connection>scm:git:git@github.com:tango-controls/Astor.git</connection>
@@ -33,6 +40,14 @@
             <url>https://api.bintray.com/maven/tango-controls/maven/${project.artifactId}/;publish=1</url>
         </repository>
     </distributionManagement>
+    
+    <!-- tango-controls bintray maven repo to resolve dependencies-->
+    <repositories>
+        <repository>
+            <id>bintray-tango-controls-maven</id>
+            <url>http://dl.bintray.com/tango-controls/maven</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -49,7 +64,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <useReleaseProfile>false</useReleaseProfile>
+                    <useReleaseProfile>true</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
@@ -67,7 +82,32 @@
                     </archive>
                 </configuration>
             </plugin>
-
+            <!-- this builds fat jar -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>executable</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>admin.astor.Astor</mainClass>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -83,4 +123,33 @@
             <version>RELEASE</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
