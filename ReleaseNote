@@ -11,6 +11,12 @@
 #
 #-======================================================================
 
+Astor-7.0.14 -  04/05/17:
+	Update the release number in display.
+
+Astor-7.0.13 -  27/04/17:
+	Fix a NPE
+
 Astor-7.0.12 -  16/02/17:
 	Improve check host name when create/clone host object
 

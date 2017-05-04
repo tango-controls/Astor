@@ -16,7 +16,11 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 16-02-2017  14:29:19)</center><br>\n" + 
+		"	(Generated 04-05-2017  16:00:01)</center><br>\n" + 
+		"<li><b>Astor-7.0.14 -  04/05/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Update the release number in display.<br>" + 
+		"<li><b>Astor-7.0.13 -  27/04/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a NPE<br>" + 
 		"<li><b>Astor-7.0.12 -  16/02/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Improve check host name when create/clone host object<br>" + 
 		"<li><b>Astor-7.0.11 -  01/02/17:</b><br>" + 

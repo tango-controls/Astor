@@ -82,7 +82,8 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- this builds fat jar -->
+            <!-- this builds fat jar
+            ******* BUT we do not want to do it !!!!!!!!!!!!!
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.0.0</version>
@@ -108,6 +109,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
     </build>
 
@@ -141,13 +143,13 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
+                    <!--plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
-                    </plugin>
+                    </plugin-->
                 </plugins>
             </build>
         </profile>
