@@ -61,7 +61,8 @@ public class RemoteLoginThread extends Thread implements AstorDefs {
         this.hostname = hostname;
         PingHosts pingHosts = new PingHosts(hostname);
         if (pingHosts.getAliveList().isEmpty())
-            Except.throw_exception("NoResponse", hostname + " is not responding");
+            Except.throw_exception("NoResponse",
+                    "No response from " + hostname + "\nIt seems down");
     }
     //======================================================================
     /**

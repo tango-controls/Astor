@@ -87,17 +87,17 @@ public class PingHosts {
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
-    public boolean noStopped() throws DevFailed {
+    public boolean noStopped() {
         return stoppedList.isEmpty();
     }
     //===============================================================
     //===============================================================
-    public List<String> getAliveList() throws DevFailed {
+    public List<String> getAliveList() {
         return aliveList;
     }
     //===============================================================
     //===============================================================
-    List<String> getStoppedList() throws DevFailed {
+    List<String> getStoppedList() {
         return stoppedList;
     }
     //===============================================================

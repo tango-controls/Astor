@@ -34,10 +34,7 @@
 
 package admin.astor;
 
-import admin.astor.tools.BlackBoxTable;
-import admin.astor.tools.PopupTable;
-import admin.astor.tools.PopupText;
-import admin.astor.tools.Utils;
+import admin.astor.tools.*;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoApi.events.TangoEventsAdapter;
@@ -576,7 +573,6 @@ public class TangoHost extends DeviceProxy {
         }
     }
     //==============================================================
-
     /**
      * Awake thread to read host.
      */
@@ -690,6 +686,13 @@ public class TangoHost extends DeviceProxy {
         return str;
     }
 
+    //==============================================================
+    //==============================================================
+    public void checkIfAlive() throws DevFailed {
+        PingHosts pingHosts = new PingHosts(name);
+        if (pingHosts.getAliveList().isEmpty())
+            Except.throw_exception("NoResponse", "No response from " + name + "\nIt seems down");
+    }
     //==============================================================
     //==============================================================
     public String hostName() {

@@ -694,9 +694,8 @@ public class AstorTree extends JTree implements AstorDefs {
 //
 //======================================================
     //======================================================
-
     /**
-     * Manage event on clicked mouse on PogoTree object.
+     * Manage event on clicked mouse on JTree object.
      *
      * @param evt the mouse event
      */
@@ -905,6 +904,14 @@ public class AstorTree extends JTree implements AstorDefs {
             return;
         }
 
+        //  Check if host alive
+        try {
+            selectedHost.checkIfAlive();
+        }
+        catch (DevFailed e) {
+            ErrorPane.showErrorMessage(this, null, e);
+            return;
+        }
         //	Manage a synchronous read attributes
         selectedHost.updateData();
         try {
@@ -979,15 +986,15 @@ public class AstorTree extends JTree implements AstorDefs {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 getLastSelectedPathComponent();
 
-        String str = node + ":\n\n";
+        StringBuilder str = new StringBuilder(node + ":\n\n");
         //	Get collection children
         int nb = node.getChildCount();
         for (int i = 0; i < nb; i++) {
             node = node.getNextNode();
             TangoHost host = (TangoHost) node.getUserObject();
-            str += host.hostStatus();
+            str.append(host.hostStatus());
         }
-        Utils.popupMessage(parent, str);
+        Utils.popupMessage(parent, str.toString());
     }
 
     //===============================================================
