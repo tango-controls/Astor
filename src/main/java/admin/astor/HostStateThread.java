@@ -131,7 +131,6 @@ public class HostStateThread extends Thread implements AstorDefs {
         }
     }
     //======================================================================
-
     /**
      * Compute time to sleep before next loop, and sleep it.
      *

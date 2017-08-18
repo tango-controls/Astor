@@ -31,17 +31,13 @@
 //
 //-======================================================================
 
-
 package admin.astor;
-
 
 /**
  *	Constant definition interface for Astor package.
  *
  * @author verdier
  */
-
-
 
 public interface AstorDefs {
 
