@@ -2,7 +2,7 @@
 #-----------------------------------------------------------------------
 # Update version in application and generate ReleaseNote.java
 #-----------------------------------------------------------------------
-APPLI_VERS=7.0.14a
+APPLI_VERS=7.1.0
 MAIN_CLASS=Astor
 PACKAGE=admin.astor
 

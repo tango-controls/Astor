@@ -56,7 +56,7 @@ public class PopupText extends javax.swing.JDialog {
      * Creates new form PopupText
      */
     //======================================================
-    public PopupText(java.awt.Frame parent, boolean modal) {
+    public PopupText(JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         pack();
@@ -70,9 +70,7 @@ public class PopupText extends javax.swing.JDialog {
         } catch (Exception e) {
             /* is Parent is not already displayed */
         }
-
     }
-
     //======================================================
     /**
      * Creates new form PopupText
@@ -93,7 +91,6 @@ public class PopupText extends javax.swing.JDialog {
             /* is Parent is not already displayed */
         }
     }
-
     //======================================================
     //======================================================
     private void initComponents() {

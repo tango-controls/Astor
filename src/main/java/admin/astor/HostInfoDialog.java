@@ -36,6 +36,8 @@ package admin.astor;
 
 
 
+import admin.astor.tools.PopupText;
+import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.ApiUtil;
@@ -74,6 +76,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     private String hostName;
     private JFrame jFrame;
     private Color bg = null;
+    private List<TangoServer> warningServers;
 
     private String attribute = "Servers";
 
@@ -105,8 +108,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         this(parent, new TangoHost(hostName, true));
         this.standAlone = standAlone;
         AstorUtil.getInstance().initIcons();
-        //new HostStateThread(host).start();
-    }
+        initWarningButton();
+     }
     //===============================================================
     /**
      * Creates new form HostInfoDialog
@@ -139,11 +142,19 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             startAllBtn.setVisible(false);
             stopAllBtn.setVisible(false);
         }
+        initWarningButton();
 
         pack();
         ATKGraphicsUtils.centerDialog(this);
     }
-
+    //===============================================================
+    //===============================================================
+    private void initWarningButton() {
+        warningButton.setText("");
+        warningButton.setIcon(Utils.getInstance().getIcon("warning.gif", 0.5));
+        separatorLabel.setVisible(false);
+        warningButton.setVisible(false);
+    }
     //===============================================================
     //===============================================================
     public String getHostName() {
@@ -216,10 +227,23 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             for (LevelTree tree : trees)
                 tree.checkUpdate();
 
-        int nb = 0;
+        int nbServers = 0;
         for (int i = 1; i < trees.length; i++)
-            nb += trees[i].getNbServers();
-        titleLabel.setText("" + nb + " Controlled Servers on " + hostName);
+            nbServers += trees[i].getNbServers();
+        titleLabel.setText("" + nbServers + " Controlled Servers on " + hostName);
+
+        //  ToDo Check for servers with several instances
+        warningServers = new ArrayList<>();
+        for (LevelTree levelTree : trees) {
+            List<TangoServer> tangoServerList = levelTree.getTangoServerList();
+            for (TangoServer tangoServer : tangoServerList) {
+                if (tangoServer.getNbInstances()>1) {
+                    warningServers.add(tangoServer);
+                }
+            }
+        }
+        separatorLabel.setVisible(!warningServers.isEmpty());
+        warningButton.setVisible(!warningServers.isEmpty());
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -365,12 +389,15 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         titleLabel = new javax.swing.JLabel();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         javax.swing.JButton cancelBtn = new javax.swing.JButton();
+        separatorLabel = new javax.swing.JLabel();
+        warningButton = new javax.swing.JButton();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
         });
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
         startNewBtn.setText("Start New");
         startNewBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -425,6 +452,18 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             }
         });
         bottomPanel.add(cancelBtn);
+
+        separatorLabel.setText("            ");
+        bottomPanel.add(separatorLabel);
+
+        warningButton.setText("Warning");
+        warningButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        warningButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                warningButtonActionPerformed(evt);
+            }
+        });
+        bottomPanel.add(warningButton);
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
@@ -481,7 +520,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         new ServerCmdThread(this, host, StopAllServers, used).start();
 
     }//GEN-LAST:event_stopAllBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -500,7 +538,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         new ServerCmdThread(this, host, StartAllServers, used).start();
 
     }//GEN-LAST:event_startAllBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -518,7 +555,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             new StartServersThread(this, serverNames, point).start();
         }
     }//GEN-LAST:event_startNewBtnActionPerformed
-
 
     //===============================================================
     //===============================================================
@@ -619,18 +655,24 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         doClose();
     }//GEN-LAST:event_cancelBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose();
     }//GEN-LAST:event_closeDialog
-
     //===============================================================
-    /**
-     * Closes the dialog
-     */
+    //===============================================================
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void warningButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warningButtonActionPerformed
+        StringBuilder  sb = new StringBuilder("Servers running at least twice:\n\n");
+        int i = 0;
+        for (TangoServer tangoServer : warningServers) {
+            sb.append(tangoServer.getName()).append("\n");
+        }
+        new PopupText(this, true).show(sb.toString(), 300, 400);
+    }//GEN-LAST:event_warningButtonActionPerformed
+    //===============================================================
     //===============================================================
     void doClose() {
         if ((jFrame instanceof Astor) ||
@@ -643,7 +685,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             System.exit(0);
         }
     }
-
     //===============================================================
     //===============================================================
     void fireNewTreeSelection(LevelTree tree) {
@@ -651,7 +692,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             if (tree1 != tree)
                 tree1.clearSelection();
     }
-
     //===============================================================
     //===============================================================
     void stopLevel(int level) {
@@ -659,7 +699,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         levels.add(level);
         new ServerCmdThread(this, host, StopAllServers, levels).start();
     }
-
     //===============================================================
     //===============================================================
     void startLevel(int level) {
@@ -667,7 +706,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         levels.add(level);
         new ServerCmdThread(this, host, StartAllServers, levels, false).start();
     }
-
     //=============================================================
     //=============================================================
     private void manageServersAttribute(DeviceAttribute att) {
@@ -700,7 +738,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         for (LevelTree tree : trees)
             tree.repaint();
     }
-
     //=============================================================
     /**
      *	Update TangoHost objects and check what has changed.
@@ -727,9 +764,11 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
             if (server != null) {
                 //	Check state
-                if (newServer.state != server.getState()) {
+                if (newServer.state != server.getState() ||
+                    newServer.nbInstances != server.getNbInstances()) {
                     server.setState(newServer.state);
                     state_changed = true;
+                    server.setNbInstances(newServer.nbInstances);
                 }
                 //	Check control
                 if (newServer.controlled != server.controlled |
@@ -799,11 +838,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
     private javax.swing.JRadioButton displayAllBtn;
+    private javax.swing.JLabel separatorLabel;
     private javax.swing.JButton startAllBtn;
     private javax.swing.JButton startNewBtn;
     private javax.swing.JButton stopAllBtn;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JPanel titlePanel;
+    private javax.swing.JButton warningButton;
     // End of variables declaration//GEN-END:variables
     //===============================================================
 
@@ -848,6 +889,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         DevState state;
         boolean controlled = false;
         int level = 0;
+        int nbInstances = 1;
 
         //=========================================================
         public Server(String line) {
@@ -857,19 +899,27 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             while (stk.hasMoreTokens())
                 items.add(stk.nextToken());
 
-            if (items.size() > 0)
-                this.name = items.get(0);
-
-            if (items.size() > 1)
-                this.state = string2state(items.get(1));
-
-            if (items.size() > 2)
-                this.controlled = ((items.get(2)).equals("1"));
-
-            if (items.size() > 3) {
-                String s = items.get(3);
+            int n = 0;
+            if (items.size() > n)
+                this.name = items.get(n);
+            n++;
+            if (items.size() > n)
+                this.state = string2state(items.get(n));
+            n++;
+            if (items.size() > n)
+                this.controlled = ((items.get(n)).equals("1"));
+            n++;
+            if (items.size() > n) {
+                String s = items.get(n);
                 try {
                     this.level = Integer.parseInt(s);
+                } catch (NumberFormatException e) { /* */}
+            }
+            n++;
+            if (items.size() > n) {
+                String s = items.get(n);
+                try {
+                    this.nbInstances = Integer.parseInt(s);
                 } catch (NumberFormatException e) { /* */}
             }
             //System.out.println(this);

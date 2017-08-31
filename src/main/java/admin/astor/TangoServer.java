@@ -62,9 +62,9 @@ import java.util.List;
 public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     private String name;
     private DbServer dbServer = null;
-    private String devname;
+    private String deviceName;
     private DevState state;
-
+    private int nbInstances = 1;
 
     public DbServInfo info;
     public JLabel label;
@@ -81,7 +81,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         super("dserver/" + name);
         set_transparency_reconnection(true);
         this.name = name;
-        this.devname = get_name();    //	Not the dbServer name but
+        this.deviceName = get_name();    //	Not the dbServer name but
         // the administrative device name
         this.state = state;
     }
@@ -93,7 +93,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         super(name);
         set_transparency_reconnection(true);
         this.name = name;
-        this.devname = get_name();    //	Not the dbServer name but
+        this.deviceName = get_name();    //	Not the dbServer name but
         // the administrative device name
         this.state = DevState.ON;
     }
@@ -135,6 +135,15 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     }
 
     //=============================================================
+    //=============================================================
+    public int getNbInstances() {
+        return nbInstances;
+    }
+    //=============================================================
+    //=============================================================
+    public void setNbInstances(int nbInstances) {
+        this.nbInstances = nbInstances;
+    }
     //=============================================================
     //=============================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -203,7 +212,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
 
         //	Add the admin dev name if requested.
         if (add_dserver)
-            devices[devices.length - 1] = devname;
+            devices[devices.length - 1] = deviceName;
         return devices;
     }
 
@@ -630,7 +639,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             String[] _devices = queryDevice();
             //	add admin device
             String[] devices = new String[_devices.length + 1];
-            devices[0] = devname;
+            devices[0] = deviceName;
             System.arraycopy(_devices, 0, devices, 1, _devices.length);
             DevState[] states = new DevState[devices.length];
 

@@ -101,7 +101,7 @@ public class TangoHost extends DeviceProxy {
             if (!data.is_empty())
                 collection = data.extractString();
 
-            //	Get if Host usage is dedefined in database.
+            //	Get if Host usage is defined in database.
             DbDatum prop = get_property("HostUsage");
             if (!prop.is_empty()) {
                 usage = prop.extractString();
@@ -547,7 +547,7 @@ public class TangoHost extends DeviceProxy {
 
     //===============================================================
     //===============================================================
-    void readStdErrorFile(java.awt.Frame parent, String servname) {
+    void readStdErrorFile(JFrame parent, String servname) {
         try {
             String logStr = readLogFile(servname);
 

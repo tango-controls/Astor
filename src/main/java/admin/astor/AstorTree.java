@@ -847,7 +847,7 @@ public class AstorTree extends JTree implements AstorDefs {
             //	Take off IP address if exists
             StringTokenizer st = new StringTokenizer(hostname);
             hostname = st.nextToken();
-            //	Take off name extention (e.g. .esrf.fr) if exists
+            //	Take off name extension (e.g. .esrf.fr) if exists
             st = new StringTokenizer(hostname, ".");
             hostname = st.nextToken();
 
@@ -864,10 +864,10 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //======================================================
     //======================================================
-    public void displayHostInfo(String devname) {
+    public void displayHostInfo(String deviceName) {
         try {
             //	Get host name from device
-            String hostname = new IORdump(devname).get_host();
+            String hostname = new IORdump(deviceName).get_host();
             if (hostname == null)
                 Except.throw_exception("UNKNOWN_HOST",
                         "May be this device has never been exported !", "");
@@ -884,7 +884,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 setSelectionPath(new TreePath(root.getPath()));    // remove previous selection
                 setSelectionPath(hostname);
                 displayHostInfo();
-                String servname = new DeviceProxy(devname).adm_name();
+                String servname = new DeviceProxy(deviceName).adm_name();
                 servname = servname.substring(servname.indexOf('/') + 1);
                 HostInfoDialog dlg = hostDialogs.getByHostName(selectedHost);
                 if (dlg != null)
@@ -905,12 +905,13 @@ public class AstorTree extends JTree implements AstorDefs {
         }
 
         //  Check if host alive
-        try {
-            selectedHost.checkIfAlive();
-        }
-        catch (DevFailed e) {
-            ErrorPane.showErrorMessage(this, null, e);
-            return;
+        if (System.getenv("DEBUG")!=null && !System.getenv("DEBUG").equals("true")) {
+            try {
+                selectedHost.checkIfAlive();
+            } catch (DevFailed e) {
+                ErrorPane.showErrorMessage(this, null, e);
+                return;
+            }
         }
         //	Manage a synchronous read attributes
         selectedHost.updateData();

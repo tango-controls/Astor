@@ -67,18 +67,20 @@ class LevelTree extends JTree implements AstorDefs {
     private ServerPopupMenu serverMenu;
     private ServerPopupMenu levelMenu;
     private TangoHost host;
-    private Color bg;
     private Level level;
     private DefaultMutableTreeNode root;
 
+    private static Color treeBackground;
+    private static final Color warningColor = new Color(0xffaa00);
+    private static final Color selectionWarning = new Color(0xccaa66);
     //===============================================================
     //===============================================================
     LevelTree(JFrame jFrame, HostInfoDialog parent, TangoHost host, int level_row) {
         this.parent = parent;
         this.host = host;
 
-        bg = parent.getBackgroundColor();
-        setBackground(bg);
+        treeBackground = parent.getBackgroundColor();
+        setBackground(treeBackground);
         serverMenu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.SERVERS);
         levelMenu = new ServerPopupMenu(jFrame, parent, host, ServerPopupMenu.LEVELS);
 
@@ -87,47 +89,44 @@ class LevelTree extends JTree implements AstorDefs {
 
         manageVisibility();
     }
-
     //===============================================================
     //===============================================================
     boolean hasRunningServer() {
         return level.hasRunningServer();
     }
-
     //===============================================================
     //===============================================================
     DevState getState() {
         return level.getState();
     }
-
     //===============================================================
     //===============================================================
     int getNbServers() {
         return level.size();
     }
-
     //===============================================================
     //===============================================================
     private void manageVisibility() {
         setVisible(level.size() > 0);    //	Display only if servers exist
     }
-
     //===============================================================
     //===============================================================
-    TangoServer getServer(String servname) {
-        return level.getServer(servname);
+    TangoServer getServer(String serverName) {
+        return level.getServer(serverName);
     }
-
     //===============================================================
     //===============================================================
     int getLevelRow() {
         return level.row;
     }
-
+    //===============================================================
+    //===============================================================
+    List<TangoServer> getTangoServerList() {
+        return level;
+    }
     //===============================================================
     //===============================================================
     private void initComponent() {
-
         //Create the nodes.
         root = new DefaultMutableTreeNode(level);
 
@@ -173,14 +172,12 @@ class LevelTree extends JTree implements AstorDefs {
         if (level.row == LEVEL_NOT_CTRL)
             collapseTree();
     }
-
     //======================================================
     //======================================================
     @SuppressWarnings("UnusedParameters")
     private void selectionChanged(TreeSelectionEvent evt) {
         //parent.fireNewTreeSelection(this);
     }
-
     //======================================================
     //======================================================
     void checkUpdate() {
@@ -224,7 +221,6 @@ class LevelTree extends JTree implements AstorDefs {
             }
         }
     }
-
     //===============================================================
     //===============================================================
     void changeChangeLevel(int level) {
@@ -264,7 +260,6 @@ class LevelTree extends JTree implements AstorDefs {
             ErrorPane.showErrorMessage(this, null, e);
         }
     }
-
     //===============================================================
     //===============================================================
     void changeServerLevels() {
@@ -280,14 +275,12 @@ class LevelTree extends JTree implements AstorDefs {
         }
         parent.updateData();
     }
-
     //======================================================
     //======================================================
     void resetSelection() {
         manageVisibility();
         setSelectionPath(new TreePath(root.getPath()));
     }
-
     //======================================================
     //======================================================
     void setSelection(TangoServer server) {
@@ -300,19 +293,16 @@ class LevelTree extends JTree implements AstorDefs {
                 setSelectionPath(new TreePath(node.getPath()));
         }
     }
-
     //======================================================
     //======================================================
     void expandTree() {
         expandRow(0);
     }
-
     //======================================================
     //======================================================
     void collapseTree() {
         collapseRow(0);
     }
-
     //======================================================
     //======================================================
     void toggleExpandCollapse() {
@@ -321,7 +311,6 @@ class LevelTree extends JTree implements AstorDefs {
         else
             expandTree();
     }
-
     //======================================================
     //======================================================
     void displayUptime() {
@@ -348,15 +337,6 @@ class LevelTree extends JTree implements AstorDefs {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }
-    //======================================================
-    //======================================================
-
-
-//======================================================
-//
-//	Mouse event managment.
-//
-//======================================================
     //======================================================
     /**
      * Manage event on clicked mouse on JTree object.
@@ -386,7 +366,6 @@ class LevelTree extends JTree implements AstorDefs {
                 levelMenu.showMenu(evt, this, isExpanded(0));
         }
     }
-
     //===============================================================
     //===============================================================
     public String toString() {
@@ -396,7 +375,14 @@ class LevelTree extends JTree implements AstorDefs {
     //===============================================================
 
 
+
+
+
+
     //===============================================================
+    /*
+     * Startup Level class
+     */
     //===============================================================
     private class Level extends ArrayList<TangoServer> {
         public int row;
@@ -486,17 +472,12 @@ class LevelTree extends JTree implements AstorDefs {
      */
     //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
-        private Font[] fonts;
-
+        private final Font[] fonts = {
+                new Font("Dialog", Font.BOLD, 16),
+                new Font("Dialog", Font.PLAIN, 12),
+        };
         //===============================================================
-        //===============================================================
-        public TangoRenderer() {
-            fonts = new Font[3];
-            fonts[0] = new Font("Dialog", Font.BOLD, 16);
-            fonts[1] = new Font("Dialog", Font.PLAIN, 12);
-        }
-
-        //===============================================================
+        public TangoRenderer() {}
         //===============================================================
         public Component getTreeCellRendererComponent(
                 JTree tree,
@@ -512,25 +493,30 @@ class LevelTree extends JTree implements AstorDefs {
                     expanded, leaf, row,
                     hasFocus);
 
-            setBackgroundNonSelectionColor(bg);
+            setBackgroundNonSelectionColor(treeBackground);
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) obj;
-            Object uo = node.getUserObject();
+            Object userObject = node.getUserObject();
 
             setFont(fonts[node.getLevel()]);
 
             if (row == 0) {
                 //	ROOT (Level number)
                 setIcon(getStateIcon(level.getState()));
-                setBackgroundSelectionColor(bg);
-            } else if (uo instanceof TangoServer) {
-                TangoServer server = (TangoServer) uo;
+                setBackgroundSelectionColor(treeBackground);
+            } else if (userObject instanceof TangoServer) {
+                TangoServer server = (TangoServer) userObject;
                 setIcon(getStateIcon(server.getState()));
-                setBackgroundSelectionColor(Color.lightGray);
+                if (server.getNbInstances()>1) {
+                    setBackgroundNonSelectionColor(warningColor);
+                    setBackgroundSelectionColor(selectionWarning);
+                }
+                else {
+                    setBackgroundNonSelectionColor(treeBackground );
+                    setBackgroundSelectionColor(Color.lightGray);
+                }
             }
             return this;
         }
-
-        //===============================================================
         //===============================================================
         private ImageIcon getStateIcon(DevState state) {
             int idx;
@@ -544,7 +530,6 @@ class LevelTree extends JTree implements AstorDefs {
                 idx = faulty;
             return AstorUtil.state_icons[idx];
         }
-        //===============================================================
         //===============================================================
     }
 }

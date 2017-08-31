@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 16-08-2017  13:57:04)</center><br>\n" + 
+		"	(Generated 31-08-2017  09:16:06)</center><br>\n" + 
+		"<li><b>Astor-7.1.0 -  31/08/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Manage the Starter check for several instances for a server.<br>" + 
 		"<li><b>Astor-7.0.14 -  04/05/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Update the release number in display.<br>" + 
 		"<li><b>Astor-7.0.13 -  27/04/17:</b><br>" + 
