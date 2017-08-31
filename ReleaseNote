@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.1.1 -  31/08/17:
+    add a missing icon file
+
 Astor-7.1.0 -  31/08/17:
     Manage the Starter check for several instances for a server.
 
