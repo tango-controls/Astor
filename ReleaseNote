@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.1.2 -  04/09/17:
+    Add a global check for several instances for a server in servers statistics.
+
 Astor-7.1.1 -  31/08/17:
     add a missing icon file
 

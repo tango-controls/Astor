@@ -117,6 +117,20 @@ public class GlobalStatistics {
     }
     //=======================================================
     //=======================================================
+    public String getServersRunningTwice() {
+        StringBuilder sb = new StringBuilder();
+        for (StarterStat starterStat : starterStats) {
+            if (starterStat.runningTwiceList.size()>0) {
+                sb.append(starterStat.name).append(":\n");
+                for (String runningTwice : starterStat.runningTwiceList) {
+                    sb.append("  ").append(runningTwice).append('\n');
+                }
+            }
+        }
+        return sb.toString();
+    }
+    //=======================================================
+    //=======================================================
     public List<StarterStat> getStarterStatistics() {
         return starterStats;
     }

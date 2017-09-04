@@ -56,6 +56,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     public boolean readOK = false;
     public long resetTime = System.currentTimeMillis();
     public String error = "";
+    public List<String> runningTwiceList = new ArrayList<>();
 
     //  Saving file definitions
     public static final String className = "StarterStat";
@@ -100,9 +101,9 @@ public class StarterStat extends ArrayList<ServerStat> {
     //===============================================================
     private void readStatisticsFromStarter(String name) {
         String devName = AstorUtil.getStarterDeviceHeader() + name;
-        DeviceProxy dev;
+        DeviceProxy proxy;
         try {
-            dev = new DeviceProxy(devName);
+            proxy = new DeviceProxy(devName);
         } catch (DevFailed e) {
             Except.print_exception(e);
             error = e.errors[0].desc;
@@ -111,8 +112,8 @@ public class StarterStat extends ArrayList<ServerStat> {
 
         try {
             //  Get server running list
-            buildControlledServerList(dev);
-            readStatisticsFileFromStarter(dev);
+            buildControlledServerList(proxy);
+            readStatisticsFileFromStarter(proxy);
             readOK = true;
         } catch (DevFailed e) {
             System.err.println(name + ":\t" + e.errors[0].desc);
@@ -140,11 +141,11 @@ public class StarterStat extends ArrayList<ServerStat> {
     }
     //===============================================================
     //===============================================================
-    public void readStatisticsFileFromStarter(DeviceProxy dev) throws DevFailed {
-        DeviceData argin = new DeviceData();
-        argin.insert("Statistics");
-        DeviceData argout = dev.command_inout("DevReadLog", argin);
-        String str = argout.extractString();
+    public void readStatisticsFileFromStarter(DeviceProxy proxy) throws DevFailed {
+        DeviceData argIn = new DeviceData();
+        argIn.insert("Statistics");
+        DeviceData argOut = proxy.command_inout("DevReadLog", argIn);
+        String str = argOut.extractString();
 
         List<LogRecord> records = new ArrayList<>();
         StringTokenizer stk = new StringTokenizer(str, "\n");
@@ -162,6 +163,36 @@ public class StarterStat extends ArrayList<ServerStat> {
                 if (t < resetTime)
                     resetTime = t;
             }
+        }
+
+        //  get also Servers attribute to check if some of them are running twice
+        try {
+            DeviceAttribute attribute = proxy.read_attribute("Servers");
+            String[] lines = attribute.extractStringArray();
+            for (String line :lines) {
+                stk = new StringTokenizer(line);
+                if (stk.countTokens()<5) {
+                    // Starter not up to date
+                    return;
+                }
+                //  Get server name and nb instances
+                String serverName = stk.nextToken();
+                stk.nextToken();
+                stk.nextToken();
+                stk.nextToken();
+                try {
+                    if (Integer.parseInt(stk.nextToken())>1)
+                        //  if more than 1 instance, store it in list
+                        runningTwiceList.add(serverName);
+                }
+                catch (NumberFormatException e) {
+                    System.err.println(name + ": " + e.toString());
+                    return;
+                }
+            }
+        }
+        catch (DevFailed e) {
+            System.err.println(name + ": " + e.errors[0].desc);
         }
     }
     //===============================================================
@@ -227,8 +258,7 @@ public class StarterStat extends ArrayList<ServerStat> {
     //=======================================================
     private void parseXmlStatistics(List<String> lines) throws DevFailed {
         //  The first line is the Starter definition
-        if (lines.size() >= 0)
-            parseXmlProperties(lines.get(0));
+        parseXmlProperties(lines.get(0));
 
         List<String> records = new ArrayList<>();
         boolean inServer = false;

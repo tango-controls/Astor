@@ -57,6 +57,7 @@ import java.util.Comparator;
  * @author Pascal Verdier
  */
 //=======================================================
+@SuppressWarnings("MagicConstant")
 public class StatisticsPanel extends JFrame {
     static private JFileChooser chooser = null;
     private static final StatisticsFileFilter fileFilter =
@@ -65,7 +66,6 @@ public class StatisticsPanel extends JFrame {
     private GlobalStatistics globalStatistics;
     private JScrollPane tableScrollPane = null;
     private GlobalStatisticsTable statisticsTable;
-
 
     //=======================================================
     /**
@@ -79,7 +79,7 @@ public class StatisticsPanel extends JFrame {
     public StatisticsPanel(JFrame parent, String fileName) throws DevFailed {
         this.parent = parent;
         initComponents();
-        customizeMenus();
+        customComponents();
 
         globalStatistics = new GlobalStatistics(fileName);
         displayGlobalStatistics();
@@ -107,12 +107,19 @@ public class StatisticsPanel extends JFrame {
         AstorUtil.startSplash("Statistics ");
         AstorUtil.increaseSplashProgress(5, "Initializing....");
         initComponents();
-        customizeMenus();
+        customComponents();
 
         titleLabel.setText("No Statistics Read");
         pack();
         ATKGraphicsUtils.centerFrameOnScreen(this);
         AstorUtil.stopSplash();
+    }
+    //=======================================================
+    //=======================================================
+    private void customComponents() {
+        runningTwicePanel.setVisible(false);
+        bottomPanel.setVisible(false);
+        resetItem.setVisible(System.getenv("SUPER_TANGO")!=null && System.getenv("SUPER_TANGO").equals("true"));
     }
     //=======================================================
     /**
@@ -151,36 +158,18 @@ public class StatisticsPanel extends JFrame {
         else
             title += "  servers have failed";
         titleLabel.setText(title);
+
+        // ToDo
+        String runningTwice = globalStatistics.getServersRunningTwice();
+        if (runningTwice.length()>0) {
+            runningTwiceTextArea.setText(runningTwice);
+            runningTwicePanel.setVisible(true);
+        }
         pack();
     }
     //=======================================================
     //=======================================================
 
-    //=======================================================
-    //=======================================================
-    private void customizeMenus() {
-        fileMenu.setMnemonic('F');
-        readItem.setMnemonic('R');
-        readItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.CTRL_MASK));
-        openItem.setMnemonic('O');
-        openItem.setAccelerator(KeyStroke.getKeyStroke('O', Event.CTRL_MASK));
-        saveItem.setMnemonic('S');
-        saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Event.CTRL_MASK));
-
-        String superTango = System.getenv("SUPER_TANGO");
-        if (superTango != null && superTango.toLowerCase().equals("true")) {
-            resetItem.setMnemonic('R');
-            resetItem.setAccelerator(KeyStroke.getKeyStroke('R', Event.ALT_MASK));
-        } else
-            resetItem.setVisible(false);
-
-        exitItem.setMnemonic('E');
-        exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', Event.CTRL_MASK));
-
-        editMenu.setMnemonic('E');
-        showMenu.setMnemonic('S');
-        bottomPanel.setVisible(false);
-    }
     //=======================================================
 
     /**
@@ -200,16 +189,20 @@ public class StatisticsPanel extends JFrame {
         bottomPanel = new javax.swing.JPanel();
         javax.swing.JLabel filterLabel = new javax.swing.JLabel();
         filterText = new javax.swing.JTextField();
+        runningTwicePanel = new javax.swing.JPanel();
+        javax.swing.JScrollPane runningTwiceScrollPane = new javax.swing.JScrollPane();
+        runningTwiceTextArea = new javax.swing.JTextArea();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
         javax.swing.JMenuBar jMenuBar1 = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        readItem = new javax.swing.JMenuItem();
-        openItem = new javax.swing.JMenuItem();
-        saveItem = new javax.swing.JMenuItem();
+        javax.swing.JMenu fileMenu = new javax.swing.JMenu();
+        javax.swing.JMenuItem readItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem openItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem saveItem = new javax.swing.JMenuItem();
         resetItem = new javax.swing.JMenuItem();
-        exitItem = new javax.swing.JMenuItem();
-        editMenu = new javax.swing.JMenu();
+        javax.swing.JMenuItem exitItem = new javax.swing.JMenuItem();
+        javax.swing.JMenu editMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem filterItem = new javax.swing.JMenuItem();
-        showMenu = new javax.swing.JMenu();
+        javax.swing.JMenu showMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem datesItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem errorItem = new javax.swing.JMenuItem();
 
@@ -250,8 +243,24 @@ public class StatisticsPanel extends JFrame {
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
+        runningTwicePanel.setLayout(new java.awt.BorderLayout());
+
+        runningTwiceTextArea.setColumns(20);
+        runningTwiceTextArea.setRows(5);
+        runningTwiceScrollPane.setViewportView(runningTwiceTextArea);
+
+        runningTwicePanel.add(runningTwiceScrollPane, java.awt.BorderLayout.CENTER);
+
+        jLabel1.setText("Server(s) running twice");
+        runningTwicePanel.add(jLabel1, java.awt.BorderLayout.NORTH);
+
+        getContentPane().add(runningTwicePanel, java.awt.BorderLayout.EAST);
+
+        fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
+        readItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        readItem.setMnemonic('R');
         readItem.setText("Read Whole Statistics");
         readItem.setActionCommand("read");
         readItem.addActionListener(new java.awt.event.ActionListener() {
@@ -261,6 +270,8 @@ public class StatisticsPanel extends JFrame {
         });
         fileMenu.add(readItem);
 
+        openItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openItem.setMnemonic('O');
         openItem.setText("Open");
         openItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -269,6 +280,8 @@ public class StatisticsPanel extends JFrame {
         });
         fileMenu.add(openItem);
 
+        saveItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        saveItem.setMnemonic('S');
         saveItem.setText("Save");
         saveItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -277,6 +290,7 @@ public class StatisticsPanel extends JFrame {
         });
         fileMenu.add(saveItem);
 
+        resetItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_MASK));
         resetItem.setText("Reset Statistics");
         resetItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -285,6 +299,8 @@ public class StatisticsPanel extends JFrame {
         });
         fileMenu.add(resetItem);
 
+        exitItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        exitItem.setMnemonic('x');
         exitItem.setText("Exit");
         exitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -295,6 +311,7 @@ public class StatisticsPanel extends JFrame {
 
         jMenuBar1.add(fileMenu);
 
+        editMenu.setMnemonic('E');
         editMenu.setText("Edit");
 
         filterItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
@@ -308,6 +325,7 @@ public class StatisticsPanel extends JFrame {
 
         jMenuBar1.add(editMenu);
 
+        showMenu.setMnemonic('S');
         showMenu.setText("Show");
 
         datesItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
@@ -550,16 +568,11 @@ public class StatisticsPanel extends JFrame {
     //=======================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
-    private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem exitItem;
-    private javax.swing.JMenu fileMenu;
     private javax.swing.JTextField filterText;
     private javax.swing.JTextArea globalStatTextArea;
-    private javax.swing.JMenuItem openItem;
-    private javax.swing.JMenuItem readItem;
     private javax.swing.JMenuItem resetItem;
-    private javax.swing.JMenuItem saveItem;
-    private javax.swing.JMenu showMenu;
+    private javax.swing.JPanel runningTwicePanel;
+    private javax.swing.JTextArea runningTwiceTextArea;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
     //=======================================================

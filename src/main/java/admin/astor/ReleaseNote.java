@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 31-08-2017  09:35:19)</center><br>\n" + 
+		"	(Generated 04-09-2017  16:34:26)</center><br>\n" + 
+		"<li><b>Astor-7.1.2 -  04/09/17:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Add a global check for several instances for a server in servers statistics.<br>" + 
 		"<li><b>Astor-7.1.1 -  31/08/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; add a missing icon file<br>" + 
 		"<li><b>Astor-7.1.0 -  31/08/17:</b><br>" + 
