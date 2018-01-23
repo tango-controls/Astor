@@ -352,11 +352,11 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     void updateHostState() {
-        //	Manage Stater state
+        //	Manage Starter state
         if (host.state == moving) {
             String str_state = ApiUtil.stateName(DevState.MOVING);
             titlePanel.setBackground(ATKConstant.getColor4State(str_state));
-        } else if (host.state == alarm) {
+        } else if (host.state == alarm || host.state == long_moving) {
             String str_state = ApiUtil.stateName(DevState.ALARM);
             titlePanel.setBackground(ATKConstant.getColor4State(str_state));
         } else

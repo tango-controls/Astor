@@ -165,19 +165,29 @@ public class HostStateThread extends Thread implements AstorDefs {
             public void run() {
 
                //	If state has changed, then update host object
-               if (state==DevState.ON)
-                   host.state = all_ok;
-               else if (state==DevState.MOVING)
-                   host.state = moving;
-               else if (state==DevState.ALARM)
-                   host.state = alarm;
-               else if (state==DevState.OFF)
-                   host.state = all_off;
-               else if (state==DevState.FAULT)
-                   host.state = faulty;
-               else
-                   host.state = unknown;
-
+                switch (state.value()) {
+                    case DevState._ON:
+                        host.state = all_ok;
+                        break;
+                    case DevState._MOVING:
+                        host.state = moving;
+                        break;
+                    case DevState._STANDBY:
+                        host.state = long_moving;
+                        break;
+                    case DevState._ALARM:
+                        host.state = alarm;
+                        break;
+                    case DevState._OFF:
+                        host.state = all_off;
+                        break;
+                    case DevState._FAULT:
+                        host.state = faulty;
+                        break;
+                    default:
+                        host.state = unknown;
+                        break;
+                }
                if (parent!=null)
                    parent.updateState();
 

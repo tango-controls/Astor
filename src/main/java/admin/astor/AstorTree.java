@@ -65,11 +65,11 @@ public class AstorTree extends JTree implements AstorDefs {
     private JFrame parent;
     public TangoHost[] hosts;
     private TangoHost selectedHost = null;
-    private DbaseObject selected_db = null;
-    private DbaseObject[] dbase;
+    private DatabaseObject selected_db = null;
+    private DatabaseObject[] dbase;
     private DefaultTreeModel treeModel;
     private javax.swing.Timer watchDogTimer;
-    private TACobject accessControl;
+    private TacObject accessControl;
     private TangoAccess tangoAccessPanel = null;
 
     /**
@@ -366,9 +366,9 @@ public class AstorTree extends JTree implements AstorDefs {
             List<String> list = new ArrayList<>();
             while (stk.hasMoreTokens())
                 list.add(stk.nextToken());
-            dbase = new DbaseObject[list.size()];
+            dbase = new DatabaseObject[list.size()];
             for (int i = 0; i < list.size(); i++)
-                dbase[i] = new DbaseObject(this, list.get(i));
+                dbase[i] = new DatabaseObject(this, list.get(i));
 
             //	Build Host objects
             AstorUtil au = AstorUtil.getInstance();
@@ -377,7 +377,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
             String accessControlDeviceName = AstorUtil.getAccessControlDeviceName();
             if (accessControlDeviceName != null)
-                accessControl = new TACobject(this, accessControlDeviceName);
+                accessControl = new TacObject(this, accessControlDeviceName);
         }
     }
 
@@ -394,7 +394,7 @@ public class AstorTree extends JTree implements AstorDefs {
             root.add(node);
         }
         //	First create database node
-        for (DbaseObject db : dbase) {
+        for (DatabaseObject db : dbase) {
             collections.get(0).add(new DefaultMutableTreeNode(db));
         }
 
@@ -446,7 +446,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 (DefaultMutableTreeNode) path.getPathComponent(path.getPathCount() - 1);
 
         boolean is_db_collec =
-                ((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject() instanceof DbaseObject;
+                ((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject() instanceof DatabaseObject;
         //	do not collapse if Root or database node
         if (path.getPathCount() == 1 || is_db_collec) {
             //	Cancel collapse tree
@@ -674,9 +674,9 @@ public class AstorTree extends JTree implements AstorDefs {
             if (obj instanceof TangoHost) {
                 selectedHost = (TangoHost) obj;
                 selected_db = null;
-            } else if (obj instanceof DbaseObject) {
+            } else if (obj instanceof DatabaseObject) {
                 selectedHost = null;
-                selected_db = (DbaseObject) obj;
+                selected_db = (DatabaseObject) obj;
             } else {
                 selectedHost = null;
                 selected_db = null;
@@ -736,9 +736,9 @@ public class AstorTree extends JTree implements AstorDefs {
             Object obj = node.getUserObject();
             //	Check if btn3
             if ((mask & MouseEvent.BUTTON3_MASK) != 0) {
-                if (obj instanceof DbaseObject)
+                if (obj instanceof DatabaseObject)
                     dbMenu.showMenu(evt);
-                else if (obj instanceof TACobject)
+                else if (obj instanceof TacObject)
                     tacMenu.showMenu(evt);
                 else
                     pMenu.showMenu(evt);
@@ -1071,6 +1071,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
             setBackgroundNonSelectionColor(background);
             setForeground(java.awt.Color.black);
+            setToolTipText(null);
             if (row == 0) {
                 //	ROOT
                 setBackgroundSelectionColor(background);
@@ -1080,14 +1081,14 @@ public class AstorTree extends JTree implements AstorDefs {
                 if (leaf) {
                     //	Database object
                     setBackgroundSelectionColor(java.awt.Color.lightGray);
-                    DbaseObject db = getDbase(obj);
+                    DatabaseObject db = getDbase(obj);
                     setIcon(AstorUtil.state_icons[db.state]);
                     setFont(fonts[LEAF]);
                 } else {
                     //	Database collection
                     setBackgroundSelectionColor(background);
                     int state = all_ok;
-                    for (DbaseObject db : dbase)
+                    for (DatabaseObject db : dbase)
                         if (db.state == faulty)
                             state = faulty;
                     if (state == faulty)
@@ -1100,7 +1101,7 @@ public class AstorTree extends JTree implements AstorDefs {
             } else if (isTAC(obj)) {
                 //	TAC object
                 setBackgroundSelectionColor(java.awt.Color.lightGray);
-                TACobject tac = getTACobject(obj);
+                TacObject tac = getTACobject(obj);
                 setIcon(AstorUtil.state_icons[tac.state]);
                 setFont(fonts[LEAF]);
 
@@ -1115,6 +1116,7 @@ public class AstorTree extends JTree implements AstorDefs {
                 if (state == unknown)
                     state = failed;
                 setIcon(AstorUtil.state_icons[state]);
+                setToolTipText(AstorDefs.iconHelpForHosts[state]);
             } else {
                 //	Collection
                 setBackgroundSelectionColor(java.awt.Color.lightGray);
@@ -1143,6 +1145,7 @@ public class AstorTree extends JTree implements AstorDefs {
             boolean is_faulty = false;
             boolean is_alarm = false;
             boolean is_moving = false;
+            boolean is_long_moving = false;
             int nb_off = 0;
             int nb_ok = 0;
             for (int i = 0; i < nb; i++) {
@@ -1155,6 +1158,8 @@ public class AstorTree extends JTree implements AstorDefs {
                     is_alarm = true;
                 else if (tangoHosts[i].state == moving)
                     is_moving = true;
+                else if (tangoHosts[i].state == long_moving)
+                    is_long_moving = true;
                 else if (tangoHosts[i].state == all_off)
                     nb_off++;
                 else if (tangoHosts[i].state == all_ok)
@@ -1165,6 +1170,8 @@ public class AstorTree extends JTree implements AstorDefs {
                 state = faulty;
             else if (is_moving)
                 state = moving;
+            else if (is_long_moving)
+                state = long_moving;
             else if (is_alarm)
                 state = alarm;
             else if (nb_off==nb)
@@ -1196,11 +1203,11 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        DbaseObject getDbase(Object tree_node) {
+        DatabaseObject getDbase(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
-            if (obj instanceof DbaseObject)
-                return (DbaseObject) (obj);
+            if (obj instanceof DatabaseObject)
+                return (DatabaseObject) (obj);
             return null;
         }
 
@@ -1209,7 +1216,7 @@ public class AstorTree extends JTree implements AstorDefs {
         boolean isDatabase(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
-            if (obj instanceof DbaseObject)
+            if (obj instanceof DatabaseObject)
                 return true;
             else if (obj instanceof String) {
                 String str = (String) obj;
@@ -1220,11 +1227,11 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===============================================================
         //===============================================================
-        TACobject getTACobject(Object tree_node) {
+        TacObject getTACobject(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
-            if (obj instanceof TACobject)
-                return (TACobject) (obj);
+            if (obj instanceof TacObject)
+                return (TacObject) (obj);
             return null;
         }
 
@@ -1233,7 +1240,7 @@ public class AstorTree extends JTree implements AstorDefs {
         boolean isTAC(Object tree_node) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_node;
             Object obj = node.getUserObject();
-            return (obj instanceof TACobject);
+            return (obj instanceof TacObject);
         }
     }
 
@@ -1327,7 +1334,7 @@ public class AstorTree extends JTree implements AstorDefs {
         //===========================================================
         private void manageOneDataBaseOption(int action) throws DevFailed {
             //	Create a Popup text window
-            DbaseObject db = (DbaseObject) getSelectedObject();
+            DatabaseObject db = (DatabaseObject) getSelectedObject();
             switch (action) {
                 case SERVER_INFO:
                     new PopupText(parent, true).show(db.getServerInfo());
@@ -1405,7 +1412,7 @@ public class AstorTree extends JTree implements AstorDefs {
                     cmdidx = i;
 
             //	Create a Popup text window
-            TACobject tac = (TACobject) getSelectedObject();
+            TacObject tac = (TacObject) getSelectedObject();
             PopupText ppt = new PopupText(parent, true);
             try {
                 switch (cmdidx) {

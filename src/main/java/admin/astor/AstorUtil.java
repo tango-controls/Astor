@@ -154,6 +154,7 @@ public class AstorUtil implements AstorDefs {
         state_icons[all_ok]  = Utils.getInstance().getIcon("greenbal.gif");
         state_icons[all_off] = Utils.getInstance().getIcon("whiteball.gif");
         state_icons[moving]  = Utils.getInstance().getIcon("blueball.gif");
+        state_icons[long_moving]  = Utils.getInstance().getIcon("orangeTriangle.png", 0.36);
         state_icons[failed]  = Utils.getInstance().getIcon("failed.gif");
     }
     //===============================================================

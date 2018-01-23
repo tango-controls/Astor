@@ -1042,7 +1042,7 @@ public class Astor extends JFrame implements AstorDefs {
         else if (item == distributionBtn)
             new HostsScanThread(this, tree.hosts).start();
         else if (item == stateIconsBtn)
-            Utils.popupMessage(this, "", "astor_state_icons.gif");
+            new IconStateDialog(this).setVisible(true);
         else if (item == releaseNoteBtn)
             new PopupHtml(this).show(ReleaseNote.str);
         else if (item == tangorbBtn)

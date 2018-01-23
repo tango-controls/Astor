@@ -36,85 +36,124 @@ package admin.astor;
 
 import admin.astor.tools.BlackBoxTable;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevInfo;
-import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoApi.*;
+import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
 
-public class TACobject extends DeviceProxy implements AstorDefs {
+public class DatabaseObject implements AstorDefs {
     private AstorTree parent;
-    private String deviceName;
-    private StateThread state_thread;
+    private String tango_host;
+    private DbaseState state_thread;
 
     int state = unknown;
     DevFailed except = null;
-
     //======================================================
     //======================================================
-    public TACobject(AstorTree parent, String deviceName) throws DevFailed {
-        super(deviceName);
+    public DatabaseObject(AstorTree parent, String tango_host) {
         //	initialize data members
         this.parent = parent;
-        this.deviceName = deviceName;
+        this.tango_host = tango_host;
 
         //	Start update thread.
-        state_thread = new StateThread();
+        state_thread = new DbaseState();
         state_thread.start();
     }
-
-    //======================================================
-    //======================================================
-    String getServerInfo() throws DevFailed {
-        String str = "Tango Access Control:\n\n";
-
-        str += get_info() + "\n\n";
-        str += "\n\n";
-
-        return str;
-    }
-
     //===============================================================
     //===============================================================
     void start() {
         //	Start update thread.
         state_thread.start();
     }
+    //======================================================
+    //======================================================
+    String getServerInfo() throws DevFailed {
+        String deviceName = state_thread.db.get_name();
+        DeviceProxy dev = new DeviceProxy(deviceName);
+        String str = "TANGO_HOST:    " + tango_host + "\n\n";
+
+        str += dev.get_info() + "\n\n";
+        try {
+            DeviceAttribute att = dev.read_attribute("StoredProcedureRelease");
+            str += "Stored Procedure: " + att.extractString();
+        } catch (DevFailed e) {
+            //	Attribute not found
+        }
+        return str + "\n\n";
+    }
 
     //======================================================
     //======================================================
-    void blackbox(JFrame parent) {
+    String getInfo() throws DevFailed {
+        Database db = ApiUtil.get_db_obj(tango_host);
+        return db.get_info();
+    }
+
+    //======================================================
+    //======================================================
+    void showBlackBox(JFrame parent) {
         try {
-            new BlackBoxTable(parent, deviceName).setVisible(true);
+            new BlackBoxTable(parent,
+                    state_thread.db.getDeviceName()).setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
     }
-
+    //======================================================
+    //======================================================
+    void monitor() {
+        dbbench.DBBench dbBench = new dbbench.DBBench(state_thread.db.getDeviceName(), false);
+        ATKGraphicsUtils.centerFrameOnScreen(dbBench);
+        dbBench.setVisible(true);
+    }
     //======================================================
     //======================================================
     public String toString() {
-        return "Access Control";
+        return tango_host;
     }
 
+
+    //======================================================
+    //======================================================
+    private class DbConnection extends Connection {
+        private String deviceName;
+
+        private DbConnection(String host, String port) throws DevFailed {
+            super(host, port, false);
+            deviceName = get_name();
+        }
+        private String getDeviceName() {
+            return deviceName;
+        }
+    }
     //======================================================
     /**
      * A thread class to control device.
      */
     //======================================================
-    private class StateThread extends Thread {
+    private class DbaseState extends Thread {
+        private String host;
+        private String port;
+        private DbConnection db = null;
+
         //===============================================================
         //===============================================================
-        private StateThread() {
-            setName("TAC State Thread");
+        private DbaseState() {
+            setName("Database State Thread");
+            int idx = tango_host.indexOf(":");
+            host = tango_host.substring(0, idx);
+            port = tango_host.substring(idx + 1);
         }
+
+
         //===============================================================
         //===============================================================
         private synchronized void wait_next_loop() {
             try {
                 wait(AstorDefs.PollPeriod);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.err.println(e.toString());
             }
         }
 
@@ -135,14 +174,19 @@ public class TACobject extends DeviceProxy implements AstorDefs {
             int tmp_state;
             DevFailed tmp_except;
 
-            //	Try to ping TAC
+            //	Try to ping database
             try {
-                ping();
+                //	Build connection if not done
+                //	Do not use ApiUtil.get_db_obj() to be sure
+                //	on which database the connection is done
+                if (db == null)
+                    db = new DbConnection(host, port);
+                db.ping();
 
                 tmp_state = all_ok;
                 tmp_except = null;
             } catch (DevFailed e) {
-                //	If exception caught, save it
+                //	If exception catched, save it
                 tmp_state = faulty;
                 tmp_except = e;
             }

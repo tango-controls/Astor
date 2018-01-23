@@ -180,17 +180,16 @@ public class ServersTree extends JScrollPane implements AstorDefs {
     }
 
 
-//===============================================================
-
+    //===============================================================
     /**
      * Renderer Class
      */
-//===============================================================
+    //===============================================================
     private class TangoRenderer extends DefaultTreeCellRenderer {
         ImageIcon tangoIcon;
         String tango_host = AstorUtil.getTangoHost();
-        ImageIcon serv_icon;
-        ImageIcon inst_icon;
+        ImageIcon serverIcon;
+        ImageIcon deviceIcon;
         Font[] fonts;
 
         private final int TITLE = 0;
@@ -201,8 +200,8 @@ public class ServersTree extends JScrollPane implements AstorDefs {
         public TangoRenderer() {
 
             tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
-            serv_icon = Utils.getInstance().getIcon("server.gif");
-            inst_icon = Utils.getInstance().getIcon("device.gif");
+            serverIcon = Utils.getInstance().getIcon("server.gif");
+            deviceIcon = Utils.getInstance().getIcon("device.gif");
 
             fonts = new Font[2];
             fonts[TITLE] = new Font("helvetica", Font.BOLD, 18);
@@ -236,13 +235,13 @@ public class ServersTree extends JScrollPane implements AstorDefs {
                 if (leaf) {
                     //	Instance object
                     setBackgroundSelectionColor(java.awt.Color.lightGray);
-                    setIcon(inst_icon);
+                    setIcon(deviceIcon);
                     setFont(fonts[LEAF]);
                     setToolTipText("Double click to popup host panel.");
                 } else {
                     //	server collection
                     setBackgroundSelectionColor(java.awt.Color.white);
-                    setIcon(serv_icon);
+                    setIcon(serverIcon);
                     setFont(fonts[LEAF]);
                     setToolTipText("Server");
                 }

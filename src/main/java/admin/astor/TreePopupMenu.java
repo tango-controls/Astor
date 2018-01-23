@@ -161,7 +161,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
 
         Object obj = node.getUserObject();
 
-        if (obj instanceof DbaseObject)
+        if (obj instanceof DatabaseObject)
             return false;
 
         //	Check if a Tango Host
@@ -226,7 +226,7 @@ public class TreePopupMenu extends JPopupMenu implements AstorDefs {
             boolean can_test = (host.state == all_ok ||
                     host.state == all_off ||
                     host.state == alarm   ||
-                    host.state == moving);
+                    host.state == moving || host.state == long_moving);
             getComponent(OFFSET + STARTER_TEST).setEnabled(can_test);
             getComponent(OFFSET + STARTER_LOGS).setEnabled(can_test);
             getComponent(OFFSET + STARTER_STAT).setEnabled(can_test);

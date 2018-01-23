@@ -522,6 +522,9 @@ class LevelTree extends JTree implements AstorDefs {
             int idx;
             if (state == DevState.MOVING)
                 idx = moving;
+            else
+            if (state == DevState.STANDBY)
+                idx = long_moving;
             else if (state == DevState.ON)
                 idx = all_ok;
             else if (state == DevState.ALARM)

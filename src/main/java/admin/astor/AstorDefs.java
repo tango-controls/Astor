@@ -69,15 +69,32 @@ public interface AstorDefs {
     //======================================================================
     //	States colors definitions
     //======================================================================
-    int unknown  = 0;
-    int faulty   = 1;
-    int alarm    = 2;
-    int all_off  = 3;
-    int all_ok   = 4;
-    int moving   = 5;
-    int failed   = 6;
-    int NbStates = 7;
+    int all_ok   = 0;
+    int moving   = 1;
+    int long_moving = 2;
+    int alarm    = 3;
+    int all_off  = 4;
+    int faulty   = 5;
+    int unknown  = 6;
+    int failed   = 7;
+    int NbStates = 8;
 
+    String[] iconHelpForHosts = {
+            "All controlled servers are running",
+            "Starter is starting server(s)",
+            "At least one server is blocked since a while",
+            "At least one  controlled server is stopped",
+            "All controlled servers are stopped",
+            "Starter is not running on host",
+            "Starter is may be running but the connection has failed",
+            "State is not supported",
+    };
+    String[] iconHelpForServers = {
+            "Server is running",
+            "Server is running but not responding (starting ?)",
+            null, null, null,
+            "Server is not running"
+    };
     //======================================================================
     String HtmlHeader =
             "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\n" +

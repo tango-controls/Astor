@@ -98,7 +98,7 @@ public class PopupText extends javax.swing.JDialog {
         JButton cancelButton = new JButton();
         scrollPane = new JScrollPane();
         textPane = new JTextPane();
-        textPane.setFont(new Font("monospaced", 1, 12));
+        textPane.setFont(new Font("monospaced", Font.BOLD, 12));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -106,7 +106,7 @@ public class PopupText extends javax.swing.JDialog {
         }
         );
 
-        buttonPanel.setLayout(new java.awt.FlowLayout(2, 5, 5));
+        buttonPanel.setLayout(new java.awt.FlowLayout(FlowLayout.RIGHT, 5, 5));
 
         cancelButton.setText("Dismiss");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
