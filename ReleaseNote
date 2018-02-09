@@ -11,6 +11,9 @@
 #
 #-======================================================================
 
+Astor-7.2.0 -  09/08/18:
+    Add management of a new Starter state (STANDBY) when a server is blocked for a while.
+
 Astor-7.1.2 -  04/09/17:
     Add a global check for several instances for a server in servers statistics.
 

@@ -16,7 +16,9 @@ public interface ReleaseNote {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center>	<h2>Astor Release Notes </h2>\n" + 
-		"	(Generated 04-09-2017  16:34:26)</center><br>\n" + 
+		"	(Generated 09-02-2018  10:13:15)</center><br>\n" + 
+		"<li><b>Astor-7.2.0 -  09/08/18:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Add management of a new Starter state (STANDBY) when a server is blocked for a while.<br>" + 
 		"<li><b>Astor-7.1.2 -  04/09/17:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Add a global check for several instances for a server in servers statistics.<br>" + 
 		"<li><b>Astor-7.1.1 -  31/08/17:</b><br>" + 
