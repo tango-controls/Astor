@@ -473,7 +473,7 @@ public class StatisticsPanel extends JFrame {
 
         //  if nothing, special message
         if (sb.length() == 0)
-            sb.append("No Eror.");
+            sb.append("No Error.");
         new PopupText(this, true).show(sb.toString());
     }//GEN-LAST:event_errorItemActionPerformed
 

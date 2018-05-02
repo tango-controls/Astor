@@ -106,8 +106,7 @@ public class ServerStatisticsTable extends JTable {
         filteredStatistics.failedDuration = serverStatistics.failedDuration;
         filteredStatistics.runDuration = serverStatistics.runDuration;
         filteredStatistics.oldestTime = serverStatistics.oldestTime;
-        for (ServerRecord rec : serverStatistics)
-            filteredStatistics.add(rec);
+        filteredStatistics.addAll(serverStatistics);
     }
 
     //=======================================================
@@ -241,44 +240,23 @@ public class ServerStatisticsTable extends JTable {
     //=========================================================================
     //=========================================================================
     public class DataTableModel extends DefaultTableModel {
-        /*
-        private Object[][]  viewers;
         //==========================================================
-        //==========================================================
-        public DataTableModel()
-        {
-            viewers = new Object[filteredStatistics.size()][columnNames.length];
-            for (int row=0 ; row<filteredStatistics.size() ; row++ ) {
-                for (int col=0 ; col<columnNames.length ; col++) {
-                    if (col==AUTO_START)
-                        viewers[row][col] = new JRadioButton();
-                    else
-                        viewers[row][col] = new JLabel();
-                }
-            }
-            setDataArrayList(viewers, columnNames);
-        }
-        */
-        //==========================================================
-        //==========================================================
+        @Override
         public int getColumnCount() {
             return columns.length;
         }
-
         //==========================================================
-        //==========================================================
+        @Override
         public int getRowCount() {
             return filteredStatistics.size();
         }
-
         //==========================================================
-        //==========================================================
+        @Override
         public String getColumnName(int col) {
             return columns[col].name;
         }
-
         //==========================================================
-        //==========================================================
+        @Override
         public Object getValueAt(int row, int col) {
             ServerRecord record = filteredStatistics.get(row);
             return getRecordValueString(record, col);
@@ -292,10 +270,15 @@ public class ServerStatisticsTable extends JTable {
         * rather than a check box.
         */
         //==========================================================
+        @Override
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
         }
         //==========================================================
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
         //==========================================================
     }
     //=========================================================================
@@ -312,6 +295,7 @@ public class ServerStatisticsTable extends JTable {
             setOpaque(true); //MUST do this for background to show up.
         }
 
+        @Override
         public Component getTableCellRendererComponent(
                 JTable table, Object value,
                 boolean isSelected, boolean hasFocus,
