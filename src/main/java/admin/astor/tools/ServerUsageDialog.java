@@ -52,16 +52,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
-//===============================================================
-
 /**
- * JDialog Class to display info
+ * JDialog Class to display server info
  *
  * @author Pascal Verdier
  */
-//===============================================================
-
 
 @SuppressWarnings("MagicConstant")
 public class ServerUsageDialog extends JDialog {
@@ -307,15 +302,6 @@ public class ServerUsageDialog extends JDialog {
             dispose();
         }
     }
-
-    //===============================================================
-    //===============================================================
-    public void showDialog() {
-        setVisible(true);
-    }
-    //===============================================================
-    //===============================================================
-
     //===============================================================
     //===============================================================
     private void fillTangoClasses(String serverName) throws DevFailed {
@@ -444,6 +430,10 @@ public class ServerUsageDialog extends JDialog {
     //===============================================================
 
 
+
+
+
+
     //===============================================================
     /**
      * @param args the command line arguments
@@ -459,6 +449,11 @@ public class ServerUsageDialog extends JDialog {
     }
     //===============================================================
     //===============================================================
+
+
+
+
+
 
 
     //===============================================================

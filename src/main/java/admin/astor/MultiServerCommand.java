@@ -54,9 +54,10 @@ import java.util.List;
  *
  * @author verdier
  */
-//===============================================================
+
 public class MultiServerCommand extends JDialog {
-    private static String str_filter = "*";
+    private JFrame parent;
+    private static String strFilter = "*";
     private static String[] commands = {
             "",
             "Start",
@@ -74,10 +75,11 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     public MultiServerCommand(JFrame parent) throws DevFailed {
         super(parent, false);
+        this.parent = parent;
         initComponents();
 
         //	fix str filter and add a mouse listener on list
-        filterTxt.setText(str_filter);
+        filterTxt.setText(strFilter);
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 listSelectionPerformed(e);
@@ -92,17 +94,14 @@ public class MultiServerCommand extends JDialog {
         pack();
         ATKGraphicsUtils.centerDialog(this);
     }
-
     //======================================================
     //======================================================
     private void setList() throws DevFailed {
-        str_filter = filterTxt.getText();
-        String[] serverList = ApiUtil.get_db_obj().get_server_list(str_filter);
+        strFilter = filterTxt.getText();
+        String[] serverList = ApiUtil.get_db_obj().get_server_list(strFilter);
         jList.setListData(serverList);
 
     }
-
-
     //======================================================
     /**
      * This method is called from within the constructor to
@@ -209,6 +208,8 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        if (parent==null)
+            System.exit(0);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_cancelBtnActionPerformed
@@ -217,6 +218,8 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+        if (parent==null)
+            System.exit(0);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_closeDialog
@@ -236,19 +239,25 @@ public class MultiServerCommand extends JDialog {
 
         //  Get command to be executed
         String command = (String) comboBox.getSelectedItem();
+        if (command==null)
+            return;
         if (command.length() == 0) {
             displayError(this, "No command selected !",
                     "MultiServerCommand.sendCmdBtnActionPerformed()");
             return;
         }
 
-        //	Dispach for command
-        if (command.toLowerCase().equals("uptime")) {
-            displayServerUpTimes(selections);
-        } else if (command.toLowerCase().equals("status")) {
-            displayServerStatus(selections);
-        } else {
-            starterCommandForServers(command, selections);
+        //	Dispatch for command
+        switch (command.toLowerCase()) {
+            case "uptime":
+                displayServerUpTimes(selections);
+                break;
+            case "status":
+                displayServerStatus(selections);
+                break;
+            default:
+                starterCommandForServers(command, selections);
+                break;
         }
 
     }//GEN-LAST:event_sendCmdBtnActionPerformed
@@ -262,6 +271,14 @@ public class MultiServerCommand extends JDialog {
         }
     }
     //======================================================
+    //======================================================
+
+
+
+
+
+
+    //======================================================
     /**
      * @param args the command line arguments
      */
@@ -269,7 +286,7 @@ public class MultiServerCommand extends JDialog {
     public static void main(String args[]) {
 
         try {
-            MultiServerCommand msc = new MultiServerCommand(new JFrame());
+            MultiServerCommand msc = new MultiServerCommand(null);
             msc.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), "", e);
@@ -285,6 +302,10 @@ public class MultiServerCommand extends JDialog {
     // End of variables declaration//GEN-END:variables
     //======================================================
     //======================================================
+
+
+
+
 
 
     //======================================================
@@ -378,8 +399,8 @@ public class MultiServerCommand extends JDialog {
 
             try {
                 DeviceProxy starter = getStarterInstanceForServer(serverName);
-                DeviceAttribute argout = starter.read_attribute("Servers");
-                String[] serverStates = argout.extractStringArray();
+                DeviceAttribute argOut = starter.read_attribute("Servers");
+                String[] serverStates = argOut.extractStringArray();
                 for (String line : serverStates) {
                     StringTokenizer stk = new StringTokenizer(line);
                     String server = stk.nextToken();
