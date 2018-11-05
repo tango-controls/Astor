@@ -1080,12 +1080,10 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
 	private void displayAboutAstor() {
         String message =
-                "           Astor  (Tango Manager) \n\n" +
-                        "This programme is used to control, start and stop\n" +
-                        "           the TANGO device servers. \n\n" +
-                        AstorUtil.getInstance().getApplicationName() +
-                        "\n\n" +
-                        "Pascal Verdier - Software Engineering Group - ESRF";
+                "       " + AstorUtil.getInstance().getApplicationName() + "  (Tango Manager) \n\n" +
+                "This programme is used to control, start and stop\n" +
+                "           the TANGO device servers. \n\n" +
+                "Pascal Verdier - Software Engineering Group - ESRF";
         Utils.popupMessage(this, message, "TangoClass.gif");
 	}
     //======================================================================
