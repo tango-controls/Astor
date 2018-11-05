@@ -104,7 +104,7 @@ public class UnAvailableHostsDialog extends JDialog {
         criticalBtn.setForeground(Color.white);
         AstorUtil.startSplash("Pinging crates.....");
         AstorUtil.increaseSplashProgress(0.3, "Get host list from database");
-        String[] ctrlHosts = AstorUtil.getInstance().getHostControlledList();
+        String[] ctrlHosts = MySqlUtil.getInstance().getHostControlledList();
         lastCollections = AstorUtil.getInstance().getLastCollectionList();
         AstorUtil.increaseSplashProgress(0.6, "Checking " + ctrlHosts.length + " hosts");
 

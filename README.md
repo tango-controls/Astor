@@ -1,4 +1,7 @@
-# Astor
+# Project Astor
+
+Maven Java project
+
 Astor is a graphical Tango control system administration tool.
 
 * Goal
@@ -17,7 +20,45 @@ Astor is a graphical Tango control system administration tool.
     * Execute diagnostics on components.
     * Execute global analysis on a large number of crates or database.
 
+## Cloning
 
+```
+git clone git@github.com:tango-controls/Astor
+```
+
+## Documentation 
 
 [ ![Download](https://api.bintray.com/packages/tango-controls/maven/Astor/images/download.svg) ](https://bintray.com/tango-controls/maven/Astor/_latestVersion)
 [![Docs](https://img.shields.io/badge/Latest-Docs-orange.svg)](http://tango-controls.readthedocs.io/en/latest/tools-and-extensions/astor/index.html)
+
+
+## Building and Installation
+
+### Dependencies
+
+#### Project Dependencies 
+
+* DBBench.jar
+* Jive.jar
+* JTango.jar
+* ATKCore.jar
+* ATKWidget.jar
+* atkpanel.jar
+  
+
+#### Toolchain Dependencies 
+
+* javac 7 or higher
+* maven
+  
+
+### Build
+
+
+Instructions on building the project.
+
+```
+cd Astor
+mvn package
+```
+

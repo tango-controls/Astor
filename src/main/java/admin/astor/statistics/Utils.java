@@ -35,6 +35,7 @@
 package admin.astor.statistics;
 
 import admin.astor.AstorUtil;
+import admin.astor.tools.MySqlUtil;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.Database;
@@ -158,7 +159,7 @@ public class Utils {
 
         try {
             //  get host list
-            String[] hosts = AstorUtil.getInstance().getHostControlledList();
+            String[] hosts = MySqlUtil.getInstance().getHostControlledList();
 
 			if (keepLastCollections)
 			    Collections.addAll(ctrlHosts, hosts);

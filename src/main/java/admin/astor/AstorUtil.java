@@ -127,6 +127,24 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
+    public String getApplicationName() {
+        String applicationName = getClass().getPackage().getImplementationTitle();
+        if (applicationName == null)
+            applicationName = "Astor";
+        return applicationName + getApplicationRelease();
+    }
+    //===============================================================
+    //===============================================================
+    public String getApplicationRelease() {
+        String release = getClass().getPackage().getImplementationVersion();
+        if (release!=null)
+            return "-" + release;
+        else
+            return " - not released";
+    }
+    //===============================================================
+    //===============================================================
+
     public static String getStarterDeviceHeader() {
         return starterDeviceHeader;
     }
@@ -180,7 +198,7 @@ public class AstorUtil implements AstorDefs {
         List<String> list = new ArrayList<>();
         while (stk.hasMoreTokens())
             list.add(stk.nextToken());
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     //===============================================================
@@ -677,7 +695,7 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     public TangoHost[] getTangoHostList() throws DevFailed {
         //	Get hosts list from database
-        String[] hostNames = getHostControlledList();
+        String[] hostNames = MySqlUtil.getInstance().getHostControlledList();
 
         //	If IDL 4 or greater, read database for all hosts import info
         boolean db_server_idl_4 =
@@ -692,7 +710,6 @@ public class AstorUtil implements AstorDefs {
 
         //	And create TangoHost array object
         List<TangoHost> hosts = new ArrayList<>();
-        int idx = 0;
         for (String hostName : hostNames) {
             if (db_server_idl_4) {
                 //	Check to be sure the admin correspond to the device
@@ -717,7 +734,7 @@ public class AstorUtil implements AstorDefs {
         }
         if (db_server_idl_4)
             MySqlUtil.getInstance().manageTangoHostProperties(hosts);
-        return hosts.toArray(new TangoHost[hosts.size()]);
+        return hosts.toArray(new TangoHost[0]);
     }
 
     //===============================================================
@@ -739,20 +756,6 @@ public class AstorUtil implements AstorDefs {
         }
         return null; //	not found
     }
-
-    //===============================================================
-    /**
-     * Get the devices controlled by Starter DS
-     * and return the hosts list.
-     *
-     * @return controlled host list
-     * @throws fr.esrf.Tango.DevFailed in case of database connection failed.
-     */
-    //===============================================================
-    public String[] getHostControlledList() throws DevFailed {
-        return ApiUtil.get_db_obj().get_device_member(starterDeviceHeader+"*");
-    }
-
     //===============================================================
     //===============================================================
     public static String getTangoHost() {
@@ -953,7 +956,7 @@ public class AstorUtil implements AstorDefs {
             str = str.substring(idx + 1);
         }
         list.add(str);
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
     //===============================================================
     /**
@@ -983,6 +986,7 @@ public class AstorUtil implements AstorDefs {
      *	@param cmd	shell command to be executed.
      */
     //===============================================================
+    @SuppressWarnings("UnusedReturnValue")
     public static String executeShellCmd(String cmd)
             throws IOException, InterruptedException, DevFailed  {
         Process process = Runtime.getRuntime().exec(cmd);
@@ -992,13 +996,13 @@ public class AstorUtil implements AstorDefs {
         InputStream inputStream = process.getInputStream();
         BufferedReader br =
                 new BufferedReader(new InputStreamReader(inputStream));
-        String	sb = "";
+        StringBuilder	sb = new StringBuilder();
 
         // read output lines from command
         String str;
         while ((str = br.readLine()) != null) {
             //System.out.println(str);
-            sb += str+"\n";
+            sb.append(str).append("\n");
         }
 
         // wait for end of command
@@ -1012,13 +1016,13 @@ public class AstorUtil implements AstorDefs {
             br = new BufferedReader(new InputStreamReader(errorStream));
             while ((str = br.readLine()) != null) {
                 System.out.println(str);
-                sb += str+"\n";
+                sb.append(str).append("\n");
             }
             Except.throw_exception("ExecFailed",
                     "the shell command\n" + cmd + "\nreturns : " + retVal + " !\n\n" + sb);
         }
         //System.out.println(sb);
-        return sb;
+        return sb.toString();
     }
     //===============================================================
     //===============================================================

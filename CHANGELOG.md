@@ -1,0 +1,433 @@
+# Astor Changelog
+
+#### Astor-7.2.2 -  05/11/18:
+    Get Starter list from class name.
+    Improve README.md.
+    Replace ReleaseNote file by CHANGELOG.md
+
+#### Astor-7.2.1 -  09/01/18:
+    Add management of a new Starter state (STANDBY) when a server is blocked for a while.
+
+#### Astor-7.1.2 -  04/09/17:
+    Add a global check for several instances for a server in servers statistics.
+
+#### Astor-7.1.1 -  31/08/17:
+    add a missing icon file
+
+#### Astor-7.1.0 -  31/08/17:
+    Manage the Starter check for several instances for a server.
+
+#### Astor-7.0.14 -  04/05/17:
+    Update the release number in display.
+
+#### Astor-7.0.13 -  27/04/17:
+    Fix a NPE
+
+#### Astor-7.0.12 -  16/02/17:
+    Improve check host name when create/clone host object
+
+#### Astor-7.0.11 -  01/02/17:
+    Improve startup, level management when start more than 4 servers.
+
+#### Astor-7.0.10 -  16/01/17:
+    Fix bug in Start/Stop all servers for several hosts
+
+#### Astor-7.0.9 -  09/01/17:
+    Fix a bug in Change TANGO_HOST
+
+#### Astor-7.0.8 -  06/01/17:
+    Add DBBench call to monitor database.
+
+#### Astor-7.0.7 -  04/01/17:
+    Fix problem in TANGO release
+    Check if host is alive before openning a terminal
+
+#### Astor-7.0.6 -  15/12/16:
+    Remove old CVS references
+    Improve resize host info dialog.
+    fix a problem in help for server TANGO release
+
+#### Astor-7.0.5 -  02/12/16:
+    Fix a bug in launching JSSHTerminal.
+
+#### Astor-7.0.4 -  01/12/16:
+    JSSHTerminal is now used for remote login (JSSHTerminal.jar must be added in CLASSPATH)
+
+#### Astor-7.0.3 -  28/11/16:
+    Add a button to start/stop servers on all levels.
+
+#### Astor-7.0.2 -  24/11/16:
+    Fix a bug in last branches management.
+
+#### Astor-7.0.1 -  18/11/16:
+    Maven project
+
+#### Astor-7.0.0 -  26/08/16:
+    Java-7 syntax compatibility.
+
+#### Astor-6.7.1 -  28/06/16:
+    Fix a little bug in startup level management.
+
+#### Astor-6.7.0 -  27/01/16:
+    Starter domain name could be set with a class property.
+    Improve "Tango release for servers" feature
+
+#### Astor-6.6.6 -  30/06/15:
+    Java-7 compatibility.
+    Manage polling for Tango-9 feature.
+    Improve Tango release for servers.
+    Add a compatibility to read JTango release.
+    Update file headers.
+
+#### Astor-6.6.5 -  08/01/15:
+    Improve Server Usage utility
+
+#### Astor-6.6.4 -  08/01/15:
+    Improve the statup level change.
+
+#### Astor-6.6.3 -  17/12/14:
+    Several invokeLater() methods added.
+
+#### Astor-6.6.2 -  18/11/14:
+    ULong management added to event tester.
+
+#### Astor-6.6.1 -  04/11/14:
+    Faulty host list added to help menu.
+
+#### Astor-6.6.0 -  01/10/14:
+    Server Tango release manage Tango-9 and IDL5
+
+#### Astor-6.5.1 -  05/08/14:
+    Improve Last Branches management.
+
+#### Astor-6.5.0 -  19/04/14:
+    Manage OFF state for Starter devices.
+    Improve DbPollPanel class.
+
+#### Astor-6.4.6 -  29/01/14:
+    Package ctrl_system_info added to the jar file.
+
+#### Astor-6.4.5 -  10/01/14:
+    Fix a problem on starter properties (HostUsage and Family)
+    Clean compilation warnings.
+
+#### Astor-6.4.3 -  07/01/14:
+    Remove warning on tools launch.
+
+#### Astor-6.4.2 -  29/10/13:
+    Try to fix infinite ping loop.
+
+#### Astor-6.4.1 -  25/10/13:
+    Replace dancers by official Tango logo.
+    Cleanup part of code.
+
+#### Astor-6.4.0 -  24/09/13:
+    Fix a problem in Tango releases help.
+    fix a problem on resize with java-7
+
+#### Astor-6.3.9 -  30/08/13:
+    Fix problem in pool threads management using new syntax.
+    Improve sort methods.
+    ServerStatePanel is now an astor.tools class (not from tool_panels package)
+
+#### Astor-6.3.7 -  09/08/13:
+    Improve UnAvailableHostsDialog class.
+
+#### Astor-6.3.6 -  12/06/13:
+    Server list to be started can now be taken from another host.
+
+#### Astor-6.3.5 -  28/05/13:
+    Update splash screen with new logos.
+
+#### Astor-6.3.4 -  16/05/13:
+    Minor changes.
+
+#### Astor-6.3.3 -  30/04/13:
+    Add a tool to export server from database to another one.
+
+#### Astor-6.3.2 -  03/04/13:
+    Add a display for statistics reset by host.
+
+#### Astor-6.3.1 -  19/03/13:
+    Fix a problem when starter is killed.
+
+#### Astor-6.3.0 -  06/03/13:
+    implement READ_ONLY, DB_READ_ONLY, READ_WRITE modes.
+
+#### Astor-6.2.2 -  21/01/13:
+    Fix a bug in adding item on TAC
+
+#### Astor-6.2.1 -  14/01/13:
+    Pb on notif icon fixed.
+
+#### Astor-6.2.0 -  07/01/13:
+    Group management added on TAC panel.
+
+#### Astor-6.1.2 -  26/10/12:
+    Fix a problem when too much devices in SubDevices.
+
+#### Astor-6.1.1 -  26/10/12:
+    HostInfoDialog can be run in stand alone.
+
+#### Astor-6.1.0 -  24/10/12:
+    Tango release for servers tool added.
+
+#### Astor-6.0.6 -  09/10/12:
+    Pb with back slash fixed (?)
+
+#### Astor-6.0.5 -  21/08/12:
+    Open Jive on a selected server.
+
+#### Astor-6.0.4 -  24/05/12:
+    Distribution release.
+
+#### Astor-6.0.3 -  05/04/12:
+    Add a control system name management.
+    User preferences for tango host list added.
+
+#### Astor-6.0.1 -  02/04/12:
+    Problem when removing server info fixed.
+
+#### Astor-6.0.0 -  08/02/12:
+    Comptibility with TangORB-8.x (ZMQ event system or supposed to be).
+
+#### Astor-5.5.4 -  06/12/11:
+    Create a Thread to update splash screen (to boost startup).
+
+#### Astor-5.5.3 -  07/09/11:
+    ServerUsage tool added.
+
+#### Astor-5.5.2 -  26/07/11:
+    Statistics on one host added.
+
+#### Astor-5.5.1 -  12/04/11:
+    Auto start info added to statistics tool.
+
+#### Astor-5.5.0 -  01/04/11:
+    Statistics tools added.
+
+#### Astor-5.4.1 -  14/03/11:
+    Pb on TangoHost.getFamily() (if not defined) fixed.
+
+#### Astor-5.4.0 -  11/02/11:
+    Pb with TAC when adding addresses on "All Users" fixed.
+    No reference on app_util classes any more.
+    Change splash screen image.
+
+#### Astor-5.3.7 -  24/01/11:
+    Constructor added.
+
+#### Astor-5.3.6 -  13/01/11:
+    Pb on black box reader thread fixed.
+
+#### Astor-5.3.5 -  10/01/11:
+    TAC is now displayed as database servers.
+    StartServersAtStarteup starter class property management added.
+    Display access mode in Tango Access panel.
+
+#### Astor-5.3.4 -  04/01/11:
+    Do not try to subscribe on Starter events if starter device not exported.
+
+#### Astor-5.3.3 -  21/12/10:
+    Little tool to un-export devices registred on unreachable hosts added.
+
+#### Astor-5.3.2 -  16/12/10:
+    Add a password for AccessControl tool.
+
+#### Astor-5.3.1 -  02/12/10:
+    Constructors added in  PoolThreadsManager to be launched from Jive.
+
+#### Astor-5.3.0 -  30/11/10:
+    For multi servers command, if the command is done through the starter,
+    it is done by a thread and a delay has been added between servers.
+
+#### Astor-5.2.11 -  29/11/10:
+    Multi servers command added.
+    Uptime for servers added.
+
+#### Astor-5.2.10 -  08/10/10:
+    Change default view in Polling Profiler.
+
+#### Astor-5.2.9 -  01/09/10:
+    Minor change (traces removed and added).
+
+#### Astor-5.2.8 -  17/06/10:
+    Pb on display startup level dialog in case of many devices fixed.
+
+#### Astor-5.2.7 -  17/06/10:
+    Start new server can take several servers (multiple selection).
+
+#### Astor-5.2.6 -  04/06/10:
+    Global command to change startup level added.
+
+#### Astor-5.2.5 -  08/04/10:
+    Minor bugs fixed.
+
+#### Astor-5.2.4 -  05/01/10:
+    Best management of subscribe error window at startup.
+
+#### Astor-5.2.3 -  18/08/09:
+    Bug in Device Dependencies fixed (infinite loop)
+
+#### Astor-5.2.2 -  02/06/09:
+    Bug on host.check_notifyd fixed.
+
+#### Astor-5.2.1 -  15/05/09:
+    Remove serialization between HostStateThread and HostInfoDialogVector.
+
+#### Astor-5.2.0 -  18/04/09:
+    Tango-7 tools accessible.
+    Device dependencies (sub-devices) tool added.
+    MySqlUtil feature added.
+
+#### Astor-5.1.3 -  30/01/09:
+    Black box management added for database.
+    Black box management tool improved.
+    Find TANGO object by filter added.
+
+#### Astor-5.1.2 -  16/01/09:
+    Black box management added for host and Server.
+    Starter logging display added for host and server.
+    Splash screen use ATK one.
+
+#### Astor-5.1.1 -  17/12/08:
+    Add a scroll pane in HostInfoDialog in case of too big dialog.
+
+#### Astor-5.1.0 -  09/10/08:
+    Pool thread management added but not accessible.
+    New version and tests for access.
+
+#### Astor-5.0.5 -  12/09/08:
+    Bug in server info (if not running) fixed.
+
+#### Astor-5.0.4 -  16/06/08:
+    Level trees are now displayed on 2 rows.
+
+#### Astor-5.0.3 -  22/05/08:
+    Host info dialog servers are managed in a jtree.
+
+#### Astor-5.0.2 -  07/05/08:
+    Host info dialog line management changed.
+    Browse Database option added in DB popup menu.
+
+#### Astor-5.0.1 -  10/04/08:
+    Branch info modified.
+    Table of hosts and servers added.
+
+#### Astor-5.0.0 -  27/03/08:
+    Compatibility with Starter 4.0 and after only !
+    Better management of server list.
+    Server state MOVING managed.
+    Hard kill added on servers.
+    New features on polling profiler.
+
+#### Astor-4.5.7 -  12/12/07:
+    Reset buttons added in event configuration panel.
+
+#### Astor-4.5.6 -  07/11/07:
+    Display host info if OSManage DS  is running on host.
+    Display host's state on HotInfoDialog.
+
+#### Astor-4.5.5 -  11/09/07:
+    Db attribute polling panel added.
+    Bug on repeate error window when refresh tree fixed.
+
+#### Astor-4.5.4  -  04/09/07:
+    Set attribute polled names in lower case in new starter creation.
+
+#### Astor-4.5.3  -  20/08/07:
+    ServStatePanel added on HostInfoDialog (Check states option).
+
+#### Astor-4.5.2  -  27/04/07:
+    Display host panel available for stopped server from Device Browser.
+
+#### Astor-4.5.1  -  04/04/07:
+    Database attribute properties editor added.
+
+#### Astor-4.5.0  -  27/03/07:
+    Preferences dialog added.
+
+#### Astor-4.4.4  -  08/03/07:
+    LastCollections property is managed.
+
+#### Astor-4.4.3  -  22/01/07:
+    Remove watch dog on host thread.
+
+#### Astor-4.4.2  -  17/01/07:
+    Html helps added.
+    Startup error message added in view menu.
+
+#### Astor-4.4.1  -  08/01/07:
+    Disable Start Server button if Starter is MOVING.
+
+#### Astor-4.4.0  -  25/09/06:
+    Access control tool added.
+
+#### Astor-4.3.2:
+    Bug fixed in miscellaneous host collection.
+
+#### Astor-4.3.1:
+    Moving state added for collection.
+    In StartAll command a sleep(500) has been added between two hosts.
+
+#### Astor-4.3.0:
+    Moving state added for startup phase.
+
+#### Astor-4.2.3:
+    Host info panel modified to use icons.
+
+#### Astor-4.2.2:
+    Backward compatibilty for jive fixed.
+
+#### Astor-4.2.1:
+    Icons have been changed.
+    Some minor changes.
+
+#### Astor-4.2.0:
+    Polling profiler added.
+
+#### Astor-4.1.4:
+    Open/Save menu added on event tester window.
+
+#### Astor-4.1.3:
+    History added on event management.
+    The maximum servers displayed in horizontal on HostInfoDialog window has been set to 5.
+
+#### Astor-4.1.2:
+    Bug fixed in Device browser in member device name.
+
+#### Astor-4.1.1:
+    Change TANGO_HOST added (needs TangORB-4.7.7 or later).
+
+#### Astor-4.1.0:
+    DevBrowser and MkStarter utilities added.
+
+#### Astor-4.0.9:
+    Minor changes for EventTester compatibility
+
+#### Astor-4.0.8:
+    Screen position modified for dialogs.
+
+#### Astor-4.0.7:
+    Search if host already exist before creation.
+
+#### Astor-4.0.6:
+    Search by host name added.
+
+#### Astor-4.0.5:
+    Can change memorized attribute value.
+
+#### Astor-4.0.4:
+    Bug in server architecture fixed.
+
+#### Astor-4.0.3:
+    Minor changes, RemoteCmd property added.
+
+#### Astor-4.0.2:
+    Server architecture display addded.
+
+#### Astor-4.0.1:
+    DevWizard calls addded.
+
+#### Astor-4.0.0:
+    Possibility to controle two database servers added.

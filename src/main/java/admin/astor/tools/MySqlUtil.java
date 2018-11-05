@@ -47,6 +47,7 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  *	This class group many info and methods used By Astor.
@@ -56,29 +57,17 @@ import java.util.List;
 
 public class MySqlUtil {
 
-    private static MySqlUtil instance = null;
-
-    //===============================================================
-    //===============================================================
-    private MySqlUtil() {
-
-    }
-
+    private static MySqlUtil instance = new MySqlUtil();
     //===============================================================
     //===============================================================
     public static MySqlUtil getInstance() {
-        if (instance == null)
-            instance = new MySqlUtil();
         return instance;
     }
-
-
     //===============================================================
-
     /**
-     * Execute a SELECT command on TANGO databse.
+     * Execute a SELECT command on TANGO database.
      *
-     * @param command the command to be excuted
+     * @param command the command to be executed
      * @throws DevFailed in case of database server is not running
      *                   or in case of syntax error in command parameter.
      * @return the data found in TANGO database
@@ -94,6 +83,37 @@ public class MySqlUtil {
         //System.out.println("elapsed time : " + (t1-t0) + " ms");
 
         return new MySqlData(argout.extractLongStringArray());
+    }
+    //===============================================================
+    //===============================================================
+    public String[] getHostControlledList() throws DevFailed {
+        List<String> deviceList = new ArrayList<>();
+        String command = "SELECT name FROM device WHERE class=\"Starter\"";
+        MySqlData result = executeMySqlSelect(command);
+        for (MySqlRow row : result) {
+            if (!row.hasNull()) {
+                deviceList.add(row.get(0));
+            }
+        }
+        //  Get only host names
+        List<String> hostList = new ArrayList<>();
+        for (String deviceName : deviceList) {
+            StringTokenizer stk = new StringTokenizer(deviceName, "/");
+            if (stk.countTokens()==3) {
+                stk.nextToken();
+                stk.nextToken();
+                String host = stk.nextToken();
+                // Check if FQDN
+                int idx = host.indexOf('.');
+                if (idx>0)
+                    host = host.substring(0, idx);
+                if (hostList.contains(host))
+                    System.err.println("WARNING: " + host + " found several times as Starter");
+                else
+                    hostList.add(host);
+            }
+        }
+        return hostList.toArray(new String[0]);
     }
     //===============================================================
     /**
@@ -142,7 +162,6 @@ public class MySqlUtil {
         return info;
     }
     //===============================================================
-
     /**
      * Get the DevImport info for specified devices using low level MySql command.
      *
@@ -241,6 +260,8 @@ public class MySqlUtil {
                             host.manageNotifd=
                                     (use[1].equals("true") || use[1].equals("1"));
                 }
+                else
+                    System.err.println("Host is null");
             }
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(new JFrame(), null, e);

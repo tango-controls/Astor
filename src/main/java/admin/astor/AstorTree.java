@@ -96,7 +96,7 @@ public class AstorTree extends JTree implements AstorDefs {
 
     // startup objects
     private List<String> subscribeError = new ArrayList<>();
-    private UpdateSplashThread updateSplashThread = null;
+    private UpdateSplashThread updateSplashThread;
     PopupText subscribeErrWindow = null;
     private long startSubscribeTime;
     private Splash splash;

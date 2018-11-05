@@ -36,6 +36,7 @@
 package admin.astor.tango_release;
 
 import admin.astor.AstorUtil;
+import admin.astor.tools.MySqlUtil;
 import admin.astor.tools.PopupHtml;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.*;
@@ -76,7 +77,7 @@ public class TangoReleaseDialog extends JDialog {
         this.parent = parent;
 
         //  Get host list
-        String[] hostList = AstorUtil.getInstance().getHostControlledList();
+        String[] hostList = MySqlUtil.getInstance().getHostControlledList();
         List<String>   serverList = new ArrayList<>();
 
         //  For each host
@@ -84,8 +85,7 @@ public class TangoReleaseDialog extends JDialog {
             System.out.println("Reading "+ hostName);
             //  Get server list
             List<String>   serverNames = getControlledServers(hostName);
-            for (String server : serverNames)
-                serverList.add(server);
+            serverList.addAll(serverNames);
         }
         System.out.println(serverList.size());
         String  rootName = ApiUtil.getTangoHost();

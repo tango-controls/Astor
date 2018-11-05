@@ -63,12 +63,6 @@ import java.util.List;
 
 @SuppressWarnings("MagicConstant")
 public class Astor extends JFrame implements AstorDefs {
-
-    /**
-     * Initialized by make jar call and used to display title.
-     */
-    private static String revNumber =
-            "7.2.0  -  09-02-2018  10:13:15";
     /**
      * JTree object to display control system.
      */
@@ -102,7 +96,7 @@ public class Astor extends JFrame implements AstorDefs {
         AstorUtil.getInstance().initIcons();
         customizeMenu();
 
-        setTitle("TANGO Manager - " + revNumber);
+        setTitle(AstorUtil.getInstance().getApplicationName());
         setControlSystemTitle();
         buildTree();
         ImageIcon icon = Utils.getInstance().getIcon("astor.png");
@@ -152,11 +146,6 @@ public class Astor extends JFrame implements AstorDefs {
     private void buildTree() throws DevFailed {
 
         //	Build Splash Screen
-        String title = "Astor (TANGO Manager)";
-        int end = revNumber.indexOf("-");
-        if (end > 0)
-            title += " - " + revNumber.substring(0, end).trim();
-
         //	Create a splash window.
         JSmoothProgressBar myBar = new JSmoothProgressBar();
         myBar.setStringPainted(true);
@@ -165,7 +154,7 @@ public class Astor extends JFrame implements AstorDefs {
 
         ImageIcon icon = Utils.getInstance().getIcon("TangoLogo.gif");
         Splash splash = new Splash(icon, Color.black, myBar);
-        splash.setTitle(title);
+        splash.setTitle(AstorUtil.getInstance().getApplicationName());
         splash.setMessage("Starting....");
         splash.setVisible(true);
 
@@ -1044,7 +1033,7 @@ public class Astor extends JFrame implements AstorDefs {
         else if (item == stateIconsBtn)
             new IconStateDialog(this).setVisible(true);
         else if (item == releaseNoteBtn)
-            new PopupHtml(this).show(ReleaseNote.str);
+            new PopupHtml(this).show(ReleaseNotes.htmlString);
         else if (item == tangorbBtn)
 			displayTangORBversion();
         else if (item == aboutBtn)
@@ -1094,7 +1083,7 @@ public class Astor extends JFrame implements AstorDefs {
                 "           Astor  (Tango Manager) \n\n" +
                         "This programme is used to control, start and stop\n" +
                         "           the TANGO device servers. \n\n" +
-                        revNumber +
+                        AstorUtil.getInstance().getApplicationName() +
                         "\n\n" +
                         "Pascal Verdier - Software Engineering Group - ESRF";
         Utils.popupMessage(this, message, "TangoClass.gif");
