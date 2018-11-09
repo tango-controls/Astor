@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.3 -  09/11/18:
+    Fix a bug in host ordering
+
 #### Astor-7.2.2 -  05/11/18:
     Get Starter list from class name.
     Improve README.md.

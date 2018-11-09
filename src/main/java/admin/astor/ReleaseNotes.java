@@ -16,7 +16,9 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 05-11-2018  09:42</center>\n" + 
+		"generated: 09-11-2018  09:54</center>\n" + 
+		"<li><b>Astor-7.2.3 -  09/11/18:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a bug in host ordering<br>" + 
 		"<li><b>Astor-7.2.2 -  05/11/18:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Get Starter list from class name.<br>" + 
 		"&nbsp; &nbsp; &nbsp; Improve README.md.<br>" + 

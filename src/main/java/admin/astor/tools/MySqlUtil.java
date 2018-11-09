@@ -88,7 +88,7 @@ public class MySqlUtil {
     //===============================================================
     public String[] getHostControlledList() throws DevFailed {
         List<String> deviceList = new ArrayList<>();
-        String command = "SELECT name FROM device WHERE class=\"Starter\"";
+        String command = "SELECT name FROM device WHERE class=\"Starter\" ORDER BY name";
         MySqlData result = executeMySqlSelect(command);
         for (MySqlRow row : result) {
             if (!row.hasNull()) {
