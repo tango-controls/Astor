@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.4 -  17/01/19:
+    Fix a small problem in server startup level
+
 #### Astor-7.2.3 -  09/11/18:
     Fix a bug in host ordering
 

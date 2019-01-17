@@ -713,10 +713,19 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         List<Server> servers = new ArrayList<>();
         try {
             if (!att.hasFailed()) {
+                int nbLevels = AstorUtil.getStarterNbStartupLevels();
                 String[] lines = att.extractStringArray();
                 for (String line : lines) {
                     Server server = new Server(line);
                     servers.add(server);
+                    if (server.level>nbLevels) {
+                        // Level not coherent with Control System config
+                        // Set as not controlled
+                        DbServInfo info = new DbServInfo(server.name, hostName, false, 0);
+                        new DbServer(server.name).put_info(info);
+                        server.level = 0;
+                        server.controlled = false;
+                    }
                 }
             }
         } catch (DevFailed e) {
@@ -1106,13 +1115,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
             try {
                 DeviceAttribute att = event.getValue();
-                manageServersAttribute(att);
                 //if (AstorUtil.getDebug())
-                // 	System.out.println(host + "/" + att.getName() + " changed " + " : ");
+                //  System.out.println(host + "/" + att.getName() + " changed " + " : ");
+                manageServersAttribute(att);
             } catch (DevFailed e) {
                 System.out.println(hostName);
                 if (e.errors[0].reason.equals("API_EventTimeout")) {
-                    System.err.println("HostStataThread.ServerEventListener" +
+                    System.err.println("HostStateThread.ServerEventListener" +
                             deviceName + " : API_EventTimeout");
                     //fr.esrf.TangoDs.Except.print_exception(e);
                 } else
