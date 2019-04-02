@@ -16,7 +16,9 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 17-01-2019  13:34</center>\n" + 
+		"generated: 02-04-2019  14:19</center>\n" + 
+		"<li><b>Astor-7.2.5 -  02/04/19:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Minor changes<br>" + 
 		"<li><b>Astor-7.2.4 -  17/01/19:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Fix a small problem in server startup level<br>" + 
 		"<li><b>Astor-7.2.3 -  09/11/18:</b><br>" + 

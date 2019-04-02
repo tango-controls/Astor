@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.5 -  02/04/19:
+    Minor changes
+
 #### Astor-7.2.4 -  17/01/19:
     Fix a small problem in server startup level
 

@@ -101,8 +101,7 @@ public class Server2TangoHost extends JDialog {
 	}
 	//===============================================================
 	//===============================================================
-	private void initOwnComponents(DbServerStructure server) throws DevFailed
-	{
+	private void initOwnComponents(DbServerStructure server) {
          //	Build users_tree to display info
 		DbServerTree	tree = new DbServerTree(server);
 		JScrollPane scrollPane = new JScrollPane();
@@ -331,7 +330,7 @@ public class Server2TangoHost extends JDialog {
 	* @param args the command line arguments
 	*/
 	//===============================================================
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		try {
             if (args.length==0)
                 Except.throw_exception("SyntaxError", "ServerName ?", "main()");
@@ -359,7 +358,7 @@ public class Server2TangoHost extends JDialog {
 
         //===============================================================
         //===============================================================
-        public DbServerTree(DbServerStructure server) throws DevFailed {
+        public DbServerTree(DbServerStructure server) {
             super();
             buildTree(server);
             expandChildren(root);
@@ -484,7 +483,7 @@ public class Server2TangoHost extends JDialog {
                 node = (DefaultMutableTreeNode) node.getParent();
                 nodeList.add(0, node);
             }
-            TreeNode[] tn = nodeList.toArray(new TreeNode[nodeList.size()]);
+            TreeNode[] tn = nodeList.toArray(new TreeNode[0]);
             /*
             TreeNode[] tn = new DefaultMutableTreeNode[nodeList.size()];
             for (int i = 0; i < nodeList.size(); i++)

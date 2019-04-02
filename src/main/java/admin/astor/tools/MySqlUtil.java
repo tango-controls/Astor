@@ -277,10 +277,8 @@ public class MySqlUtil {
         //===========================================================
         private MySqlRow(List<String> vs) {
             super();
-            for (String s : vs)
-                add(s);
+            this.addAll(vs);
         }
-
         //===========================================================
         private boolean hasNull() {
             for (String s : this)
