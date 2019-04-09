@@ -4,7 +4,7 @@
 
     <groupId>org.tango.gui</groupId>
     <artifactId>Astor</artifactId>
-    <version>7.2.5-SNAPSHOT</version>
+    <version>7.2.5</version>
 
     <name>Astor</name>
     <description>Astor</description>
