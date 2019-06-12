@@ -120,32 +120,31 @@ public class JTangoVersion {
         ManifestModule manifestModule = null;
         try {
             InputStream inputStream = getClass().getResourceAsStream(packageName);
-            if (inputStream==null) {
-                System.err.println("Failed to get the inputStream for file resource :\t  " + manifestName);
-                return null;
-            }
-            InputStreamReader reader = new InputStreamReader(inputStream);
-            char[]  buff = new char[256];
-            int nb = reader.read(buff);
-            if (nb>0) {
-                String code = new String(buff);
-                StringTokenizer stk = new StringTokenizer(code, "\n");
-                String version = null;
-                String name = null;
-                String date = null;
-                while (stk.hasMoreTokens()) {
-                    String line = stk.nextToken().trim();   // remove \r
-                    if (line.startsWith(nameHeader))
-                        name = line.substring(nameHeader.length());
-                    else if (line.startsWith(versionHeader))
-                        version = line.substring(versionHeader.length());
-                    else
-                    if (line.startsWith("#") && !line.startsWith("#Gen"))
-                        date = line.substring(1);   // remove '#'
+            if (inputStream!=null) {
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                char[] buff = new char[256];
+                int nb = reader.read(buff);
+                if (nb>0) {
+                    String code = new String(buff);
+                    StringTokenizer stk = new StringTokenizer(code, "\n");
+                    String version = null;
+                    String name = null;
+                    String date = null;
+                    while (stk.hasMoreTokens()) {
+                        String line = stk.nextToken().trim();   // remove \r
+                        if (line.startsWith(nameHeader))
+                            name = line.substring(nameHeader.length());
+                        else if (line.startsWith(versionHeader))
+                            version = line.substring(versionHeader.length());
+                        else if (line.startsWith("#") && !line.startsWith("#Gen"))
+                            date = line.substring(1);   // remove '#'
+                    }
+                    if (name != null && version != null)
+                        manifestModule = new ManifestModule(name, version, date);
                 }
-                if (name!=null && version!=null)
-                    manifestModule = new ManifestModule(name, version, date);
             }
+            //else
+            //    System.err.println("Failed to get the inputStream for file resource :\t  " + manifestName);
         }
         catch (Exception e) {
             System.err.println(e.getMessage());

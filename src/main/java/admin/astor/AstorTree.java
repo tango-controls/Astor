@@ -48,8 +48,6 @@ import fr.esrf.tangoatk.widget.util.Splash;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -91,7 +89,6 @@ public class AstorTree extends JTree implements AstorDefs {
     private static List<String> collecNames = new ArrayList<>();
     private static DefaultMutableTreeNode root;
     private static int hostSubscribed = 0;
-    @SuppressWarnings("InspectionUsingGrayColors")
     private static final Color background = new Color(0xf0, 0xf0, 0xf0);
 
     // startup objects
@@ -159,7 +156,7 @@ public class AstorTree extends JTree implements AstorDefs {
         watchDogTimer.start();
     }
 
-    
+
     //===============================================================
     /**
      * A little thread to update splash screen
@@ -211,10 +208,10 @@ public class AstorTree extends JTree implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    void updateMonitor(String strerror) {
+    void updateMonitor(String strError) {
         //	add error startup message
-        if (strerror != null) {
-            subscribeError.add(strerror);
+        if (strError != null) {
+            subscribeError.add(strError);
 		}
 
         //	Check if startup is terminated
@@ -322,11 +319,7 @@ public class AstorTree extends JTree implements AstorDefs {
         setCellRenderer(new TangoRenderer());
 
         //	Listen for when the selection changes.
-        addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                hostSelectionPerformed();
-            }
-        });
+        addTreeSelectionListener(e -> hostSelectionPerformed());
 
         //	Listen for collapse tree
         addTreeExpansionListener(new TreeExpansionListener() {
@@ -1288,17 +1281,13 @@ public class AstorTree extends JTree implements AstorDefs {
             this.tree = tree;
 
             //	Build menu
-            JLabel title = new JLabel("Datbase Server :");
+            JLabel title = new JLabel("Database Server :");
             title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
             add(title);
             add(new JPopupMenu.Separator());
             for (String menuLabel : menuLabels) {
                 JMenuItem btn = new JMenuItem(menuLabel);
-                btn.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        treeActionPerformed(evt);
-                    }
-                });
+                btn.addActionListener(this::treeActionPerformed);
                 add(btn);
             }
         }
@@ -1320,12 +1309,10 @@ public class AstorTree extends JTree implements AstorDefs {
                     cmdidx = i;
 
             try {
-                switch (cmdidx) {
-                    case BROWSE_DATABASE:
-                        displayJiveAppli();
-                        break;
-                    default:
-                        manageOneDataBaseOption(cmdidx);
+                if (cmdidx == BROWSE_DATABASE) {
+                    displayJiveAppli();
+                } else {
+                    manageOneDataBaseOption(cmdidx);
                 }
             } catch (DevFailed e) {
                 ErrorPane.showErrorMessage(this, null, e);
@@ -1382,11 +1369,7 @@ public class AstorTree extends JTree implements AstorDefs {
             add(new JPopupMenu.Separator());
             for (String menuLabel : menuLabels) {
                 JMenuItem btn = new JMenuItem(menuLabel);
-                btn.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        treeActionPerformed(evt);
-                    }
-                });
+                btn.addActionListener(this::treeActionPerformed);
                 add(btn);
             }
         }
