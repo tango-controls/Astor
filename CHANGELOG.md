@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.6 -  12/05/19:
+    Remove warning trace
+
 #### Astor-7.2.5 -  02/04/19:
     Minor changes
 
