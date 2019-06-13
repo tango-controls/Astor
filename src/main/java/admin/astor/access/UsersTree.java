@@ -48,7 +48,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
@@ -81,10 +80,9 @@ public class UsersTree extends JTree implements TangoConst {
     private JFrame parent;
 
     private AccessProxy accessProxy;
-    CopiedAddresses copied_addresses = new CopiedAddresses();
-    CopiedDevices copied_devices = new CopiedDevices();
+    List<AccessAddress> copiedAddresses = new ArrayList<>();
+    List<AccessDevice> copiedDevices = new ArrayList<>();
     private static final Color background = Color.WHITE;
-
 
 
     private List<UserGroup>  groups = new ArrayList<>();
@@ -398,10 +396,10 @@ public class UsersTree extends JTree implements TangoConst {
         //  Check if user OK
         if (user.length() > 0) {
             StringTokenizer stk = new StringTokenizer(user.toLowerCase());
-            String s = "";
+            StringBuilder sb = new StringBuilder();
             while (stk.hasMoreTokens())
-                s += stk.nextToken();
-            if (s.equals("allusers")) {
+                sb.append(stk.nextToken());
+            if (sb.toString().equals("allusers")) {
                 TangoAccess.popupError(this, user + " is reserved !");
                 ok = false;
             }
@@ -409,7 +407,7 @@ public class UsersTree extends JTree implements TangoConst {
             ok = false;
 
         //  Check if user already exists
-        if (user.length() > 0) {
+        if (!user.isEmpty()) {
             if (userExists(user)) {
                 ok = false;
                 expendUserNode(user);
@@ -431,7 +429,7 @@ public class UsersTree extends JTree implements TangoConst {
         Object  obj = getSelectedObject();
         UserGroup   userGroup = null;
         if (obj instanceof UserGroup)
-               userGroup = (UserGroup) obj;
+            userGroup = (UserGroup) obj;
 
         //  Display dialog to get user and address
         boolean ok = false;
@@ -464,7 +462,7 @@ public class UsersTree extends JTree implements TangoConst {
         if (groupNode==null) {
             //  It is a new group
             groups.add(userGroup);
-            Collections.sort(groups, new GroupComparator());
+            groups.sort(new GroupComparator());
             groupNode = new DefaultMutableTreeNode(userGroup);
             treeModel.insertNodeInto(groupNode, root, root.getChildCount());
         }
@@ -513,7 +511,7 @@ public class UsersTree extends JTree implements TangoConst {
     //===============================================================
     //===============================================================
     private DefaultMutableTreeNode getGroupNode(String groupName) {
-        
+
         for (int i=0 ; i<root.getChildCount() ; i++) {
             if (root.getChildAt(i).toString().equals(groupName))
                 return (DefaultMutableTreeNode) root.getChildAt(i);
@@ -764,11 +762,9 @@ public class UsersTree extends JTree implements TangoConst {
     private String[] getDefinedUsers() {
         List<String> userList = new ArrayList<>();
         for (UserGroup group : groups) {
-            for (String member : group) {
-                userList.add(member);
-            }
+            userList.addAll(group);
         }
-        return userList.toArray(new String[userList.size()]);
+        return userList.toArray(new String[0]);
     }
 
     //===============================================================
@@ -934,9 +930,9 @@ public class UsersTree extends JTree implements TangoConst {
                 groupNode = new DefaultMutableTreeNode(userGroup);
                 treeModel.insertNodeInto(groupNode, root, root.getChildCount());
                 groups.add(userGroup);
-                Collections.sort(groups, new GroupComparator());
+                groups.sort(new GroupComparator());
             }
-            
+
             //  Update Access proxy
             try {
                 accessProxy.cloneUser(srcUser, newUser);
@@ -999,16 +995,16 @@ public class UsersTree extends JTree implements TangoConst {
             DefaultMutableTreeNode new_node = null;
             switch (obj_type) {
                 case ADDRESS:
-                    String address = copied_addresses.addressAt(0).name;
+                    String address = copiedAddresses.get(0).name;
                     accessProxy.addAddress(user, address);
                     new_node = new DefaultMutableTreeNode(new AccessAddress(address));
                     treeModel.insertNodeInto(new_node, node, node.getChildCount());
                     break;
                 case DEVICE:
-                    String devname = copied_devices.deviceAt(0).name;
-                    int right = copied_devices.deviceAt(0).right;
-                    accessProxy.addDevice(user, devname, rightsStr[right]);
-                    new_node = new DefaultMutableTreeNode(new AccessDevice(devname, right));
+                    String deviceName = copiedDevices.get(0).name;
+                    int right = copiedDevices.get(0).right;
+                    accessProxy.addDevice(user, deviceName, rightsStr[right]);
+                    new_node = new DefaultMutableTreeNode(new AccessDevice(deviceName, right));
                     treeModel.insertNodeInto(new_node, node, node.getChildCount());
                     break;
             }
@@ -1041,12 +1037,12 @@ public class UsersTree extends JTree implements TangoConst {
 
         switch (obj_type) {
             case ADDRESS:
-                copied_addresses.clear();
-                copied_addresses.add((AccessAddress) o);
+                copiedAddresses.clear();
+                copiedAddresses.add((AccessAddress) o);
                 break;
             case DEVICE:
-                copied_devices.clear();
-                copied_devices.add((AccessDevice) o);
+                copiedDevices.clear();
+                copiedDevices.add((AccessDevice) o);
                 break;
         }
     }
@@ -1130,7 +1126,7 @@ public class UsersTree extends JTree implements TangoConst {
             node = (DefaultMutableTreeNode) node.getParent();
             nodeList.add(0, node);
         }
-        TreeNode[] tn = nodeList.toArray(new TreeNode[nodeList.size()]);
+        TreeNode[] tn = nodeList.toArray(new TreeNode[0]);
         TreePath tp = new TreePath(tn);
         setSelectionPath(tp);
         scrollPathToVisible(tp);
@@ -1364,36 +1360,20 @@ public class UsersTree extends JTree implements TangoConst {
         }
         //===========================================================
     }
-
     //===============================================================
     private class Dummy {
-        //	notthing
+        //	nothing
         public String toString() {
             return "";
         }
     }
-
-    //===============================================================
-    class CopiedDevices extends ArrayList<AccessDevice> {
-        AccessDevice deviceAt(int i) {
-            return get(i);
-        }
-    }
-
-    //===============================================================
-    class CopiedAddresses extends ArrayList<AccessAddress> {
-        AccessAddress addressAt(int i) {
-            return get(i);
-        }
-    }
-
     //===============================================================
     //===============================================================
     private class GroupComparator implements Comparator<UserGroup> {
         public int compare(UserGroup group1, UserGroup group2) {
             if (group1.getName().equals(UserGroup.unsorted))
                 return 1;
-            if (group1.getName().equals(UserGroup.unsorted))
+            if (group2.getName().equals(UserGroup.unsorted))
                 return -1;
             return group1.getName().compareTo(group2.getName());
         }

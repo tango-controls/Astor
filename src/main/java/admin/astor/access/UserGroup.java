@@ -43,7 +43,6 @@ import fr.esrf.tangoatk.widget.util.ErrorPane;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
@@ -81,7 +80,7 @@ class UserGroup extends ArrayList <String> {
     //===============================================================
     //===============================================================
     public void sortMembers() {
-        Collections.sort(this, new UserComparator());
+        this.sort(new UserComparator());
     }
     //===============================================================
     //===============================================================

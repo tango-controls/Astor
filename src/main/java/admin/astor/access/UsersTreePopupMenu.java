@@ -157,10 +157,10 @@ public class UsersTreePopupMenu extends JPopupMenu {
                 getComponent(OFFSET + PASTE).setVisible(true);
                 getComponent(OFFSET + PASTE).setEnabled(false);
                 if (obj.toString().equals(UsersTree.collecStr[UsersTree.ADDRESS]))
-                    if (parent.copied_addresses.size() > 0)
+                    if (parent.copiedAddresses.size() > 0)
                         getComponent(OFFSET + PASTE).setEnabled(true);
                 if (obj.toString().equals(UsersTree.collecStr[UsersTree.DEVICE]))
-                    if (parent.copied_devices.size() > 0)
+                    if (parent.copiedDevices.size() > 0)
                         getComponent(OFFSET + PASTE).setEnabled(true);
                 break;
             case UsersTree.ADDRESS:

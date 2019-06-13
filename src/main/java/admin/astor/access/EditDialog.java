@@ -400,10 +400,6 @@ public class EditDialog extends JDialog {
     }//GEN-LAST:event_closeDialog
 
     //===============================================================
-
-    /**
-     * Closes the dialog
-     */
     //===============================================================
     private void doClose() {
         setVisible(false);
@@ -421,12 +417,12 @@ public class EditDialog extends JDialog {
     //===============================================================
     //===============================================================
     public UserGroup getUserGroup() {
-        Object  object = groupBox.getSelectedItem();
-        if (object instanceof UserGroup) {
-            return (UserGroup) object;
+        Object  selectedItem = groupBox.getSelectedItem();
+        if (selectedItem instanceof UserGroup) {
+            return (UserGroup) selectedItem;
         }
         else {
-            String  name = object.toString();
+            String  name = selectedItem.toString();
             if (name.length()==0)
                 return null;
             return new UserGroup(name);
