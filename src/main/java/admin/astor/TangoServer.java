@@ -177,16 +177,14 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             deviceNames[i] = v.get(i);
         return deviceNames;
     }
-
     //=============================================================
     //=============================================================
     String[] queryDevice() throws DevFailed {
         return queryDevice(false);
     }
-
     //=============================================================
     //=============================================================
-    private String[] queryDevice(boolean add_dserver) throws DevFailed {
+    private String[] queryDevice(boolean withDServer) throws DevFailed {
         //	Query the device list
         //	(Check two times for backward compatibility)
         DeviceData argOut;
@@ -200,10 +198,10 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 argOut = command_inout("DevQueryDevice");
         }
 
-        //	remove class name at begining of each device name added in Tango-5
+        //	remove class name at beginning of each device name added in Tango-5
         String separator = "::";
         String[] tmp = argOut.extractStringArray();
-        String[] devices = new String[(add_dserver) ? tmp.length + 1 : tmp.length];
+        String[] devices = new String[(withDServer) ? tmp.length + 1 : tmp.length];
         for (int i = 0, start; i < tmp.length; i++)
             if ((start = tmp[i].indexOf(separator)) > 0)
                 devices[i] = tmp[i].substring(start + separator.length());
@@ -211,18 +209,15 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 devices[i] = tmp[i];
 
         //	Add the admin dev name if requested.
-        if (add_dserver)
+        if (withDServer)
             devices[devices.length - 1] = deviceName;
         return devices;
     }
-
     //=============================================================
     //=============================================================
     public String toString() {
         return name;
     }
-
-
     //===============================================================
     //===============================================================
     boolean startupLevel(JDialog parent, String hostname, Point p) {
@@ -301,33 +296,49 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
 
     //===============================================================
     //===============================================================
-    private String chooseDevice(Component parent, boolean add_dserver) throws DevFailed {
+    private String chooseDevice(Component parent, boolean withDServer) throws DevFailed {
         //	Query the device list to run jive
-        String[] devices = queryDevice(add_dserver);
-        String choice = null;
-        switch (devices.length) {
+        String[] classDeviceNames = DeviceSelection.getClassDevices(name);
+        String selectedDevice = null;
+        switch (classDeviceNames.length) {
             case 0:
-                Except.throw_exception("NO_DEVICE_REGISTRED",
-                        "No device registered for this server",
-                        "TangoServer.chooseDevice()");
+                Except.throw_exception("NO_DEVICE_REGISTERED", "No device registered for this server");
                 break;
+
             case 1:
-                choice = devices[0];
+                //  Remove class name if any
+                selectedDevice = classDeviceNames[0];
+                int idx = selectedDevice.indexOf("::");
+                if (idx>0)
+                    selectedDevice = selectedDevice.substring(idx+2);
                 break;
+
             default:
-                if ((choice = (String) JOptionPane.showInputDialog(parent,
-                        "Device selection :", "",
-                        JOptionPane.INFORMATION_MESSAGE, null,
-                        devices, devices[0])) == null)
-                    choice = null;
+                //  Check if OLD tango (do not start with 'className::' )
+                if (classDeviceNames[0].contains("::")) {
+                    //  Class and device names are available
+                    DeviceSelection dialog;
+                    if (parent instanceof JFrame)
+                        dialog = new DeviceSelection((JFrame) parent, name, classDeviceNames, withDServer);
+                    else if (parent instanceof JDialog)
+                        dialog = new DeviceSelection((JDialog) parent, name, classDeviceNames, withDServer);
+                    else
+                        dialog = new DeviceSelection(new JFrame(), name, classDeviceNames, withDServer);
+                    selectedDevice = dialog.showDialog();
+                }
+                else {
+                    //  Only device name is available
+                    selectedDevice = (String) JOptionPane.showInputDialog(
+                            parent, "Device selection :", "",
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null, classDeviceNames, classDeviceNames[0]);
+                }
                 break;
         }
-        return choice;
+        return selectedDevice;
     }
-
     //===============================================================
     //===============================================================
-    @SuppressWarnings("unused")
     void displayBlackBox(Component parent) {
         try {
             //	Query the device to test
@@ -383,10 +394,10 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     String getServerInfo(Component parent, boolean ds_present) {
-        String serverInfo = "------------ Server Info ------------\n\n";
+        StringBuilder sb = new StringBuilder("------------ Server Info ------------\n\n");
         try {
             //	Query info from database
-            serverInfo += get_info().toString();
+            sb.append(get_info().toString());
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
             return "";
@@ -395,12 +406,12 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             try {
                 //	Query info from dbServer if running
                 String[] devices = queryDevice();
-                serverInfo += "\n\n----------- Device(s) Served -----------\n\n";
+                sb.append("\n\n----------- Device(s) Served -----------\n\n");
                 for (String devname : devices)
-                    serverInfo += devname + "\n";
+                    sb.append(devname).append("\n");
             } catch (DevFailed e) { /* */ }
         }
-        return serverInfo;
+        return sb.toString();
     }
 
     //===============================================================
@@ -548,23 +559,23 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
     //===============================================================
     //===============================================================
     private String indent(String s) {
-        String ret = "";
+        StringBuilder sb = new StringBuilder();
         String tab = "        ";
         int start = 0;
         int end;
         while ((end = s.indexOf("\n", start)) >= 0) {
             if (start > 0)
-                ret += "\n";
-            ret += tab + s.substring(start, end);
+                sb.append("\n");
+            sb.append(tab).append(s.substring(start, end));
             start = end + 1;
         }
         if (start > 0)
-            ret += "\n";
-        ret += tab + s.substring(start);
+            sb.append("\n");
+        sb.append(tab).append(s.substring(start));
 
-        if (ret.endsWith("\n"))
-            ret = ret.substring(0, ret.length() - 2);
-        return ret;
+        if (sb.toString().endsWith("\n"))
+            sb = new StringBuilder(sb.substring(0, sb.length() - 2));
+        return sb.toString();
     }
 
     //===============================================================
@@ -601,15 +612,12 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             });
 
             JButton dismissBtn = new JButton("Dismiss");
-            dismissBtn.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-
-                    //	Stop refresher
-                    statePanel.stopRefresher();
-                    //	Close dialog
-                    stateDialog.setVisible(false);
-                    stateDialog.dispose();
-                }
+            dismissBtn.addActionListener(evt -> {
+                //	Stop refresher
+                statePanel.stopRefresher();
+                //	Close dialog
+                stateDialog.setVisible(false);
+                stateDialog.dispose();
             });
             JPanel panel2 = new JPanel();
             panel2.add(dismissBtn);
@@ -634,7 +642,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
         //	If not found do it as before
         //==================================
         try {
-            String servinfo = "";
+            StringBuilder sb = new StringBuilder();
             //	Query info from dbServer
             String[] _devices = queryDevice();
             //	add admin device
@@ -647,25 +655,25 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
             for (int i = 0; i < devices.length; i++) {
                 DeviceProxy d = new DeviceProxy(devices[i]);
                 states[i] = d.state();
-                servinfo += devices[i] + ":    ";
-                servinfo += ApiUtil.stateName(states[i]) + "\n";
+                sb.append(devices[i]).append(":    ");
+                sb.append(ApiUtil.stateName(states[i])).append("\n");
 
                 //	Check if status must be added.
                 if (states[i] == DevState.FAULT ||
                         states[i] == DevState.ALARM ||
                         states[i] == DevState.UNKNOWN) {
-                    servinfo += indent(d.status()) + "\n\n";
+                    sb.append(indent(d.status())).append("\n\n");
                 }
             }
-            //System.out.println(servinfo);
+            //System.out.println(sb);
             int nb_lines = 0;
-            for (int i = 0; i < servinfo.length(); i++)
-                if (servinfo.charAt(i) == '\n')
+            for (int i = 0; i < sb.length(); i++)
+                if (sb.charAt(i) == '\n')
                     nb_lines++;
             if (nb_lines <= 40)
-                Utils.popupMessage(parent, servinfo);
+                Utils.popupMessage(parent, sb.toString());
             else
-                new PopupText(parent, true).show(servinfo);
+                new PopupText(parent, true).show(sb.toString());
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(parent, null, e);
         }
@@ -738,8 +746,8 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 //	Wait a bit to be sure it is stopped
                 long t0 = System.currentTimeMillis();
                 long t1 = t0;
-                while (state == DevState.ON ||
-                        state == DevState.MOVING && (t1 - t0) < RestartTimeout) {
+                while ((state == DevState.ON || state == DevState.MOVING)
+                        && (t1 - t0) < RestartTimeout) {
                     host.updateData();
                     try {
                         Thread.sleep(1000);
@@ -749,7 +757,7 @@ public class TangoServer extends DeviceProxy implements AstorDefs, TangoConst {
                 if (state == DevState.ON) {
                     Except.throw_exception("STOP_TIMOUT",
                             "Stopping dbServer " + name + " timeout\n" +
-                                    "may be, it cannot be stopped.",
+                            "may be, it cannot be stopped.",
                             "TangoServer.restartThread.run()");
                 }
                 //	And restart.

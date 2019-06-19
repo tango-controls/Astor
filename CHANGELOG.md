@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.7 -  19/06/19:
+    Improve device selection (sorted by class)
+
 #### Astor-7.2.6 -  12/05/19:
     Remove warning trace
 
