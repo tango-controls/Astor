@@ -362,23 +362,24 @@ public class DeviceSelection extends JDialog {
 		private void createNodes(String[] classDeviceNames) {
 			ClassObject _class = null;
 			DefaultMutableTreeNode classNode = null;
-			for (String str : classDeviceNames) {
-				StringTokenizer stk = new StringTokenizer(str, "::");
-				if (stk.countTokens() == 2) {
-					String className = stk.nextToken();
-					String deviceName = stk.nextToken();
-					if (_class == null || !className.equals(_class.name)) {
-						_class = new ClassObject(className);
-						classNode = new DefaultMutableTreeNode(_class);
-						rootNode.add(classNode);
-					}
-					classNode.add(new DefaultMutableTreeNode(new DeviceObject(deviceName)));
+            for (String str : classDeviceNames) {
+                StringTokenizer stk = new StringTokenizer(str, "::");
+                if (stk.countTokens() == 2) {
+                    String className = stk.nextToken();
+                    String deviceName = stk.nextToken();
+                    if (_class == null || !className.equals(_class.name)) {
+                        _class = new ClassObject(className);
+                        classNode = new DefaultMutableTreeNode(_class);
+                        rootNode.add(classNode);
+                    }
+                    classNode.add(new DefaultMutableTreeNode(new DeviceObject(deviceName)));
 				}
 			}
 			if (withDServer) {
 				classNode = new DefaultMutableTreeNode(new ClassObject("DServer"));
 				rootNode.add(classNode);
-				classNode.add(new DefaultMutableTreeNode(new DeviceObject("dserver/"+serverName.toLowerCase())));
+				classNode.add(new DefaultMutableTreeNode(
+				        new DeviceObject("dserver/"+serverName.toLowerCase())));
 			}
 		}
 		//===========================================================
