@@ -85,7 +85,7 @@ public class Astor extends JFrame implements AstorDefs {
     public static int rwMode = READ_WRITE;
     //======================================================================
     /**
-     * Creates new form Astor
+     * Creates new Astor form
      *
      * @throws DevFailed in case of database connection failed
      */
@@ -127,7 +127,6 @@ public class Astor extends JFrame implements AstorDefs {
         p.y = (scrsize.height - appsize.height) / 2;
         setLocation(p);
     }
-
     //======================================================================
     //======================================================================
     private void setControlSystemTitle() throws DevFailed {
@@ -181,21 +180,18 @@ public class Astor extends JFrame implements AstorDefs {
             throw e;
         }
     }
-
     //======================================================================
     //======================================================================
     Dimension getTreeSize() {
         //return scrollPane.getSize();
         return scrollPane.getPreferredSize();
     }
-
     //======================================================================
     //======================================================================
     void setTreeSize(Dimension d) {
         scrollPane.setPreferredSize(d);
         pack();
     }
-
     //======================================================================
     //======================================================================
     private void customizeMenu() {
@@ -243,15 +239,13 @@ public class Astor extends JFrame implements AstorDefs {
 
         nb_def_tools = toolsMenu.getItemCount();
         buildToolsItems();
-        buildAdditionnalHelps();
+        buildAdditionalHelps();
 
         expandBtn.setVisible(false);
 
         modeLabel.setText(strMode[rwMode]);
         bottomPanel.setVisible(rwMode!=READ_WRITE);
     }
-
-
     //======================================================================
     //======================================================================
     private void manageAccessControlMenu(boolean isAccessControlled) {
@@ -264,12 +258,10 @@ public class Astor extends JFrame implements AstorDefs {
             accessControlBtn.setVisible(false);
         }
     }
-
     //======================================================================
     //======================================================================
     private String[] htmlHelps = null;
-
-    private void buildAdditionnalHelps() {
+    private void buildAdditionalHelps() {
         htmlHelps = AstorUtil.getHtmlHelps();
         if (htmlHelps == null) return;
         if (htmlHelps.length == 0) return;
@@ -279,15 +271,10 @@ public class Astor extends JFrame implements AstorDefs {
         for (int i = 0; i < htmlHelps.length / 2; i++) {
             JMenuItem mi = new JMenuItem();
             mi.setText(htmlHelps[2 * i]);
-            mi.addActionListener(new ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    htmlHelpsItemActionPerformed(evt);
-                }
-            });
+            mi.addActionListener(this::htmlHelpsItemActionPerformed);
             helpMenu.add(mi);
         }
     }
-
     //======================================================================
     //======================================================================
     private void htmlHelpsItemActionPerformed(java.awt.event.ActionEvent evt) {
@@ -328,11 +315,7 @@ public class Astor extends JFrame implements AstorDefs {
                 JMenuItem mi = new JMenuItem();
                 mi.setText(t.name);
                 ActionListener al;
-                mi.addActionListener(al = new ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        toolsItemActionPerformed(evt);
-                    }
-                });
+                mi.addActionListener(al = this::toolsItemActionPerformed);
                 tools_al.add(al);
                 toolsMenu.add(mi);
             }
@@ -774,18 +757,16 @@ public class Astor extends JFrame implements AstorDefs {
                 rights = "-ro";
             //  Start a new shell because TANGO_HOST is for the JVM
             //  Start it in a tread to do not block this one
-            new Thread() {
-                public void run() {
-                    try {
-                        String cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
-                        //AstorUtil.executeShellCmdAndReturn(cmd);
-                        AstorUtil.executeShellCmd(cmd);
-                    }
-                    catch (IOException | InterruptedException | DevFailed e) {
-                        ErrorPane.showErrorMessage(new JFrame(), "Cannot fork", e);
-                    }
+            new Thread(() -> {
+                try {
+                    String cmd = "java -DTANGO_HOST=" + newTangoHost + " admin.astor.Astor " + rights;
+                    //AstorUtil.executeShellCmdAndReturn(cmd);
+                    AstorUtil.executeShellCmd(cmd);
                 }
-            }.start();
+                catch (IOException | InterruptedException | DevFailed e) {
+                    ErrorPane.showErrorMessage(new JFrame(), "Cannot fork", e);
+                }
+            }).start();
         } catch (Exception e) {
             ErrorPane.showErrorMessage(this, "Cannot change TANGO_HOST", e);
         }
@@ -1136,7 +1117,6 @@ public class Astor extends JFrame implements AstorDefs {
         else
             expandBtn.setText("Expand Tree");
     }//GEN-LAST:event_expandBtnActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1145,7 +1125,6 @@ public class Astor extends JFrame implements AstorDefs {
             devBrowser = new DevBrowser(this);
         devBrowser.setVisible(true);
     }//GEN-LAST:event_deviceBrowserBtnActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1156,21 +1135,18 @@ public class Astor extends JFrame implements AstorDefs {
             ErrorPane.showErrorMessage(this, null, e);
         }
     }//GEN-LAST:event_refreshBtnActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
         doExit();
     }//GEN-LAST:event_exitBtnActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         doExit();
     }//GEN-LAST:event_exitForm
-
     //======================================================================
     //======================================================================
     private WideSearchDialog wide_search_dlg = null;
@@ -1183,7 +1159,6 @@ public class Astor extends JFrame implements AstorDefs {
         wide_search_dlg.setVisible(true);
 
     }//GEN-LAST:event_findObjectByFilterItemActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1197,7 +1172,6 @@ public class Astor extends JFrame implements AstorDefs {
             ErrorPane.showErrorMessage(this, null, e);
         }
     }//GEN-LAST:event_multiServersCmdItemActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1206,7 +1180,6 @@ public class Astor extends JFrame implements AstorDefs {
         statisticsPanel.readAndDisplayStatistics(null); //  On all Servers
         statisticsPanel.setVisible(true);
     }//GEN-LAST:event_statisticsBtnActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1217,7 +1190,6 @@ public class Astor extends JFrame implements AstorDefs {
             ErrorPane.showErrorMessage(this, null, e);
         }
     }//GEN-LAST:event_serverUsageMenuItemActionPerformed
-
     //======================================================================
     //======================================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -1236,10 +1208,8 @@ public class Astor extends JFrame implements AstorDefs {
         popupText.setVisible(true);
 
     }//GEN-LAST:event_faultyListItemhelpActionPerformed
-
     //======================================================================
     //======================================================================
-    @SuppressWarnings({"ConstantConditions"})
     private void stopThreads() {
         System.out.println("Astor exiting....");
         //	Stop all host controlled
@@ -1254,9 +1224,8 @@ public class Astor extends JFrame implements AstorDefs {
                 }
             }
         }
-        System.out.println(" ");
+        System.out.println();
     }
-
     //======================================================================
     //======================================================================
     public void doExit() {
@@ -1268,6 +1237,11 @@ public class Astor extends JFrame implements AstorDefs {
             System.exit(0);
         }
     }
+    //======================================================================
+    //======================================================================
+
+
+
 
     //======================================================================
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1308,7 +1282,7 @@ public class Astor extends JFrame implements AstorDefs {
      * @param args the command line arguments
      */
     //======================================================================
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         //	Check if line command
         if (args.length > 0) {
@@ -1339,27 +1313,25 @@ public class Astor extends JFrame implements AstorDefs {
         }
         //	Else start application
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                long t0 = System.currentTimeMillis();
-                //	First time, Open a simple Tango window
-                try {
-                    Astor astor = new Astor();
-                    astor.setVisible(true);
-                } catch (DevFailed e) {
-                    System.err.println(e.errors[0].desc);
-                    if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
-                        e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
-                                "Astor cannot be configured from database !";
+        SwingUtilities.invokeLater(() -> {
+            long t0 = System.currentTimeMillis();
+            //	First time, Open a simple Tango window
+            try {
+                Astor astor = new Astor();
+                astor.setVisible(true);
+            } catch (DevFailed e) {
+                System.err.println(e.errors[0].desc);
+                if (e.errors[0].desc.indexOf("Controlled access service defined in Db but unreachable") > 0)
+                    e.errors[0].desc = "Controlled access service defined in Db but unreachable\n" +
+                            "Astor cannot be configured from database !";
 
-                    ErrorPane.showErrorMessage(new JFrame(), null, e);
-                    System.exit(-1);
-                } catch (java.lang.InternalError| java.awt.HeadlessException e) {
-                    System.err.println(e.getMessage());
-                }
-                long t1 = System.currentTimeMillis();
-                System.out.println("Build  GUI :" + (t1 - t0) + " ms");
+                ErrorPane.showErrorMessage(new JFrame(), null, e);
+                System.exit(-1);
+            } catch (InternalError| HeadlessException e) {
+                System.err.println(e.getMessage());
             }
+            long t1 = System.currentTimeMillis();
+            System.out.println("Build  GUI :" + (t1 - t0) + " ms");
         });
     }
     //===============================================================
