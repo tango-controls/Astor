@@ -29,7 +29,7 @@ git clone git@github.com:tango-controls/Astor
 ## Documentation 
 
 [ ![Download](https://api.bintray.com/packages/tango-controls/maven/Astor/images/download.svg) ](https://bintray.com/tango-controls/maven/Astor/_latestVersion)
-[![Docs](https://img.shields.io/badge/Latest-Docs-orange.svg)](http://tango-controls.readthedocs.io/en/latest/tools-and-extensions/astor/index.html)
+[![Docs](https://img.shields.io/badge/Latest-Docs-orange.svg)](https://tango-controls.readthedocs.io/en/latest/tools-and-extensions/built-in/astor/index.html)
 
 
 ## Building and Installation
