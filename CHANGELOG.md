@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.8 -  28/08/19:
+    Improve check states dialog (sorted by class in a tabbed pane)
+    
 #### Astor-7.2.7 -  19/06/19:
     Improve device selection (sorted by class)
 

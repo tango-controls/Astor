@@ -16,7 +16,10 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 19-06-2019  15:08</center>\n" + 
+		"generated: 28-08-2019  15:55</center>\n" + 
+		"<li><b>Astor-7.2.8 -  28/08/19:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Improve check states dialog (sorted by class in a tabbed pane)<br>" + 
+		"&nbsp; &nbsp; &nbsp; <br>" + 
 		"<li><b>Astor-7.2.7 -  19/06/19:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Improve device selection (sorted by class)<br>" + 
 		"<li><b>Astor-7.2.6 -  12/05/19:</b><br>" + 

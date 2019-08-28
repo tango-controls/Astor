@@ -101,7 +101,6 @@ public class PropertyDialog extends JDialog implements TangoConst {
         setLocation(p);
     }
     //===============================================================
-
     /**
      * This method is called from within the constructor to
      * initialize the form.

@@ -34,6 +34,7 @@
 
 package admin.astor;
 
+import admin.astor.dev_state_viewer.ServerStatesDialog;
 import admin.astor.tools.DeviceHierarchyDialog;
 import admin.astor.tools.PollingProfiler;
 import admin.astor.tools.PopupTable;
@@ -407,7 +408,12 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
                 server.testDevice(parent);
                 break;
             case CHECK_STATES:
-                server.checkStates(parent);
+                //server.checkStates(parent);
+                try {
+                    new ServerStatesDialog(parent, server.getName()).setVisible(true);
+                } catch (DevFailed e) {
+                    ErrorPane.showErrorMessage(parent, server.getName(), e);
+                }
                 break;
             case BLACK_BOX:
                 server.displayBlackBox(parent);
