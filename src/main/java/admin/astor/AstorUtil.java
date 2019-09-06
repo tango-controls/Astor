@@ -146,6 +146,8 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
 
     public static String getStarterDeviceHeader() {
+        if (instance==null) //  Must be initialized
+            instance = new AstorUtil();
         return starterDeviceHeader;
     }
     //===============================================================

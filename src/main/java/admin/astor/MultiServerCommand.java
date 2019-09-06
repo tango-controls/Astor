@@ -100,8 +100,11 @@ public class MultiServerCommand extends JDialog {
         strFilter = filterTxt.getText();
         String[] serverList = ApiUtil.get_db_obj().get_server_list(strFilter);
         jList.setListData(serverList);
-
     }
+    //======================================================
+    //======================================================
+
+
     //======================================================
     /**
      * This method is called from within the constructor to
@@ -283,7 +286,7 @@ public class MultiServerCommand extends JDialog {
      * @param args the command line arguments
      */
     //======================================================
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         try {
             MultiServerCommand msc = new MultiServerCommand(null);
@@ -394,9 +397,8 @@ public class MultiServerCommand extends JDialog {
     //======================================================
     private void displayServerStatus(List<String> serverNames) {
         List<String[]> statusList = new ArrayList<>();
-
+        //  For each starter, get server status
         for (String serverName : serverNames) {
-
             try {
                 DeviceProxy starter = getStarterInstanceForServer(serverName);
                 DeviceAttribute argOut = starter.read_attribute("Servers");
@@ -409,7 +411,10 @@ public class MultiServerCommand extends JDialog {
                         statusList.add(new String[]{server, status});
                 }
             } catch (DevFailed e) {
-                statusList.add(new String[]{serverName, e.errors[0].desc});
+                if (e.errors[0].desc.contains("/nada not defined in the database"))
+                    statusList.add(new String[]{serverName, "The server has never been running"});
+                else
+                    statusList.add(new String[]{serverName, e.errors[0].desc});
             }
         }
         if (statusList.size() == 0) {
@@ -419,8 +424,10 @@ public class MultiServerCommand extends JDialog {
 
         String[] columns = new String[]{"Servers", "Status"};
         try {
+            int height = 30 + statusList.size()*16;
+            if (height>800) height = 800;
             PopupTable ppt = new PopupTable(this, "",
-                    columns, statusList, new Dimension(650, 250));
+                    columns, statusList, new Dimension(700, height));
             ppt.setVisible(true);
         } catch (DevFailed e) {
             ErrorPane.showErrorMessage(this, null, e);
