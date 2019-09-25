@@ -90,7 +90,7 @@ public class ServerStatesDialog extends JDialog {
 			int i = 0;
 			List<JScrollPane> scrollPanes = new ArrayList<>();
 			for (TangoClass tangoClass : tangoServer) {
-				classTable = new TableViewer(tangoClass);
+				classTable = new TableViewer(this, tangoClass);
 				JScrollPane scrollPane = new JScrollPane(classTable);
 				scrollPanes.add(scrollPane);
 

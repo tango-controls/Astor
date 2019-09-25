@@ -55,6 +55,7 @@ import java.util.Enumeration;
  */
 
 public class TableViewer extends JTable {
+    private JDialog parent;
     private TangoClass tangoClass;
     private int tableWidth = 0;
     private int selectedRow = -1;
@@ -67,7 +68,8 @@ public class TableViewer extends JTable {
     private static final Color firstColumnColor = new Color(0xdd, 0xdd, 0xdd);
     //===============================================================
     //===============================================================
-    public TableViewer(TangoClass tangoClass) throws DevFailed {
+    public TableViewer(JDialog parent, TangoClass tangoClass) throws DevFailed {
+        this.parent = parent;
         this.tangoClass = tangoClass;
         for (TangoDevice device : tangoClass)
             device.createStateCell(this);
@@ -134,7 +136,7 @@ public class TableViewer extends JTable {
     //===============================================================
     private void testDevice() {
         TangoDevice device = tangoClass.get(selectedRow);
-        AstorUtil.testDevice(this, device.getName());
+        AstorUtil.testDevice(parent, device.getName());
     }
     //===============================================================
     //===============================================================

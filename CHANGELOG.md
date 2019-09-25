@@ -1,5 +1,9 @@
 # Astor Changelog
 
+#### Astor-7.2.9 -  25/09/19:
+    Fix a bug in TableViewer to test device
+    Improve MultiServerCommand dialog
+
 #### Astor-7.2.8 -  28/08/19:
     Improve check states dialog (sorted by class in a tabbed pane)
     

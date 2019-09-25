@@ -16,7 +16,10 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 28-08-2019  15:55</center>\n" + 
+		"generated: 25-09-2019  14:58</center>\n" + 
+		"<li><b>Astor-7.2.9 -  25/09/19:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a bug in TableViewer to test device<br>" + 
+		"&nbsp; &nbsp; &nbsp; Improve MultiServerCommand dialog<br>" + 
 		"<li><b>Astor-7.2.8 -  28/08/19:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Improve check states dialog (sorted by class in a tabbed pane)<br>" + 
 		"&nbsp; &nbsp; &nbsp; <br>" + 
