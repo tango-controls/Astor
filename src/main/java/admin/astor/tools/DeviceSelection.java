@@ -34,6 +34,7 @@ package admin.astor.tools;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceData;
 import fr.esrf.TangoApi.DeviceProxy;
+import fr.esrf.TangoDs.Except;
 import fr.esrf.TangoDs.TangoConst;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
@@ -115,7 +116,21 @@ public class DeviceSelection extends JDialog {
 	//===============================================================
 	//===============================================================
 	public static String[] getClassDevices(String serverName) throws DevFailed {
-		DeviceData argOut = new DeviceProxy("dserver/" + serverName).command_inout("QueryDevice");
+		//	Check if device name
+		StringTokenizer stk = new StringTokenizer(serverName, "/");
+		String deviceName = null;
+		switch (stk.countTokens()) {
+			case 2:
+				deviceName = "dserver/" + serverName;
+				break;
+			case 3:
+				deviceName = serverName;
+				break;
+			default:
+				Except.throw_exception("BadParam", serverName + " not a server name");
+		}
+
+		DeviceData argOut = new DeviceProxy(deviceName).command_inout("QueryDevice");
 		return argOut.extractStringArray();
 	}
 	//===============================================================

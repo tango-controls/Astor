@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.2.10 - 21/11/19:
+    Fix a bug in Starter test action
+
 #### Astor-7.2.9 -  25/09/19:
     Fix a bug in TableViewer to test device
     Improve MultiServerCommand dialog
