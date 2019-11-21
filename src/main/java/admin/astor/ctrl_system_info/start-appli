@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+#-----------------------------------------------------------------------
+#	Source the JavaAppliStartup script which defines a few variables
+# 
+#  JAVA_HOME (for the JVM to use for the application startup)
+#  JAVA  (for the JVM to use for the application startup)
+# 
+#  TANGO_LIBHOME (for folder where the Tango related java library jarfiles are located)
+#  TACO_LIBHOME (for folder where the Taco related java library jarfiles are located)
+#  TANGO_APPLIHOME (for the folder where your application jarfile should be located)
+# 
+#  TANGO (for JTango.jar used by java clients)
+#  TANGOSERVER (for JTango.jar used by java servers : same jarfile as for clients)
+#  TACO  (for Taco.jar)
+#  TANGOATK  (for the 2 jarfiles ATKCore and ATKWidget)
+#  TANGOPANELS (for tangopanels.jar)
+#  ATKPANEL (for atkpanel.jar)
+#
+#---------------------------------------------------------
+
+. /segfs/tango/release/java/scripts/JavaAppliStartup
+
+#--------------------------------------------------------------------------------
+#   If you need to modify any of the variables above do it here
+#   In most cases this section is empty
+#
+#   For example :
+#   JAVA=/sware/pub/java-1.7.0_67/linux_x64/bin/java   if you need to use another JVM than the default one
+#-------------------------------------------------------------------------------
+
+# to be compatible with /operation
+LIBHOME=$TANGO_LIBHOME
+APPLIHOME=$TANGO_APPLIHOME
+
+
+#--------------------------------------------------------------------------------
+#   Set the variables for Application jarfile, Package and Main class name
+#
+#  Set APPLI_JAR to the absolute pathname of your application's jarfile
+#  Set APPLI_PACKAGE to the fully qualified package name which contains the main class
+#         example : fr.esrf.tangoatk.widget.util.jdraw
+#  Set APPLI_MAIN_CLASS to the name of the main class that this script should start
+#-------------------------------------------------------------------------------
+APPLI_JAR=$TANGO_APPLIHOME/
+APPLI_JAR=../../../../../../target/classes
+APPLI_PACKAGE=admin.astor.ctrl_system_info
+APPLI_MAIN_CLASS=CtrlSystemInfo
+
+#--------------------------------------------------------------------------------
+#   Set the eventual additional variables Specific to the application
+#
+#   Here you can add some jarfiles which contains other applications you may launch
+#   through your application
+#-------------------------------------------------------------------------------
+JIVE=$TANGO_APPLIHOME/Jive.jar
+
+
+#---------------------------------------------------------
+#       Set the Class Path for Tango, ATK and AtkPanel usage
+#---------------------------------------------------------
+
+CLASSPATH=$TANGO:$TANGOATK:$APPLI_JAR:$JIVE
+export CLASSPATH
+
+
+
+
+#---------------------------------------------------------
+#       Start the process
+#---------------------------------------------------------
+#
+echo "CLASSPATH=$CLASSPATH"
+$JAVA -version
+
+# -mx128m allows to specify the maximum size of the memory allocation pool
+# to 128 megas where the default maximum size is 64m
+
+$JAVA -mx128m  -Dmax_receptor_threads=2000   $APPLI_PACKAGE.$APPLI_MAIN_CLASS $*
