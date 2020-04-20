@@ -46,7 +46,6 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 /**
@@ -54,7 +53,6 @@ import java.awt.event.MouseEvent;
  *
  * @author verdier
  */
-@SuppressWarnings({"PointlessArithmeticExpression"})
 public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 
     private TangoHost host;
@@ -66,7 +64,6 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
 
     static final int SERVERS = 0;
     static final int LEVELS = 1;
-    static final int NOTIFD = 2;
 
     static private String[] serverMenuLabels = {
             "Start server",
@@ -96,9 +93,6 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             "Set startup level for each server",
             "Up time",
             "Expand Tree",
-    };
-    static private String[] notifdMenuLabels = {
-            "Start daemon",
     };
     static private final int OFFSET = 2;        //	Label And separator
     static private final int START_STOP = 0;
@@ -149,7 +143,7 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
     //===============================================================
     private void buildBtnPopupMenu() {
         JLabel title = new JLabel("Server Control :");
-        title.setFont(new java.awt.Font("Dialog", 1, 16));
+        title.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
         add(title);
         add(new JPopupMenu.Separator());
         String[] pMenuLabels;
@@ -161,18 +155,12 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
                 pMenuLabels = levelMenuLabels;
                 break;
             default:
-                title.setText("Event Notify Daemon");
-                pMenuLabels = notifdMenuLabels;
+                return;
         }
-
 
         for (String lbl : pMenuLabels) {
             JMenuItem btn = new JMenuItem(lbl);
-            btn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    cmdActionPerformed(evt);
-                }
-            });
+            btn.addActionListener(this::cmdActionPerformed);
             add(btn);
         }
     }
@@ -301,7 +289,6 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
      */
     //======================================================
     private Point location;
-
     private void cmdActionPerformed(ActionEvent evt) {
         switch (mode) {
             case SERVERS:
@@ -310,28 +297,8 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
             case LEVELS:
                 levelCmdActionPerformed(evt);
                 break;
-            case NOTIFD:
-                notifdCmdActionPerformed(evt);
-                break;
         }
     }
-
-    //======================================================
-    //======================================================
-    private void notifdCmdActionPerformed(ActionEvent evt) {
-        Object obj = evt.getSource();
-        int itemIndex = -1;
-        for (int i = 0; i < notifdMenuLabels.length; i++)
-            if (getComponent(OFFSET + i) == obj)
-                itemIndex = i;
-
-        switch (itemIndex) {
-            case START:
-                host.startServer(parent, notifyd_prg + "/" + host.getName());
-                break;
-        }
-    }
-
     //======================================================
     //======================================================
     private void levelCmdActionPerformed(ActionEvent evt) {

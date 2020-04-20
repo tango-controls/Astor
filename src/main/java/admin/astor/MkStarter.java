@@ -55,7 +55,6 @@ public class MkStarter {
     };
     private String hostName;
     private String[] ds_path;
-    private boolean use_events = false;
 
     private String classname = "Starter";
     private String serverName;
@@ -76,14 +75,12 @@ public class MkStarter {
         serverName = classname + "/" + hostName;
         deviceName = AstorUtil.getStarterDeviceHeader() + hostName;
     }
-
     //===============================================================
     //===============================================================
-    public MkStarter(String hostName, String[] ds_path, boolean use_events)
+    public MkStarter(String hostName, String[] ds_path)
             throws DevFailed {
         this.hostName = hostName;
         this.ds_path = ds_path;
-        this.use_events = use_events;
         checkHostName(hostName);
 
         serverName = classname + "/" + hostName;
@@ -117,7 +114,6 @@ public class MkStarter {
         Database db = ApiUtil.get_db_obj();
         db.add_device(deviceName, classname, serverName);
     }
-
     //===============================================================
     //===============================================================
     public void setProperties() throws DevFailed {
@@ -137,12 +133,7 @@ public class MkStarter {
 
         //	Manage Attribute Polling
         setPollProperty();
-
-        //	Manage use events if needed.
-        DbDatum data = new DbDatum("UseEvents", (use_events)?1:0);
-        dev.put_property(data);
     }
-
     //===============================================================
     //===============================================================
     private void setPollProperty() throws DevFailed {
@@ -157,7 +148,6 @@ public class MkStarter {
         data.insert(pollProp);
         dev.put_property(data);
     }
-
     //===============================================================
     //===============================================================
     public void setAdditionalProperties(String propertyName, String propertyValue, boolean create) throws DevFailed {
@@ -183,12 +173,7 @@ public class MkStarter {
                     "MkStarter.getEnvironment()");
         ds_path = new String[1];
         ds_path[0] = dp;
-
-        String str = System.getProperty("USE_EVENTS");
-        if (str != null && str.toLowerCase().equals("true"))
-            use_events = true;
     }
-
     //===============================================================
     //===============================================================
     public static void main(String[] args) {

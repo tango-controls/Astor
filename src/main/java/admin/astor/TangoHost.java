@@ -71,11 +71,9 @@ public class TangoHost extends DeviceProxy {
     public HostStateThread thread = null;
     public int notifydState;
     public boolean onEvents = true;
-    public boolean manageNotifd;
     public HostInfoDialog info_dialog = null;
 
     public TangoEventsAdapter supplier = null;
-    public String   eventSource = "";   //  notifd, ZMQ or empty
 
     private String adm_name;
 
@@ -107,15 +105,6 @@ public class TangoHost extends DeviceProxy {
                 usage = prop.extractString();
                 if (usage.length() == 0)
                     usage = null;
-            }
-            //	Check if notify daemon is used by the Starter ds
-            manageNotifd = false;
-            try {
-                data = get_property("UseEvents");
-                if (!data.is_empty())
-                    manageNotifd = (data.extractShort() != 0);
-            } catch (DevFailed e) {
-                /*	Nothing */
             }
         }
         //	Else
@@ -450,36 +439,35 @@ public class TangoHost extends DeviceProxy {
     //==============================================================
     //==============================================================
     public void displayInfo(java.awt.Component parent) {
-        String str = "";
+        StringBuilder sb = new StringBuilder();
         //	Query database for Controlled servers list
         try {
             if (starter == null)
                 starter = new TangoServer(adm_name);
-            str += starter.getServerInfo(parent, (state == AstorDefs.all_ok));
-            str += "\n\n----------- Controlled servers -----------\n";
+            sb.append(starter.getServerInfo(parent, (state == AstorDefs.all_ok)));
+            sb.append("\n\n----------- Controlled servers -----------\n");
 
             Database db = ApiUtil.get_db_obj();
             DeviceData argin = new DeviceData();
             argin.insert(name);
             DeviceData argout = db.command_inout("DbGetHostServerList", argin);
-            String[] servnames = argout.extractStringArray();
+            String[] serverNames = argout.extractStringArray();
 
             //	Query database for control mode.
-            for (String servname : servnames) {
-                DbServInfo s = db.get_server_info(servname);
+            for (String serverName : serverNames) {
+                DbServInfo s = db.get_server_info(serverName);
                 //	store only controlled servers
                 if (s.controlled)
-                    str += s.name + "\n";
+                    sb.append(s.name).append("\n");
             }
         } catch (DevFailed e) {
-            str += e.errors[0].desc;
-            ErrorPane.showErrorMessage(parent, str, e);
+            sb.append(e.errors[0].desc);
+            ErrorPane.showErrorMessage(parent, sb.toString(), e);
             return;
         }
-        str += "\n\n";
-        Utils.popupMessage(parent, str);
+        sb.append("\n\n");
+        Utils.popupMessage(parent, sb.toString());
     }
-
     //==============================================================
     //==============================================================
     public void testStarter(java.awt.Component parent) {
@@ -491,7 +479,6 @@ public class TangoHost extends DeviceProxy {
             ErrorPane.showErrorMessage(parent, "", e);
         }
     }
-
     //==============================================================
     //==============================================================
     @SuppressWarnings("unused")

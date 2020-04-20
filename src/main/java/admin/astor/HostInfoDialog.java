@@ -89,9 +89,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     private LevelTree[] trees = null;
     private JPanel levelsPanel = null;
     private JPanel[] treePanels;
-    private JPanel notifdPanel;
-    private JLabel notifdLabel;
-    private ServerPopupMenu notifdMenu;
     private boolean standAlone = false;
     private UpdateThread    updateThread;
     //===============================================================
@@ -134,7 +131,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
         bg = titlePanel.getBackground();
         titleLabel.setText("Controlled Servers on " + hostName);
-        notifdMenu = new ServerPopupMenu(jFrame, this, host, ServerPopupMenu.NOTIFD);
 
         //  Manage for READ_ONLY mode
         if (Astor.rwMode==AstorDefs.READ_ONLY) {
@@ -193,28 +189,8 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
             levelsPanel = new JPanel();
             levelsPanel.setLayout(new GridBagLayout());
+
             centerPanel.add(levelsPanel, BorderLayout.CENTER);
-
-            //	First time build notifd label
-            if (host.manageNotifd) {
-                notifdPanel = new JPanel();
-                notifdLabel = new JLabel("Event Notify Daemon");
-                notifdLabel.setFont(new Font("Dialog", Font.BOLD, 12));
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.gridwidth = nbLevels;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                notifdPanel.add(notifdLabel, gbc);
-                levelsPanel.add(notifdPanel, gbc);
-
-                //	Add Action listener
-                notifdLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-                    public void mouseClicked(java.awt.event.MouseEvent evt) {
-                        serverBtnMouseClicked(evt);
-                    }
-                });
-            }
             treePanels = new JPanel[nbLevels];
             trees = new LevelTree[nbLevels];
 
@@ -330,15 +306,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 y += 2;
             }
         }
-        //	Re-add notifd panel
-        if (host.manageNotifd) {
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.gridwidth = x_size + 1;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            levelsPanel.add(notifdPanel, gbc);
-        }
     }
 
     //===============================================================
@@ -361,10 +328,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
             titlePanel.setBackground(ATKConstant.getColor4State(str_state));
         } else
             titlePanel.setBackground(bg);
-
-        //	Update  notifd state
-        if (host.manageNotifd && notifdLabel!=null)
-            notifdLabel.setIcon(AstorUtil.state_icons[host.notifydState]);
     }
 
 
@@ -469,18 +432,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    //======================================================
-    /**
-     * Manage event on clicked mouse on PogoTree object.
-     *
-     * @param evt the mouse event
-     */
-    //======================================================
-    private void serverBtnMouseClicked(java.awt.event.MouseEvent evt) {
-        notifdMenu.showMenu(evt);
-    }
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})
@@ -496,7 +447,6 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                     tree.collapseTree();
         }
     }//GEN-LAST:event_displayAllBtnActionPerformed
-
     //===============================================================
     //===============================================================
     @SuppressWarnings({"UnusedDeclaration"})

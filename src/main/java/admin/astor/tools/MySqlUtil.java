@@ -91,7 +91,7 @@ public class MySqlUtil {
         String command = "SELECT name FROM device WHERE class=\"Starter\" ORDER BY name";
         MySqlData result = executeMySqlSelect(command);
         for (MySqlRow row : result) {
-            if (!row.hasNull()) {
+            if (row.hasNoNull()) {
                 deviceList.add(row.get(0));
             }
         }
@@ -129,20 +129,20 @@ public class MySqlUtil {
         String table = "event";
         String[] fields = {"name", "host", "exported", "ior"};
 
-        String cmd = "";
+        StringBuilder cmd = new StringBuilder();
         for (int i = 0; i < fields.length; i++) {
-            cmd += fields[i];
+            cmd.append(fields[i]);
             if (i < fields.length - 1)
-                cmd += ",";
+                cmd.append(",");
         }
-        cmd += " FROM " + table;
-        cmd += " WHERE name LIKE \"" + deviceName + "\"";
+        cmd.append(" FROM ").append(table);
+        cmd.append(" WHERE name LIKE \"").append(deviceName).append("\"");
 
-        MySqlData result = executeMySqlSelect(cmd);
+        MySqlData result = executeMySqlSelect(cmd.toString());
         DbEventImportInfo[] info = new DbEventImportInfo[result.size()];
         int idx = 0;
         for (MySqlRow row : result)
-            if (!row.hasNull())
+            if (row.hasNoNull())
                 info[idx++] = new DbEventImportInfo(
                         row.get(0).toLowerCase(),
                         row.get(1),
@@ -175,21 +175,21 @@ public class MySqlUtil {
         String[] fields = {"name", "exported", "version", "ior",
                 "server", "host", "class"};
 
-        String cmd = "";
+        StringBuilder cmd = new StringBuilder();
         for (int i = 0; i < fields.length; i++) {
-            cmd += fields[i];
+            cmd.append(fields[i]);
             if (i < fields.length - 1)
-                cmd += ",";
+                cmd.append(",");
         }
-        cmd += " FROM " + table;
-        cmd += " WHERE name LIKE \"" + deviceName + "\" ORDER BY name";
+        cmd.append(" FROM ").append(table);
+        cmd.append(" WHERE name LIKE \"").append(deviceName).append("\" ORDER BY name");
 
-        MySqlData result = executeMySqlSelect(cmd);
+        MySqlData result = executeMySqlSelect(cmd.toString());
 
         DbDevImportInfo[] info = new DbDevImportInfo[result.size()];
         int idx = 0;
         for (MySqlRow row : result)
-            if (!row.hasNull())
+            if (row.hasNoNull())
                 info[idx++] = new DbDevImportInfo(
                         row.get(0).toLowerCase(),
                         row.get(1).equals("1"),
@@ -214,20 +214,20 @@ public class MySqlUtil {
         String table = "property_device";
         String[] fields = {"device", "value"};
 
-        String cmd = "";
+        StringBuilder cmd = new StringBuilder();
         for (int i = 0; i < fields.length; i++) {
-            cmd += fields[i];
+            cmd.append(fields[i]);
             if (i < fields.length - 1)
-                cmd += ",";
+                cmd.append(",");
         }
-        cmd += " FROM " + table;
-        cmd += " WHERE device LIKE \"" + deviceName + "\"";
-        cmd += " And name = \"" + propertyName + "\"";
+        cmd.append(" FROM ").append(table);
+        cmd.append(" WHERE device LIKE \"").append(deviceName).append("\"");
+        cmd.append(" And name = \"").append(propertyName).append("\"");
 
-        MySqlData result = executeMySqlSelect(cmd);
+        MySqlData result = executeMySqlSelect(cmd.toString());
         List<String[]> lines = new ArrayList<>();
         for (MySqlRow row : result)
-            if (!row.hasNull())
+            if (row.hasNoNull())
                 lines.add(new String[]{row.get(0), row.get(1)});
         return lines;
     }
@@ -245,7 +245,6 @@ public class MySqlUtil {
             MySqlUtil mysql = MySqlUtil.getInstance();
             List<String[]> collections = mysql.getHostProperty(starters, "HostCollection");
             List<String[]> host_usage = mysql.getHostProperty(starters, "HostUsage");
-            List<String[]> use_evt = mysql.getHostProperty(starters, "UseEvents");
             for (TangoHost host : hosts) {
                 if (host!=null) {
                     String deviceName=host.get_name();
@@ -255,10 +254,6 @@ public class MySqlUtil {
                     for (String[] usage : host_usage)
                         if (deviceName.equals(usage[0]))
                             host.usage=usage[1];
-                    for (String[] use : use_evt)
-                        if (deviceName.equals(use[0]))
-                            host.manageNotifd=
-                                    (use[1].equals("true") || use[1].equals("1"));
                 }
                 else
                     System.err.println("Host is null");
@@ -273,25 +268,25 @@ public class MySqlUtil {
 
     //===============================================================
     //===============================================================
-    private class MySqlRow extends ArrayList<String> {
+    private static class MySqlRow extends ArrayList<String> {
         //===========================================================
         private MySqlRow(List<String> vs) {
             super();
             this.addAll(vs);
         }
         //===========================================================
-        private boolean hasNull() {
+        private boolean hasNoNull() {
             for (String s : this)
                 if (s == null)
-                    return true;
-            return false;
+                    return false;
+            return true;
         }
         //===========================================================
     }
 
     //===============================================================
     //===============================================================
-    private class MySqlData extends ArrayList<MySqlRow> {
+    private static class MySqlData extends ArrayList<MySqlRow> {
 
         //===========================================================
         private MySqlData(DevVarLongStringArray lsa) {

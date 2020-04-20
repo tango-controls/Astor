@@ -35,9 +35,7 @@
 package admin.astor;
 
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.TangoApi.DbDatum;
 import fr.esrf.TangoApi.DeviceProxy;
-import fr.esrf.TangoDs.Except;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 
 import javax.swing.*;
@@ -60,21 +58,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     private List<String> collections;
     private int retVal = JOptionPane.CANCEL_OPTION;
     private boolean creating;
-    //======================================================================
-    //======================================================================
-    private boolean getUseEvents() {
-        //	Check if use events
-        //	Do not use host field because it could
-        //	have been reset if notifd is stopped !!!!!
-        boolean ue = false;
-        try {
-            DbDatum data = host.get_property("UseEvents");
-            if (!data.is_empty())
-                ue = data.extractBoolean();
-        } catch (Exception e) { /* */ }
-        return ue;
-    }
-
     //======================================================================
     /*
 	 *	Creates new NewStarterDialog for editing properties
@@ -105,7 +88,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
             familyText.setText(host.getFamily());
             hostText.setText(hostname);
 
-            useEventsBtn.setSelected(getUseEvents());
             if (creating) {
                 familyText.setText(host.getFamily());
                 hostText.setText(hostname);
@@ -151,7 +133,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
         pathText = new javax.swing.JTextArea();
         javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
         usageText = new javax.swing.JTextField();
-        useEventsBtn = new javax.swing.JRadioButton();
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
         createBtn = new javax.swing.JButton();
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
@@ -162,7 +143,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
                 closeDialog(evt);
             }
         });
-        getContentPane().setLayout(new java.awt.BorderLayout());
 
         titleLbl.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         titleLbl.setText("Create a Starter in Database For a New Host");
@@ -261,14 +241,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         centerPanel.add(usageText, gridBagConstraints);
-
-        useEventsBtn.setText("Manage notifd");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        centerPanel.add(useEventsBtn, gridBagConstraints);
 
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
@@ -370,8 +342,7 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
             }
 
             String[] ds_path = AstorUtil.string2StringArray(str_ds_path);
-            boolean use_events = (useEventsBtn.getSelectedObjects() != null);
-             MkStarter starter = new MkStarter(hostName, ds_path, use_events);
+            MkStarter starter = new MkStarter(hostName, ds_path);
             if (creating)
                 starter.create();
             starter.setProperties();
@@ -450,7 +421,6 @@ public class NewStarterDialog extends JDialog implements AstorDefs {
     private javax.swing.JTextArea pathText;
     private javax.swing.JLabel titleLbl;
     private javax.swing.JTextField usageText;
-    private javax.swing.JRadioButton useEventsBtn;
     // End of variables declaration//GEN-END:variables
     //======================================================================
 

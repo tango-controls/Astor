@@ -1073,7 +1073,7 @@ public class Astor extends JFrame implements AstorDefs {
         for (TangoHost host : tree.hosts) {
             if (onEvt) {
 				if (host.onEvents)
-                	hostsList.add(host.getName() + " " + host.eventSource);
+                	hostsList.add(host.getName());
 			}
             else {
  				if (!host.onEvents)
@@ -1346,7 +1346,7 @@ public class Astor extends JFrame implements AstorDefs {
      * A thread class to execute a hosts scan
      */
     //===============================================================
-    private class HostsScanThread extends Thread {
+    private static class HostsScanThread extends Thread {
         private JFrame parent;
         private TangoHost[] hosts;
 
@@ -1355,10 +1355,9 @@ public class Astor extends JFrame implements AstorDefs {
             this.parent = parent;
             this.hosts = hosts;
         }
-
         //===============================================================
         public void run() {
-            String[][] list = new String[hosts.length][];
+            String[][] pairs = new String[hosts.length][2];
             String message = "Scanning hosts...";
             Monitor monitor = new Monitor(parent, message);
             double ratio = 0.01;
@@ -1367,30 +1366,27 @@ public class Astor extends JFrame implements AstorDefs {
                 sleep(500);
             } catch (InterruptedException e) { /* */}
             try {
-                int nb_serv = 0;
+                int nbServers = 0;
                 for (int i = 0; i < hosts.length; i++) {
                     ratio = (1 + 1.0 * i) / hosts.length;
-                    monitor.setProgressValue(ratio,
-                            "Reading " + hosts[i].getName());
+                    monitor.setProgressValue(ratio, "Reading " + hosts[i].getName());
 
                     String[] servers = hosts[i].getServerAttribute();
 
-                    list[i] = new String[2];
-                    list[i][0] = hosts[i].getName();
-                    list[i][1] = "" + servers.length;
-                    nb_serv += servers.length;
+                    pairs[i][0] = hosts[i].getName();
+                    pairs[i][1] = "" + servers.length;
+                    nbServers += servers.length;
                 }
 
                 //	Format results
-                String title = nb_serv + " servers   on " +
-                        hosts.length + " hosts";
+                String title = nbServers + " servers   on " + hosts.length + " hosts";
                 String[] cols = new String[]{"Names", "Nb Servers"};
 
-                PopupTable table = new PopupTable(parent, title, cols, list);
+                PopupTable table = new PopupTable(parent, title, cols, pairs);
                 table.setColumnWidth(new int[]{200, 100});
                 table.setVisible(true);
             } catch (DevFailed e) {
-                ErrorPane.showErrorMessage(parent, "", e);
+                ErrorPane.showErrorMessage(parent, null, e);
             }
         }
     }

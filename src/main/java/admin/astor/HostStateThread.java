@@ -198,39 +198,11 @@ public class HostStateThread extends Thread implements AstorDefs {
            }
        });
     }
-
-    //======================================================================
-    //======================================================================
-    public void updateNotifdHost(final DevState notifd_state) {
-        //	Convert to int
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                int notifyd_state = unknown;
-                if (notifd_state == DevState.ON) notifyd_state = all_ok;
-                else if (notifd_state == DevState.FAULT) notifyd_state = faulty;
-
-                if (host.notifydState == notifyd_state)
-                    return;
-
-                host.notifydState = notifyd_state;
-                if (parent != null)
-                    parent.updateState();
-                else {
-                    host.notifydState = notifyd_state;
-                }
-                if (host.info_dialog != null)
-                    host.info_dialog.updateHostState();
-            }
-        });
-    }
-
     //======================================================================
     //======================================================================
     private int timeout = -1;
     public void manageSynchronousAttributes() {
         DevState hostState;
-        DevState notifdState;
-
         try {
             if (timeout<0) {
                 timeout = host.get_timeout_millis();
@@ -242,22 +214,13 @@ public class HostStateThread extends Thread implements AstorDefs {
                 hostState = DevState.FAULT;
             else
                 hostState = att[StateAtt].extractState();
-
-            if (att[NotifdAtt].hasFailed())
-                notifdState = DevState.UNKNOWN;
-            else
-                notifdState = att[NotifdAtt].extractState();
         } catch (DevFailed e) {
             //Except.print_exception(e);
             host.except = e;
-            notifdState = DevState.UNKNOWN;
             hostState = DevState.FAULT;
         }
         try { host.set_timeout_millis(timeout); } catch (DevFailed e) { /* */ }
         updateHost(hostState);
-
-        if (host.manageNotifd)
-            updateNotifdHost(notifdState);
     }
 
 
@@ -320,22 +283,10 @@ public class HostStateThread extends Thread implements AstorDefs {
         //=====================================================================
         //=====================================================================
         public void change(TangoChangeEvent event) {
-
-            try {
-                if (event.isZmqEvent())
-                    host.eventSource = "(ZMQ)";
-                else
-                    host.eventSource = "(notifd)";
-            }
-            catch (NoSuchMethodError e) {
-                //  Cannot be ZMQ (too old)
-                host.eventSource = "(notifd)";
-            }
             //long	t0 = System.currentTimeMillis();
             TangoChange tc = (TangoChange) event.getSource();
             String deviceName = tc.getEventSupplier().get_name();
             DevState hostState;
-            DevState notifdState;
 
             int timeout = -1;
             try {
@@ -369,20 +320,6 @@ public class HostStateThread extends Thread implements AstorDefs {
                     host.set_timeout_millis(timeout);
             }catch (DevFailed e) {
                 System.err.println(e.errors[0].desc);
-            }
-
-            if (host.manageNotifd) {
-                try {
-                    //	Check if notify daemon running in synchronous
-                    DeviceAttribute att_synch = host.read_attribute(attributes[NotifdAtt]);
-                    if (att_synch.hasFailed())
-                        notifdState = DevState.UNKNOWN;
-                    else
-                        notifdState = att_synch.extractState();
-                } catch (Exception e) {
-                    notifdState = DevState.UNKNOWN;
-                }
-                updateNotifdHost(notifdState);
             }
             updateHost(hostState);
         }

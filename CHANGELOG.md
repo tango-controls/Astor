@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.0 - 20/04/20:
+    Does not manage notifd anymore
+
 #### Astor-7.2.10 - 21/11/19:
     Fix a bug in Starter test action
 
