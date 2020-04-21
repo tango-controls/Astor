@@ -73,7 +73,7 @@ public class EventsTable extends JDialog {
     public static final int SUBSCRIBE_CHANGE = 0;
     public static final int SUBSCRIBE_PERIODIC = 1;
     public static final int SUBSCRIBE_ARCHIVE = 2;
-    public static final String strMode[] = {
+    public static final String[] strMode = {
             "CHANGE", "PERIODIC", "ARCHIVE"
     };
 
@@ -97,7 +97,6 @@ public class EventsTable extends JDialog {
     public static final int DT = 4;
     public static final int DV = 5;
     public static final int CNT = 6;
-    public static final int SOURCE = 7;
 
     private static int[] col_width = {140, 100, 45, 85, 60, 100, 50, 50};
     /**
@@ -106,7 +105,7 @@ public class EventsTable extends JDialog {
     private List<SubscribedSignal> signals = new ArrayList<>();
     private boolean first = true;
     private TablePopupMenu menu = null;
-    private Component parent = null;
+    private Component parent;
     /**
      * File Chooser Object used in file menu.
      */
@@ -310,19 +309,19 @@ public class EventsTable extends JDialog {
     //===============================================================
     //===============================================================
     private void saveEventList(String filename) {
-        String str = FileHeader;
+        StringBuilder sb = new StringBuilder(FileHeader);
         //	Get signal list
         for (SubscribedSignal signal : signals) {
-            str += signal.toString() + "\n";
+            sb.append(signal.toString()).append("\n");
         }
         //	Get columns width
         int[] width = getColumnWidth();
-        str += "#\n" + ColWidthHeader + "	";
+        sb.append("#\n" + ColWidthHeader + "	");
         for (int aWidth : width)
-            str += " " + aWidth;
+            sb.append(" ").append(aWidth);
         try {
             FileOutputStream fidout = new FileOutputStream(filename);
-            fidout.write(str.getBytes());
+            fidout.write(sb.toString().getBytes());
             fidout.close();
 
 
@@ -490,7 +489,6 @@ public class EventsTable extends JDialog {
             model = new DataTableModel();
 
             // Create the table
-            //noinspection NullableProblems
             table = new JTable(model) {
                 //Implement table cell tool tips.
                 public String getToolTipText(MouseEvent e) {
@@ -541,11 +539,7 @@ public class EventsTable extends JDialog {
             if (first) {
                 //	Start a timer to display date and time
                 int delay = 1000; //milliseconds
-                ActionListener taskPerformer = new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        buildTitle(evt);
-                    }
-                };
+                ActionListener taskPerformer = this::buildTitle;
                 new javax.swing.Timer(delay, taskPerformer).start();
                 first = false;
             }
@@ -752,8 +746,6 @@ public class EventsTable extends JDialog {
                     return sig.d_value;
                 case CNT:
                     return "" + sig.cnt;
-                case SOURCE:
-                    return "" + sig.source;
             }
             return "";
         }
