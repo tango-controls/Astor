@@ -69,7 +69,6 @@ public class TangoHost extends DeviceProxy {
     public boolean poll_serv_lists = false;
     public String collection = null;
     public HostStateThread thread = null;
-    public int notifydState;
     public boolean onEvents = true;
     public HostInfoDialog info_dialog = null;
 
@@ -84,7 +83,6 @@ public class TangoHost extends DeviceProxy {
         super(AstorUtil.getStarterDeviceHeader() + name);
         adm_name = "dserver/starter/" + name;
         set_transparency_reconnection(true);
-        notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;
@@ -167,7 +165,6 @@ public class TangoHost extends DeviceProxy {
         super(deviceInfo);
         adm_name = adminInfo.name;
         set_transparency_reconnection(true);
-        notifydState = AstorDefs.unknown;
 
         //	Check if name contain sub network added, then cut it.
         int i;

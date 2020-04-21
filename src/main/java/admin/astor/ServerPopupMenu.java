@@ -264,25 +264,6 @@ public class ServerPopupMenu extends JPopupMenu implements AstorDefs {
         location.y += evt.getY();
         show(tree, evt.getX(), evt.getY());
     }
-
-    //======================================================
-    /*
-      *	Manage event on clicked mouse on Notifd object.
-      */
-    //======================================================
-    public void showMenu(MouseEvent evt) {
-        if (Astor.rwMode==AstorDefs.READ_ONLY) {
-            return;
-        }
-
-        JLabel lbl = (JLabel) evt.getSource();
-        boolean running = (host.notifydState == all_ok);
-        getComponent(START + OFFSET).setEnabled(!running);
-
-        //	Get position and display Popup menu
-        location = lbl.getLocationOnScreen();
-        show(lbl, evt.getX(), evt.getY());
-    }
     //======================================================
     /**
      * Called when popup menu item selected

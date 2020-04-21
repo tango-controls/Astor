@@ -62,14 +62,13 @@ public class SubscribedSignal implements TangoConst {
     String time = defVal;
     String d_time = defVal;
     String d_value = defVal;
-    List<EventHisto> histo = new ArrayList<>();
+    List<EventHistory> histo = new ArrayList<>();
 
     String deviceName;
     String attributeName;
     int mode;
     int cnt = 0;
     int data_type;
-    String  source = "";
 
     private double dt_min = Double.MAX_VALUE;
     private double dt_max = 0.0;
@@ -84,7 +83,7 @@ public class SubscribedSignal implements TangoConst {
     private PeriodicEventListener periodic_listener = null;
 
     private EventsTable parent;
-    private AttributeInfoEx attinfo;
+    private AttributeInfoEx attributeInfo;
 
     //================================================================
     //================================================================
@@ -97,7 +96,7 @@ public class SubscribedSignal implements TangoConst {
         this.mode = mode;
 
         try {
-            attinfo = new AttributeProxy(name).get_info_ex();
+            attributeInfo = new AttributeProxy(name).get_info_ex();
         } catch (DevFailed e) { /* Nothing to do */}
     }
 
@@ -111,58 +110,58 @@ public class SubscribedSignal implements TangoConst {
     //================================================================
     //================================================================
     String except_str() {
-        String str = "";
+        StringBuilder sb = new StringBuilder();
 
         if (except instanceof ConnectionFailed)
-            str += ((ConnectionFailed) (except)).getStack();
+            sb.append(((ConnectionFailed) (except)).getStack());
         else if (except instanceof CommunicationFailed)
-            str += ((CommunicationFailed) (except)).getStack();
+            sb.append(((CommunicationFailed) (except)).getStack());
         else if (except instanceof WrongNameSyntax)
-            str += ((WrongNameSyntax) (except)).getStack();
+            sb.append(((WrongNameSyntax) (except)).getStack());
         else if (except instanceof WrongData)
-            str += ((WrongData) (except)).getStack();
+            sb.append(((WrongData) (except)).getStack());
         else if (except instanceof NonDbDevice)
-            str += ((NonDbDevice) (except)).getStack();
+            sb.append(((NonDbDevice) (except)).getStack());
         else if (except instanceof NonSupportedFeature)
-            str += ((NonSupportedFeature) (except)).getStack();
+            sb.append(((NonSupportedFeature) (except)).getStack());
         else if (except instanceof EventSystemFailed)
-            str += ((EventSystemFailed) (except)).getStack();
+            sb.append(((EventSystemFailed) (except)).getStack());
         else if (except instanceof AsynReplyNotArrived)
-            str += ((AsynReplyNotArrived) (except)).getStack();
+            sb.append(((AsynReplyNotArrived) (except)).getStack());
         else if (except instanceof DevFailed) {
             DevFailed df = (DevFailed) except;
             //	True DevFailed
             for (int i = 0; i < df.errors.length; i++) {
-                str += df.toString() + ":\n";
-                str += "Tango exception\n";
-                str += "Severity -> ";
+                sb.append(df.toString()).append(":\n");
+                sb.append("Tango exception\n");
+                sb.append("Severity -> ");
                 switch (df.errors[i].severity.value()) {
                     case ErrSeverity._WARN:
-                        str += "WARNING \n";
+                        sb.append("WARNING \n");
                         break;
 
                     case ErrSeverity._ERR:
-                        str += "ERROR \n";
+                        sb.append("ERROR \n");
                         break;
 
                     case ErrSeverity._PANIC:
-                        str += "PANIC \n";
+                        sb.append("PANIC \n");
                         break;
 
                     default:
-                        str += "Unknown severity code";
+                        sb.append("Unknown severity code");
                         break;
                 }
-                str += "Desc -> " + df.errors[i].desc + "\n";
-                str += "Reason -> " + df.errors[i].reason + "\n";
-                str += "Origin -> " + df.errors[i].origin + "\n";
+                sb.append("Desc -> ").append(df.errors[i].desc).append("\n");
+                sb.append("Reason -> ").append(df.errors[i].reason).append("\n");
+                sb.append("Origin -> ").append(df.errors[i].origin).append("\n");
 
                 if (i < df.errors.length - 1)
-                    str += "-------------------------------------------------------------\n";
+                    sb.append("-------------------------------------------------------------\n");
             }
         } else
-            str = except.toString();
-        return str;
+            sb = new StringBuilder(except.toString());
+        return sb.toString();
     }
 
     //================================================================
@@ -202,7 +201,7 @@ public class SubscribedSignal implements TangoConst {
         //	store values for next event.
         t0 = t1;
         if (values != null) {
-            histo.add(new EventHisto(attr.getTimeValMillisSec(), values, d_value, d_time));
+            histo.add(new EventHistory(attr.getTimeValMillisSec(), values, d_value, d_time));
             prev_val = values;
         }
         except = null;
@@ -338,27 +337,27 @@ public class SubscribedSignal implements TangoConst {
     //=====================================================================
     //=====================================================================
     private void setValue(DeviceAttribute attr) throws DevFailed {
-        value = "";
+        StringBuilder sb = new StringBuilder();
         String format = null;
-        if (attinfo != null && !attinfo.format.equals("Not specified"))
-            format = attinfo.format;
+        if (attributeInfo != null && !attributeInfo.format.equals("Not specified"))
+            format = attributeInfo.format;
         switch (data_type = attr.getType()) {
             case Tango_DEV_BOOLEAN: {
                 boolean[] tmp = attr.extractBooleanArray();
                 if (tmp.length == 1)
-                    value = "" + tmp[0];
+                    sb = new StringBuilder("" + tmp[0]);
                 else
                     for (int i = 0; i < tmp.length; i++) {
-                        value += ((tmp[i]) ? "1" : "0");
-                        if (((i + 1) % 4) == 0) value += " ";
+                        sb.append((tmp[i]) ? "1" : "0");
+                        if (((i + 1) % 4) == 0) sb.append(" ");
                     }
             }
             break;
             case Tango_DEV_UCHAR: {
                 short[] tmp = attr.extractUCharArray();
                 for (int i = 0; i < tmp.length; i++) {
-                    value += "" + tmp[i];
-                    if (i < tmp.length - 1) value += "\n";
+                    sb.append(tmp[i]);
+                    if (i < tmp.length - 1) sb.append("\n");
                 }
             }
             break;
@@ -367,12 +366,12 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
-                    values[i] = (double) tmp[i];
+                    if (i < tmp.length - 1) sb.append("\n");
+                    values[i] = tmp[i];
                 }
             }
             break;
@@ -381,12 +380,12 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
-                    values[i] = (double) tmp[i];
+                    if (i < tmp.length - 1) sb.append("\n");
+                    values[i] = tmp[i];
                 }
             }
             break;
@@ -395,12 +394,12 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
-                    values[i] = (double) tmp[i];
+                    if (i < tmp.length - 1) sb.append("\n");
+                    values[i] = tmp[i];
                 }
             }
             break;
@@ -409,11 +408,11 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format==null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
+                    if (i < tmp.length - 1) sb.append("\n");
                     values[i] = (double) tmp[i];
                 }
             }
@@ -423,11 +422,11 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
+                    if (i < tmp.length - 1) sb.append("\n");
                     values[i] = (double) tmp[i];
                 }
             }
@@ -437,12 +436,12 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
-                    values[i] = (double) tmp[i];
+                    if (i < tmp.length - 1) sb.append("\n");
+                    values[i] = tmp[i];
                 }
             }
             break;
@@ -451,11 +450,11 @@ public class SubscribedSignal implements TangoConst {
                 values = new double[tmp.length];
                 for (int i = 0; i < tmp.length; i++) {
                     if (format == null)
-                        value += "" + tmp[i];
+                        sb.append(tmp[i]);
                     else {
-                        value += String.format(format, tmp[i]);
+                        sb.append(String.format(format, tmp[i]));
                     }
-                    if (i < tmp.length - 1) value += "\n";
+                    if (i < tmp.length - 1) sb.append("\n");
                     values[i] = tmp[i];
                 }
             }
@@ -463,19 +462,20 @@ public class SubscribedSignal implements TangoConst {
             case Tango_DEV_STRING: {
                 String[] tmp = attr.extractStringArray();
                 for (int i = 0; i < tmp.length; i++) {
-                    value += tmp[i];
-                    if (i < tmp.length - 1) value += "\n";
+                    sb.append(tmp[i]);
+                    if (i < tmp.length - 1) sb.append("\n");
                 }
             }
             break;
             case Tango_DEV_STATE: {
                 DevState state = attr.extractState();
-                value = ApiUtil.stateName(state);
+                sb = new StringBuilder(ApiUtil.stateName(state));
             }
             break;
             default:
-                value = "" + data_type + " ?  - Unsuported Type";
+                sb = new StringBuilder("" + data_type + " ?  - Unsupported Type");
         }
+        value = sb.toString();
     }
     //===============================================================
     //===============================================================
@@ -487,7 +487,7 @@ public class SubscribedSignal implements TangoConst {
      * A class to define an history element
      */
     //=========================================================================
-    class EventHisto {
+    static class EventHistory {
         long time;
         double[] values;
         String d_value;
@@ -495,7 +495,7 @@ public class SubscribedSignal implements TangoConst {
         Exception except;
 
         //=========================================================================
-        EventHisto(long time, double[] values, String d_value, String d_time) {
+        EventHistory(long time, double[] values, String d_value, String d_time) {
             this.time = time;
             this.values = values;
             this.d_value = d_value;
@@ -581,14 +581,6 @@ public class SubscribedSignal implements TangoConst {
         //=====================================================================
         public void change(TangoChangeEvent event) {
             try {
-                if (source.length()==0)
-                    source = (event.isZmqEvent()) ? "ZMQ" : "Notifd";
-                //System.out.println("receive event");
-            }
-            catch (Exception e) {
-                source = "? ?"; //  TangORB too old
-            }
-            try {
                 //	Get the attribute value
                 DeviceAttribute attr = event.getValue();
                 signal.setData(attr);
@@ -621,13 +613,6 @@ public class SubscribedSignal implements TangoConst {
         //=====================================================================
         public void archive(TangoArchiveEvent event) {
             try {
-                if (source.length()==0)
-                    source = (event.isZmqEvent()) ? "ZMQ" : "Notifd";
-            }
-            catch (Exception e) {
-                source = "? ?"; //  TangORB too old
-            }
-            try {
                 //	Get the attribute value
                 DeviceAttribute attr = event.getValue();
                 signal.setData(attr);
@@ -657,13 +642,6 @@ public class SubscribedSignal implements TangoConst {
         //=====================================================================
         //=====================================================================
         public void periodic(TangoPeriodicEvent event) {
-            try {
-                if (source.length()==0)
-                    source = (event.isZmqEvent()) ? "ZMQ" : "Notifd";
-            }
-            catch (Exception e) {
-                source = "? ?"; //  TangORB too old
-            }
             try {
                 //	Get the attribute value
                 DeviceAttribute attr = event.getValue();

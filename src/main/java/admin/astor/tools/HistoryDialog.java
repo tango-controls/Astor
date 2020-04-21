@@ -100,7 +100,7 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
         //  Get nb curves
         int nb = 0;
         for (int i = 0; nb == 0 && i < signal.histo.size(); i++) {
-            SubscribedSignal.EventHisto histo = signal.histo.get(i);
+            SubscribedSignal.EventHistory histo = signal.histo.get(i);
             if (histo.values != null)
                 nb = histo.values.length;
         }
@@ -121,7 +121,7 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
         double x;
         double y;
         for (int i = 0; i < signal.histo.size(); i++) {
-            SubscribedSignal.EventHisto histo = signal.histo.get(i);
+            SubscribedSignal.EventHistory histo = signal.histo.get(i);
             if (histo.values != null) {
                 double max = 0;
                 for (int v = 0; v < histo.values.length; v++) {
@@ -149,7 +149,7 @@ public class HistoryDialog extends JDialog implements IJLChartListener {
         String[] retVal = new String[4];
         retVal[0] = new Date((long) data.x).toString();
         retVal[1] = "Value = " + SubscribedSignal.formatValue(data.y);
-        SubscribedSignal.EventHisto histo = signal.histo.get(idx);
+        SubscribedSignal.EventHistory histo = signal.histo.get(idx);
         retVal[2] = "Delta Value = " + histo.d_value;
         retVal[3] = "Delta time  = " + histo.d_time;
 

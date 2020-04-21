@@ -75,7 +75,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     public TangoHost host;
     private String hostName;
     private JFrame jFrame;
-    private Color bg = null;
+    private Color bg;
     private List<TangoServer> warningServers;
 
     private String attribute = "Servers";
@@ -85,7 +85,7 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
     private static final int STATE_CHANGED = 2;
     private static Dimension preferredSize;
 
-    private JScrollPane scrollPane = null;
+    private JScrollPane scrollPane;
     private LevelTree[] trees = null;
     private JPanel levelsPanel = null;
     private JPanel[] treePanels;
@@ -221,13 +221,11 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
         separatorLabel.setVisible(!warningServers.isEmpty());
         warningButton.setVisible(!warningServers.isEmpty());
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                checkActiveLevels();
-                updateHostState();
-                if (resizePanel)
-                    packTheDialog();
-            }
+        SwingUtilities.invokeLater(() -> {
+            checkActiveLevels();
+            updateHostState();
+            if (resizePanel)
+                packTheDialog();
         });
     }
     //===============================================================
@@ -905,13 +903,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
 
 
+    private static final int readInfoPeriod = 1000;
     //===============================================================
     /**
      * A thread to read and update server lists
      */
     //===============================================================
     private class UpdateThread extends Thread {
-        private int readInfoPeriod = 1000;
         private boolean stopIt = false;
 
         //===========================================================
@@ -930,34 +928,15 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
 
                 waitNextLoop(t0);
                 if (!stopIt) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (!host.onEvents) {
-                                manageSynchronous();
-                            }
-                            if (!(jFrame instanceof Astor)) {
-                                manageNotifd();
-                                updateHostState();
-                            }
+                    SwingUtilities.invokeLater(() -> {
+                        if (!host.onEvents) {
+                            manageSynchronous();
+                        }
+                        if (!(jFrame instanceof Astor)) {
+                            updateHostState();
                         }
                     });
                 }
-            }
-        }
-        //=============================================================
-        //=============================================================
-        private void manageNotifd() {
-            try {
-                DeviceAttribute deviceAttribute = host.read_attribute("NotifdState");
-                DevState    devState = deviceAttribute.extractDevState();
-                if (devState==DevState.ON)
-                    host.notifydState = all_ok;
-                else
-                if (devState==DevState.FAULT)
-                    host.notifydState = faulty;
-            }
-            catch(DevFailed e) {
-                host.notifydState = unknown;
             }
         }
         //=============================================================

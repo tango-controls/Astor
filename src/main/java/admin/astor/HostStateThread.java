@@ -57,12 +57,7 @@ public class HostStateThread extends Thread implements AstorDefs {
     private int readInfoPeriod;
     boolean stop_it = false;
 
-
-    private String[] attributes = {"State", "NotifdState"};
-
-    private static final int StateAtt = 0;
-    private static final int NotifdAtt = 1;
-
+    private static final String STATE_ATT = "State";
     //======================================================================
     /**
      * Thread constructor.
@@ -161,41 +156,39 @@ public class HostStateThread extends Thread implements AstorDefs {
             return;
         previous_state = state;
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+        SwingUtilities.invokeLater(() -> {
 
-               //	If state has changed, then update host object
-                switch (state.value()) {
-                    case DevState._ON:
-                        host.state = all_ok;
-                        break;
-                    case DevState._MOVING:
-                        host.state = moving;
-                        break;
-                    case DevState._STANDBY:
-                        host.state = long_moving;
-                        break;
-                    case DevState._ALARM:
-                        host.state = alarm;
-                        break;
-                    case DevState._OFF:
-                        host.state = all_off;
-                        break;
-                    case DevState._FAULT:
-                        host.state = faulty;
-                        break;
-                    default:
-                        host.state = unknown;
-                        break;
-                }
-               if (parent!=null)
-                   parent.updateState();
+           //	If state has changed, then update host object
+            switch (state.value()) {
+                case DevState._ON:
+                    host.state = all_ok;
+                    break;
+                case DevState._MOVING:
+                    host.state = moving;
+                    break;
+                case DevState._STANDBY:
+                    host.state = long_moving;
+                    break;
+                case DevState._ALARM:
+                    host.state = alarm;
+                    break;
+                case DevState._OFF:
+                    host.state = all_off;
+                    break;
+                case DevState._FAULT:
+                    host.state = faulty;
+                    break;
+                default:
+                    host.state = unknown;
+                    break;
+            }
+           if (parent!=null)
+               parent.updateState();
 
-               //System.out.println(host.get_name() + " is " + ApiUtil.stateName(state));
+           //System.out.println(host.get_name() + " is " + ApiUtil.stateName(state));
 
-               if (host.info_dialog!=null)
-                   host.info_dialog.updateHostState();
-           }
+           if (host.info_dialog!=null)
+               host.info_dialog.updateHostState();
        });
     }
     //======================================================================
@@ -208,12 +201,12 @@ public class HostStateThread extends Thread implements AstorDefs {
                 timeout = host.get_timeout_millis();
             }
             host.set_timeout_millis(1000);
-            DeviceAttribute[] att = host.read_attribute(attributes);
+            DeviceAttribute deviceAttribute = host.read_attribute(STATE_ATT);
 
-            if (att[StateAtt].hasFailed())
+            if (deviceAttribute.hasFailed())
                 hostState = DevState.FAULT;
             else
-                hostState = att[StateAtt].extractState();
+                hostState = DevState.ON;
         } catch (DevFailed e) {
             //Except.print_exception(e);
             host.except = e;
@@ -246,8 +239,7 @@ public class HostStateThread extends Thread implements AstorDefs {
             //	if not already well done, add listener for state_event
             if (state_listener == null) {
                 state_listener = new StateEventListener();
-                host.supplier.addTangoChangeListener(
-                        state_listener, attributes[StateAtt], filters);
+                host.supplier.addTangoChangeListener(state_listener, STATE_ATT, filters);
             }
         } catch (DevFailed e) {
             state_listener = null;

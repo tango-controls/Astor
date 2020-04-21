@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.1 - 21/04/20:
+    Remove all notifd references
+
 #### Astor-7.3.0 - 20/04/20:
     Does not manage notifd anymore
 

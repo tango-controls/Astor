@@ -16,7 +16,9 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 20-04-2020  10:40</center>\n" + 
+		"generated: 21-04-2020  08:03</center>\n" + 
+		"<li><b>Astor-7.3.1 - 21/04/20:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Remove all notifd references<br>" + 
 		"<li><b>Astor-7.3.0 - 20/04/20:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Does not manage notifd anymore<br>" + 
 		"<li><b>Astor-7.2.10 - 21/11/19:</b><br>" + 
