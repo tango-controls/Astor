@@ -53,6 +53,9 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static admin.astor.AstorDefs.*;
+import static admin.astor.AstorDefs.usage_property;
+
 
 /**
  *	This class is the Astor main panel
@@ -916,8 +919,8 @@ public class Astor extends JFrame implements AstorDefs {
             //	Remove properties
             DeviceProxy dev = new DeviceProxy(deviceName);
             dev.delete_property("StartDsPath");
-            dev.delete_property(collec_property);
-            dev.delete_property(usage_property);
+            dev.delete_property(AstorDefs.collec_property);
+            dev.delete_property(AstorDefs.usage_property);
             dev.delete_property("UseEvents");
 
             //	Remove devices and server

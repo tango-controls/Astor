@@ -206,7 +206,7 @@ public class HostStateThread extends Thread implements AstorDefs {
             if (deviceAttribute.hasFailed())
                 hostState = DevState.FAULT;
             else
-                hostState = DevState.ON;
+                hostState = deviceAttribute.extractState();
         } catch (DevFailed e) {
             //Except.print_exception(e);
             host.except = e;
