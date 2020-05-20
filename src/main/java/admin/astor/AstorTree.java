@@ -503,16 +503,16 @@ public class AstorTree extends JTree implements AstorDefs {
     //===============================================================
     //===============================================================
     void startHostInfo() {
+        System.out.println("Astor: " + parent);
         Object  object = getSelectedObject();
         if (object instanceof TangoHost) {
             TangoHost   host = (TangoHost) object;
             String className = AstorUtil.getHostInfoClassName();
-            System.out.println(className + "  for " + host.hostName());
             try {
-                AstorUtil.getInstance().startExternalApplication(className, host.hostName());
+                AstorUtil.getInstance().startExternalApplication(parent, className, host.hostName());
             }
             catch (DevFailed e) {
-                ErrorPane.showErrorMessage(new JFrame(), null, e);
+                ErrorPane.showErrorMessage(parent, null, e);
             }
         }
         if (object instanceof String) { //  A branch
@@ -528,10 +528,10 @@ public class AstorTree extends JTree implements AstorDefs {
             }
             String className = AstorUtil.getHostInfoClassName();
             try {
-                AstorUtil.getInstance().startExternalApplication(className, hostNames);
+                AstorUtil.getInstance().startExternalApplication(parent, className, hostNames);
             }
             catch (DevFailed e) {
-                ErrorPane.showErrorMessage(new JFrame(), null, e);
+                ErrorPane.showErrorMessage(parent, null, e);
             }
         }
     }
@@ -949,7 +949,6 @@ public class AstorTree extends JTree implements AstorDefs {
                 hostDialogs.add((Astor) parent, selectedHost);
         }
     }
-
     //===============================================================
     //===============================================================
     void resetCollectionStatistics() {

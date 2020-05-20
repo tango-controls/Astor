@@ -46,7 +46,6 @@ public class HostInfoDialogVector extends ArrayList<HostInfoDialog> {
     HostInfoDialogVector() {
         super();
     }
-
     //===============================================================
     //===============================================================
     void setDialogPreferredSize(Dimension d) {

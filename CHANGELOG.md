@@ -1,6 +1,6 @@
 # Astor Changelog
 
-#### Astor-7.3.2 - 18/05/20:
+#### Astor-7.3.2 - 20/05/20:
     Fix a bug in host state calculation
 
 #### Astor-7.3.1 - 21/04/20 (Removed):

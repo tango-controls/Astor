@@ -666,7 +666,7 @@ public class AstorUtil implements AstorDefs {
         }
 
         //	Sort for alphabetical order
-        Collections.sort(list, new StringComparator());
+        list.sort(new StringComparator());
 
         //	Add database as first element
         list.add(0, "Tango Database");
@@ -853,57 +853,57 @@ public class AstorUtil implements AstorDefs {
     //================================================================
     //================================================================
     public static String strException(Exception except) {
-        String str = "";
+        StringBuilder sb = new StringBuilder();
 
         if (except instanceof ConnectionFailed)
-            str += ((ConnectionFailed) (except)).getStack();
+            sb.append(((ConnectionFailed) (except)).getStack());
         else if (except instanceof CommunicationFailed)
-            str += ((CommunicationFailed) (except)).getStack();
+            sb.append(((CommunicationFailed) (except)).getStack());
         else if (except instanceof WrongNameSyntax)
-            str += ((WrongNameSyntax) (except)).getStack();
+            sb.append(((WrongNameSyntax) (except)).getStack());
         else if (except instanceof WrongData)
-            str += ((WrongData) (except)).getStack();
+            sb.append(((WrongData) (except)).getStack());
         else if (except instanceof NonDbDevice)
-            str += ((NonDbDevice) (except)).getStack();
+            sb.append(((NonDbDevice) (except)).getStack());
         else if (except instanceof NonSupportedFeature)
-            str += ((NonSupportedFeature) (except)).getStack();
+            sb.append(((NonSupportedFeature) (except)).getStack());
         else if (except instanceof EventSystemFailed)
-            str += ((EventSystemFailed) (except)).getStack();
+            sb.append(((EventSystemFailed) (except)).getStack());
         else if (except instanceof AsynReplyNotArrived)
-            str += ((AsynReplyNotArrived) (except)).getStack();
+            sb.append(((AsynReplyNotArrived) (except)).getStack());
         else if (except instanceof DevFailed) {
             DevFailed df = (DevFailed) except;
             //	True DevFailed
-            str += "Tango exception  " + df.toString() + "\n";
+            sb.append("Tango exception  ").append(df.toString()).append("\n");
             for (int i = 0; i < df.errors.length; i++) {
-                str += "Severity -> ";
+                sb.append("Severity -> ");
                 switch (df.errors[i].severity.value()) {
                     case ErrSeverity._WARN:
-                        str += "WARNING \n";
+                        sb.append("WARNING \n");
                         break;
 
                     case ErrSeverity._ERR:
-                        str += "ERROR \n";
+                        sb.append("ERROR \n");
                         break;
 
                     case ErrSeverity._PANIC:
-                        str += "PANIC \n";
+                        sb.append("PANIC \n");
                         break;
 
                     default:
-                        str += "Unknown severity code";
+                        sb.append("Unknown severity code");
                         break;
                 }
-                str += "Desc   -> " + df.errors[i].desc + "\n";
-                str += "Reason -> " + df.errors[i].reason + "\n";
-                str += "Origin -> " + df.errors[i].origin + "\n";
+                sb.append("Desc   -> ").append(df.errors[i].desc).append("\n");
+                sb.append("Reason -> ").append(df.errors[i].reason).append("\n");
+                sb.append("Origin -> ").append(df.errors[i].origin).append("\n");
 
                 if (i < df.errors.length - 1)
-                    str += "-------------------------------------------------------------\n";
+                    sb.append("-------------------------------------------------------------\n");
             }
         } else
-            str = except.toString();
-        return str;
+            sb = new StringBuilder(except.toString());
+        return sb.toString();
     }
 
     //======================================================
@@ -1203,7 +1203,7 @@ public class AstorUtil implements AstorDefs {
 
     //===============================================================
     //===============================================================
-    class RGB {
+    static class RGB {
         int r = 0;
         int g = 0;
         int b = 0;
@@ -1284,17 +1284,17 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     public void sortTangoServer(ArrayList<TangoServer> list) {
-        Collections.sort(list, new TangoServerComparator());
+        list.sort(new TangoServerComparator());
     }
 
     //===============================================================
     //===============================================================
     public void sort(ArrayList<String> arrayList) {
-        Collections.sort(arrayList, new StringComparator());
+        arrayList.sort(new StringComparator());
     }
     //===============================================================
     //===============================================================
-    public void startExternalApplication(String className, String stringParameter) throws DevFailed {
+    public void startExternalApplication(JFrame parent, String className, String stringParameter) throws DevFailed {
         try {
             //	Retrieve class name
             Class	_class = Class.forName(className);
@@ -1306,7 +1306,7 @@ public class AstorUtil implements AstorDefs {
                 Class[] parameterTypes = constructor.getParameterTypes();
                 if (parameterTypes.length==2 &&
                         parameterTypes[0]==JFrame.class && parameterTypes[1]==String.class) {
-                    ((Component) constructor.newInstance(new JFrame(), stringParameter)).setVisible(true);
+                    ((Component) constructor.newInstance(parent, stringParameter)).setVisible(true);
                     found = true;
                 }
             }
@@ -1326,7 +1326,17 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
+    public void startExternalApplication(String className, String stringParameter) throws DevFailed {
+        startExternalApplication(new JFrame(), className, stringParameter);
+    }
+    //===============================================================
+    //===============================================================
     public void startExternalApplication(String className, String[] stringParameters) throws DevFailed {
+        startExternalApplication(new JFrame(), className, stringParameters);
+    }
+    //===============================================================
+    //===============================================================
+    public void startExternalApplication(JFrame parent, String className, String[] stringParameters) throws DevFailed {
         try {
             //	Retrieve class name
             Class	_class = Class.forName(className);
@@ -1338,7 +1348,7 @@ public class AstorUtil implements AstorDefs {
                 Class[] parameterTypes = constructor.getParameterTypes();
                 if (parameterTypes.length==2 &&
                         parameterTypes[0]==JFrame.class && parameterTypes[1]==String[].class) {
-                    ((Component) constructor.newInstance(new JFrame(), stringParameters)).setVisible(true);
+                    ((Component) constructor.newInstance(parent, stringParameters)).setVisible(true);
                     found = true;
                 }
             }
@@ -1384,7 +1394,7 @@ public class AstorUtil implements AstorDefs {
      * Comparators class to sort collection
      */
     //======================================================
-    class StringComparator implements Comparator<String> {
+    static class StringComparator implements Comparator<String> {
         public int compare(String s1, String s2) {
 
             if (s1 == null)
@@ -1396,7 +1406,7 @@ public class AstorUtil implements AstorDefs {
         }
     }
     //======================================================
-    class TangoServerComparator implements Comparator<TangoServer> {
+    static class TangoServerComparator implements Comparator<TangoServer> {
         public int compare(TangoServer s1, TangoServer s2) {
 
             if (s1 == null)
