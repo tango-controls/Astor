@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.4 - 29/06/20:
+    Fix a bug in HostInfoDialog refreshing
+
 #### Astor-7.3.2 - 20/05/20:
     Fix a bug in host state calculation
 

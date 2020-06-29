@@ -16,7 +16,9 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 20-05-2020  09:48</center>\n" + 
+		"generated: 29-06-2020  09:18</center>\n" + 
+		"<li><b>Astor-7.3.4 - 29/06/20:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Fix a bug in HostInfoDialog refreshing<br>" + 
 		"<li><b>Astor-7.3.2 - 20/05/20:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Fix a bug in host state calculation<br>" + 
 		"<li><b>Astor-7.3.1 - 21/04/20 (Removed):</b><br>" + 

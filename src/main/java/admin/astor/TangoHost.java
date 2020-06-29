@@ -200,6 +200,11 @@ public class TangoHost extends DeviceProxy {
 
     //==============================================================
     //==============================================================
+    public List<TangoServer> getServerList() {
+        return servers;
+    }
+    //==============================================================
+    //==============================================================
     public TangoServer getServer(int idx) {
         return servers.get(idx);
     }
