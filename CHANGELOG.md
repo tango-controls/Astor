@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.5 - 24/08/20:
+    Fix a bug in case of a server is not defined in database
+
 #### Astor-7.3.4 - 29/06/20:
     Fix a bug in HostInfoDialog refreshing
 

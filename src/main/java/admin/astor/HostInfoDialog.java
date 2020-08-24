@@ -712,12 +712,13 @@ public class HostInfoDialog extends JDialog implements AstorDefs, TangoConst {
                 //	create it
                 try {
                     server = new TangoServer(newServer.name, newServer.state);
+                    host.addServer(server);
+                    listChanged = true;
                 } catch (DevFailed e) {
                     System.err.println(hostName);
                     Except.print_exception(e);
+                    ErrorPane.showErrorMessage(this, hostName, e);
                 }
-                host.addServer(server);
-                listChanged = true;
             }
 
             if (server != null) {
