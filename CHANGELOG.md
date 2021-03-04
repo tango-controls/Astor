@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.6 - 04/03/21:
+    Improve Device HierarchyDialog (also used in Jive)
+
 #### Astor-7.3.5 - 24/08/20:
     Fix a bug in case of a server is not defined in database
 

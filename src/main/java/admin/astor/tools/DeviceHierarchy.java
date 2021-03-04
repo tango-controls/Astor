@@ -599,59 +599,27 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
                 proxy = new DeviceProxy(name);
 
                 if (check_sub) {
-                    //	Try to ask to the admin device
-                    //	noinspection NestedTryStatement
-                    /*
-                    try {
-                        DeviceData argout = proxy.get_adm_dev().command_inout("QuerySubDevice");
-                        String[] dependencies = argout.extractStringArray();
-                        if (dependencies.length<=maxDevices) {
+                    //	If failed, check on property
+                    DbDatum datum = proxy.get_property(SUB_DEV_PROP_NAME);
+                    if (!datum.is_empty()) {
+                        String[] dependencies = datum.extractStringArray();
+                        if (dependencies.length <= maxDevices) {
                             for (String dependency : dependencies) {
-                                //	get sub device only for this device
-                                int idx = dependency.indexOf(' ');
-                                if (idx > 0) {
-                                    String org = dependency.substring(0, idx).trim();
-                                    boolean exists = (parent != null && parent.alreadyHave(dependency.substring(idx).trim()));
-                                    if (org.toLowerCase().equals(name.toLowerCase()))
-                                        add(new Device(this, dependency.substring(idx).trim(), !exists));
-                                } else {
-                                    //	This case is sub-devices not attached to device
-                                    //	(e.g. in case of custum thread has sub-devices)
-                                    //	Attach it on admin device
-                                    if (name.startsWith("dserver/"))
+                                if(dependency.compareTo(name) != 0
+                                        && !dependency.contains("dserver/")){
+                                    if (parent == null) {
                                         add(new Device(this, dependency, CHECK_SUB));
-                                }
-                            }
-                        }
-                        else {
-                            tooMuchDevices = dependencies.length;
-                        }
-                    } catch (DevFailed e) {
-                        if (e.errors[0].reason.equals("API_CommandNotFound")) {
-                            too_old = true;
-                        } else {
-                        */
-                    {
-                        {
-                            //	If failed, check on property
-                            DbDatum datum = proxy.get_property(SUB_DEV_PROP_NAME);
-                            if (!datum.is_empty()) {
-                                String[] dependencies = datum.extractStringArray();
-                                if (dependencies.length<=maxDevices) {
-                                    for (String dependency : dependencies) {
-                                        if (parent == null)
-                                            add(new Device(this, dependency, CHECK_SUB));
-                                        else {
-                                            //	to do not have a non ending loop
-                                            boolean exists = parent.alreadyHave(dependency);
+                                    } else {
+                                        //	to do not have a non ending loop
+                                        boolean exists = parent.alreadyHave(dependency);
+                                        if(!exists){
                                             add(new Device(this, dependency, !exists));
                                         }
                                     }
                                 }
-                                else {
-                                    tooMuchDevices = dependencies.length;
-                                }
                             }
+                        } else {
+                            tooMuchDevices = dependencies.length;
                         }
                     }
                 }
@@ -668,6 +636,12 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
             //	Check itself
             if (this.name.equals(name))
                 return true;
+            
+            for(int i = 0; i < this.size() ; i++){
+                if(get(i).name.equals(name)){
+                    return true;
+                }
+            }
 
             //	Check it's own parent
             return parent!=null && parent.alreadyHave(name);

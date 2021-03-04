@@ -245,6 +245,9 @@ public class DeviceHierarchyDialog extends JDialog {
 
         //String serverName = "VacTemperature/c24-wago";
         String serverName = "VacGaugeServer/sr_c27-ip";
+        //String serverName = "srmag/sqp-sd1/c31-b";
+        //String serverName = "srdiag/bpm/all";
+        //String serverName = "WhistBunchClock/ctrm";
         //String serverName = "PLCmodbus/d23";
 
         
