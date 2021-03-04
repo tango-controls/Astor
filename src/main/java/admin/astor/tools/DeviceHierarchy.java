@@ -383,7 +383,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            root_icon = utils.getIcon("TangoClass.gif", 0.33);
+            root_icon = utils.getIcon("TangoClass.png", 0.33);
 
             fonts = new Font[LEAF + 1];
             fonts[TITLE] = new Font("Dialog", Font.BOLD, 18);

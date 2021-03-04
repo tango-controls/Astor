@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.7 - 04/03/21:
+    Update Images and Logo
+
 #### Astor-7.3.6 - 04/03/21:
     Improve Device HierarchyDialog (also used in Jive)
 

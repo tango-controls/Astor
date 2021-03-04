@@ -1127,7 +1127,7 @@ public class AstorUtil implements AstorDefs {
         myBar.setProgressBarColors(Color.gray, Color.lightGray, Color.darkGray);
 
         if (tango_icon == null)
-            tango_icon =  Utils.getInstance().getIcon("TangoLogo.gif");
+            tango_icon =  Utils.getInstance().getIcon("TangoLogo.png");
         splash = new Splash(tango_icon, Color.black, myBar);
         splash.setTitle(title);
         splash.setMessage("Starting....");

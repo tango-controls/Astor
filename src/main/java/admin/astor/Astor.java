@@ -153,7 +153,7 @@ public class Astor extends JFrame implements AstorDefs {
         myBar.setBackground(Color.lightGray);
         myBar.setProgressBarColors(Color.gray, Color.gray, Color.gray);
 
-        ImageIcon icon = Utils.getInstance().getIcon("TangoLogo.gif");
+        ImageIcon icon = Utils.getInstance().getIcon("TangoLogo.png");
         Splash splash = new Splash(icon, Color.black, myBar);
         splash.setTitle(AstorUtil.getInstance().getApplicationName());
         splash.setMessage("Starting....");
@@ -1067,7 +1067,7 @@ public class Astor extends JFrame implements AstorDefs {
                 "This programme is used to control, start and stop\n" +
                 "           the TANGO device servers. \n\n" +
                 "Pascal Verdier - Software Engineering Group - ESRF";
-        Utils.popupMessage(this, message, "TangoClass.gif");
+        Utils.popupMessage(this, message, "TangoClass.png");
 	}
     //======================================================================
     //======================================================================

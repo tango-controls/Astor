@@ -326,7 +326,7 @@ public class ServerCmdThread extends Thread implements AstorDefs {
 
             titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
             titleLabel.setText("Dialog Title");
-            titleLabel.setIcon(Utils.getInstance().getIcon("TangoClass.gif", 0.25));
+            titleLabel.setIcon(Utils.getInstance().getIcon("TangoClass.png", 0.25));
             topPanel.add(titleLabel);
 
             getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);

@@ -335,8 +335,8 @@ public class AllowedCmdTree extends JTree implements TangoConst {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            tango_icon = utils.getIcon("TangoClass.gif", 0.33);
-            class_icon = utils.getIcon("TangoClass.gif", 0.125);
+            tango_icon = utils.getIcon("TangoClass.png", 0.33);
+            class_icon = utils.getIcon("TangoClass.png", 0.125);
             cmd_icon = utils.getIcon("attleaf.gif");
 
             fonts = new Font[3];

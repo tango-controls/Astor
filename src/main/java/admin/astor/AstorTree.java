@@ -460,7 +460,7 @@ public class AstorTree extends JTree implements AstorDefs {
                     message += "All are controlled on events.";
                 else if (nb_on_events > 0)
                     message += nb_on_events + " are controlled on events.";
-                Utils.popupMessage(parent, message, "TangoClass.gif");
+                Utils.popupMessage(parent, message, "TangoClass.png");
             }
         }
     }
@@ -1036,8 +1036,8 @@ public class AstorTree extends JTree implements AstorDefs {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            dbIcon = Utils.getInstance().getIcon("MySql.gif");
-            tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.25);
+            dbIcon = Utils.getInstance().getIcon("MySql.png");
+            tangoIcon = Utils.getInstance().getIcon("TransparentTango.png", 0.25);
 
             fonts = new Font[2];
             rootFont = new Font("helvetica", Font.BOLD, 24);

@@ -814,7 +814,7 @@ public class ServArchitectureDialog extends JDialog {
         //===============================================================
         //===============================================================
         private TangoRenderer() {
-            root_icon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
+            root_icon = Utils.getInstance().getIcon("TransparentTango.png", 0.15);
             class_icon = Utils.getInstance().getIcon("class.gif");
             prop_icon = Utils.getInstance().getIcon("attleaf.gif");
             leaf_icon = Utils.getInstance().getIcon("uleaf.gif");

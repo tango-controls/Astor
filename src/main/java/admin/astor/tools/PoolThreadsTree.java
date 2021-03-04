@@ -566,7 +566,7 @@ public class PoolThreadsTree extends JTree implements TangoConst {
         //===============================================================
         public TangoRenderer() {
             Utils utils = Utils.getInstance();
-            tango_icon = utils.getIcon("TangoClass.gif", 0.33);
+            tango_icon = utils.getIcon("TangoClass.png", 0.33);
             class_icon = utils.getIcon("class.gif");
             cmd_icon = utils.getIcon("attleaf.gif");
             dd_cursor = utils.getCursor("drg-drp.gif");

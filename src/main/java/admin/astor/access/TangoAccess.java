@@ -89,7 +89,7 @@ public class TangoAccess extends JFrame {
             initComponents();
             initOwnComponents();
             AstorUtil.increaseSplashProgress(5, "Finalize GUI");
-            ImageIcon icon = Utils.getInstance().getIcon("TangoClass.gif");
+            ImageIcon icon = Utils.getInstance().getIcon("TangoClass.png");
             setIconImage(icon.getImage());
             this.setTitle("Tango Access Control Manager");
 

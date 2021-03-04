@@ -199,7 +199,7 @@ public class ServersTree extends JScrollPane implements AstorDefs {
         //===============================================================
         public TangoRenderer() {
 
-            tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
+            tangoIcon = Utils.getInstance().getIcon("TransparentTango.png", 0.15);
             serverIcon = Utils.getInstance().getIcon("server.gif");
             deviceIcon = Utils.getInstance().getIcon("device.gif");
 
