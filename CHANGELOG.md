@@ -1,5 +1,8 @@
 # Astor Changelog
 
+#### Astor-7.3.8 - 15/03/21:
+    Remove splash screen replace by a bottom bar
+
 #### Astor-7.3.7 - 04/03/21:
     Update Images and Logo
 

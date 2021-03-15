@@ -988,7 +988,7 @@ public class DevBrowserTree extends JTree implements TangoConst {
         //===============================================================
         //===============================================================
         public TangoRenderer() {
-            tangoIcon = Utils.getInstance().getIcon("TransparentTango.gif", 0.15);
+            tangoIcon = Utils.getInstance().getIcon("TransparentTango.png", 0.15);
             serv_icon = Utils.getInstance().getIcon("server.gif");
             dev_icon = Utils.getInstance().getIcon("device.gif");
             attr_icon = Utils.getInstance().getIcon("leaf.gif");

@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
 
 
 public class AstorTree extends JTree implements AstorDefs {
-    private JFrame parent;
+    private Astor parent;
     public TangoHost[] hosts;
     private TangoHost selectedHost = null;
     private DatabaseObject selected_db = null;
@@ -96,12 +96,14 @@ public class AstorTree extends JTree implements AstorDefs {
     private UpdateSplashThread updateSplashThread;
     PopupText subscribeErrWindow = null;
     private long startSubscribeTime;
-    private Splash splash;
+    private JProgressBar splashProgess;
+    private JLabel splashLabel;
     //===============================================================
     //===============================================================
-    public AstorTree(JFrame parent, Splash splash) throws DevFailed {
+    public AstorTree(Astor parent, JProgressBar splash,JLabel label) throws DevFailed {
         this.parent = parent;
-        this.splash = splash;
+        this.splashProgess = splash;
+        this.splashLabel = label;
 
         //	Build panel and its tree
         initComponent();
@@ -170,16 +172,16 @@ public class AstorTree extends JTree implements AstorDefs {
 
         //===========================================================
         private UpdateSplashThread(int maxValue) {
-            splash.setAlwaysOnTop(true);
-            splash.setVisible(true);
-            splash.setMaxProgress(maxValue);
+            splashLabel.setVisible(true);
+            splashProgess.setVisible(true);
+            splashProgess.setMaximum(maxValue);
         }
 
         //===========================================================
         public void run() {
             while (!stop) {
-                splash.progress(ratio);
-                splash.setMessage(message);
+                splashProgess.setValue(ratio);
+                splashLabel.setText(message);
                 doSleep();
             }
         }
@@ -212,7 +214,7 @@ public class AstorTree extends JTree implements AstorDefs {
         //	add error startup message
         if (strError != null) {
             subscribeError.add(strError);
-		}
+        }
 
         //	Check if startup is terminated
         if (hostSubscribed < hosts.length) {
@@ -239,7 +241,8 @@ public class AstorTree extends JTree implements AstorDefs {
             }
 
             //	Concat. error messages at startup if any
-            splash.setVisible(false);
+            splashLabel.setVisible(false);
+            splashProgess.setVisible(false);
             if (subscribeError.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < subscribeError.size(); i++) {
@@ -1247,7 +1250,7 @@ public class AstorTree extends JTree implements AstorDefs {
         public void run() {
             for (TangoHost host : hosts) {
                 if (host.onEvents) {
-                    host.thread.subscribeChangeStateEvent();
+                    host.thread.subscribeChangeStateEvent();    
                 }
             }
         }

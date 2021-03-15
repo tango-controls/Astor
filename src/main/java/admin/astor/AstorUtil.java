@@ -37,9 +37,11 @@ package admin.astor;
 import admin.astor.tools.MySqlUtil;
 import admin.astor.tools.Utils;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.Tango.DevState;
 import fr.esrf.Tango.ErrSeverity;
 import fr.esrf.TangoApi.*;
 import fr.esrf.TangoDs.Except;
+import fr.esrf.tangoatk.widget.util.ATKConstant;
 import fr.esrf.tangoatk.widget.util.ATKGraphicsUtils;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
 import fr.esrf.tangoatk.widget.util.JSmoothProgressBar;
@@ -168,12 +170,12 @@ public class AstorUtil implements AstorDefs {
     //===============================================================
     //===============================================================
     public void initIcons() {
-        state_icons[unknown] = Utils.getInstance().getIcon("greyball.gif");
-        state_icons[faulty]  = Utils.getInstance().getIcon("redball.gif");
-        state_icons[alarm]   = Utils.getInstance().getIcon("orangebal.gif");
-        state_icons[all_ok]  = Utils.getInstance().getIcon("greenbal.gif");
-        state_icons[all_off] = Utils.getInstance().getIcon("whiteball.gif");
-        state_icons[moving]  = Utils.getInstance().getIcon("blueball.gif");
+        state_icons[unknown] = ATKConstant.getSmallBallIcon4State(DevState.UNKNOWN.toString());
+        state_icons[faulty]  = ATKConstant.getSmallBallIcon4State(DevState.FAULT.toString());
+        state_icons[alarm]   = ATKConstant.getSmallBallIcon4State(DevState.ALARM.toString());
+        state_icons[all_ok]  = ATKConstant.getSmallBallIcon4State(DevState.ON.toString());
+        state_icons[all_off] = ATKConstant.getSmallBallIcon4State(DevState.OFF.toString());
+        state_icons[moving]  = ATKConstant.getSmallBallIcon4State(DevState.MOVING.toString());
         state_icons[long_moving]  = Utils.getInstance().getIcon("orangeTriangle.png", 0.36);
         state_icons[failed]  = Utils.getInstance().getIcon("failed.gif");
     }
@@ -1177,11 +1179,10 @@ public class AstorUtil implements AstorDefs {
     }
     //===============================================================
     //===============================================================
-
-
-
-
-
+    public static ImageIcon getIconImage(DevState state) {
+        return ATKConstant.getSmallBallIcon4State(state.toString());
+    }
+    
     //===============================================================
     //===============================================================
     static private RGB rgb = null;

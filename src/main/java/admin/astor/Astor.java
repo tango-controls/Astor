@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.GroupLayout;
 
 import static admin.astor.AstorDefs.*;
 import static admin.astor.AstorDefs.usage_property;
@@ -146,19 +147,6 @@ public class Astor extends JFrame implements AstorDefs {
     //======================================================================
     private void buildTree() throws DevFailed {
 
-        //	Build Splash Screen
-        //	Create a splash window.
-        JSmoothProgressBar myBar = new JSmoothProgressBar();
-        myBar.setStringPainted(true);
-        myBar.setBackground(Color.lightGray);
-        myBar.setProgressBarColors(Color.gray, Color.gray, Color.gray);
-
-        ImageIcon icon = Utils.getInstance().getIcon("TangoLogo.png");
-        Splash splash = new Splash(icon, Color.black, myBar);
-        splash.setTitle(AstorUtil.getInstance().getApplicationName());
-        splash.setMessage("Starting....");
-        splash.setVisible(true);
-
         try {
             //	Stop threads if already started (updating tree)
             if (tree != null) {
@@ -168,7 +156,7 @@ public class Astor extends JFrame implements AstorDefs {
             }
 
             //	Build tree and start threads to update tree
-            tree = new AstorTree(this, splash);
+            tree = new AstorTree(this, this.miniSplashProgressBar, this.miniSplashLabel);
             scrollPane = new JScrollPane();
             scrollPane.setPreferredSize(AstorUtil.getPreferredSize());
             scrollPane.setViewportView(tree);
@@ -179,7 +167,8 @@ public class Astor extends JFrame implements AstorDefs {
             //  Access control management
             manageAccessControlMenu(tree.isAccessControlled());
         } catch (DevFailed e) {
-            splash.setVisible(false);
+            miniSplashProgressBar.setVisible(false);
+            miniSplashLabel.setVisible(false);
             throw e;
         }
     }
@@ -247,7 +236,7 @@ public class Astor extends JFrame implements AstorDefs {
         expandBtn.setVisible(false);
 
         modeLabel.setText(strMode[rwMode]);
-        bottomPanel.setVisible(rwMode!=READ_WRITE);
+        modeLabel.setVisible(rwMode!=READ_WRITE);
     }
     //======================================================================
     //======================================================================
@@ -343,6 +332,8 @@ public class Astor extends JFrame implements AstorDefs {
         titleLabel = new javax.swing.JLabel();
         bottomPanel = new javax.swing.JPanel();
         modeLabel = new javax.swing.JLabel();
+        miniSplashLabel = new javax.swing.JLabel();
+        miniSplashProgressBar = new javax.swing.JProgressBar();
         javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         changeTgHostBtn = new javax.swing.JMenuItem();
@@ -392,8 +383,14 @@ public class Astor extends JFrame implements AstorDefs {
 
         getContentPane().add(topPanel, java.awt.BorderLayout.NORTH);
 
+        bottomPanel.setLayout(new java.awt.BorderLayout());
+
         modeLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        bottomPanel.add(modeLabel);
+        bottomPanel.add(modeLabel, java.awt.BorderLayout.NORTH);
+
+        miniSplashLabel.setText("Splash message");
+        bottomPanel.add(miniSplashLabel, java.awt.BorderLayout.CENTER);
+        bottomPanel.add(miniSplashProgressBar, java.awt.BorderLayout.SOUTH);
 
         getContentPane().add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
@@ -415,7 +412,7 @@ public class Astor extends JFrame implements AstorDefs {
         });
         fileMenu.add(ctrlPreferenceBtn);
 
-        usePreferenceBtn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        usePreferenceBtn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         usePreferenceBtn.setMnemonic('U');
         usePreferenceBtn.setText("User Preferences");
         usePreferenceBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -545,7 +542,7 @@ public class Astor extends JFrame implements AstorDefs {
         });
         toolsMenu.add(multiServersCmdItem);
 
-        serverUsageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        serverUsageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         serverUsageMenuItem.setText("Server Usage");
         serverUsageMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1262,6 +1259,8 @@ public class Astor extends JFrame implements AstorDefs {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem jiveMenuItem;
     private javax.swing.JMenuItem logviewerMenuItem;
+    private javax.swing.JLabel miniSplashLabel;
+    private javax.swing.JProgressBar miniSplashProgressBar;
     private javax.swing.JLabel modeLabel;
     private javax.swing.JMenuItem multiServersCmdItem;
     private javax.swing.JMenuItem newBranchBtn;

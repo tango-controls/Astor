@@ -16,7 +16,9 @@ public interface ReleaseNotes {
 		"<body text=\"#000000\" bgColor=\"#FFFFFF\" link=\"#0000FF\" vLink=\"#7F00FF\" aLink=\"#FF0000\">\n" + 
 		"<p><!-------TITLE------></p>\n" + 
 		"<center><h2> Release Notes </h2>\n" + 
-		"generated: 04-03-2021  16:20</center>\n" + 
+		"generated: 15-03-2021  09:31</center>\n" + 
+		"<li><b>Astor-7.3.8 - 15/03/21:</b><br>" + 
+		"&nbsp; &nbsp; &nbsp; Remove splash screen replace by a bottom bar<br>" + 
 		"<li><b>Astor-7.3.7 - 04/03/21:</b><br>" + 
 		"&nbsp; &nbsp; &nbsp; Update Images and Logo<br>" + 
 		"<li><b>Astor-7.3.6 - 04/03/21:</b><br>" + 

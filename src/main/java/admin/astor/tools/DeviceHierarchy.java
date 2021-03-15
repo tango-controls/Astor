@@ -68,7 +68,7 @@ public class DeviceHierarchy extends JTree implements AstorDefs {
     private static final boolean CHECK_SUB = true;
 
 
-    private static int maxDevices = 32;
+    private static int maxDevices = 1024;
     //===============================================================
     //===============================================================
     public DeviceHierarchy(DeviceHierarchyDialog parent, Astor astor, String name) throws DevFailed {

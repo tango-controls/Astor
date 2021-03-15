@@ -8,6 +8,7 @@
 
     <name>Astor</name>
     <description>Astor</description>
+    <packaging>jar</packaging>
 
     <developers>
         <developer>
@@ -37,14 +38,77 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.tango</groupId>
+            <groupId>org.tango-controls</groupId>
+            <artifactId>JTango</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.atk</groupId>
+            <artifactId>ATKCore</artifactId>
+            <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tango-controls</groupId>
+                    <artifactId>JTango</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.atk</groupId>
+            <artifactId>ATKWidget</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.gui</groupId>
             <artifactId>Jive</artifactId>
             <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tango.gui</groupId>
+                    <artifactId>Astor</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tango</groupId>
             <artifactId>DBBench</artifactId>
             <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tango-controls</groupId>
+                    <artifactId>JTango</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.tango</groupId>
+                    <artifactId>JTangoServer</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.gui</groupId>
+            <artifactId>LogViewer</artifactId>
+            <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tango</groupId>
+                    <artifactId>JTangoServer</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.gui</groupId>
+            <artifactId>ATKPanel</artifactId>
+            <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tango.atk</groupId>
+                    <artifactId>ATKCore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.tango.atk</groupId>
+                    <artifactId>ATKWidget</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
